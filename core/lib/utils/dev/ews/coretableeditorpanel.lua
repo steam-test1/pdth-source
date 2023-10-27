@@ -65,7 +65,7 @@ function CoreTableEditorPanel:set_item_value(item_index, column_name, value)
 end
 function CoreTableEditorPanel:selected_item()
 	local item_index = self.__list_ctrl:selected_item()
-	return item_index >= 0 and item_index or nil
+	return 0 <= item_index and item_index or nil
 end
 function CoreTableEditorPanel:set_selected_item(item_index)
 	self.__list_ctrl:set_item_selected(item_index or -1, true)
@@ -156,9 +156,7 @@ function CoreTableEditorPanel:_string_to_value(str, column_name)
 	return str or ""
 end
 function CoreTableEditorPanel:_value_to_string(value, column_name)
-	if value ~= nil or not "" then
-	end
-	return (tostring(value))
+	return value == nil and "" or tostring(value)
 end
 function CoreTableEditorPanel:_make_control_edited_callback(control, column_name, value_method_name)
 	return function()

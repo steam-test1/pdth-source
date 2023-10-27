@@ -338,7 +338,7 @@ function LevelLoadingScreenGuiScript:setup(res, progress)
 	self._tips_text:set_w(self._saferect_panel:w() - self._tips_head_line:w() - offset)
 	self._tips_text:set_top(tip_top)
 	self._tips_text:set_left(self._tips_head_line:right() + offset)
-	if progress > 0 then
+	if 0 < progress then
 		self._init_progress = progress
 	end
 	for i, challenge in ipairs(self._challenges) do

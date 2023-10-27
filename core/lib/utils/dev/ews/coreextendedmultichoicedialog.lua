@@ -56,7 +56,7 @@ function CoreExtendedMultiChoiceDialog:on_cancel_button()
 end
 function CoreExtendedMultiChoiceDialog:on_left_box()
 	local index = self._left_list_box:selected_index()
-	if index > -1 then
+	if -1 < index then
 		local selected = self._left_list_box:get_string(index)
 		self._right_list_box:append(selected)
 		self._left_list_box:remove(index)
@@ -64,7 +64,7 @@ function CoreExtendedMultiChoiceDialog:on_left_box()
 end
 function CoreExtendedMultiChoiceDialog:on_right_box()
 	local index = self._right_list_box:selected_index()
-	if index > -1 then
+	if -1 < index then
 		local selected = self._right_list_box:get_string(index)
 		self._left_list_box:append(selected)
 		self._right_list_box:remove(index)

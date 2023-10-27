@@ -99,8 +99,8 @@ function RumbleManager:play(name, controller_wrapper, multiplier_data, custom_da
 			end
 			local multiplier = multiplier_data or 1
 			local timer = effect.timer or TimerManager:game()
-			if multiplier_data and type(multiplier_data) == "table" then
-				multiplier = multiplier_data.func and (multiplier_data.func(self._registered_controller_pos_callback_list[controller:key()], multiplier_data.params) or 1)
+			if multiplier_data and type(multiplier_data) == "table" and multiplier_data.func then
+				multiplier = multiplier_data.func(self._registered_controller_pos_callback_list[controller:key()], multiplier_data.params) or 1
 			end
 			if effect.engine == "hybrid" then
 				table.insert(rumble_id, 1, controller:rumble({
@@ -140,7 +140,7 @@ function RumbleManager:play(name, controller_wrapper, multiplier_data, custom_da
 	end
 end
 function RumbleManager:set_multiplier(rumble_id, multiplier)
-	if not self._enabled or not rumble_id or not multiplier then
+	if not (self._enabled and rumble_id) or not multiplier then
 		return false
 	end
 	local effect = self._preset_rumbles[rumble_id.name]
@@ -158,7 +158,7 @@ function RumbleManager:mult_distance_lerp(pos_func_list, params)
 		local closest_pos
 		for pos_func in pairs(pos_func_list) do
 			local next_closest_pos = pos_func(params)
-			if not closest_pos or next_closest_pos - source:lenght() < closest_pos - source:length() then
+			if not closest_pos or (next_closest_pos - source):lenght() < (closest_pos - source):length() then
 				closest_pos = next_closest_pos
 			end
 		end
@@ -167,7 +167,7 @@ function RumbleManager:mult_distance_lerp(pos_func_list, params)
 			local zero_dis = params.zero_dis or 1000 - full_dis
 			local mult = params.multiplier or 1
 			local source = params.source
-			mult = mult * (zero_dis - math.clamp(source - closest_pos:length() - full_dis, 0, zero_dis)) / zero_dis
+			mult = mult * (zero_dis - math.clamp((source - closest_pos):length() - full_dis, 0, zero_dis)) / zero_dis
 			return mult
 		end
 	end

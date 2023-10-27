@@ -120,15 +120,15 @@ function NetworkFriendsPSN:psn_disconnected()
 end
 function NetworkFriendsPSN:psn_update_friends()
 	local friends = PSN:get_list_friends() or {}
-	if #friends >= 0 then
+	if 0 <= #friends then
 		local change_of_friends = false
 		for k, v in pairs(friends) do
 			local friend_in_list = self._last_info.friends_map[tostring(v.friend)]
 			if not friend_in_list then
 				change_of_friends = true
-			else
-				self._last_info.friends_map[tostring(v.friend)] = nil
+				break
 			end
+			self._last_info.friends_map[tostring(v.friend)] = nil
 		end
 		for k, v in pairs(self._last_info.friends_map) do
 			change_of_friends = true
@@ -182,7 +182,7 @@ function NetworkFriendsPSN:_count_online(friends)
 		local info_mod = 1
 		if tostring(v.friend) ~= name and friend_status ~= v.status * info_mod then
 			status_changed = true
-		else
+			break
 		end
 	end
 	if not status_changed then

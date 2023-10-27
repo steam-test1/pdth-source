@@ -162,7 +162,7 @@ function CopLogicTravel.reset_actions(data, internal_data, old_internal_data, al
 				if aa_type == allowed_action then
 					busy_body_parts[body_part] = true
 					table.insert(active_actions, aa_type)
-				else
+					break
 				end
 			end
 		end
@@ -192,7 +192,7 @@ function CopLogicTravel.reset_actions(data, internal_data, old_internal_data, al
 	else
 		idle_body_part = 1
 	end
-	if idle_body_part > 0 then
+	if 0 < idle_body_part then
 		local new_action = {
 			type = "idle",
 			body_part = idle_body_part,
@@ -250,7 +250,7 @@ function CopLogicTravel.queued_update(data)
 	elseif my_data.processing_advance_path or my_data.processing_coarse_path or my_data.cover_leave_t or my_data.advance_path then
 	elseif objective and objective.nav_seg then
 		if my_data.coarse_path then
-			if not data.unit:sound():speaking(data.t) and data.char_tweak.chatter.clear and data.unit:anim_data().idle and (not my_data.focus_enemy or not my_data.focus_enemy.verified_t or not (t - my_data.focus_enemy.verified_t < 10)) then
+			if not data.unit:sound():speaking(data.t) and data.char_tweak.chatter.clear and data.unit:anim_data().idle and (not (my_data.focus_enemy and my_data.focus_enemy.verified_t) or not (t - my_data.focus_enemy.verified_t < 10)) then
 				managers.groupai:state():chk_say_enemy_chatter(data.unit, data.m_pos, "clear")
 			end
 			local coarse_path = my_data.coarse_path
@@ -464,8 +464,8 @@ function CopLogicTravel._upd_enemy_detection(data)
 		if interrupt == "contact" then
 			exit_state = focus_type == "assault" and "attack" or focus_type
 			objective_interrupted = true
-		elseif interrupt == "obstructed" then
-			exit_state = CopLogicAttack.is_obstructed(data) and (focus_type == "assault" and "attack" or focus_type)
+		elseif interrupt == "obstructed" and CopLogicAttack.is_obstructed(data) then
+			exit_state = focus_type == "assault" and "attack" or focus_type
 			objective_interrupted = true
 		end
 		if exit_state then
@@ -587,15 +587,13 @@ function CopLogicTravel.action_complete_clbk(data, action)
 				local high_ray = CopLogicTravel._chk_cover_height(data, my_data.best_cover[1], my_data.ai_visibility_slotmask)
 				my_data.best_cover[4] = high_ray
 				my_data.in_cover = true
-				if not my_data.cover_wait_t then
-					local cover_wait_t = {0.7, 0.8}
-				end
+				local cover_wait_t = my_data.cover_wait_t or {0.7, 0.8}
 				my_data.cover_leave_t = data.t + cover_wait_t[1] + cover_wait_t[2] * math.random()
 			else
 				managers.navigation:release_cover(my_data.moving_to_cover[1])
 				if my_data.best_cover then
 					local dis = mvector3.distance(my_data.best_cover[1][1], data.unit:movement():m_pos())
-					if dis > 100 then
+					if 100 < dis then
 						managers.navigation:release_cover(my_data.best_cover[1])
 						my_data.best_cover = nil
 					end
@@ -604,7 +602,7 @@ function CopLogicTravel.action_complete_clbk(data, action)
 			my_data.moving_to_cover = nil
 		elseif my_data.best_cover then
 			local dis = mvector3.distance(my_data.best_cover[1][1], data.unit:movement():m_pos())
-			if dis > 100 then
+			if 100 < dis then
 				managers.navigation:release_cover(my_data.best_cover[1])
 				my_data.best_cover = nil
 			end
@@ -640,7 +638,7 @@ function CopLogicTravel._get_pos_accross_door(guard_door, nav_seg)
 		local best_error_dis, best_pos, best_is_hit, best_is_miss, best_has_too_much_error
 		for _, accross_pos in ipairs(accross_positions) do
 			local error_dis = math.abs(mvector3.distance(accross_pos[1], door_pos) - optimal_dis)
-			local too_much_error = error_dis / optimal_dis > 0.3
+			local too_much_error = 0.3 < error_dis / optimal_dis
 			local is_hit = accross_pos[2]
 			if best_is_hit then
 				if is_hit then
@@ -713,7 +711,7 @@ function CopLogicTravel._reserve_pos_along_vec(look_pos, wanted_pos)
 	local data = {
 		start_pos = wanted_pos,
 		step_vec = step_vec,
-		step_mul = max_pos_mul > 0 and 1 or -1,
+		step_mul = 0 < max_pos_mul and 1 or -1,
 		block = max_pos_mul == 0,
 		max_pos_mul = max_pos_mul
 	}
@@ -739,7 +737,7 @@ function CopLogicTravel._rsrv_pos_along_vec_step_clbk(shait, data, test_pos)
 			return false
 		end
 		data.block = true
-		if step_mul > 0 then
+		if 0 < step_mul then
 			data.step_mul = -step_mul
 		else
 			data.step_mul = -step_mul + 1
@@ -753,7 +751,7 @@ function CopLogicTravel._rsrv_pos_along_vec_step_clbk(shait, data, test_pos)
 		if data.step_mul > data.max_pos_mul then
 			return
 		end
-	elseif step_mul > 0 then
+	elseif 0 < step_mul then
 		data.step_mul = -step_mul
 	else
 		data.step_mul = -step_mul + 1
@@ -818,7 +816,7 @@ function CopLogicTravel._chk_request_action_walk_to_advance_pos(data, my_data, s
 				for u_key, u_data in pairs(managers.enemy:all_enemies()) do
 					if u_key ~= my_key and tweak_data.character[u_data.unit:base()._tweak_table].chatter.go_go and max_dis_sq > mvector3.distance_sq(my_pos, u_data.m_pos) and not u_data.unit:sound():speaking(data.t) and (u_data.unit:anim_data().idle or u_data.unit:anim_data().move) then
 						managers.groupai:state():chk_say_enemy_chatter(u_data.unit, u_data.m_pos, "go_go")
-					else
+						break
 					end
 				end
 			end
@@ -986,7 +984,7 @@ function CopLogicTravel._try_anounce(data, my_data)
 		if u_key ~= my_key and tweak_data.character[u_data.unit:base()._tweak_table].chatter[announce_type] and max_dis_sq > mvector3.distance_sq(my_pos, u_data.m_pos) and not u_data.unit:sound():speaking(data.t) and (u_data.unit:anim_data().idle or u_data.unit:anim_data().move) then
 			managers.groupai:state():chk_say_enemy_chatter(u_data.unit, u_data.m_pos, announce_type)
 			my_data.announce_t = data.t + 15
-		else
+			break
 		end
 	end
 end

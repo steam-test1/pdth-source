@@ -140,7 +140,7 @@ function OverlayEffectManager:play_effect(data)
 		end
 		local effect = {
 			rectangle = rectangle,
-			start_t = data.timer or TimerManager:game():time(),
+			start_t = (data.timer or TimerManager:game()):time(),
 			data = {},
 			current_alpha = spawn_alpha,
 			gradient_points = data.gradient_points
@@ -175,14 +175,14 @@ function OverlayEffectManager:fade_out_effect(id)
 	if id then
 		local effect = self._playing_effects[id]
 		if effect then
-			effect.start_t = effect.data.timer or TimerManager:game():time()
+			effect.start_t = (effect.data.timer or TimerManager:game()):time()
 			effect.data.sustain = 0
 			effect.data.fade_in = 0
 			effect.data.color = effect.data.color:with_alpha(effect.current_alpha)
 		end
 	else
 		for key, effect in pairs(self._playing_effects) do
-			effect.start_t = effect.data.timer or TimerManager:game():time()
+			effect.start_t = (effect.data.timer or TimerManager:game()):time()
 			effect.data.sustain = 0
 			effect.data.fade_in = 0
 			effect.data.color = effect.data.color:with_alpha(effect.current_alpha)

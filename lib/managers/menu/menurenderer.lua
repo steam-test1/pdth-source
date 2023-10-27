@@ -29,15 +29,17 @@ function MenuRenderer:show_node(node)
 	end
 end
 function MenuRenderer:open(...)
-	MenuRenderer.super.open(self, ...)
-	do break end
-	if SystemInfo:platform() == Idstring("WIN32") then
-		self._menu_video = self._main_panel:video({
-			video = "movies/menu",
-			loop = true,
-			blend_mode = "add"
-		})
-	end
+	repeat
+		MenuRenderer.super.open(self, ...)
+		do break end -- pseudo-goto
+		if SystemInfo:platform() == Idstring("WIN32") then
+			self._menu_video = self._main_panel:video({
+				video = "movies/menu",
+				loop = true,
+				blend_mode = "add"
+			})
+		end
+	until true
 	self:_layout_video()
 	self._menu_bg = self._main_panel:bitmap({
 		texture = tweak_data.menu_themes[managers.user:get_setting("menu_theme")].background
@@ -182,7 +184,9 @@ function MenuRenderer:trigger_item(item)
 			end
 		elseif item_type == "slider" then
 			local percentage = item:percentage()
-		elseif percentage > 0 and not (percentage < 100) or item_type == "multi_choice" then
+			if not (0 < percentage) or percentage < 100 then
+			end
+		elseif item_type == "multi_choice" then
 		end
 	end
 end

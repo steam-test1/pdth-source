@@ -84,12 +84,8 @@ function PlayerStandard:enter(enter_data)
 	end
 	self:_reset_delay_action()
 	self._last_velocity_xy = Vector3()
-	if not enter_data or not enter_data.last_sent_pos_t then
-	end
-	self._last_sent_pos_t = TimerManager:game():time()
-	if not enter_data or not enter_data.last_sent_pos then
-	end
-	self._last_sent_pos = mvector3.copy(self._pos)
+	self._last_sent_pos_t = enter_data and enter_data.last_sent_pos_t or TimerManager:game():time()
+	self._last_sent_pos = enter_data and enter_data.last_sent_pos or mvector3.copy(self._pos)
 end
 function PlayerStandard:_enter(enter_data)
 	self._unit:base():set_slot(self._unit, 2)
@@ -473,7 +469,7 @@ function PlayerStandard:_update_movement(t, dt)
 			local jump_vel = mvector3.normalize(jump_dir)
 			local fwd_dot = jump_dir:dot(input_move_vec)
 			if jump_vel > fwd_dot then
-				local sustain_dot = input_move_vec:normalized() * jump_vel:dot(jump_dir)
+				local sustain_dot = (input_move_vec:normalized() * jump_vel):dot(jump_dir)
 				local new_move_vec = input_move_vec + jump_dir * (sustain_dot - fwd_dot)
 				mvector3.step(achieved_walk_vel, self._last_velocity_xy, new_move_vec, 700 * dt)
 			else
@@ -523,7 +519,7 @@ function PlayerStandard:_update_movement(t, dt)
 	if self._ext_network then
 		local cur_pos = pos_new or self._pos
 		local move_dis = mvector3.distance_sq(cur_pos, self._last_sent_pos)
-		if move_dis > 22500 or move_dis > 400 and (t - self._last_sent_pos_t > 1.5 or not pos_new) then
+		if 22500 < move_dis or 400 < move_dis and (t - self._last_sent_pos_t > 1.5 or not pos_new) then
 			self._ext_network:send("action_walk_nav_point", cur_pos)
 			mvector3.set(self._last_sent_pos, cur_pos)
 			self._last_sent_pos_t = t
@@ -812,34 +808,32 @@ function PlayerStandard:_check_action_melee(t, input)
 			local sphere_cast_radius = 20
 			local col_ray = self._unit:raycast("ray", from, to, "slot_mask", self._slotmask_bullet_impact_targets, "sphere_cast_radius", sphere_cast_radius, "ray_type", "body melee")
 			if col_ray then
-				do
-					local damage, damage_effect = self._equipped_unit:base():melee_damage_info()
-					col_ray.sphere_cast_radius = sphere_cast_radius
-					local hit_unit = col_ray.unit
-					if not hit_unit:character_damage() or not hit_unit:character_damage()._no_blood then
-						managers.game_play_central:play_impact_flesh({col_ray = col_ray})
-						managers.game_play_central:play_impact_sound_and_effects({col_ray = col_ray, no_decal = true})
-					end
-					if hit_unit:damage() and col_ray.body:extension() and col_ray.body:extension().damage then
-						col_ray.body:extension().damage:damage_melee(self._unit, col_ray.normal, col_ray.position, col_ray.direction, damage)
-						if hit_unit:id() ~= -1 then
-							managers.network:session():send_to_peers_synched("sync_body_damage_melee", col_ray.body, self._unit, col_ray.normal, col_ray.position, col_ray.direction, damage)
-						end
-					end
-					managers.rumble:play("melee_hit")
-					managers.game_play_central:physics_push(col_ray)
-					if hit_unit:character_damage() and hit_unit:character_damage().damage_melee then
-						local action_data = {}
-						action_data.variant = "melee"
-						action_data.damage = damage
-						action_data.damage_effect = damage_effect
-						action_data.attacker_unit = self._unit
-						action_data.col_ray = col_ray
-						local defense_data = col_ray.unit:character_damage():damage_melee(action_data)
-						return defense_data
+				local damage, damage_effect = self._equipped_unit:base():melee_damage_info()
+				col_ray.sphere_cast_radius = sphere_cast_radius
+				local hit_unit = col_ray.unit
+				if not hit_unit:character_damage() or not hit_unit:character_damage()._no_blood then
+					managers.game_play_central:play_impact_flesh({col_ray = col_ray})
+					managers.game_play_central:play_impact_sound_and_effects({col_ray = col_ray, no_decal = true})
+				end
+				if hit_unit:damage() and col_ray.body:extension() and col_ray.body:extension().damage then
+					col_ray.body:extension().damage:damage_melee(self._unit, col_ray.normal, col_ray.position, col_ray.direction, damage)
+					if hit_unit:id() ~= -1 then
+						managers.network:session():send_to_peers_synched("sync_body_damage_melee", col_ray.body, self._unit, col_ray.normal, col_ray.position, col_ray.direction, damage)
 					end
 				end
-			else
+				managers.rumble:play("melee_hit")
+				managers.game_play_central:physics_push(col_ray)
+				if hit_unit:character_damage() and hit_unit:character_damage().damage_melee then
+					local action_data = {}
+					action_data.variant = "melee"
+					action_data.damage = damage
+					action_data.damage_effect = damage_effect
+					action_data.attacker_unit = self._unit
+					action_data.col_ray = col_ray
+					local defense_data = col_ray.unit:character_damage():damage_melee(action_data)
+					return defense_data
+				else
+				end
 			end
 			new_action = true
 		end
@@ -972,7 +966,7 @@ function PlayerStandard:_get_interaction_target(char_table, my_head_pos, cam_fwd
 		for _, char in pairs(char_table) do
 			if ray.unit == char.unit then
 				prime_target = char
-			else
+				break
 			end
 		end
 	end
@@ -1047,7 +1041,7 @@ function PlayerStandard:_get_intimidation_action(prime_target, char_table)
 						end
 					end
 				end
-				plural = num_affected > 1 and true or false
+				plural = 1 < num_affected and true or false
 			end
 			local max_inv_wgt = 0
 			for _, char in pairs(char_table) do
@@ -1114,7 +1108,7 @@ function PlayerStandard:_start_action_intimidate(t)
 	if not self._intimidate_t or t - self._intimidate_t > tweak_data.player.movement_state.interaction_delay then
 		local voice_type, plural, prime_target = self:_get_unit_intimidation_action(true, true, true)
 		local interact_type, sound_name
-		local sound_suffix = (not plural or not "plu") and "sin"
+		local sound_suffix = plural and "plu" or "sin"
 		local skip_alert = false
 		if voice_type == "stop" then
 			interact_type = "cmd_stop"
@@ -1358,14 +1352,9 @@ function PlayerStandard:_check_action_primary_attack(t, input)
 							self._unit:camera():play_redirect(self.IDS_RECOIL_STEELSIGHT, weap_base:fire_rate_multiplier())
 						end
 						local kick_v = weap_tweak_data.kick.v[self._in_steelsight and "steelsight" or self._ducking and "crouching" or "standing"]
-						if weap_tweak_data.kick.h then
-						else
-							local kick_h = weap_tweak_data.kick.h[self._in_steelsight and "steelsight" or self._ducking and "crouching" or "standing"] or 0
-						end
+						local kick_h = weap_tweak_data.kick.h and weap_tweak_data.kick.h[self._in_steelsight and "steelsight" or self._ducking and "crouching" or "standing"] or 0
 						local recoil_multiplier = managers.player:upgrade_value(weap_base:get_name_id(), "recoil_multiplier")
-						if recoil_multiplier == 0 or not recoil_multiplier then
-							recoil_multiplier = 1
-						end
+						recoil_multiplier = recoil_multiplier ~= 0 and recoil_multiplier or 1
 						self._camera_unit:base():recoil_kick(kick_v * recoil_multiplier, kick_h * recoil_multiplier)
 						local spread_multiplier = weap_base:spread_multiplier()
 						managers.hud:_kick_crosshair_offset(weap_tweak_data.crosshair[self._in_steelsight and "steelsight" or self._ducking and "crouching" or "standing"].kick_offset * spread_multiplier)
@@ -1485,7 +1474,7 @@ function PlayerStandard:_get_dir_str_from_vec(fwd, dir_vec)
 	local abs_spin = math.abs(att_dir_spin)
 	if abs_spin < 45 then
 		return "fwd"
-	elseif abs_spin > 135 then
+	elseif 135 < abs_spin then
 		return "bwd"
 	elseif att_dir_spin < 0 then
 		return "right"

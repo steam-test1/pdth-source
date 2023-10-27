@@ -224,29 +224,27 @@ function SequenceManager:get_keys_as_string(key_value_list, none_string, dot_at_
 		return none_string
 	end
 	for key, value in pairs(key_value_list) do
-		do
-			local last_func = func
-			local append_string
-			if only_values then
-				append_string = value
-			else
-				append_string = key
-			end
-			function func(count, first)
-				if count == 1 then
-					if first then
-						return append_string .. (dot_at_end and "." or "")
-					else
-						return append_string
-					end
-				elseif first then
-					return last_func(count - 1, false) .. " and " .. append_string .. (dot_at_end and "." or "")
-				else
-					return last_func(count - 1, false) .. ", " .. append_string
-				end
-			end
-			count = count + 1
+		local last_func = func
+		local append_string
+		if only_values then
+			append_string = value
+		else
+			append_string = key
 		end
+		function func(count, first)
+			if count == 1 then
+				if first then
+					return append_string .. (dot_at_end and "." or "")
+				else
+					return append_string
+				end
+			elseif first then
+				return last_func(count - 1, false) .. " and " .. append_string .. (dot_at_end and "." or "")
+			else
+				return last_func(count - 1, false) .. ", " .. append_string
+			end
+		end
+		count = count + 1
 	end
 	return func(count, true)
 end
@@ -471,11 +469,11 @@ function SequenceManager:test_unit_variations(unit)
 	if alive(unit) and unit:damage() then
 		local unit_element = self._unit_elements[unit:name():key()]
 		local variation_list = unit_element:get_parameter_sequence_name_list("editable_state", true)
-		if #variation_list > 0 then
+		if 0 < #variation_list then
 			local reset_variation_list = unit_element:get_parameter_sequence_name_list("reset_editable_state", true)
 			if #reset_variation_list == 0 then
 				Application:error("Unit had " .. #variation_list .. " sequences with the attribute \"editable_state\" set to true but no sequence with the attribute \"reset_editable_state\" set to true.")
-			elseif #reset_variation_list > 1 then
+			elseif 1 < #reset_variation_list then
 				Application:error("Too many sequences with the attribute \"reset_editable_state\". Found " .. #reset_variation_list .. ", should only be 1.")
 			end
 			local param_list = {
@@ -492,7 +490,7 @@ function SequenceManager:test_unit_variations(unit)
 			}
 			for _, name in ipairs(variation_list) do
 				unit_element:run_sequence(name, unpack(param_list))
-				if #reset_variation_list > 0 then
+				if 0 < #reset_variation_list then
 					unit_element:run_sequence(reset_variation_list[1], unpack(param_list))
 				end
 			end
@@ -625,7 +623,7 @@ function SequenceManager:do_area_damage(damage_type, attack_unit, pos, range, co
 			body_extension = body_extension and body_extension.damage
 			if body_extension then
 				local hit_pos = body:center_of_mass()
-				local dir = hit_pos - pos:normalized()
+				local dir = (hit_pos - pos):normalized()
 				local unit_extension = unit:damage()
 				local body_damage
 				if get_damage_func then
@@ -645,7 +643,7 @@ function SequenceManager:do_area_damage(damage_type, attack_unit, pos, range, co
 ". Should be "dead, damage".
 THIS WILL CRASH SOON, SO FIX IT!
 ]])
-						elseif damage > 0 then
+						elseif 0 < damage then
 							damaged_prop_map[unit_key] = unit
 							if dead then
 								killed_prop_map[unit_key] = unit
@@ -664,14 +662,14 @@ THIS WILL CRASH SOON, SO FIX IT!
 		if unit_key and unit_key ~= ignore_unit_key and not checked_unit_map[unit_key] and unit_extension then
 			local hit, hit_pos = self:is_hit_by_area_damage(unit, pos, ray_caller, ignore_unit)
 			if hit then
-				local dir = unit:position() - pos:normalized()
+				local dir = (unit:position() - pos):normalized()
 				local unit_damage
 				if get_damage_func then
 					unit_damage = get_damage_func(unit, nil, dir, hit_pos, damage_type, attack_unit, pos, range, constant_damage, damage, velocity, ignore_unit, direct_attack_unit, ignore_mask)
 				elseif constant_damage then
 					unit_damage = damage
 				else
-					unit_damage = damage * (1 - math.clamp(hit_pos - pos:length() / range, 0, 1))
+					unit_damage = damage * (1 - math.clamp((hit_pos - pos):length() / range, 0, 1))
 				end
 				local dead, damage = self:do_area_damage_on_unit(unit, nil, unit_extension, damage_type, attack_unit, -dir, pos, dir, unit_damage, velocity, ignore_unit, direct_attack_unit)
 				hit_being_map[unit_key] = unit
@@ -681,7 +679,7 @@ THIS WILL CRASH SOON, SO FIX IT!
 ". Should be "dead, damage".
 THIS WILL CRASH SOON, SO FIX IT!
 ]])
-					elseif damage > 0 then
+					elseif 0 < damage then
 						damaged_being_map[unit_key] = unit
 						if dead then
 							killed_being_map[unit_key] = unit
@@ -1064,11 +1062,11 @@ function SequenceEnvironment.angle(v1, v2, up)
 	end
 end
 function SequenceEnvironment.pos_side(obj, pos)
-	local dir = pos - obj:position():normalized()
+	local dir = (pos - obj:position()):normalized()
 	return SequenceEnvironment.dir_side(obj, dir)
 end
 function SequenceEnvironment.dir_side(obj, dir)
-	local world_dir = -dir:rotate_with(obj:rotation())
+	local world_dir = (-dir):rotate_with(obj:rotation())
 	local abs_x = math.abs(world_dir.x)
 	local abs_y = math.abs(world_dir.y)
 	local abs_z = math.abs(world_dir.z)
@@ -1222,7 +1220,7 @@ function BaseElement:retrieve_node_file(node)
 end
 function BaseElement:retrieve_node_line(node)
 	local line = node.line and node:line() or nil
-	if line and (line <= 0 or line >= 276577824) then
+	if line and (line <= 0 or 276577824 <= line) then
 		return nil
 	else
 		return line
@@ -1281,22 +1279,20 @@ function BaseElement:activate(env)
 	if alive(env.dest_unit) and self:filter_callback(env) then
 		local start_time = self:run_parsed_func(env, self._start_time) or 0
 		local repeat_nr = self:run_parsed_func(env, self._repeat_nr) or 1
-		if start_time > 0 then
-			do
-				local params = env.params
-				local start_time_id_var = self:run_parsed_func(env, self._start_time_var)
-				local function func()
-					if self:delayed_filter_callback(env) and alive(env.dest_unit) then
-						env.params = params
-						SequenceEnvironment.self = env
-						SequenceEnvironment.element = self
-						self:activate_callback(env)
-					end
+		if 0 < start_time then
+			local params = env.params
+			local start_time_id_var = self:run_parsed_func(env, self._start_time_var)
+			local function func()
+				if self:delayed_filter_callback(env) and alive(env.dest_unit) then
+					env.params = params
+					SequenceEnvironment.self = env
+					SequenceEnvironment.element = self
+					self:activate_callback(env)
 				end
-				local id = managers.sequence:add_time_callback(func, start_time, repeat_nr)
-				if start_time_id_var then
-					env.vars[start_time_id_var] = id
-				end
+			end
+			local id = managers.sequence:add_time_callback(func, start_time, repeat_nr)
+			if start_time_id_var then
+				env.vars[start_time_id_var] = id
 			end
 		else
 			for i = 1, repeat_nr do
@@ -1349,7 +1345,7 @@ end
 function BaseElement:check_invalid_node(node, valid_node_list)
 	if self:is_valid_xml_node(node) then
 		local unit_name = self._unit_element and self._unit_element._name or self._name or "[None]"
-		Application:error("\"" .. tostring(node:name()) .. "\" elements for unit \"" .. tostring(unit_name) .. "\" are not supported in the \"" .. tostring(self._element_name) .. "\" elements, only the following are allowed: " .. SequenceManager:get_keys_as_string(valid_node_list, "[None]", true, #valid_node_list > 0) .. " " .. self:get_xml_origin())
+		Application:error("\"" .. tostring(node:name()) .. "\" elements for unit \"" .. tostring(unit_name) .. "\" are not supported in the \"" .. tostring(self._element_name) .. "\" elements, only the following are allowed: " .. SequenceManager:get_keys_as_string(valid_node_list, "[None]", true, 0 < #valid_node_list) .. " " .. self:get_xml_origin())
 	end
 end
 function BaseElement:is_valid_xml_node(node)
@@ -1684,7 +1680,7 @@ function UnitElement:save(data)
 		if self._set_global_vars[k] ~= v then
 			state.global_vars = table.map_copy(self._global_vars)
 			changed = true
-		else
+			break
 		end
 	end
 	if changed then
@@ -1740,10 +1736,8 @@ function FilterElement:is_allowed(env)
 		allowed = element:is_allowed(env) == allow
 		if check_all and not allowed then
 			break
-		else
-			if not check_all and allowed then
-		end
-		else
+		elseif not check_all and allowed then
+			break
 		end
 	end
 	return allowed
@@ -1786,7 +1780,7 @@ function SideFilterElement:is_allowed(env)
 	if alive(env.dest_body) then
 		local rotation = env.dest_body:rotation()
 		local dot = math.dot(env.dest_normal, self._multiplier * rotation[self._axis](rotation))
-		return dot > 0.9
+		return 0.9 < dot
 	else
 		self:print_error("Unable to use filter on destroyed dest_body. This is probably because a scripter didn't specify a body when a sequence was executed or if it was executed from a sequence that had \"startup\" attribute set to true or if the sequence was triggered from a water element.", true, env)
 		return false
@@ -1805,24 +1799,22 @@ function ZoneFilterElement:init(node, unit_element)
 	self._func_list = {}
 	local negative = false
 	for i = 1, #name do
-		do
-			local __chr = string.sub(name, i, i)
-			if __chr == "-" then
-				negative = true
-			elseif __chr == "x" or __chr == "y" or __chr == "z" then
-				local func
-				if negative then
-					function func(zone_vector)
-						return zone_vector[__chr] < 0
-					end
-				else
-					function func(zone_vector)
-						return zone_vector[__chr] >= 0
-					end
+		local __chr = string.sub(name, i, i)
+		if __chr == "-" then
+			negative = true
+		elseif __chr == "x" or __chr == "y" or __chr == "z" then
+			local func
+			if negative then
+				function func(zone_vector)
+					return zone_vector[__chr] < 0
 				end
-				table.insert(self._func_list, func)
-				negative = false
+			else
+				function func(zone_vector)
+					return 0 <= zone_vector[__chr]
+				end
 			end
+			table.insert(self._func_list, func)
+			negative = false
 		end
 	end
 	if #self._func_list == 0 then
@@ -1833,12 +1825,12 @@ function ZoneFilterElement:is_allowed(env)
 	local obj_name = self:run_parsed_func(env, self._ref_object)
 	local obj = obj_name and env.dest_unit:get_object(obj_name:id())
 	if obj then
-		local zone_vector = env.pos - obj:position():rotate_with(obj:rotation():inverse())
+		local zone_vector = (env.pos - obj:position()):rotate_with(obj:rotation():inverse())
 		local allowed = true
 		for _, func in ipairs(self._func_list) do
 			allowed = func(zone_vector)
 			if not allowed then
-			else
+				break
 			end
 		end
 		return allowed
@@ -1936,7 +1928,7 @@ function ProximityTypeElement:init(node, unit_element)
 	self._interval = self._interval and tonumber(self._interval(SequenceEnvironment))
 	self._interval = math.min(tonumber(self._interval) or 0, self.MIN_INTERVAL)
 	self._quick = self:get("quick")
-	self._quick = not self._quick or self._quick(SequenceEnvironment) or true
+	self._quick = self._quick and self._quick(SequenceEnvironment) or true
 	self._start_within = self:get("start_within")
 	self._start_within = self._start_within and self._quick(SequenceEnvironment)
 	if self._start_within == nil then
@@ -2427,7 +2419,7 @@ function EnduranceElement:can_skip()
 end
 function EnduranceElement:damage(env)
 	local new_damage = env.damage - self._abs[env.damage_type]
-	if new_damage >= 0 then
+	if 0 <= new_damage then
 		local extension = env.dest_body:extension().damage
 		extension._damage[env.damage_type] = extension._damage[env.damage_type] + new_damage
 		if extension._damage[env.damage_type] >= self._endurance[env.damage_type] then
@@ -2603,7 +2595,7 @@ function AreaDamageElement:activate_callback(env)
 			self:print_attribute_error("position", position, nil, false, env)
 		else
 			local range = self:run_parsed_func(env, self._range)
-			if range and range > 0 then
+			if range and 0 < range then
 				local damage = self:run_parsed_func(env, self._damage) or 0
 				local physic_effect = self:run_parsed_func(env, self._physic_effect)
 				local mass = self:run_parsed_func(env, self._mass)
@@ -2614,7 +2606,8 @@ function AreaDamageElement:activate_callback(env)
 				ignore_mask = ignore_mask and managers.slot:get_mask(ignore_mask)
 				if #self._key_list == 0 then
 					if falloff == "keys" then
-						falloff, damage_callback_func_name = nil, nil
+						falloff = nil
+						damage_callback_func_name = nil
 					end
 				else
 					damage_callback_func_name = damage_callback_func_name or self._falloff_func_map.keys
@@ -2638,7 +2631,7 @@ function AreaDamageElement:get_params(env)
 		for current_index, current_parsed_key in ipairs(params.parsed_key_list) do
 			if parsed_key:get_variable("range") > current_parsed_key:get_variable("range") then
 				index = current_index
-			else
+				break
 			end
 		end
 		table.insert(params.parsed_key_list, index or #params.parsed_key_list + 1, parsed_key)
@@ -2687,9 +2680,7 @@ function AreaDamageElement:get_falloff_preset1_damage(params, unit, body, dir, h
 	return (1 - (distance / range) ^ 2) * damage
 end
 function AreaDamageElement:get_distance(body, hit_pos, pos)
-	if not body or not get_distance_to_body(body, pos) then
-	end
-	return (hit_pos - pos:length())
+	return body and get_distance_to_body(body, pos) or (hit_pos - pos):length()
 end
 AreaDamageKeyElement = AreaDamageKeyElement or class(BaseElement)
 function AreaDamageKeyElement:init(node, unit_element)
@@ -2737,7 +2728,7 @@ end
 function AreaDamageKeyElement:get_linear_damage(distance, range, damage, prev_key_range, prev_key_damage)
 	local diff = range - prev_key_range
 	local offset
-	if diff > 0 then
+	if 0 < diff then
 		offset = math.clamp(distance - prev_key_range, 0, diff) / diff
 	else
 		offset = 0
@@ -3679,7 +3670,7 @@ function ProjectDecalElement:activate_callback(env)
 			ignore_unit = nil
 		end
 		if ray_distance then
-			local ray = ignore_unit or World:raycast("ray", position, position + direction * ray_distance, "slot_mask", slotmask)
+			local ray = (ignore_unit or World):raycast("ray", position, position + direction * ray_distance, "slot_mask", slotmask)
 			if ray then
 				position = ray.position
 				normal = normal or ray.normal
@@ -3693,7 +3684,7 @@ function ProjectDecalElement:activate_callback(env)
 		table.insert(arg_list, ignore_unit)
 		table.insert(arg_list, slotmask)
 		local effect = World:project_decal(name, position, direction, unpack(arg_list))
-		if #effect > 0 and self:run_parsed_func(env, self._play_effect) then
+		if 0 < #effect and self:run_parsed_func(env, self._play_effect) then
 			World:effect_manager():spawn({
 				effect = effect,
 				position = position,
@@ -4209,28 +4200,26 @@ function SlotElement:init(node, unit_element)
 end
 function SlotElement:activate_callback(env)
 	if self._frustum_delay then
-		do
-			local visible = self:run_parsed_func(env, self._frustum_delay)
-			local frustum_close_radius = self:run_parsed_func(env, self._frustum_close_radius)
-			local frustum_extension = self:run_parsed_func(env, self._frustum_extension)
-			local frustum_far_clip = self:run_parsed_func(env, self._frustum_far_clip)
-			local data = {}
-			local function func()
-				return self:check_frustum_delay(frustum_close_radius, frustum_extension, frustum_far_clip, visible, env, data)
-			end
-			data._body_index = 1
-			data._bodies = {}
-			local body_count = env.dest_unit:num_bodies()
-			for i = 0, body_count - 1 do
-				table.insert(data._bodies, env.dest_unit:body(i))
-			end
-			if #data._bodies == 0 then
-				self:activate_element(env)
-			end
-			managers.sequence:add_retry_callback("culling", func, true)
-			if self.SAVE_STATE then
-				self:set_state(env.dest_unit, tonumber(self:run_parsed_func(env, self._slot)))
-			end
+		local visible = self:run_parsed_func(env, self._frustum_delay)
+		local frustum_close_radius = self:run_parsed_func(env, self._frustum_close_radius)
+		local frustum_extension = self:run_parsed_func(env, self._frustum_extension)
+		local frustum_far_clip = self:run_parsed_func(env, self._frustum_far_clip)
+		local data = {}
+		local function func()
+			return self:check_frustum_delay(frustum_close_radius, frustum_extension, frustum_far_clip, visible, env, data)
+		end
+		data._body_index = 1
+		data._bodies = {}
+		local body_count = env.dest_unit:num_bodies()
+		for i = 0, body_count - 1 do
+			table.insert(data._bodies, env.dest_unit:body(i))
+		end
+		if #data._bodies == 0 then
+			self:activate_element(env)
+		end
+		managers.sequence:add_retry_callback("culling", func, true)
+		if self.SAVE_STATE then
+			self:set_state(env.dest_unit, tonumber(self:run_parsed_func(env, self._slot)))
 		end
 	else
 		self:activate_element(env)

@@ -29,9 +29,7 @@ function CoreCutsceneClipMetadata:camera_watermark()
 	if self:footage() and self:camera() then
 		local name_without_prefix = string.match(self:camera(), "camera_(.+)")
 		local as_number = tonumber(name_without_prefix)
-		if not as_number or not tostring(as_number) then
-		end
-		return string.upper(name_without_prefix or "camera"), 12, "ALIGN_CENTER_HORIZONTAL,ALIGN_CENTER_VERTICAL", Vector3(0, -2)
+		return as_number and tostring(as_number) or string.upper(name_without_prefix or "camera"), 12, "ALIGN_CENTER_HORIZONTAL,ALIGN_CENTER_VERTICAL", Vector3(0, -2)
 	end
 	return nil
 end

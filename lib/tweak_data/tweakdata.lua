@@ -2008,14 +2008,12 @@ function TweakData:set_menu_scale()
 			mission_end_font_size = 1
 		}
 	}
-	if not lang_mods_def[SystemInfo:language():key()] then
-		local lang_mods = {
-			topic_font_size = 1,
-			challenges_font_size = 1,
-			upgrades_font_size = 1,
-			mission_end_font_size = 1
-		}
-	end
+	local lang_mods = lang_mods_def[SystemInfo:language():key()] or {
+		topic_font_size = 1,
+		challenges_font_size = 1,
+		upgrades_font_size = 1,
+		mission_end_font_size = 1
+	}
 	local scale_multiplier = self.scale.default_font_multiplier
 	local small_scale_multiplier = self.scale.small_font_multiplier
 	self.menu.default_font = "fonts/font_univers_530_bold"
@@ -2102,16 +2100,14 @@ function TweakData:set_hud_values()
 			location_font_size = 0.7
 		}
 	}
-	if not lang_mods_def[SystemInfo:language():key()] then
-		local lang_mods = {
-			hint_font_size = 1,
-			stats_challenges_font_size = 1,
-			active_objective_title_font_size = 1,
-			present_mid_text_font_size = 1,
-			next_player_font_size = 1,
-			location_font_size = 1
-		}
-	end
+	local lang_mods = lang_mods_def[SystemInfo:language():key()] or {
+		hint_font_size = 1,
+		stats_challenges_font_size = 1,
+		active_objective_title_font_size = 1,
+		present_mid_text_font_size = 1,
+		next_player_font_size = 1,
+		location_font_size = 1
+	}
 	self.hud.small_font = "fonts/font_univers_530_medium"
 	self.hud.small_font_size = 14 * self.scale.small_font_multiplier
 	self.hud.location_font_size = 28 * self.scale.hud_default_font_multiplier * lang_mods.location_font_size

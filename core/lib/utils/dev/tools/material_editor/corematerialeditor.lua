@@ -408,7 +408,7 @@ function CoreMaterialEditor:_clean_parameters()
 			for _, var in ipairs(variables) do
 				if param:parameter("type") ~= "texture" and param:parameter("name") == var.name:s() or param:name() == var.name:s() then
 					found = true
-				else
+					break
 				end
 			end
 			if not found then

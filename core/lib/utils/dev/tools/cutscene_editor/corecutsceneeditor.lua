@@ -502,7 +502,7 @@ end
 function CoreCutsceneEditor:_create_sequencer(parent_frame)
 	self._sequencer_panel = EWS:Panel(parent_frame)
 	local panel_sizer = EWS:BoxSizer("VERTICAL")
-	self._sequencer_panel:set_background_colour(EWS:get_system_colour("3DSHADOW") * 255:unpack())
+	self._sequencer_panel:set_background_colour((EWS:get_system_colour("3DSHADOW") * 255):unpack())
 	self._sequencer_panel:set_sizer(panel_sizer)
 	self._sequencer = CoreCutsceneSequencerPanel:new(self._sequencer_panel)
 	self._sequencer:connect("EVT_TRACK_MOUSEWHEEL", callback(self, self, "_on_sequencer_track_mousewheel"), self._sequencer)
@@ -515,10 +515,10 @@ end
 function CoreCutsceneEditor:_create_attribute_panel(parent_frame)
 	self._attribute_panel = EWS:Panel(parent_frame)
 	local panel_sizer = EWS:BoxSizer("VERTICAL")
-	self._attribute_panel:set_background_colour(EWS:get_system_colour("3DSHADOW") * 255:unpack())
+	self._attribute_panel:set_background_colour((EWS:get_system_colour("3DSHADOW") * 255):unpack())
 	self._attribute_panel:set_sizer(panel_sizer)
 	self._attribute_panel_area = EWS:ScrolledWindow(self._attribute_panel, "", "")
-	self._attribute_panel_area:set_background_colour(EWS:get_system_colour("3DFACE") * 255:unpack())
+	self._attribute_panel_area:set_background_colour((EWS:get_system_colour("3DFACE") * 255):unpack())
 	self:_refresh_attribute_panel()
 	panel_sizer:add(self._attribute_panel_area, 1, 1, "LEFT,BOTTOM,EXPAND")
 end
@@ -567,7 +567,7 @@ function CoreCutsceneEditor:_selected_footage()
 		return #selected_clip_footages == 1 and selected_clip_footages[1] or nil
 	else
 		local selected_item_index = self._footage_list_ctrl:selected_item()
-		return selected_item_index >= 0 and self._footage_list_ctrl:get_item_data(selected_item_index)
+		return 0 <= selected_item_index and self._footage_list_ctrl:get_item_data(selected_item_index)
 	end
 end
 function CoreCutsceneEditor:_display_footage_in_selected_footage_track(footage)
@@ -583,9 +583,7 @@ function CoreCutsceneEditor:_display_footage_in_selected_footage_track(footage)
 end
 function CoreCutsceneEditor:_sizer_with_editable_attributes_for_current_context(parent_frame)
 	local selected_keys = self._sequencer:selected_keys()
-	if #selected_keys ~= 1 or not selected_keys[1] then
-	end
-	local displayed_item = responder(nil):metadata()
+	local displayed_item = (#selected_keys == 1 and selected_keys[1] or responder(nil)):metadata()
 	if displayed_item and displayed_item.populate_sizer_with_editable_attributes then
 		local sizer = EWS:BoxSizer("VERTICAL")
 		local headline = EWS:StaticText(parent_frame, displayed_item:type_name())
@@ -600,7 +598,7 @@ end
 function CoreCutsceneEditor:_create_selected_footage_track(parent_frame)
 	local panel = EWS:Panel(parent_frame)
 	local panel_sizer = EWS:BoxSizer("VERTICAL")
-	panel:set_background_colour(EWS:get_system_colour("3DSHADOW") * 255:unpack())
+	panel:set_background_colour((EWS:get_system_colour("3DSHADOW") * 255):unpack())
 	panel:set_sizer(panel_sizer)
 	self._selected_footage_track_scrolled_area = EWS:ScrolledWindow(panel, "", "HSCROLL,NO_BORDER,ALWAYS_SHOW_SB")
 	local scrolled_area_sizer = EWS:BoxSizer("VERTICAL")
@@ -675,7 +673,7 @@ end
 function CoreCutsceneEditor:_evaluate_editor_cutscene_keys_for_frame(frame)
 	local time = frame / self:frames_per_second()
 	self._last_evaluated_time = self._last_evaluated_time or 0
-	if self._last_evaluated_time == 0 and time > 0 then
+	if self._last_evaluated_time == 0 and 0 < time then
 		self._last_evaluated_time = -1
 	end
 	for key in self:keys_between(self._last_evaluated_time, time) do
@@ -874,7 +872,7 @@ function CoreCutsceneEditor:set_playhead_position(time)
 end
 function CoreCutsceneEditor:zoom_around(time, offset_in_window, delta)
 	local new_pixels_per_division = self._sequencer:pixels_per_division() + delta
-	if new_pixels_per_division >= 25 and new_pixels_per_division < 12000 then
+	if 25 <= new_pixels_per_division and new_pixels_per_division < 12000 then
 		self._sequencer:zoom_around(time, offset_in_window, delta)
 		self._selected_footage_track_scrolled_area:freeze()
 		self._selected_footage_track:set_units_from_ruler(self._sequencer:ruler())
@@ -967,9 +965,7 @@ function CoreCutsceneEditor:end_update(time, delta_time)
 			self:_draw_hierarchies()
 		end
 		local selected_items = self._sequencer:selected_keys()
-		if #selected_items ~= 1 or not selected_items[1] then
-		end
-		local selected_item = responder(nil):metadata()
+		local selected_item = (#selected_items == 1 and selected_items[1] or responder(nil)):metadata()
 		if selected_item and selected_item.update_gui then
 			selected_item:update_gui(time, delta_time, self._player)
 		end
@@ -1197,7 +1193,7 @@ function CoreCutsceneEditor:_project_db_type()
 	return project_class and project_class.ELEMENT_NAME or "cutscene_project"
 end
 function CoreCutsceneEditor:_get_clip_bounds(clips)
-	if #clips > 0 then
+	if 0 < #clips then
 		local earliest_time = math.huge
 		local latest_time = -math.huge
 		for _, clip in ipairs(clips) do
@@ -1280,7 +1276,7 @@ function CoreCutsceneEditor:_on_cleanup_zoom_keys()
 			end
 		end
 	end
-	if #items_to_remove > 0 then
+	if 0 < #items_to_remove then
 		self._sequencer:remove_items(items_to_remove)
 	end
 end
@@ -1350,9 +1346,7 @@ end
 function CoreCutsceneEditor:_on_sequencer_drag_item(sender, dragged_item, drag_mode)
 	self:_refresh_selected_footage_track()
 	if string.ends(drag_mode, "EDGE") then
-		if drag_mode ~= "LEFT_EDGE" or not dragged_item:start_time() then
-		end
-		self:_evaluate_clip_at_frame(dragged_item, dragged_item:end_time() - 1)
+		self:_evaluate_clip_at_frame(dragged_item, drag_mode == "LEFT_EDGE" and dragged_item:start_time() or dragged_item:end_time() - 1)
 	else
 		self:_evaluate_current_frame()
 	end
@@ -1378,7 +1372,7 @@ end
 function CoreCutsceneEditor:_on_footage_selection_changed(sender, event)
 	self._selected_footage_track:remove_all_clips()
 	local selected_item_index = sender:selected_item()
-	local footage = selected_item_index >= 0 and sender:get_item_data(selected_item_index) or nil
+	local footage = 0 <= selected_item_index and sender:get_item_data(selected_item_index) or nil
 	if footage then
 		footage:add_clips_to_track(self._selected_footage_track)
 		footage:add_cameras_to_list_ctrl(self._camera_list_ctrl)
@@ -1445,7 +1439,7 @@ function CoreCutsceneEditor:_on_insert_clips_from_selected_footage(sender, event
 		self:_on_go_to_end()
 	else
 		local selected_item_index = self._footage_list_ctrl:selected_item()
-		if selected_item_index > 0 then
+		if 0 < selected_item_index then
 			local selected_footage = self._footage_list_ctrl:get_item_data(selected_item_index)
 			local cutscene_keys = table.find_all_values(selected_footage:keys(), function(key)
 				return key.ELEMENT_NAME ~= CoreChangeCameraCutsceneKey.ELEMENT_NAME
@@ -1481,29 +1475,27 @@ end
 function CoreCutsceneEditor:_draw_focus_planes()
 	if self._player and managers.DOF then
 		self._player._viewport:update()
-		do
-			local camera = self._player:_camera()
-			local function draw_focus_plane(value, color)
-				local point = camera:screen_to_world(Vector3(0, 0, value))
-				local brush = Draw:brush()
-				brush:set_color(Color(color))
-				brush:set_blend_mode("add")
-				brush:disc(point, self._player:is_viewport_enabled() and 10000 or 100, camera:rotation():y())
-			end
-			local camera_cylinder = Draw:pen()
-			camera_cylinder:set(Color("808080"))
-			camera_cylinder:cylinder(camera:position(), camera:screen_to_world(Vector3(0, 0, camera:far_range())), 100, 20, 0)
-			local camera_brush = Draw:brush()
-			camera_brush:set_color(Color("003300"))
-			camera_brush:set_blend_mode("add")
-			camera_brush:disc(camera:position(), 100, camera:rotation():y())
-			local dof_attributes = self._player:depth_of_field_attributes()
-			if dof_attributes then
-				draw_focus_plane(dof_attributes.near_focus_distance_min, "330000")
-				draw_focus_plane(dof_attributes.near_focus_distance_max, "333333")
-				draw_focus_plane(dof_attributes.far_focus_distance_min, "333333")
-				draw_focus_plane(dof_attributes.far_focus_distance_max, "330000")
-			end
+		local camera = self._player:_camera()
+		local function draw_focus_plane(value, color)
+			local point = camera:screen_to_world(Vector3(0, 0, value))
+			local brush = Draw:brush()
+			brush:set_color(Color(color))
+			brush:set_blend_mode("add")
+			brush:disc(point, self._player:is_viewport_enabled() and 10000 or 100, camera:rotation():y())
+		end
+		local camera_cylinder = Draw:pen()
+		camera_cylinder:set(Color("808080"))
+		camera_cylinder:cylinder(camera:position(), camera:screen_to_world(Vector3(0, 0, camera:far_range())), 100, 20, 0)
+		local camera_brush = Draw:brush()
+		camera_brush:set_color(Color("003300"))
+		camera_brush:set_blend_mode("add")
+		camera_brush:disc(camera:position(), 100, camera:rotation():y())
+		local dof_attributes = self._player:depth_of_field_attributes()
+		if dof_attributes then
+			draw_focus_plane(dof_attributes.near_focus_distance_min, "330000")
+			draw_focus_plane(dof_attributes.near_focus_distance_max, "333333")
+			draw_focus_plane(dof_attributes.far_focus_distance_min, "333333")
+			draw_focus_plane(dof_attributes.far_focus_distance_max, "330000")
 		end
 	end
 end
@@ -1663,7 +1655,7 @@ function CoreCutsceneEditor:_draw_joint(start_object, end_object, radius)
 		local start_position = start_object and start_object.position and start_object:position()
 		if start_position then
 			self:_pen():set(Color(0.5, 0.5, 0.5))
-			local joint_normal = end_position - start_position:normalized()
+			local joint_normal = (end_position - start_position):normalized()
 			self:_pen():cone(end_position - joint_normal * radius, start_position + joint_normal * radius, radius, 4, 4)
 		else
 			self:_pen():set(Color.white)

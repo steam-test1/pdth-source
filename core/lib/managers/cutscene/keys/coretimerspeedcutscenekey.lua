@@ -25,18 +25,18 @@ end
 function CoreTimerSpeedCutsceneKey:_set_timer_speed(speed, duration)
 	speed = math.max(speed, 0)
 	duration = math.max(duration, 0)
-	if speed > 0 and speed < 0.035 then
+	if 0 < speed and speed < 0.035 then
 		speed = 0.035
 	end
-	if duration > 0 and duration < 0.035 then
+	if 0 < duration and duration < 0.035 then
 		duration = 0
 	end
 	TimerManager:ramp_multiplier(TimerManager:game(), speed, duration, TimerManager:pausable())
 	TimerManager:ramp_multiplier(TimerManager:game_animation(), speed, duration, TimerManager:pausable())
 end
 function CoreTimerSpeedCutsceneKey:is_valid_speed(speed)
-	return speed ~= nil and speed >= 0.035
+	return speed ~= nil and 0.035 <= speed
 end
 function CoreTimerSpeedCutsceneKey:is_valid_duration(duration)
-	return duration ~= nil and duration >= 0
+	return duration ~= nil and 0 <= duration
 end

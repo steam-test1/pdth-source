@@ -4,7 +4,7 @@ CoreZoomCameraCutsceneKey.ELEMENT_NAME = "camera_zoom"
 CoreZoomCameraCutsceneKey.NAME = "Camera Zoom"
 CoreZoomCameraCutsceneKey.DEFAULT_CAMERA_FOV = 55
 CoreZoomCameraCutsceneKey.INTERPOLATION_FUNCTIONS = {
-	["Linear"] = function(t, bias)
+	Linear = function(t, bias)
 		return t
 	end,
 	["J curve"] = function(t, bias)
@@ -49,23 +49,23 @@ end
 function CoreZoomCameraCutsceneKey:update(player, time)
 	local transition_time = self:transition_time()
 	if time <= transition_time + 0.033333335 then
-		local t = transition_time > 0 and math.min(time / transition_time, 1) or 1
+		local t = 0 < transition_time and math.min(time / transition_time, 1) or 1
 		local alpha = self:_calc_interpolation(t)
 		local fov = self:start_fov() + (self:end_fov() - self:start_fov()) * alpha
 		player:set_camera_attribute("fov", fov)
 	end
 end
 function CoreZoomCameraCutsceneKey:is_valid_start_fov(value)
-	return value and value > 0 and value < 180
+	return value and 0 < value and value < 180
 end
 function CoreZoomCameraCutsceneKey:is_valid_transition_time(value)
-	return value and value >= 0
+	return value and 0 <= value
 end
 function CoreZoomCameraCutsceneKey:is_valid_interpolation(value)
 	return self.INTERPOLATION_FUNCTIONS[value] ~= nil
 end
 function CoreZoomCameraCutsceneKey:is_valid_interpolation_bias(value)
-	return value and value >= 0 and value <= 1
+	return value and 0 <= value and value <= 1
 end
 CoreZoomCameraCutsceneKey.is_valid_end_fov = CoreZoomCameraCutsceneKey.is_valid_start_fov
 CoreZoomCameraCutsceneKey.control_for_interpolation = CoreCutsceneKeyBase.standard_combo_box_control

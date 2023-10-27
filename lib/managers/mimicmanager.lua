@@ -58,7 +58,7 @@ function MimicManager:update(t, dt)
 				unit:mimic():return_requested_npcs(return_list)
 				self._call_to_arms_list[k] = false
 				all_called = false
-			else
+				break
 			end
 		end
 		if all_called then

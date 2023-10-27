@@ -86,7 +86,7 @@ function ControllerManager:check_connect_change()
 		for _, controller in ipairs(self._default_controller_list) do
 			connected = controller:connected()
 			if not connected then
-			else
+				break
 			end
 		end
 		if not Global.controller_manager.default_controller_connected ~= not connected then

@@ -202,10 +202,10 @@ function dump_all(units, name, get_objects_string)
 				if string.match(o:name():s(), "lod" .. i) then
 					cat_print("editor", "insert obj", o:name():s())
 					table.insert(objs, o)
-				else
+					break
 				end
 			end
-			if #objs > 0 then
+			if 0 < #objs then
 				cat_print("editor", "enough lods, time to break")
 				break
 			end

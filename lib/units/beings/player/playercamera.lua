@@ -124,7 +124,7 @@ function PlayerCamera:set_rotation(rot)
 	local error_sync_dot = mvector3.dot(self._sync_fwd, new_fwd)
 	local t = TimerManager:game():time()
 	local sync_dt = t - self._last_sync_t
-	if error_sync_dot < 0.9 and sync_dt > 0.5 or error_sync_dot < 0.99 and sync_dt > 1 then
+	if error_sync_dot < 0.9 and 0.5 < sync_dt or error_sync_dot < 0.99 and 1 < sync_dt then
 		self._last_sync_t = t
 		self._unit:network():send("set_look_dir", new_fwd)
 		mvector3.set(self._sync_fwd, new_fwd)

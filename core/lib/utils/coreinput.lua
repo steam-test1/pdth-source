@@ -26,7 +26,7 @@ function RepKey:update(d, dt)
 	for _, key in ipairs(self._keys) do
 		if self._input:down(Idstring(key)) then
 			anykey = true
-		else
+			break
 		end
 	end
 	local down = false

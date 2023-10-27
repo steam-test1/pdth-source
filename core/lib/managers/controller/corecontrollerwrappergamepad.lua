@@ -79,9 +79,9 @@ function ControllerWrapperGamepad:virtual_connect_axis1(controller_id, controlle
 	input_name = "direction"
 	if not controller:has_axis(self.IDS_DIRECTION) then
 		local axes_count = controller:num_axes()
-		if axes_count > 0 then
+		if 0 < axes_count then
 			input_name = controller:axis_name(0)
-			if axes_count > 1 and input_name == "rotation" then
+			if 1 < axes_count and input_name == "rotation" then
 				input_name = controller:axis_name(1)
 			end
 		end
@@ -92,9 +92,9 @@ function ControllerWrapperGamepad:virtual_connect_axis2(controller_id, controlle
 	input_name = "rotation"
 	if not controller:has_axis(self.IDS_ROTATION) then
 		local axes_count = controller:num_axes()
-		if axes_count > 0 then
+		if 0 < axes_count then
 			input_name = controller:axis_name(0)
-			if axes_count > 1 and input_name == "direction" then
+			if 1 < axes_count and input_name == "direction" then
 				input_name = controller:axis_name(1)
 			end
 		end

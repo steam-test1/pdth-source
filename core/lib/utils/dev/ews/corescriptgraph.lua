@@ -92,7 +92,7 @@ function ScriptGraph:load(config_root)
 	for node in config_root:children() do
 		if node:name() == "metadata" then
 			self._graph_metadata = node:child(0)
-		else
+			break
 		end
 	end
 	for node in config_root:children() do

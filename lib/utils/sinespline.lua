@@ -100,7 +100,7 @@ function SineSpline:walk(delta_dis)
 					play_data.subseg_len = mvector3.distance(play_data.subseg_start, play_data.subseg_end)
 					new_subseg_dis = play_data.subseg_len + undershot
 				end
-			until new_subseg_dis > 0
+			until 0 < new_subseg_dis
 			play_data.subseg_dis = new_subseg_dis
 			return math.lerp(play_data.subseg_start, play_data.subseg_end, play_data.subseg_dis / play_data.subseg_len), play_data.subseg_i == 1 and undershot
 		else

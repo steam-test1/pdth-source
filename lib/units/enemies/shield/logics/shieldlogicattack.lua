@@ -97,7 +97,7 @@ function ShieldLogicAttack.queued_update(data)
 				mvector3.normalize(vec)
 				local fwd = unit:movement():m_rot():y()
 				local fwd_dot = fwd:dot(vec)
-				if fwd_dot > 0 then
+				if 0 < fwd_dot then
 					local enemy_tracker = focus_enemy.unit:movement():nav_tracker()
 					if enemy_tracker:lost() then
 						ray_params.tracker_from = nil
@@ -258,48 +258,46 @@ function ShieldLogicAttack._upd_enemy_detection(data)
 				enemies_cpy[key1] = nil
 				for key2, enemy_data2 in pairs(enemies_cpy) do
 					if nr_threats == 2 then
-						do
-							local AB = mvector3.copy(enemy_data1.m_pos)
-							mvector3.subtract(AB, enemy_data2.m_pos)
-							mvector3.normalize(AB)
-							local PA = mvector3.copy(data.m_pos)
-							mvector3.subtract(PA, enemy_data1.m_pos)
-							mvector3.normalize(PA)
-							local PB = mvector3.copy(data.m_pos)
-							mvector3.subtract(PB, enemy_data2.m_pos)
-							mvector3.normalize(PB)
-							local dot1 = mvector3.dot(AB, PA)
-							local dot2 = mvector3.dot(AB, PB)
-							if dot1 < 0 and dot2 < 0 or dot1 > 0 and dot2 > 0 then
-								break
-							else
+						local AB = mvector3.copy(enemy_data1.m_pos)
+						mvector3.subtract(AB, enemy_data2.m_pos)
+						mvector3.normalize(AB)
+						local PA = mvector3.copy(data.m_pos)
+						mvector3.subtract(PA, enemy_data1.m_pos)
+						mvector3.normalize(PA)
+						local PB = mvector3.copy(data.m_pos)
+						mvector3.subtract(PB, enemy_data2.m_pos)
+						mvector3.normalize(PB)
+						local dot1 = mvector3.dot(AB, PA)
+						local dot2 = mvector3.dot(AB, PB)
+						if dot1 < 0 and dot2 < 0 or 0 < dot1 and 0 < dot2 then
+							break
+						else
+							furthest_line = {
+								enemy_data1.m_pos,
+								enemy_data2.m_pos
+							}
+							break
+						end
+					end
+					local pt = math.line_intersection(enemy_data1.m_pos, enemy_data2.m_pos, threat_epicenter, data.m_pos)
+					local to_pt = mvector3.copy(threat_epicenter)
+					mvector3.subtract(to_pt, pt)
+					mvector3.normalize(to_pt)
+					if 0 < mvector3.dot(from_threat, to_pt) then
+						local line = mvector3.copy(enemy_data2.m_pos)
+						mvector3.subtract(line, enemy_data1.m_pos)
+						local line_len = mvector3.normalize(line)
+						local pt_line = mvector3.copy(pt)
+						mvector3.subtract(pt_line, enemy_data1.m_pos)
+						local dot = mvector3.dot(line, pt_line)
+						if line_len > dot and 0 < dot then
+							local dist = mvector3.distance(pt, threat_epicenter)
+							if furthest_pt_dist < dist then
+								furthest_pt_dist = dist
 								furthest_line = {
 									enemy_data1.m_pos,
 									enemy_data2.m_pos
 								}
-							end
-						end
-					else
-						local pt = math.line_intersection(enemy_data1.m_pos, enemy_data2.m_pos, threat_epicenter, data.m_pos)
-						local to_pt = mvector3.copy(threat_epicenter)
-						mvector3.subtract(to_pt, pt)
-						mvector3.normalize(to_pt)
-						if 0 < mvector3.dot(from_threat, to_pt) then
-							local line = mvector3.copy(enemy_data2.m_pos)
-							mvector3.subtract(line, enemy_data1.m_pos)
-							local line_len = mvector3.normalize(line)
-							local pt_line = mvector3.copy(pt)
-							mvector3.subtract(pt_line, enemy_data1.m_pos)
-							local dot = mvector3.dot(line, pt_line)
-							if line_len > dot and dot > 0 then
-								local dist = mvector3.distance(pt, threat_epicenter)
-								if furthest_pt_dist < dist then
-									furthest_pt_dist = dist
-									furthest_line = {
-										enemy_data1.m_pos,
-										enemy_data2.m_pos
-									}
-								end
 							end
 						end
 					end
@@ -363,7 +361,7 @@ function ShieldLogicAttack._upd_enemy_detection(data)
 				if enemy_data == my_data.focus_enemy then
 					angle = angle + 0.15
 				end
-				if not focus_enemy_verified and enemy_data.verified or not focus_type or focus_enemy_angle < angle then
+				if not ((focus_enemy_verified or not enemy_data.verified) and focus_type) or focus_enemy_angle < angle then
 					focus_enemy = enemy_data
 					focus_type = reaction
 					focus_enemy_angle = angle

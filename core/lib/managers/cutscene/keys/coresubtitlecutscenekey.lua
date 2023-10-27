@@ -35,7 +35,7 @@ function CoreSubtitleCutsceneKey:is_valid_string_id(value)
 	return value and value ~= ""
 end
 function CoreSubtitleCutsceneKey:is_valid_duration(value)
-	return value and value > 0
+	return value and 0 < value
 end
 function CoreSubtitleCutsceneKey:control_for_localized_text(parent_frame)
 	local control = EWS:TextCtrl(parent_frame, "", "", "NO_BORDER,TE_RICH,TE_MULTILINE,TE_READONLY")

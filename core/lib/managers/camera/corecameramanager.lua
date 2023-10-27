@@ -337,7 +337,7 @@ function CameraTemplateManager:parse_camera_node(xml_node, space)
 		local class_name = xml_node:parameter("class")
 		local class_hier = split_string(class_name)
 		local class
-		if #class_hier > 1 then
+		if 1 < #class_hier then
 			local module = core:import(class_hier[1])
 			class = module[class_hier[2]]
 		else

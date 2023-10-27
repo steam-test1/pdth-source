@@ -77,7 +77,7 @@ function NetworkAccountPSN:experience_loaded()
 	self:_check_for_unawarded_achievements()
 end
 function NetworkAccountPSN:_check_for_unawarded_achievements()
-	if not self._achievements_fetched or not self._challenges_loaded or not self._experience_loaded then
+	if not (self._achievements_fetched and self._challenges_loaded) or not self._experience_loaded then
 		return
 	end
 	print("[NetworkAccountPSN:_check_for_unawarded_achievements]")

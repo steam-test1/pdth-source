@@ -165,25 +165,23 @@ function table.concat_map(map, concat_values, none_string, wrap, sep, last_sep)
 	sep = sep or ", "
 	last_sep = last_sep or " and "
 	for key, value in pairs(map) do
-		do
-			local last_func = func
-			local append_string
-			if concat_values then
-				append_string = tostring(value)
-			else
-				append_string = tostring(key)
-			end
-			function func(count, first)
-				if count == 1 then
-					return wrap .. append_string .. wrap
-				elseif first then
-					return last_func(count - 1, false) .. last_sep .. wrap .. append_string .. wrap
-				else
-					return last_func(count - 1, false) .. sep .. wrap .. append_string .. wrap
-				end
-			end
-			count = count + 1
+		local last_func = func
+		local append_string
+		if concat_values then
+			append_string = tostring(value)
+		else
+			append_string = tostring(key)
 		end
+		function func(count, first)
+			if count == 1 then
+				return wrap .. append_string .. wrap
+			elseif first then
+				return last_func(count - 1, false) .. last_sep .. wrap .. append_string .. wrap
+			else
+				return last_func(count - 1, false) .. sep .. wrap .. append_string .. wrap
+			end
+		end
+		count = count + 1
 	end
 	return func(count, true)
 end
@@ -372,50 +370,48 @@ function table.print_data(data, t)
 	end
 end
 if Application:ews_enabled() then
-	do
-		local __lua_representation, __write_lua_representation_to_file
-		function __lua_representation(value)
-			local t = type(value)
-			if t == "string" then
-				return string.format("%q", value)
-			elseif t == "number" or t == "boolean" then
-				return tostring(value)
-			else
-				error("Unable to generate Lua representation of type \"" .. t .. "\".")
+	local __lua_representation, __write_lua_representation_to_file
+	function __lua_representation(value)
+		local t = type(value)
+		if t == "string" then
+			return string.format("%q", value)
+		elseif t == "number" or t == "boolean" then
+			return tostring(value)
+		else
+			error("Unable to generate Lua representation of type \"" .. t .. "\".")
+		end
+	end
+	function __write_lua_representation_to_file(value, file, indentation)
+		indentation = indentation or 1
+		local t = type(value)
+		if t == "table" then
+			local indent = string.rep("\t", indentation)
+			file:write("{\n")
+			for key, value in pairs(value) do
+				assert(type(key) ~= "table", "Using a table for a key is unsupported.")
+				file:write(indent .. "[" .. __lua_representation(key) .. "] = ")
+				__write_lua_representation_to_file(value, file, indentation + 1)
+				file:write(";\n")
 			end
+			file:write(string.rep("\t", indentation - 1) .. "}")
+		elseif t == "string" or t == "number" or t == "boolean" then
+			file:write(__lua_representation(value))
+		else
+			error("Unable to generate Lua representation of type \"" .. t .. "\".")
 		end
-		function __write_lua_representation_to_file(value, file, indentation)
-			indentation = indentation or 1
-			local t = type(value)
-			if t == "table" then
-				local indent = string.rep("\t", indentation)
-				file:write("{\n")
-				for key, value in pairs(value) do
-					assert(type(key) ~= "table", "Using a table for a key is unsupported.")
-					file:write(indent .. "[" .. __lua_representation(key) .. "] = ")
-					__write_lua_representation_to_file(value, file, indentation + 1)
-					file:write(";\n")
-				end
-				file:write(string.rep("\t", indentation - 1) .. "}")
-			elseif t == "string" or t == "number" or t == "boolean" then
-				file:write(__lua_representation(value))
-			else
-				error("Unable to generate Lua representation of type \"" .. t .. "\".")
-			end
-		end
-		function write_lua_representation_to_path(value, path)
-			assert(type(path) == "string", "Invalid path argument. Expected string.")
-			local file = io.open(path, "w")
-			file:write("return ")
-			__write_lua_representation_to_file(value, file)
-			file:close()
-		end
-		function read_lua_representation_from_path(path)
-			assert(type(path) == "string", "Invalid path argument. Expected string.")
-			local file = io.open(path, "r")
-			local script = file and file:read("*a")
-			file:close()
-			return script and loadstring(script)() or {}
-		end
+	end
+	function write_lua_representation_to_path(value, path)
+		assert(type(path) == "string", "Invalid path argument. Expected string.")
+		local file = io.open(path, "w")
+		file:write("return ")
+		__write_lua_representation_to_file(value, file)
+		file:close()
+	end
+	function read_lua_representation_from_path(path)
+		assert(type(path) == "string", "Invalid path argument. Expected string.")
+		local file = io.open(path, "r")
+		local script = file and file:read("*a")
+		file:close()
+		return script and loadstring(script)() or {}
 	end
 end

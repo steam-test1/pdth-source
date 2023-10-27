@@ -78,7 +78,7 @@ function BrushLayer:reposition_all()
 			else
 				local nudged_units = 0
 				local positions = MassUnitManager:unit_positions(name)
-				if #positions > 0 then
+				if 0 < #positions then
 					local rotations = MassUnitManager:unit_rotations(name)
 					MassUnitManager:delete_units(name)
 					for counter = 1, #positions do
@@ -91,8 +91,8 @@ function BrushLayer:reposition_all()
 						if ray then
 							local brush_header = self:add_brush_header(name)
 							local correct_pos = brush_header:spawn_brush(ray.position, rotations[counter])
-							local nudge_length = ray.position - correct_pos:length()
-							if nudge_length > 0.05 then
+							local nudge_length = (ray.position - correct_pos):length()
+							if 0.05 < nudge_length then
 								nudged_units = nudged_units + 1
 							end
 						else
@@ -101,7 +101,7 @@ function BrushLayer:reposition_all()
 						end
 					end
 				end
-				if nudged_units > 0 then
+				if 0 < nudged_units then
 					managers.editor:output(" * Nudged " .. nudged_units .. " units of type " .. name)
 				end
 			end
@@ -172,11 +172,11 @@ function BrushLayer:update(time, rel_time)
 		tip = ray.position + ray.normal * self._brush_height + ray.normal * self._offset
 		Application:draw_circle(tip, self._brush_size, 0, 0.7, 0, ray.normal)
 	else
-		local ray_normal = to - from:normalized()
+		local ray_normal = (to - from):normalized()
 		base = from + ray_normal * 1000
 		tip = from + ray_normal * 10000
 		local tunnel = 9000
-		while tunnel > 0 do
+		while 0 < tunnel do
 			Application:draw_circle(base + ray_normal * tunnel, self._brush_size, 0.3 + 0.7 * (tunnel / 9000), 0, 0, ray_normal)
 			tunnel = tunnel * 0.9 - 100
 		end
@@ -391,7 +391,7 @@ function BrushLayer:hide_create_brush(data)
 end
 function BrushLayer:remove_brush(brushes)
 	local i = brushes:selected_index()
-	if i >= 0 then
+	if 0 <= i then
 		self._unit_brushes[brushes:get_string(i)] = nil
 		brushes:remove(i)
 		self:save_brushes()
@@ -453,7 +453,7 @@ function BrushLayer:set_unit_name(units)
 		table.insert(self._brush_names, name)
 	end
 	local i = self._brushes_ctrlr:selected_index()
-	if i > -1 then
+	if -1 < i then
 		self._brushes_ctrlr:deselect_index(i)
 	end
 end

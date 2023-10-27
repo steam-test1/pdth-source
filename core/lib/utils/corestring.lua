@@ -32,8 +32,8 @@ function string.split(s, separator_pattern, keep_empty, max_splits)
 			count = count + 1
 			result[count] = part
 			if count == max_splits then
+				break
 			end
-		else
 		end
 	end
 	local remainder = string.sub(s, final_match_end_index)

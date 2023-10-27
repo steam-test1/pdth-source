@@ -25,7 +25,7 @@ function MoneyWrapBase:take_money(unit)
 		end
 	else
 		local taken = self:_take_money(unit)
-		if taken > 0 then
+		if 0 < taken then
 			unit:sound():play("money_grab")
 			managers.network:session():send_to_peers_synched("sync_money_wrap_money_taken", self._unit)
 		end

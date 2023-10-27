@@ -82,7 +82,7 @@ function TeamAIDamage:damage_melee(attack_data)
 	end
 	local result = {variant = "melee"}
 	local damage_percent, health_subtracted = self:_apply_damage(attack_data, result)
-	if health_subtracted > 0 then
+	if 0 < health_subtracted then
 		self:_send_damage_drama(attack_data, health_subtracted)
 	end
 	if self._dead then
@@ -105,7 +105,7 @@ function TeamAIDamage:force_bleedout()
 	local damage_percent, health_subtracted = self:_apply_damage(attack_data, result)
 	self._next_allowed_dmg_t = TimerManager:game():time() + self._dmg_interval
 	self._last_received_dmg = health_subtracted
-	if health_subtracted > 0 then
+	if 0 < health_subtracted then
 		self:_send_damage_drama(attack_data, health_subtracted)
 	end
 	if self._dead then
@@ -130,7 +130,7 @@ function TeamAIDamage:damage_bullet(attack_data)
 	local damage_percent, health_subtracted = self:_apply_damage(attack_data, result)
 	self._next_allowed_dmg_t = TimerManager:game():time() + self._dmg_interval
 	self._last_received_dmg = health_subtracted
-	if health_subtracted > 0 then
+	if 0 < health_subtracted then
 		self:_send_damage_drama(attack_data, health_subtracted)
 	end
 	if self._dead then
@@ -149,7 +149,7 @@ function TeamAIDamage:damage_explosion(attack_data)
 	end
 	local result = {variant = "explosion"}
 	local damage_percent, health_subtracted = self:_apply_damage(attack_data, result)
-	if health_subtracted > 0 then
+	if 0 < health_subtracted then
 		self:_send_damage_drama(attack_data, health_subtracted)
 	end
 	if self._dead then
@@ -345,7 +345,7 @@ function TeamAIDamage:_on_hurt()
 	for _, crim in pairs(managers.groupai:state():all_player_criminals()) do
 		if 6250000 > mvector3.distance_sq(self._unit:movement():m_pos(), crim.unit:movement():m_pos()) then
 			regen_time = self._char_dmg_tweak.REGENERATE_TIME
-		else
+			break
 		end
 	end
 	self._regenerate_t = TimerManager:game():time() + regen_time

@@ -36,7 +36,7 @@ function PortalManager:pseudo_reset()
 end
 function PortalManager:add_portal(polygon_tbl, min, max)
 	cat_print("portal", "add_portal", #polygon_tbl)
-	if #polygon_tbl > 0 then
+	if 0 < #polygon_tbl then
 		table.insert(self._portal_shapes, PortalShape:new(polygon_tbl, min, max))
 	end
 end
@@ -57,7 +57,9 @@ function PortalManager:add_unit(unit)
 			self._all_units[unit:key()] = (self._all_units[unit:key()] or 0) + amount
 			local inverse = unit:unit_data().portal_visible_inverse
 			local i = 0
-			i = portal:is_inside() or inverse and 1 or -1
+			if not portal:is_inside() then
+				i = inverse and 1 or -1
+			end
 			self:change_visibility(unit, i, inverse)
 		end
 	end
@@ -145,9 +147,7 @@ function PortalManager:render()
 	for _, group in pairs(self._unit_groups) do
 		group:update(TimerManager:wall():time(), TimerManager:wall():delta_time())
 	end
-	while true do
-		if table.remove(self._check_positions) then
-		end
+	while table.remove(self._check_positions) do
 	end
 end
 function PortalManager:debug_draw_border(polygon, min, max)
@@ -322,7 +322,7 @@ function PortalShape:update(time, rel_time)
 	for _, pos in ipairs(managers.portal:check_positions()) do
 		is_inside = self:inside(pos)
 		if is_inside then
-		else
+			break
 		end
 	end
 	if self._is_inside ~= is_inside then
@@ -413,7 +413,7 @@ function PortalUnitGroup:update(t, dt)
 	for _, pos in ipairs(managers.portal:check_positions()) do
 		is_inside = self:inside(pos)
 		if is_inside then
-		else
+			break
 		end
 	end
 	if self._is_inside ~= is_inside then

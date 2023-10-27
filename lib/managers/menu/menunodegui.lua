@@ -165,7 +165,7 @@ function MenuNodeGui:_create_legends(node)
 	for i, legend in ipairs(node:legends()) do
 		if not is_pc or legend.pc then
 			has_pc_legend = has_pc_legend or legend.pc
-			local spacing = i > 1 and "  |  " or ""
+			local spacing = 1 < i and "  |  " or ""
 			t_text = t_text .. spacing .. string.upper(managers.localization:text(legend.string_id, {
 				BTN_UPDATE = managers.localization:btn_macro("menu_update")
 			}))
@@ -1132,12 +1132,8 @@ function MenuNodeGui:_key_press(o, key, input_id, item, no_add)
 		self:_end_customize_controller(o, item)
 		return
 	end
-	if input_id ~= "mouse" or not Input:mouse():button_name_str(key) then
-	end
-	local key_name = "" .. Input:keyboard():button_name_str(key)
-	if not no_add and input_id == "mouse" then
-		key_name = "mouse " .. key_name or key_name
-	end
+	local key_name = "" .. (input_id == "mouse" and Input:mouse():button_name_str(key) or Input:keyboard():button_name_str(key))
+	key_name = not no_add and input_id == "mouse" and "mouse " .. key_name or key_name
 	local forbidden_btns = {
 		"esc",
 		"tab",
@@ -1594,23 +1590,23 @@ function MenuNodeGui:_align_marker(row_item)
 	elseif row_item.type == "server_column" then
 		self._marker_data.marker:set_left(row_item.gui_panel:x())
 	elseif row_item.type == "customize_controller" then
-	else
-		if row_item.type == "kitslot" or row_item.type == "multi_choice" or row_item.type == "toggle" then
-			if row_item.type == "slider" then
-				self._marker_data.marker:set_left(self:_left_align() - row_item.gui_slider:width())
-			elseif row_item.type == "kitslot" or row_item.type == "multi_choice" then
-				if row_item.choice_panel then
-					self._marker_data.marker:set_left(row_item.arrow_left:left() - self._align_line_padding + row_item.gui_panel:x())
-				end
-			elseif row_item.type == "toggle" then
+	elseif row_item.type == "kitslot" or row_item.type == "multi_choice" or row_item.type == "toggle" then
+		if row_item.type == "slider" then
+			self._marker_data.marker:set_left(self:_left_align() - row_item.gui_slider:width())
+		elseif row_item.type == "kitslot" or row_item.type == "multi_choice" then
+			if row_item.choice_panel then
+				self._marker_data.marker:set_left(row_item.arrow_left:left() - self._align_line_padding + row_item.gui_panel:x())
+			end
+		else
+			if row_item.type == "toggle" then
 				if row_item.gui_option then
 					local x, y, w, h = row_item.gui_option:text_rect()
 					self._marker_data.marker:set_left(self:_left_align() - w - self._align_line_padding + row_item.gui_panel:x())
 				else
 					self._marker_data.marker:set_left(row_item.gui_icon:x() - self._align_line_padding + row_item.gui_panel:x())
 				end
+			else
 			end
-		else
 		end
 	end
 	self._marker_data.gradient:set_visible(true)
@@ -2021,7 +2017,7 @@ function MenuNodeGui:close(...)
 			row_item.level_movie:parent():remove(row_item.level_movie)
 			row_item.level_movie = nil
 			MenuNodeGui.lobby_campaign = nil
-		else
+			break
 		end
 	end
 	MenuNodeGui.super.close(self, ...)

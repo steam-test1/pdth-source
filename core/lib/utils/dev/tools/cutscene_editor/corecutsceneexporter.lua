@@ -120,14 +120,9 @@ function CoreCutsceneExporter:_all_controlled_unit_types(include_cameras)
 			end
 		end
 	end
-	if not include_cameras or not self.__all_controlled_unit_types then
-	end
-	return (table.remap(self.__all_controlled_unit_types, function(unit_name, unit_type)
-		if not string.begins(unit_name, "camera") then
-		else
-		end
-		return unit_name, unit_type or nil
-	end))
+	return include_cameras and self.__all_controlled_unit_types or table.remap(self.__all_controlled_unit_types, function(unit_name, unit_type)
+		return unit_name, not string.begins(unit_name, "camera") and unit_type or nil
+	end)
 end
 function CoreCutsceneExporter:_all_controlled_unit_names(include_cameras)
 	return table.map_keys(self:_all_controlled_unit_types(include_cameras))
@@ -139,34 +134,32 @@ function CoreCutsceneExporter:_get_final_animation(unit_name)
 		final_animation = self:_get_joined_animation(unit_name) or false
 		local unit_type = self:_all_controlled_unit_types()[unit_name]
 		if final_animation and unit_type ~= nil and unit_type ~= "locator" then
+			local patches = self.__animation_patches and self.__animation_patches[unit_name] or {}
+			local unit_animatable_set = self:_get_animatable_set_name_for_unit_type(unit_type)
 			do
-				local patches = self.__animation_patches and self.__animation_patches[unit_name] or {}
-				local unit_animatable_set = self:_get_animatable_set_name_for_unit_type(unit_type)
-				do
-					local original_bones = AnimationManager:animatable_set_bones(unit_animatable_set)
-					local replaced_blend_sets = table.map_keys(patches)
-					local kept_bones = table.inject(replaced_blend_sets, original_bones, function(result, blend_set)
-						local blend_set_bones = AnimationManager:animatable_set_bones(unit_animatable_set, blend_set)
-						return table.find_all_values(result, function(bone)
-							return not table.contains(blend_set_bones, bone)
-						end)
-					end)
-					final_animation = self:_process_animation("strip", final_animation, kept_bones)
-				end
-				for blend_set, animation_name in pairs(patches) do
+				local original_bones = AnimationManager:animatable_set_bones(unit_animatable_set)
+				local replaced_blend_sets = table.map_keys(patches)
+				local kept_bones = table.inject(replaced_blend_sets, original_bones, function(result, blend_set)
 					local blend_set_bones = AnimationManager:animatable_set_bones(unit_animatable_set, blend_set)
-					assert(#blend_set_bones > 0, string.format("Blend set \"%s\" in \"%s\" contains no bones.", blend_set, unit_animatable_set))
-					local patch_animation = self:_process_animation("strip", AnimationCutter:load(animation_name), blend_set_bones)
-					assert(0 < #patch_animation:bones(), string.format("Animation \"%s\" contains no animation for bones in blend set \"%s\".", animation_name, blend_set))
-					if patch_animation:length() > final_animation:length() then
-						patch_animation = self:_process_animation("cut", patch_animation, 0, final_animation:length())
-					elseif patch_animation:length() < final_animation:length() then
-						local pause = AnimationCutter:pause(final_animation:length() - patch_animation:length())
-						patch_animation = self:_process_animation("join", patch_animation, pause)
-						pause:free()
-					end
-					final_animation = self:_process_animation("merge", final_animation, patch_animation)
+					return table.find_all_values(result, function(bone)
+						return not table.contains(blend_set_bones, bone)
+					end)
+				end)
+				final_animation = self:_process_animation("strip", final_animation, kept_bones)
+			end
+			for blend_set, animation_name in pairs(patches) do
+				local blend_set_bones = AnimationManager:animatable_set_bones(unit_animatable_set, blend_set)
+				assert(0 < #blend_set_bones, string.format("Blend set \"%s\" in \"%s\" contains no bones.", blend_set, unit_animatable_set))
+				local patch_animation = self:_process_animation("strip", AnimationCutter:load(animation_name), blend_set_bones)
+				assert(0 < #patch_animation:bones(), string.format("Animation \"%s\" contains no animation for bones in blend set \"%s\".", animation_name, blend_set))
+				if patch_animation:length() > final_animation:length() then
+					patch_animation = self:_process_animation("cut", patch_animation, 0, final_animation:length())
+				elseif patch_animation:length() < final_animation:length() then
+					local pause = AnimationCutter:pause(final_animation:length() - patch_animation:length())
+					patch_animation = self:_process_animation("join", patch_animation, pause)
+					pause:free()
 				end
+				final_animation = self:_process_animation("merge", final_animation, patch_animation)
 			end
 		end
 		self.__final_animation_cache[unit_name] = final_animation
@@ -175,12 +168,9 @@ function CoreCutsceneExporter:_get_final_animation(unit_name)
 end
 function CoreCutsceneExporter:_get_joined_animation(unit_name_or_func)
 	self.__joined_animation_cache = self.__joined_animation_cache or setmetatable({}, {__mode = "v"})
-	if type(unit_name_or_func) ~= "function" then
-	else
-		local unit_name_func = function()
-			return tostring(unit_name_or_func)
-		end or unit_name_or_func
-	end
+	local unit_name_func = type(unit_name_or_func) ~= "function" and function()
+		return tostring(unit_name_or_func)
+	end or unit_name_or_func
 	local unit_name = unit_name_func()
 	local joined_animation = self.__joined_animation_cache[unit_name]
 	if not alive(joined_animation) then

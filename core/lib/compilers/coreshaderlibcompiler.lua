@@ -61,7 +61,7 @@ function CoreShaderLibCompiler:root_path()
 	local f
 	function f(s)
 		local str, i = string.gsub(s, "\\[%w_%.%s]+\\%.%.\\", "\\")
-		return i > 0 and f(str) or str
+		return 0 < i and f(str) or str
 	end
 	local out_path = f(path)
 	if string.sub(out_path, -1) ~= "\\" then

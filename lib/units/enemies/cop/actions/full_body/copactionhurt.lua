@@ -157,7 +157,7 @@ function CopActionHurt:init(action_desc, common_data)
 					else
 						dir_str = "bwd"
 					end
-				elseif right_dot > 0 then
+				elseif 0 < right_dot then
 					dir_str = "l"
 				else
 					dir_str = "r"
@@ -167,7 +167,7 @@ function CopActionHurt:init(action_desc, common_data)
 				height = hit_z > self._ext_movement:m_com().z and "high" or "low"
 				if action_type == "death" then
 					variant = CopActionHurt.death_anim_variants[action_desc.death_type][crouching and "crouching" or "not_crouching"][dir_str][height]
-					if variant > 1 then
+					if 1 < variant then
 						variant = math.random(variant)
 					end
 				else
@@ -176,7 +176,7 @@ function CopActionHurt:init(action_desc, common_data)
 					end
 					if not variant then
 						variant = CopActionHurt.hurt_anim_variants[action_type == "hurt" and "normal" or "heavy"].not_crouching[dir_str][height]
-						if variant > 1 then
+						if 1 < variant then
 							variant = math.random(variant)
 						end
 					end

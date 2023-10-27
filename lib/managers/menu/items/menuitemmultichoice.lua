@@ -44,7 +44,7 @@ function MenuItemMultiChoice:_show_options(callback_handler)
 			for _, id in ipairs(option.visible_callback_names) do
 				if not callback_handler[id](callback_handler, option) then
 					show = false
-				else
+					break
 				end
 			end
 		end
@@ -77,7 +77,7 @@ function MenuItemMultiChoice:set_value(value)
 	for i, option in ipairs(self._options) do
 		if option:parameters().value == value then
 			self._current_index = i
-		else
+			break
 		end
 	end
 	self:dirty()

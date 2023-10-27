@@ -920,9 +920,7 @@ function StatisticsManager:_amount_format(amount, left)
 	for i = 6 - string.len(amount), 0, -1 do
 		s = s .. " "
 	end
-	if not left or not (amount .. s) then
-	end
-	return s .. amount
+	return left and amount .. s or s .. amount
 end
 function StatisticsManager:_time_text(time, params)
 	local no_days = params and params.no_days
@@ -933,9 +931,7 @@ function StatisticsManager:_time_text(time, params)
 	local minutes = math.floor(time / 60)
 	time = time - minutes * 60
 	local seconds = math.round(time)
-	if not no_days or not "" then
-	end
-	return ((days < 10 and "0" .. days or days) .. ":") .. (hours < 10 and "0" .. hours or hours) .. ":" .. (minutes < 10 and "0" .. minutes or minutes) .. ":" .. (seconds < 10 and "0" .. seconds or seconds)
+	return (no_days and "" or (days < 10 and "0" .. days or days) .. ":") .. (hours < 10 and "0" .. hours or hours) .. ":" .. (minutes < 10 and "0" .. minutes or minutes) .. ":" .. (seconds < 10 and "0" .. seconds or seconds)
 end
 function StatisticsManager:_check_loaded_data()
 	if not self._global.downed.incapacitated then
@@ -966,16 +962,10 @@ function StatisticsManager:favourite_level()
 	local started = 0
 	local c_name
 	for name, data in pairs(self._global.sessions.levels) do
-		if started < data.started then
-			c_name = name or c_name
-		end
-		if started < data.started then
-			started = data.started or started
-		end
+		c_name = started < data.started and name or c_name
+		started = started < data.started and data.started or started
 	end
-	if not c_name or not tweak_data.levels:get_localized_level_name_from_level_id(c_name) then
-	end
-	return (managers.localization:text("debug_undecided"))
+	return c_name and tweak_data.levels:get_localized_level_name_from_level_id(c_name) or managers.localization:text("debug_undecided")
 end
 function StatisticsManager:total_completed_campaigns()
 	local i = 0
@@ -993,9 +983,7 @@ function StatisticsManager:favourite_weapon()
 			weapon_id = id
 		end
 	end
-	if not weapon_id or not managers.localization:text(tweak_data.weapon[weapon_id].name_id) then
-	end
-	return (managers.localization:text("debug_undecided"))
+	return weapon_id and managers.localization:text(tweak_data.weapon[weapon_id].name_id) or managers.localization:text("debug_undecided")
 end
 function StatisticsManager:total_kills()
 	return self._global.killed.total.count
@@ -1032,9 +1020,7 @@ function StatisticsManager:session_favourite_weapon()
 			weapon_id = id
 		end
 	end
-	if not weapon_id or not managers.localization:text(tweak_data.weapon[weapon_id].name_id) then
-	end
-	return (managers.localization:text("debug_undecided"))
+	return weapon_id and managers.localization:text(tweak_data.weapon[weapon_id].name_id) or managers.localization:text("debug_undecided")
 end
 function StatisticsManager:session_total_kills()
 	return self._global.session.killed.total.count

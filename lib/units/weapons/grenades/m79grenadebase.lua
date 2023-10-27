@@ -140,7 +140,7 @@ function M79GrenadeBase:_detect_and_give_dmg(hit_pos)
 		for _, s_pos in ipairs(splinters) do
 			if mvector3.distance_sq(pos, s_pos) < 900 then
 				near_splinter = true
-			else
+				break
 			end
 		end
 		if not near_splinter then
@@ -162,7 +162,7 @@ function M79GrenadeBase:_detect_and_give_dmg(hit_pos)
 				}, "report")
 				if ray_hit then
 					characters_hit[hit_body:unit():key()] = true
-				else
+					break
 				end
 			end
 		elseif apply_dmg or hit_body:dynamic() then

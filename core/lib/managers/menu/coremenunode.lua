@@ -123,7 +123,7 @@ function MenuNode:item(item_name)
 	for _, i in ipairs(self:items()) do
 		if not item_name and i:visible() or i:parameters().name == item_name then
 			item = i
-		else
+			break
 		end
 	end
 	return item
@@ -142,7 +142,7 @@ function MenuNode:select_item(item_name)
 		for i, item in ipairs(self:items()) do
 			if item:visible() then
 				self._default_item_name = item:name()
-			else
+				break
 			end
 		end
 	end

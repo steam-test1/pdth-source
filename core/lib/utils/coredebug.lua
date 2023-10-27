@@ -70,14 +70,14 @@ function out(...)
 		for k, _ in pairs(Global.category_print) do
 			if k == c then
 				cat = c
-			else
+				break
 			end
 		end
 		cat_print(cat, ...)
 	end
 	if #args == 0 then
 		return
-	elseif #args > 1 and type(args[1]) == "string" then
+	elseif 1 < #args and type(args[1]) == "string" then
 		local a = args[1]
 		args[1] = "[" .. a .. "]"
 		do_print(a, correct_spaces(unpack(args)))
@@ -169,7 +169,7 @@ function compile_and_reload()
 		local f
 		function f(s)
 			local str, i = string.gsub(s, "\\[%w_%.%s]+\\%.%.", "")
-			return i > 0 and f(str) or str
+			return 0 < i and f(str) or str
 		end
 		return f(path)
 	end

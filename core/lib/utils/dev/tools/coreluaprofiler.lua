@@ -393,22 +393,20 @@ function CoreLuaProfiler:add_profiler(name)
 		self._profilers[func_table._source]._function_name = func_table._name
 		self._profilers[func_table._source]._calls = 0
 		self._profilers[func_table._source]._time = 0
-		do
-			local f = rawget(_G, self._class_name)[func_table._name]
-			self._profilers[func_table._source]._old_func = f
-			rawget(_G, self._class_name)[func_table._name] = function(...)
-				local profiler_id = Profiler:start(func_table._source)
-				local ret_list = {
-					f(...)
-				}
-				Profiler:stop(profiler_id)
-				return unpack(ret_list)
-			end
-			local i = self._main_frame_table._profiler_list_ctrl:append_item(func_table._name)
-			self._main_frame_table._profiler_list_ctrl:set_item(i, 1, func_table._source)
-			self._main_frame_table._profiler_list_ctrl:autosize_column(0)
-			Application:console_command("profiler add " .. func_table._source)
+		local f = rawget(_G, self._class_name)[func_table._name]
+		self._profilers[func_table._source]._old_func = f
+		rawget(_G, self._class_name)[func_table._name] = function(...)
+			local profiler_id = Profiler:start(func_table._source)
+			local ret_list = {
+				f(...)
+			}
+			Profiler:stop(profiler_id)
+			return unpack(ret_list)
 		end
+		local i = self._main_frame_table._profiler_list_ctrl:append_item(func_table._name)
+		self._main_frame_table._profiler_list_ctrl:set_item(i, 1, func_table._source)
+		self._main_frame_table._profiler_list_ctrl:autosize_column(0)
+		Application:console_command("profiler add " .. func_table._source)
 	end
 end
 function CoreLuaProfiler:on_select_function()
@@ -453,7 +451,7 @@ function CoreLuaProfiler:update_profilers()
 end
 function CoreLuaProfiler:roundup(value)
 	local f = math.floor(value)
-	if value - f > 0 then
+	if 0 < value - f then
 		return f + 1
 	else
 		return f
@@ -494,7 +492,7 @@ function CoreLuaProfiler:update(t, dt)
 			self:load_profilers()
 		end
 		self:update_profilers()
-		if self._frames_sample_steps > 1 or not self._last_update or t - self._last_update > 0.5 then
+		if not (not (self._frames_sample_steps > 1) and self._last_update) or t - self._last_update > 0.5 then
 			self._last_update = t
 			if self._frames_since_profilers_reset >= self._frames_sample_steps then
 				self:update_profiler_list()
@@ -604,9 +602,7 @@ function CoreLuaProfilerSampleRateDialog:show_modal()
 	self._done = false
 	self._return_val = true
 	self._dialog:show_modal()
-	while true do
-		if not self._done then
-		end
+	while not self._done do
 	end
 	return self._return_val
 end

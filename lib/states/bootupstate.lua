@@ -139,7 +139,7 @@ function BootupState:update_fades()
 	if self._play_data.video then
 		duration = self._gui_obj:length()
 		local frames = self._gui_obj:frames()
-		if frames > 0 then
+		if 0 < frames then
 			time = self._gui_obj:frame_num() / frames * duration
 		else
 			time = 0

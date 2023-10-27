@@ -249,7 +249,7 @@ function RaycastWeaponBase:_check_alert(rays, fire_pos, direction, user_unit)
 			table.remove(all_alerts, i)
 		end
 	end
-	if #rays > 0 then
+	if 0 < #rays then
 		for _, ray in ipairs(rays) do
 			local event_pos = ray.position
 			for i = #all_alerts, 1, -1 do
@@ -326,7 +326,7 @@ function RaycastWeaponBase:damage_player(col_ray, from_pos, direction)
 			else
 				return true, ray_data
 			end
-		elseif proj_len < 100 and b > 500 then
+		elseif proj_len < 100 and 500 < b then
 			unit:character_damage():play_whizby(ray_data.position)
 		end
 	end

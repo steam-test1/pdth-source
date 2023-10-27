@@ -172,7 +172,7 @@ function _ScriptViewport:scriptviewport_update_rotation(rot)
 	end
 end
 function _ScriptViewport:scriptviewport_update_environment(environment, sky_yaw, rpc)
-	if not self._env_net_cache or not self._sky_rot_cache or self._env_net_cache ~= environment or self._sky_rot_cache ~= sky_yaw then
+	if not (self._env_net_cache and self._sky_rot_cache) or self._env_net_cache ~= environment or self._sky_rot_cache ~= sky_yaw then
 		self._env_net_cache = environment
 		self._sky_rot_cache = sky_yaw
 		self._mixer:set_environment(environment)
@@ -222,7 +222,7 @@ function _ScriptViewport:_update(nr, t, dt)
 		end
 		local sky_yaw = -object:rotation():yaw()
 		local current_env = self._mixer:current_environment()
-		if not self._env_net_cache or not self._sky_rot_cache or self._env_net_cache ~= current_env or self._sky_rot_cache ~= sky_yaw then
+		if not (self._env_net_cache and self._sky_rot_cache) or self._env_net_cache ~= current_env or self._sky_rot_cache ~= sky_yaw then
 			self:remote_update("scriptviewport_update_environment", current_env, sky_yaw)
 		end
 		self._pump_net = false

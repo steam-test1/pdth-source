@@ -190,7 +190,7 @@ function GroupAIStateBesiege:_begin_new_tasks()
 				if t >= sp_data.delay_t then
 					table.insert(to_search_segs, nav_seg)
 					found_segs[nav_seg] = true
-				else
+					break
 				end
 			end
 		end
@@ -216,12 +216,12 @@ function GroupAIStateBesiege:_begin_new_tasks()
 		local nr_police = table.size(area.police.units)
 		local nr_criminals = table.size(area.criminal.units)
 		local undershot = demand and demand - nr_police
-		if reenforce_candidates and undershot and undershot > 0 and nr_criminals == 0 then
+		if reenforce_candidates and undershot and 0 < undershot and nr_criminals == 0 then
 			local area_free = true
 			for i_task, reenforce_task_data in ipairs(reenforce_data.tasks) do
 				if reenforce_task_data.target_area == search_seg then
 					area_free = false
-				else
+					break
 				end
 			end
 			if area_free then
@@ -235,7 +235,7 @@ function GroupAIStateBesiege:_begin_new_tasks()
 			for criminal_key, _ in pairs(area.criminal.units) do
 				if not self._criminals[criminal_key].status then
 					table.insert(assault_candidates, search_seg)
-				else
+					break
 				end
 			end
 		end
@@ -251,18 +251,18 @@ function GroupAIStateBesiege:_begin_new_tasks()
 		end
 		i = i + 1
 	until i > #to_search_segs
-	if assault_candidates and #assault_candidates > 0 then
+	if assault_candidates and 0 < #assault_candidates then
 		self:_begin_assault_task(assault_candidates)
 		recon_candidates = nil
 	end
-	if reenforce_candidates and #reenforce_candidates > 0 then
+	if reenforce_candidates and 0 < #reenforce_candidates then
 		local lucky_i_candidate = math.random(#reenforce_candidates)
 		local reenforce_area = reenforce_candidates[lucky_i_candidate][1]
 		local undershot = reenforce_candidates[lucky_i_candidate][2]
 		self:_begin_reenforce_task(reenforce_area, undershot)
 		recon_candidates = nil
 	end
-	if recon_candidates and #recon_candidates > 0 then
+	if recon_candidates and 0 < #recon_candidates then
 		local best_i_candidate, best_has_hostages
 		for i_area, seg_id in ipairs(recon_candidates) do
 			for u_key, u_data in ipairs(managers.enemy:all_civilians()) do
@@ -271,12 +271,12 @@ function GroupAIStateBesiege:_begin_new_tasks()
 					if so_id then
 						best_has_hostages = true
 						best_i_candidate = i_area
+						break
 					end
-				else
 				end
 			end
 			if best_has_hostages then
-			else
+				break
 			end
 		end
 		best_i_candidate = best_i_candidate or math.random(#recon_candidates)
@@ -365,8 +365,8 @@ function GroupAIStateBesiege:_upd_assault_task()
 			local crim_area = criminal_data.tracker:nav_segment()
 			if crim_area == primary_target_area then
 				area_safe = nil
+				break
 			end
-		else
 		end
 	end
 	if area_safe then
@@ -388,9 +388,9 @@ function GroupAIStateBesiege:_upd_assault_task()
 	end
 	if task_data.phase == "anticipation" then
 		local spawn_threshold = math.max(0, self._police_force_max - self._police_force - 5)
-		if spawn_threshold > 0 then
+		if 0 < spawn_threshold then
 			local nr_wanted = math.min(spawn_threshold, task_data.force - self._police_force)
-			if nr_wanted > 0 then
+			if 0 < nr_wanted then
 				nr_wanted = math.min(3, nr_wanted)
 				local spawn_points = self:_find_spawn_points_near_area(primary_target_area, nr_wanted, nil, 10000, callback(self, self, "_verify_anticipation_spawn_point"))
 				if spawn_points then
@@ -420,9 +420,9 @@ function GroupAIStateBesiege:_upd_assault_task()
 	end
 	if task_data.phase ~= "fade" and task_data.phase ~= "anticipation" then
 		local spawn_threshold = math.max(0, self._police_force_max - self._police_force)
-		if spawn_threshold > 0 then
+		if 0 < spawn_threshold then
 			local nr_wanted = math.min(spawn_threshold, task_data.force - self._police_force)
-			if nr_wanted > 0 then
+			if 0 < nr_wanted then
 				local used_event
 				if task_data.use_spawn_event then
 					task_data.use_spawn_event = false
@@ -633,7 +633,7 @@ function GroupAIStateBesiege:_find_nearest_safe_area(nav_seg_id, start_pos)
 			my_enemy_dis_sq = my_dis
 		end
 	end
-	if not my_enemy_pos or my_enemy_dis_sq > 9000000 then
+	if not my_enemy_pos or 9000000 < my_enemy_dis_sq then
 		return
 	end
 	local closest_dis, closest_safe_nav_seg_id
@@ -662,13 +662,13 @@ function GroupAIStateBesiege:_upd_recon_tasks()
 	local recon_tasks = self._task_data.recon.tasks
 	local t = self._t
 	local i = #recon_tasks
-	while i > 0 do
+	while 0 < i do
 		local task_data = recon_tasks[i]
 		local target_pos = managers.navigation._nav_segments[task_data.target_area].pos
 		local undershot = task_data.force_required - task_data.force_assigned
-		if undershot > 0 then
+		if 0 < undershot then
 			local spawn_threshold = math.max(0, self._police_force_calm - self._police_force)
-			if spawn_threshold > 0 then
+			if 0 < spawn_threshold then
 				local used_event
 				if task_data.use_spawn_event then
 					task_data.use_spawn_event = false
@@ -688,7 +688,7 @@ function GroupAIStateBesiege:_upd_recon_tasks()
 					end
 				end
 			end
-			if undershot > 0 then
+			if 0 < undershot then
 				local existing_cops = self:_find_surplus_cops_around_area(task_data.target_area, undershot, 0)
 				if existing_cops then
 					self:_assign_cops_to_recon(task_data.target_area, existing_cops, "avoid")
@@ -752,7 +752,7 @@ function GroupAIStateBesiege:_find_spawn_points_near_area(target_area, nr_wanted
 					if not max_dis or max_dis > my_dis then
 						local i = #distances
 						while true do
-							if not (i > 0) or my_dis > distances[i] then
+							if not (0 < i) or my_dis > distances[i] then
 								break
 							end
 							i = i - 1
@@ -785,7 +785,7 @@ function GroupAIStateBesiege:_find_spawn_points_near_area(target_area, nr_wanted
 			end
 		end
 	until #to_search_segs == 0
-	return #s_points > 0 and s_points
+	return 0 < #s_points and s_points
 end
 function GroupAIStateBesiege:_spawn_cops_to_recon(area, spawn_points, attitude, task)
 	local produce_data = {
@@ -842,15 +842,15 @@ function GroupAIStateBesiege:_upd_reenforce_tasks()
 	local reenforce_tasks = self._task_data.reenforce.tasks
 	local t = self._t
 	local i = #reenforce_tasks
-	while i > 0 do
+	while 0 < i do
 		local task_data = reenforce_tasks[i]
 		local force_data = self._area_data[task_data.target_area].factors.force
 		if force_data then
 			task_data.force_required = force_data.force
 			local undershot = task_data.force_required - task_data.force_assigned
-			if undershot > 0 and not self._task_data.regroup.active and self._task_data.assault.phase ~= "fade" then
+			if 0 < undershot and not self._task_data.regroup.active and self._task_data.assault.phase ~= "fade" then
 				local spawn_threshold = math.max(0, self._police_force_calm - self._police_force)
-				if spawn_threshold > 0 then
+				if 0 < spawn_threshold then
 					local used_event
 					if task_data.use_spawn_event then
 						task_data.use_spawn_event = false
@@ -870,7 +870,7 @@ function GroupAIStateBesiege:_upd_reenforce_tasks()
 						end
 					end
 				end
-				if undershot > 0 then
+				if 0 < undershot then
 					local existing_cops = self:_find_surplus_cops_around_area(task_data.target_area, undershot, 0)
 					if existing_cops then
 						self:_assign_cops_to_reenforce(task_data.target_area, existing_cops)
@@ -1018,14 +1018,14 @@ function GroupAIStateBesiege:_find_surplus_cops_around_area(nav_seg, wanted_nr_u
 		end
 	until #to_search_segs == 0
 	local undershot = wanted_nr_units - (#lazy_bastards + spawn_threshold)
-	if undershot > 0 then
+	if 0 < undershot then
 		local i = 1
 		while busy_bastards[i] and undershot >= i do
 			table.insert(lazy_bastards, busy_bastards[i])
 			i = i + 1
 		end
 		undershot = wanted_nr_units - (#lazy_bastards + spawn_threshold)
-		if undershot > 0 then
+		if 0 < undershot then
 			i = 1
 			while very_busy_bastards[i] and undershot >= i do
 				table.insert(lazy_bastards, very_busy_bastards[i])
@@ -1136,8 +1136,8 @@ function GroupAIStateBesiege:on_objective_complete(unit, objective)
 							so_data.admin_clbk(unit)
 						end
 						self:remove_special_objective(so_id)
+						break
 					end
-				else
 				end
 			end
 		end
@@ -1197,7 +1197,7 @@ function GroupAIStateBesiege:on_cop_jobless(unit)
 	local demand = force_factor and force_factor.force
 	local nr_police = table.size(area.police.units)
 	local undershot = demand and demand - nr_police
-	if undershot and undershot > 0 then
+	if undershot and 0 < undershot then
 		local new_objective = {
 			type = "defend_area",
 			nav_seg = nav_seg,
@@ -1252,7 +1252,7 @@ function GroupAIStateBesiege:_map_spawn_points_to_respective_areas(id, spawn_poi
 			pos = pos,
 			nav_seg = nav_seg,
 			spawn_point = new_spawn_point,
-			amount = amount > 0 and amount,
+			amount = 0 < amount and amount,
 			interval = interval,
 			delay_t = -1,
 			accessibility = accessibility ~= "any" and accessibility
@@ -1276,7 +1276,7 @@ function GroupAIStateBesiege:remove_preferred_spawn_points(id)
 		local area_spawn_points = area_data.spawn_points
 		if area_spawn_points then
 			local i_sp = #area_spawn_points
-			while i_sp > 0 do
+			while 0 < i_sp do
 				local sp_data = area_spawn_points[i_sp]
 				if sp_data.id == id then
 					area_spawn_points[i_sp] = area_spawn_points[#area_spawn_points]
@@ -1297,7 +1297,7 @@ function GroupAIStateBesiege:_remove_preferred_spawn_point_from_area(area, sp_da
 		if sp_data_ == sp_data then
 			area_data[i] = area_data[#area_data]
 			table.remove(area_data)
-		else
+			break
 		end
 	end
 end
@@ -1344,7 +1344,7 @@ function GroupAIStateBesiege:_draw_enemy_activity(t)
 				nr_units = nr_units + 1
 			end
 		end
-		if nr_units > 0 then
+		if 0 < nr_units then
 			brush_area:half_sphere(area_pos, 22, area_normal)
 			for i, u_pos in ipairs(u_positions) do
 				local brush
@@ -1371,52 +1371,50 @@ function GroupAIStateBesiege:_draw_enemy_activity(t)
 	local panel = draw_data.panel
 	local camera = managers.viewport:get_current_camera()
 	if camera then
-		do
-			local ws = draw_data.workspace
-			local mid_pos1 = Vector3()
-			local mid_pos2 = Vector3()
-			local focus_enemy_pen = draw_data.pen_focus_enemy
-			local focus_player_brush = draw_data.brush_focus_player
-			local function _f_draw_logic_name(u_key, l_data)
-				local logic_name_text = logic_name_texts[u_key]
-				if not logic_name_text then
-					logic_name_text = panel:text({
-						name = "text",
-						text = "blah",
-						font = "fonts/font_univers_530_bold",
-						font_size = 20,
-						color = Color(1, 0, 1, 0),
-						layer = 1
-					})
-					logic_name_texts[u_key] = logic_name_text
-				end
-				local my_head_pos = mid_pos1
-				mvector3.set(my_head_pos, l_data.unit:movement():m_head_pos())
-				mvector3.set_z(my_head_pos, my_head_pos.z + 30)
-				logic_name_text:set_text(l_data.name)
-				local my_head_pos_screen = camera:world_to_screen(my_head_pos)
-				if 0 < my_head_pos_screen.z then
-					local screen_x = (my_head_pos_screen.x + 1) * 0.5 * RenderSettings.resolution.x
-					local screen_y = (my_head_pos_screen.y + 1) * 0.5 * RenderSettings.resolution.y
-					logic_name_text:set_x(screen_x)
-					logic_name_text:set_y(screen_y)
-				end
+		local ws = draw_data.workspace
+		local mid_pos1 = Vector3()
+		local mid_pos2 = Vector3()
+		local focus_enemy_pen = draw_data.pen_focus_enemy
+		local focus_player_brush = draw_data.brush_focus_player
+		local function _f_draw_logic_name(u_key, l_data)
+			local logic_name_text = logic_name_texts[u_key]
+			if not logic_name_text then
+				logic_name_text = panel:text({
+					name = "text",
+					text = "blah",
+					font = "fonts/font_univers_530_bold",
+					font_size = 20,
+					color = Color(1, 0, 1, 0),
+					layer = 1
+				})
+				logic_name_texts[u_key] = logic_name_text
 			end
-			for u_key, u_data in pairs(self._police) do
-				local l_data = u_data.unit:brain()._logic_data
-				_f_draw_logic_name(u_key, l_data)
-				local my_head_pos = l_data.unit:movement():m_head_pos()
-				local i_data = l_data.internal_data
-				if i_data and i_data.focus_enemy then
-					local e_pos = i_data.focus_enemy.m_head_pos
-					local dis = mvector3.distance(my_head_pos, e_pos)
-					mvector3.step(mid_pos2, my_head_pos, e_pos, 300)
-					mvector3.lerp(mid_pos1, my_head_pos, mid_pos2, t % 0.5)
-					mvector3.step(mid_pos2, mid_pos1, e_pos, 50)
-					focus_enemy_pen:line(mid_pos1, mid_pos2)
-					if i_data.focus_enemy.unit:base().is_local_player then
-						focus_player_brush:sphere(my_head_pos, 20)
-					end
+			local my_head_pos = mid_pos1
+			mvector3.set(my_head_pos, l_data.unit:movement():m_head_pos())
+			mvector3.set_z(my_head_pos, my_head_pos.z + 30)
+			logic_name_text:set_text(l_data.name)
+			local my_head_pos_screen = camera:world_to_screen(my_head_pos)
+			if 0 < my_head_pos_screen.z then
+				local screen_x = (my_head_pos_screen.x + 1) * 0.5 * RenderSettings.resolution.x
+				local screen_y = (my_head_pos_screen.y + 1) * 0.5 * RenderSettings.resolution.y
+				logic_name_text:set_x(screen_x)
+				logic_name_text:set_y(screen_y)
+			end
+		end
+		for u_key, u_data in pairs(self._police) do
+			local l_data = u_data.unit:brain()._logic_data
+			_f_draw_logic_name(u_key, l_data)
+			local my_head_pos = l_data.unit:movement():m_head_pos()
+			local i_data = l_data.internal_data
+			if i_data and i_data.focus_enemy then
+				local e_pos = i_data.focus_enemy.m_head_pos
+				local dis = mvector3.distance(my_head_pos, e_pos)
+				mvector3.step(mid_pos2, my_head_pos, e_pos, 300)
+				mvector3.lerp(mid_pos1, my_head_pos, mid_pos2, t % 0.5)
+				mvector3.step(mid_pos2, mid_pos1, e_pos, 50)
+				focus_enemy_pen:line(mid_pos1, mid_pos2)
+				if i_data.focus_enemy.unit:base().is_local_player then
+					focus_player_brush:sphere(my_head_pos, 20)
 				end
 			end
 		end
@@ -1442,7 +1440,7 @@ function GroupAIStateBesiege:on_nav_segment_state_change(changed_seg, state)
 			table.insert(neighbour_area_neighbours, {seg = changed_seg, doors = door_list})
 		else
 			local i = #neighbour_area_neighbours
-			while i > 0 do
+			while 0 < i do
 				if neighbour_area_neighbours[i].seg == changed_seg then
 					neighbour_area_neighbours[i] = neighbour_area_neighbours[#neighbour_area_neighbours]
 					table.remove(neighbour_area_neighbours)
@@ -1587,7 +1585,7 @@ function GroupAIStateBesiege:remove_from_surrendered(unit)
 	for i, entry in ipairs(hos_data) do
 		if u_key == entry.u_key then
 			table.remove(hos_data, i)
-		else
+			break
 		end
 	end
 	if #hos_data == 0 then
@@ -1601,7 +1599,7 @@ function GroupAIStateBesiege:_upd_hostage_task()
 	local first_entry = hos_data[1]
 	table.remove(hos_data, 1)
 	first_entry.clbk()
-	if not self._hostage_upd_key and #hos_data > 0 then
+	if not self._hostage_upd_key and 0 < #hos_data then
 		self._hostage_upd_key = "GroupAIStateBesiege:_upd_hostage_task"
 		managers.enemy:queue_task(self._hostage_upd_key, self._upd_hostage_task, self, self._t + 1)
 	end

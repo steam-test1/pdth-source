@@ -18,7 +18,7 @@ end
 function CoreChangeEnvCutsceneKey:evaluate(player, fast_forward)
 	self.__previous_environment_name = self.__previous_environment_name or managers.environment:get_current_environment_name()
 	local transition_time = self:transition_time()
-	if transition_time and transition_time > 0 then
+	if transition_time and 0 < transition_time then
 		managers.viewport:first_active_viewport():set_environment(self:name(), transition_time)
 	else
 		managers.viewport:first_active_viewport():set_environment(self:name())
@@ -31,7 +31,7 @@ function CoreChangeEnvCutsceneKey:is_valid_name(name)
 	return Database:has("environment", name)
 end
 function CoreChangeEnvCutsceneKey:is_valid_transition_time(value)
-	return value and value >= 0
+	return value and 0 <= value
 end
 CoreChangeEnvCutsceneKey.control_for_name = CoreCutsceneKeyBase.standard_combo_box_control
 function CoreChangeEnvCutsceneKey:refresh_control_for_name(control)

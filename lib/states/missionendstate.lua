@@ -102,7 +102,7 @@ function MissionEndState:at_enter(old_state, params)
 							noob_lubes = noob_lubes + 1
 						end
 					end
-					if noob_lubes >= 3 then
+					if 3 <= noob_lubes then
 						managers.challenges:set_flag("noob_herder")
 					end
 				end
@@ -204,7 +204,7 @@ function MissionEndState:on_statistics_result(best_kills_peer_id, best_kills_sco
 		managers.hud:script(self.GUI_SAFERECT):set_group_statistics(best_kills, best_kills_score, best_special_kills, best_special_kills_score, best_accuracy, best_accuracy_score, most_downs, most_downs_score, total_kills, total_specials_kills, total_head_shots, group_accuracy, group_downs)
 	end
 	print("on_statistics_result end")
-	if Network:is_server() and self._success and not managers.achievment:get_script_data("cant_touch_fail") and tweak_data:difficulty_to_index(Global.game_settings.difficulty) >= 4 and Global.level_data.level_id == "heat_street" and group_accuracy >= 60 then
+	if Network:is_server() and self._success and not managers.achievment:get_script_data("cant_touch_fail") and tweak_data:difficulty_to_index(Global.game_settings.difficulty) >= 4 and Global.level_data.level_id == "heat_street" and 60 <= group_accuracy then
 		managers.challenges:set_flag("cant_touch")
 		managers.network:session():send_to_peers("award_achievment", "cant_touch")
 	end

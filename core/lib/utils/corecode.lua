@@ -117,7 +117,7 @@ function line_representation(x, seen, raw)
 			if w < r:len() then
 				r = r:sub(1, w)
 				r = r .. "..."
-			else
+				break
 			end
 		end
 		r = r .. "}"

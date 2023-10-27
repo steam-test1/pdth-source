@@ -246,7 +246,9 @@ function CoreCutscenePlayer:preroll_cutscene_keys()
 	end
 	for _, cutscene_key in ipairs(self:_all_keys_sorted_by_time()) do
 		if 0 < cutscene_key:frame() then
-		elseif cutscene_key.preroll then
+			break
+		end
+		if cutscene_key.preroll then
 			cutscene_key:preroll(self)
 		end
 	end
@@ -360,9 +362,7 @@ function CoreCutscenePlayer:invoke_callback_in_gui(gui_name, function_name, ...)
 				local argument_string = table.concat(table.collect({
 					...
 				}, function(arg)
-					if type(arg) ~= "string" or not string.format("%q", arg) then
-					end
-					return (tostring(arg))
+					return type(arg) == "string" and string.format("%q", arg) or tostring(arg)
 				end), ", ")
 				cat_print("cutscene", string.format("[CoreCutscenePlayer] Calling %s(%s) in Gui \"%s\".", function_name, argument_string, gui_name))
 			end

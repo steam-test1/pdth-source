@@ -139,7 +139,7 @@ function EnvironmentAreaManager:environment_at_position(pos)
 	for _, area in ipairs(self._areas) do
 		if area:is_inside(pos) then
 			environment = area:environment()
-		else
+			break
 		end
 	end
 	return environment

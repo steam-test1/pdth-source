@@ -56,7 +56,7 @@ function AimCameraNode:_update_pitch_offset(parent_position, parent_rotation)
 		local polar = current_position_to_eye_target:to_polar_with_reference(parent_rotation:y(), parent_rotation:z())
 		local pitch = polar.pitch
 		local yaw = polar.spin
-		if pitch < 0 and pitch > -90 then
+		if pitch < 0 and -90 < pitch then
 			local normalized_pitch = math.abs(pitch) / 90
 			local y_offset = -math.sign(pitch) * (math.sin(270 + normalized_pitch * 180) * 0.5 + 0.5) * 90
 			local offset = Vector3(0, y_offset, 0)

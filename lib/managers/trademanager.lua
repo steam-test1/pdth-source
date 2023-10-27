@@ -104,7 +104,7 @@ function TradeManager:update(t, dt)
 			end
 		end
 	end
-	if not self._trade_countdown or not Network:is_server() or self._trading_hostage or self._hostage_trade_clbk or not (#self._criminals_to_respawn > 0) or self:get_criminal_to_trade() == nil or 0 >= managers.groupai:state():hostage_count() then
+	if not (self._trade_countdown and Network:is_server() and not self._trading_hostage and not self._hostage_trade_clbk and #self._criminals_to_respawn > 0) or self:get_criminal_to_trade() == nil or 0 >= managers.groupai:state():hostage_count() then
 	else
 		self._cancel_trade = nil
 		local respawn_t = self._t + math.random(2, 5)
@@ -158,7 +158,7 @@ function TradeManager:sync_set_trade_spawn(criminal_name)
 	for i, crim in ipairs(self._criminals_to_respawn) do
 		if crim.id == criminal_name then
 			table.remove(self._criminals_to_respawn, i)
-		else
+			break
 		end
 	end
 end
@@ -178,7 +178,7 @@ function TradeManager:play_custody_voice(criminal_name)
 		for _, crim_data in pairs(managers.groupai:state():all_char_criminals()) do
 			if not crim_data.unit:movement():downed() then
 				criminal_left = managers.criminals:character_name_by_unit(crim_data.unit)
-			else
+				break
 			end
 		end
 		if managers.criminals:local_character_name() == criminal_left then
@@ -250,7 +250,7 @@ function TradeManager:on_player_criminal_death(criminal_name, respawn_penalty, h
 		if crim_to_respawn.ai == true or respawn_penalty < crim_to_respawn.respawn_penalty then
 			table.insert(self._criminals_to_respawn, i, crim)
 			inserted = true
-		else
+			break
 		end
 	end
 	if not inserted then
@@ -281,7 +281,7 @@ function TradeManager:replace_ai_with_player(ai_criminal, player_criminal, new_r
 			respawn_penalty = new_respawn_penalty or c.respawn_penalty
 			hostages_killed = c.hostages_killed
 			table.remove(self._criminals_to_respawn, i)
-		else
+			break
 		end
 	end
 	if respawn_penalty then
@@ -303,7 +303,7 @@ function TradeManager:replace_player_with_ai(player_criminal, ai_criminal, new_r
 			respawn_penalty = new_respawn_penalty or c.respawn_penalty
 			hostages_killed = c.hostages_killed
 			table.remove(self._criminals_to_respawn, i)
-		else
+			break
 		end
 	end
 	if respawn_penalty then
@@ -323,7 +323,7 @@ function TradeManager:remove_from_trade(criminal)
 	for i, c in ipairs(self._criminals_to_respawn) do
 		if c.id == criminal then
 			table.remove(self._criminals_to_respawn, i)
-		else
+			break
 		end
 	end
 end
@@ -553,7 +553,7 @@ function TradeManager:clbk_respawn_criminal(trading_unit)
 		if crim == respawn_criminal then
 			print("Removing from list")
 			table.remove(self._criminals_to_respawn, i)
-		else
+			break
 		end
 	end
 	self._num_trades = self._num_trades + 1

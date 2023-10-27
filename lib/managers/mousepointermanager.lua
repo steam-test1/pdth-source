@@ -50,7 +50,7 @@ function MousePointerManager:remove_mouse(id)
 			if params.id == id then
 				removed = true
 				table.remove(self._mouse_callbacks, i)
-			else
+				break
 			end
 		end
 	end

@@ -35,7 +35,7 @@ function SpawnManager:spawn_enemy_group(event)
 	end
 	spawn_request.ai = event.ai
 	local criminals = World:find_units_quick("all", managers.slot:get_mask("players"))
-	if #criminals > 0 then
+	if 0 < #criminals then
 		local hide_from_trackers = {}
 		for _, criminal_unit in ipairs(criminals) do
 			table.insert(hide_from_trackers, criminal_unit:movement():nav_tracker())

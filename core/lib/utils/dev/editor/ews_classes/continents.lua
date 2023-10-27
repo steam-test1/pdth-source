@@ -132,7 +132,7 @@ function ContinentPanel:update_continent_panel(continent)
 			params.toolbar:set_tool_state("LOCKED", continent:value("locked"))
 			params.toolbar:set_tool_state("ENABLED_IN_SIMULATION", continent:value("enabled_in_simulation"))
 			params.toolbar:set_tool_state("EDITOR_ONLY", continent:value("editor_only"))
-		else
+			break
 		end
 	end
 end

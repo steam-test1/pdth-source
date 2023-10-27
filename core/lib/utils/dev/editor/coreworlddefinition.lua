@@ -360,7 +360,8 @@ function WorldDefinition:_create_portal(data, offset)
 			local top = portal.top
 			local bottom = portal.bottom
 			if top == 0 and bottom == 0 then
-				top, bottom = nil, nil
+				top = nil
+				bottom = nil
 			end
 			managers.portal:add_portal(t, bottom, top)
 		end
@@ -784,9 +785,7 @@ function WorldDefinition:add_trigger_sequence(unit, triggers)
 end
 function WorldDefinition:use_me(unit, is_editor)
 	local id = unit:unit_data().unit_id
-	if id == 0 or not id then
-		id = unit:editor_id()
-	end
+	id = id ~= 0 and id or unit:editor_id()
 	self._all_units[id] = self._all_units[id] or unit
 	if self._trigger_units[id] then
 		for _, t in ipairs(self._trigger_units[id]) do

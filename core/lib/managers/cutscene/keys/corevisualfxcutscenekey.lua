@@ -31,19 +31,17 @@ function CoreVisualFXCutsceneKey:play(player, undo, fast_forward)
 	elseif not fast_forward then
 		self:stop()
 		self:prime(player)
-		do
-			local effect_manager = World:effect_manager()
-			local parent_object = self:_unit_object(self:unit_name(), self:object_name(), true)
-			local effect_id = effect_manager:spawn({
-				effect = self:effect(),
-				parent = parent_object,
-				position = self:offset(),
-				rotation = self:rotation(),
-				force_synch = self:force_synch()
-			})
-			function self._effect_abort_func()
-				effect_manager:kill(effect_id)
-			end
+		local effect_manager = World:effect_manager()
+		local parent_object = self:_unit_object(self:unit_name(), self:object_name(), true)
+		local effect_id = effect_manager:spawn({
+			effect = self:effect(),
+			parent = parent_object,
+			position = self:offset(),
+			rotation = self:rotation(),
+			force_synch = self:force_synch()
+		})
+		function self._effect_abort_func()
+			effect_manager:kill(effect_id)
 		end
 	end
 end
@@ -62,7 +60,7 @@ function CoreVisualFXCutsceneKey:is_valid_effect(effect)
 	return DB:has("effect", effect)
 end
 function CoreVisualFXCutsceneKey:is_valid_duration(value)
-	return value == nil or value > 0
+	return value == nil or 0 < value
 end
 function CoreVisualFXCutsceneKey:is_valid_offset(value)
 	return value ~= nil

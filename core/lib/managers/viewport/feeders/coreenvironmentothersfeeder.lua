@@ -19,7 +19,7 @@ function EnvironmentOthersFeeder:feed(nr, scene, vp, data, block, ...)
 		local sun_ray_color = block.sun_ray_color
 		local sun_ray_color_scale = block.sun_ray_color_scale
 		local global_texture = block.global_texture
-		if not Global._current_underlay_name or not Underlay:loaded() or Global._current_underlay_name ~= underlay_name then
+		if not (Global._current_underlay_name and Underlay:loaded()) or Global._current_underlay_name ~= underlay_name then
 			Global._current_underlay_name = underlay_name
 			if CoreCode.alive(Global._global_light) then
 				World:delete_light(Global._global_light)

@@ -351,7 +351,7 @@ function UnitNetworkHandler:sync_interacted(unit)
 	unit:interaction():sync_interacted()
 end
 function UnitNetworkHandler:sync_interaction_set_active(unit, active, sender)
-	if not alive(unit) or not self._verify_gamestate(self._gamestate_filter.any_ingame) or not self._verify_sender(sender) then
+	if not (alive(unit) and self._verify_gamestate(self._gamestate_filter.any_ingame)) or not self._verify_sender(sender) then
 		return
 	end
 	unit:interaction():set_active(active)
@@ -380,7 +380,7 @@ function UnitNetworkHandler:action_hurt_end(unit)
 	unit:movement():sync_action_hurt_end()
 end
 function UnitNetworkHandler:cop_set_attention_unit(unit, target_unit)
-	if not self._verify_gamestate(self._gamestate_filter.any_ingame) or not self._verify_character(unit) or not self._verify_character(target_unit) then
+	if not (self._verify_gamestate(self._gamestate_filter.any_ingame) and self._verify_character(unit)) or not self._verify_character(target_unit) then
 		return
 	end
 	unit:movement():synch_attention({unit = target_unit})
@@ -422,7 +422,7 @@ function UnitNetworkHandler:set_pose(unit, pose_code, sender)
 	unit:movement():sync_pose(pose_code)
 end
 function UnitNetworkHandler:cop_on_intimidated(cop, amount, aggressor)
-	if not self._verify_gamestate(self._gamestate_filter.any_ingame) or not self._verify_character(cop) or not alive(aggressor) then
+	if not (self._verify_gamestate(self._gamestate_filter.any_ingame) and self._verify_character(cop)) or not alive(aggressor) then
 		return
 	end
 	if cop:in_slot(managers.slot:get_mask("criminals")) or cop:in_slot(managers.slot:get_mask("harmless_criminals")) then
@@ -540,7 +540,7 @@ function UnitNetworkHandler:action_tase_fire(unit, sender)
 	unit:movement():sync_taser_fire()
 end
 function UnitNetworkHandler:alert(alerted_unit, aggressor)
-	if not self._verify_gamestate(self._gamestate_filter.any_ingame) or not self._verify_character(alerted_unit) or not self._verify_character(aggressor) then
+	if not (self._verify_gamestate(self._gamestate_filter.any_ingame) and self._verify_character(alerted_unit)) or not self._verify_character(aggressor) then
 		return
 	end
 	local record = managers.groupai:state():criminal_record(aggressor:key())
@@ -601,7 +601,7 @@ function UnitNetworkHandler:unpause_arrested_timer(unit, sender)
 	unit:character_damage():unpause_arrested_timer()
 end
 function UnitNetworkHandler:revive_unit(unit, reviving_unit)
-	if not self._verify_gamestate(self._gamestate_filter.any_ingame) or not self._verify_character(unit) or not alive(reviving_unit) then
+	if not (self._verify_gamestate(self._gamestate_filter.any_ingame) and self._verify_character(unit)) or not alive(reviving_unit) then
 		return
 	end
 	unit:interaction():interact(reviving_unit)
@@ -663,13 +663,13 @@ function UnitNetworkHandler:sync_trip_mine_explode_no_user(unit, ray_from, ray_t
 	self:sync_trip_mine_explode(unit, nil, ray_from, ray_to, damage_size, damage, sender)
 end
 function UnitNetworkHandler:sync_trip_mine_set_armed(unit, bool, lenght, sender)
-	if not alive(unit) or not self._verify_gamestate(self._gamestate_filter.any_ingame) or not self._verify_sender(sender) then
+	if not (alive(unit) and self._verify_gamestate(self._gamestate_filter.any_ingame)) or not self._verify_sender(sender) then
 		return
 	end
 	unit:base():sync_trip_mine_set_armed(bool, lenght)
 end
 function UnitNetworkHandler:sync_trip_mine_beep_explode(unit, sender)
-	if not alive(unit) or not self._verify_gamestate(self._gamestate_filter.any_ingame) or not self._verify_sender(sender) then
+	if not (alive(unit) and self._verify_gamestate(self._gamestate_filter.any_ingame)) or not self._verify_sender(sender) then
 		return
 	end
 	unit:base():sync_trip_mine_beep_explode()
@@ -726,7 +726,7 @@ function UnitNetworkHandler:sync_ammo_bag_setup(unit, ammo_upgrade_lvl)
 	unit:base():sync_setup(ammo_upgrade_lvl)
 end
 function UnitNetworkHandler:sync_ammo_bag_ammo_taken(unit, amount, sender)
-	if not alive(unit) or not self._verify_gamestate(self._gamestate_filter.any_ingame) or not self._verify_sender(sender) then
+	if not (alive(unit) and self._verify_gamestate(self._gamestate_filter.any_ingame)) or not self._verify_sender(sender) then
 		return
 	end
 	unit:base():sync_ammo_taken(amount)
@@ -746,13 +746,13 @@ function UnitNetworkHandler:sync_doctor_bag_setup(unit, amount_upgrade_lvl)
 	unit:base():sync_setup(amount_upgrade_lvl)
 end
 function UnitNetworkHandler:sync_doctor_bag_taken(unit, amount, sender)
-	if not alive(unit) or not self._verify_gamestate(self._gamestate_filter.any_ingame) or not self._verify_sender(sender) then
+	if not (alive(unit) and self._verify_gamestate(self._gamestate_filter.any_ingame)) or not self._verify_sender(sender) then
 		return
 	end
 	unit:base():sync_taken(amount)
 end
 function UnitNetworkHandler:sync_money_wrap_money_taken(unit, sender)
-	if not alive(unit) or not self._verify_gamestate(self._gamestate_filter.any_ingame) or not self._verify_sender(sender) then
+	if not (alive(unit) and self._verify_gamestate(self._gamestate_filter.any_ingame)) or not self._verify_sender(sender) then
 		return
 	end
 	unit:base():sync_money_taken()
@@ -769,7 +769,7 @@ function UnitNetworkHandler:unit_sound_play(unit, event_index, sender)
 	end
 end
 function UnitNetworkHandler:sync_player_sound(unit, event, source, sender)
-	if not alive(unit) or not self._verify_gamestate(self._gamestate_filter.any_ingame) or not self._verify_sender(sender) then
+	if not (alive(unit) and self._verify_gamestate(self._gamestate_filter.any_ingame)) or not self._verify_sender(sender) then
 		return
 	end
 	if source == "nil" then
@@ -802,13 +802,13 @@ function UnitNetworkHandler:sync_hostage_headcount(value)
 	managers.groupai:state():sync_hostage_headcount(value)
 end
 function UnitNetworkHandler:play_distance_interact_redirect(unit, redirect, sender)
-	if not alive(unit) or not self._verify_gamestate(self._gamestate_filter.any_ingame) or not self._verify_sender(sender) then
+	if not (alive(unit) and self._verify_gamestate(self._gamestate_filter.any_ingame)) or not self._verify_sender(sender) then
 		return
 	end
 	unit:movement():play_redirect(redirect)
 end
 function UnitNetworkHandler:start_timer_gui(unit, timer, sender)
-	if not alive(unit) or not self._verify_gamestate(self._gamestate_filter.any_ingame) or not self._verify_sender(sender) then
+	if not (alive(unit) and self._verify_gamestate(self._gamestate_filter.any_ingame)) or not self._verify_sender(sender) then
 		return
 	end
 	unit:timer_gui():sync_start(timer)
@@ -877,19 +877,19 @@ function UnitNetworkHandler:sync_show_hint(id, sender)
 	managers.hint:sync_show_hint(id)
 end
 function UnitNetworkHandler:sync_show_action_message(unit, id, sender)
-	if not alive(unit) or not self._verify_gamestate(self._gamestate_filter.any_ingame) or not self._verify_sender(sender) then
+	if not (alive(unit) and self._verify_gamestate(self._gamestate_filter.any_ingame)) or not self._verify_sender(sender) then
 		return
 	end
 	managers.action_messaging:sync_show_message(id, unit)
 end
 function UnitNetworkHandler:say(unit, event_id, sender)
-	if not alive(unit) or not self._verify_gamestate(self._gamestate_filter.any_ingame) or not self._verify_sender(sender) then
+	if not (alive(unit) and self._verify_gamestate(self._gamestate_filter.any_ingame)) or not self._verify_sender(sender) then
 		return
 	end
 	unit:sound():sync_say(event_id)
 end
 function UnitNetworkHandler:say_str(unit, sound_name, sender)
-	if not alive(unit) or not self._verify_gamestate(self._gamestate_filter.any_ingame) or not self._verify_sender(sender) then
+	if not (alive(unit) and self._verify_gamestate(self._gamestate_filter.any_ingame)) or not self._verify_sender(sender) then
 		return
 	end
 	unit:sound():sync_say_str(sound_name)
@@ -954,13 +954,13 @@ function UnitNetworkHandler:set_kit_selection(peer_id, category, id, slot, sende
 	managers.menu:get_menu("kit_menu").renderer:set_kit_selection(peer_id, category, id, slot)
 end
 function UnitNetworkHandler:set_armor(unit, percent, sender)
-	if not alive(unit) or not self._verify_gamestate(self._gamestate_filter.any_ingame) or not self._verify_sender(sender) then
+	if not (alive(unit) and self._verify_gamestate(self._gamestate_filter.any_ingame)) or not self._verify_sender(sender) then
 		return
 	end
 	managers.hud:set_mugshot_armor(unit:unit_data().mugshot_id, percent / 100)
 end
 function UnitNetworkHandler:set_health(unit, percent, sender)
-	if not alive(unit) or not self._verify_gamestate(self._gamestate_filter.any_ingame) or not self._verify_sender(sender) then
+	if not (alive(unit) and self._verify_gamestate(self._gamestate_filter.any_ingame)) or not self._verify_sender(sender) then
 		return
 	end
 	managers.hud:set_mugshot_health(unit:unit_data().mugshot_id, percent / 100)
@@ -1036,7 +1036,7 @@ function UnitNetworkHandler:mark_enemy(unit, sender)
 	managers.game_play_central:add_enemy_contour(unit)
 end
 function UnitNetworkHandler:sync_teammate_helped_hint(hint, helped_unit, helping_unit, sender)
-	if not self._verify_gamestate(self._gamestate_filter.any_ingame) or not self._verify_character_and_sender(helped_unit, sender) or not self._verify_character(helping_unit, sender) then
+	if not (self._verify_gamestate(self._gamestate_filter.any_ingame) and self._verify_character_and_sender(helped_unit, sender)) or not self._verify_character(helping_unit, sender) then
 		return
 	end
 	managers.trade:sync_teammate_helped_hint(helped_unit, helping_unit, hint)
@@ -1160,7 +1160,7 @@ function UnitNetworkHandler:sync_run_sequence_char(unit, seq, sender)
 	ElementSequenceCharacter.sync_function(unit, seq)
 end
 function UnitNetworkHandler:sync_player_kill_statistic(tweak_table_name, is_headshot, weapon_unit, variant, sender)
-	if not self._verify_gamestate(self._gamestate_filter.any_ingame) or not self._verify_sender(sender) or not alive(weapon_unit) then
+	if not (self._verify_gamestate(self._gamestate_filter.any_ingame) and self._verify_sender(sender)) or not alive(weapon_unit) then
 		return
 	end
 	local data = {

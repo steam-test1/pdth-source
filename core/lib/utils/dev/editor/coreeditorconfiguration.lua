@@ -113,7 +113,7 @@ function CoreEditor:on_configuration_cancel()
 end
 function CoreEditor:on_configuration_apply()
 	for value, data in pairs(self._config) do
-		local ctrlr = not data.ctrlr and data
+		local ctrlr = data.ctrlr or data
 		local changed = false
 		if type(self[value]) == "number" then
 			changed = self[value] ~= tonumber(ctrlr:get_value())

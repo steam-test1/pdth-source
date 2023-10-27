@@ -339,10 +339,7 @@ function UpgradesManager:description(id)
 		return
 	end
 	local upgrade = tweak_data.upgrades.definitions[id]
-	if upgrade.subtitle_id then
-	else
-	end
-	return managers.localization:text(upgrade.description_text_id or id) or nil
+	return upgrade.subtitle_id and managers.localization:text(upgrade.description_text_id or id) or nil
 end
 function UpgradesManager:image(id)
 	local image = tweak_data.upgrades.definitions[id].image

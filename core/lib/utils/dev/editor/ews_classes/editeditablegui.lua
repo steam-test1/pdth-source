@@ -2,7 +2,7 @@ core:import("CoreEditorUtils")
 core:import("CoreEws")
 EditUnitEditableGui = EditUnitEditableGui or class(EditUnitBase)
 function EditUnitEditableGui:init(editor)
-	local panel, sizer = editor or managers.editor:add_unit_edit_page({name = "Gui Text", class = self})
+	local panel, sizer = (editor or managers.editor):add_unit_edit_page({name = "Gui Text", class = self})
 	self._panel = panel
 	self._ctrls = {}
 	self._element_guis = {}

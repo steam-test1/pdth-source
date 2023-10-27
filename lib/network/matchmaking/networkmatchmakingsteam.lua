@@ -57,22 +57,24 @@ function NetworkMatchMakingSTEAM:update()
 			self._server_rpc:re_open_lobby_request(true)
 			self._try_re_enter_lobby = "asked"
 		elseif self._try_re_enter_lobby == "asked" then
-		elseif self._try_re_enter_lobby == "open" then
-			self._try_re_enter_lobby = "joining"
-			Application:error("RE-ENTERING LOBBY", self.lobby_handler:id())
-			local function _join_lobby_result_f(result, handler)
-				if result == "success" then
-					Application:error("SUCCESS!")
-					self.lobby_handler = handler
-				else
-					Application:error("FAIL!")
+		else
+			if self._try_re_enter_lobby == "open" then
+				self._try_re_enter_lobby = "joining"
+				Application:error("RE-ENTERING LOBBY", self.lobby_handler:id())
+				local function _join_lobby_result_f(result, handler)
+					if result == "success" then
+						Application:error("SUCCESS!")
+						self.lobby_handler = handler
+					else
+						Application:error("FAIL!")
+					end
+					self._server_rpc:re_open_lobby_request(false)
+					self._try_re_enter_lobby = nil
 				end
-				self._server_rpc:re_open_lobby_request(false)
-				self._try_re_enter_lobby = nil
+				Steam:join_lobby(self.lobby_handler:id(), _join_lobby_result_f)
+			else
 			end
-			Steam:join_lobby(self.lobby_handler:id(), _join_lobby_result_f)
 		end
-	else
 	end
 end
 function NetworkMatchMakingSTEAM:leave_game()

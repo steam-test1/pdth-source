@@ -41,7 +41,7 @@ function CoreCutsceneBatchOptimizerDialog:init(parent_window)
 	self.__window = EWS:Frame("Batch Export to Game", Vector3(100, 500, 0), Vector3(400, 400, 0), "DEFAULT_DIALOG_STYLE,RESIZE_BORDER,FRAME_FLOAT_ON_PARENT", parent_window)
 	self.__window:set_icon(CoreEWS.image_path("film_reel_16x16.png"))
 	self.__window:set_min_size(Vector3(400, 321, 0))
-	self.__window:set_background_colour(EWS:get_system_colour("3DFACE") * 255:unpack())
+	self.__window:set_background_colour((EWS:get_system_colour("3DFACE") * 255):unpack())
 	self.__window:connect("EVT_CLOSE_WINDOW", callback(self, self, "_on_exit"))
 	local function connect_command(command_id, callback_name, callback_data)
 		callback_name = callback_name or "_on_" .. string.lower(command_id)
@@ -125,9 +125,7 @@ function CoreCutsceneBatchOptimizerDialog:_destroy()
 	self.__batch = nil
 end
 function CoreCutsceneBatchOptimizerDialog:_progress_message(project)
-	if project ~= nil or not "Done!" then
-	end
-	return (string.format("Exporting %s", project))
+	return project == nil and "Done!" or string.format("Exporting %s", project)
 end
 function CoreCutsceneBatchOptimizerDialog:_open_job_list(input_path)
 	local mappings = read_lua_representation_from_path(input_path)

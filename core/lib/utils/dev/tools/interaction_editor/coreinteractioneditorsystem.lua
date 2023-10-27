@@ -13,9 +13,7 @@ function InteractionEditorSystem:init(ui, path)
 	self._node_id_map = {}
 	self._pattern_data = {}
 	self._is_new = path == nil
-	if not path or not managers.database:entry_name(path) then
-	end
-	self._caption = "New" .. tostring(new_counter)
+	self._caption = path and managers.database:entry_name(path) or "New" .. tostring(new_counter)
 	self._op_stack = CoreInteractionEditorSystemEvents.InteractionEditorSystemEvents.setup_stack(self)
 	self._panel, self._id = ui:create_nb_page(self._caption, true)
 	local main_box = EWS:BoxSizer("VERTICAL")
@@ -36,13 +34,13 @@ function InteractionEditorSystem:init(ui, path)
 		for child in md:children() do
 			if child:name() == "interaction" then
 				self._desc:from_xml(child)
-			else
+				break
 			end
 		end
 		for child in md:children() do
 			if child:name() == "patterns" then
 				self:_load_patterns(self._desc, self._pattern_data, child)
-			else
+				break
 			end
 		end
 	end

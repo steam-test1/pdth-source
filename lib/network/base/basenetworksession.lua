@@ -374,9 +374,9 @@ function BaseNetworkSession:clbk_network_send(target_rpc, post_send)
 				local send_resume = Network:get_connection_send_status(target_rpc)
 				if send_resume then
 					for delivery_type, amount in pairs(send_resume) do
-						if amount > 0 then
+						if 0 < amount then
 							ok_to_delete = false
-						else
+							break
 						end
 					end
 				end
@@ -420,7 +420,7 @@ function BaseNetworkSession:is_ready_to_close()
 			local send_resume = Network:get_connection_send_status(peer:rpc())
 			if send_resume then
 				for delivery_type, amount in pairs(send_resume) do
-					if delivery_type ~= "unreliable" and amount > 0 then
+					if delivery_type ~= "unreliable" and 0 < amount then
 						print("[BaseNetworkSession:is_ready_to_close] waiting transmission", delivery_type, amount)
 						return false
 					end
@@ -462,7 +462,7 @@ function BaseNetworkSession:upd_trash_connections(wall_t)
 				for peer_id, peer in pairs(self._peers) do
 					if peer:ip_verified() and peer:ip() == ip or peer:user_id() == ip then
 						reset = false
-					else
+						break
 					end
 				end
 				if reset then
@@ -481,7 +481,7 @@ function BaseNetworkSession:upd_trash_connections(wall_t)
 			if wall_t > info.expire_t then
 				info.peer:destroy()
 				self._soft_remove_peers[peer_ip] = nil
-			else
+				break
 			end
 		end
 		if not next(self._soft_remove_peers) then

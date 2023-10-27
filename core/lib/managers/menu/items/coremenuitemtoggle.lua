@@ -57,7 +57,7 @@ function ItemToggle:set_value(value)
 	for i, option in ipairs(self.options) do
 		if option:parameters().value == value then
 			self.selected = i
-		else
+			break
 		end
 	end
 	self:dirty()

@@ -70,10 +70,7 @@ function CoreCutsceneKeyBase:is_valid_attribute_value(attribute_name, value)
 	return validator_func == nil or validator_func(self, value)
 end
 function CoreCutsceneKeyBase:is_valid_object_name(object_name, unit_name)
-	if object_name then
-	else
-	end
-	return table.contains(self:_unit_object_names(unit_name or self:unit_name()), object_name) or false
+	return object_name and table.contains(self:_unit_object_names(unit_name or self:unit_name()), object_name) or false
 end
 function CoreCutsceneKeyBase:is_valid_unit_name(unit_name)
 	return table.contains(self:_unit_names(), unit_name)
@@ -227,41 +224,37 @@ function CoreCutsceneKeyBase:attribute_affects(changed, ...)
 end
 function CoreCutsceneKeyBase:populate_sizer_with_editable_attributes(grid_sizer, parent_frame)
 	for _, attribute_name in ipairs(self:attribute_names()) do
-		do
-			do
-				local control
-				local function on_control_edited()
-					local value_is_valid = self:validate_control_for_attribute(attribute_name)
-					if value_is_valid then
-						local value = control:get_value()
-						value = value == nil and "" or tostring(value)
-						self:set_attribute_value_from_string(attribute_name, value)
-						self:refresh_controls_dependent_on(attribute_name)
-						parent_frame:fit_inside()
-					end
-				end
-				control = self:control_for_attribute(attribute_name, parent_frame, on_control_edited)
-				self.__controls = self.__controls or {}
-				self.__controls[attribute_name] = control
-				self:refresh_control_for_attribute(attribute_name)
-				local control_type = type_name(control)
-				if control_type == "EWSPanel" then
-					grid_sizer:add(control, 1, 0, "EXPAND")
-				else
-					if not table.contains({
-						"EWSCheckBox",
-						"EWSButton",
-						"EWSBitmapButton",
-						"EWSStaticLine"
-					}, control_type) then
-						local label = self:attribute_label(attribute_name)
-						if label then
-							grid_sizer:add(EWS:StaticText(parent_frame, label .. ":"), 0, 5, "TOP,LEFT,RIGHT")
-						end
-					end
-					grid_sizer:add(control_type == "table" and control.panel and control:panel() or control, 0, 5, "ALL,EXPAND")
+		local control
+		local function on_control_edited()
+			local value_is_valid = self:validate_control_for_attribute(attribute_name)
+			if value_is_valid then
+				local value = control:get_value()
+				value = value == nil and "" or tostring(value)
+				self:set_attribute_value_from_string(attribute_name, value)
+				self:refresh_controls_dependent_on(attribute_name)
+				parent_frame:fit_inside()
+			end
+		end
+		control = self:control_for_attribute(attribute_name, parent_frame, on_control_edited)
+		self.__controls = self.__controls or {}
+		self.__controls[attribute_name] = control
+		self:refresh_control_for_attribute(attribute_name)
+		local control_type = type_name(control)
+		if control_type == "EWSPanel" then
+			grid_sizer:add(control, 1, 0, "EXPAND")
+		else
+			if not table.contains({
+				"EWSCheckBox",
+				"EWSButton",
+				"EWSBitmapButton",
+				"EWSStaticLine"
+			}, control_type) then
+				local label = self:attribute_label(attribute_name)
+				if label then
+					grid_sizer:add(EWS:StaticText(parent_frame, label .. ":"), 0, 5, "TOP,LEFT,RIGHT")
 				end
 			end
+			grid_sizer:add(control_type == "table" and control.panel and control:panel() or control, 0, 5, "ALL,EXPAND")
 		end
 	end
 end
@@ -337,7 +330,7 @@ function CoreCutsceneKeyBase:validate_control_for_attribute(attribute_name)
 	end
 	local value_is_valid = self:is_valid_attribute_value(attribute_name, self:attribute_value_from_string(attribute_name, control:get_value()))
 	local colour = value_is_valid and EWS:get_system_colour("WINDOW") or Color("ff9999")
-	control:set_background_colour(colour * 255:unpack())
+	control:set_background_colour((colour * 255):unpack())
 	if type_name(control) ~= "table" then
 		control:refresh()
 		control:update()

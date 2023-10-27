@@ -83,7 +83,7 @@ function CoreUnitSequenceTriggerUnitElement:update_editing()
 	})
 	if ray and ray.unit then
 		local sequences = managers.sequence:get_sequence_list(ray.unit:name())
-		if #sequences > 0 then
+		if 0 < #sequences then
 			Application:draw(ray.unit, 0, 1, 0)
 		end
 	end
@@ -97,7 +97,7 @@ function CoreUnitSequenceTriggerUnitElement:select_unit()
 	if ray and ray.unit then
 		local unit = ray.unit
 		local sequences = managers.sequence:get_sequence_list(unit:name())
-		if #sequences > 0 then
+		if 0 < #sequences then
 			self._sequence_units[unit:unit_data().unit_id] = unit
 			local sequence_list_data = {
 				unit_id = unit:unit_data().unit_id,
@@ -212,7 +212,7 @@ function CoreUnitSequenceTriggerUnitElement:set_sequence_data(guis_id)
 	for i, entry in pairs(self._hed.sequence_list) do
 		if entry.guis_id == guis_id then
 			entry.sequence = sequence
-		else
+			break
 		end
 	end
 end

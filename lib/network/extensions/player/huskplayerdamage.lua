@@ -14,11 +14,9 @@ function HuskPlayerDamage:remove_listener(key)
 	CopDamage.remove_listener(self, key)
 end
 function HuskPlayerDamage:sync_damage_bullet(attacker_unit, damage, i_body, height_offset)
-	if not attacker_unit or not (attacker_unit:movement():m_pos() - self._unit:movement():m_pos()) then
-	end
 	local attack_data = {
 		attacker_unit = attacker_unit,
-		attack_dir = Vector3(1, 0, 0),
+		attack_dir = attacker_unit and attacker_unit:movement():m_pos() - self._unit:movement():m_pos() or Vector3(1, 0, 0),
 		pos = mvector3.copy(self._unit:movement():m_head_pos()),
 		result = {type = "hurt", variant = "bullet"}
 	}

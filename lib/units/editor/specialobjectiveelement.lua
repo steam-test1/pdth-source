@@ -158,7 +158,7 @@ function SpecialObjectiveUnitElement:_highlight_if_outside_the_nav_field(t)
 			local t1 = t % 0.5
 			local t2 = t % 1
 			local alpha
-			if t2 > 0.5 then
+			if 0.5 < t2 then
 				alpha = t1
 			else
 				alpha = 0.5 - t1

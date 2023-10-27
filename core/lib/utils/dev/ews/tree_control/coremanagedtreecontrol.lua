@@ -38,7 +38,7 @@ function CoreManagedTreeControl:_init_checkbox_icons()
 end
 function CoreManagedTreeControl:_change_state(data, event)
 	local id, hit = self._tree_ctrl:hit_test()
-	if id > -1 then
+	if -1 < id then
 		if hit == "ONITEMICON" then
 			self._tree_ctrl:freeze()
 			local state = self._tree_ctrl:get_item_image(id, "NORMAL")
@@ -69,7 +69,7 @@ function CoreManagedTreeControl:_change_state(data, event)
 end
 function CoreManagedTreeControl:_tooltip(data, event)
 	local id, hit = self._tree_ctrl:hit_test()
-	if id > -1 and (hit == "ONITEMICON" or hit == "ONITEMLABEL") then
+	if -1 < id and (hit == "ONITEMICON" or hit == "ONITEMLABEL") then
 		event:set_tool_tip(self._tooltips[tostring(id)] or "")
 	end
 end

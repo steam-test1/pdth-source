@@ -193,8 +193,8 @@ function NavigationManager:get_save_data()
 							door_list[i_door] = nil
 							if not next(door_list) then
 								nav_seg.neighbours[other_nav_seg] = nil
+								break
 							end
-						else
 						end
 					end
 				end
@@ -392,7 +392,7 @@ function NavigationManager:_reconstruct_geographic_segments()
 		i_seg = i_seg + 1
 	end
 	i_seg = nr_seg_x * nr_seg_y
-	while i_seg > 0 do
+	while 0 < i_seg do
 		if segments[i_seg] == false then
 			segments[i_seg] = nil
 		end
@@ -590,10 +590,10 @@ function NavigationManager:_draw_room(room, instant)
 					rad = 2.2
 					color = Vector3(0, 1, 0)
 				elseif obstacle_type == "stairs" then
-					rad = 1
+					rad = 1, 8
 					color = Vector3(1, 0.4, 0)
 				elseif obstacle_type == "cliffs" then
-					rad = 1
+					rad = 1, 6
 					color = Vector3(0.2, 0.1, 0)
 				else
 					rad = 1
@@ -750,7 +750,7 @@ function NavigationManager:_draw_visibility_groups(progress)
 	local brush_links = draw_data.brush.vis_graph_links
 	local i_vis_group = draw_data.next_draw_i_vis
 	local wanted_index = math.clamp(math.floor(nr_vis_groups * progress), 0, nr_vis_groups)
-	while wanted_index > 0 and i_vis_group <= wanted_index do
+	while 0 < wanted_index and i_vis_group <= wanted_index do
 		local vis_group = all_vis_groups[selected_vis_groups[i_vis_group]]
 		brush_node:sphere(vis_group.pos, 30)
 		for i_vis_room, _ in pairs(vis_group.rooms) do
@@ -807,7 +807,7 @@ function NavigationManager:get_nav_segments_in_direction(start_nav_seg_id, fwd)
 			mvec3_set(search_vec, neighbour_seg.pos)
 			mvec3_sub(search_vec, start_pos)
 			local neighbour_dot = mvec3_dot(fwd, search_vec)
-			if neighbour_dot > 0 then
+			if 0 < neighbour_dot then
 				table.insert(to_search, neighbour_id)
 				found[neighbour_id] = true
 			end
@@ -944,10 +944,10 @@ function NavigationManager:unregister_anim_nav_link(element)
 			if door_id == nav_link then
 				if #start_nav_seg_neighbours[end_nav_seg_id] == 1 then
 					start_nav_seg_neighbours[end_nav_seg_id] = nil
-				else
-					table.remove(start_nav_seg_neighbours[end_nav_seg_id], i_door)
+					break
 				end
-			else
+				table.remove(start_nav_seg_neighbours[end_nav_seg_id], i_door)
+				break
 			end
 		end
 	end
@@ -1069,7 +1069,7 @@ function NavigationManager:find_walls_accross_tracker(from_tracker, accross_vec,
 		end
 		i_ray = i_ray + 1
 	end
-	return #ray_results > 0 and ray_results
+	return 0 < #ray_results and ray_results
 end
 function NavigationManager:find_segment_doors(from_seg_id, approve_clbk)
 	local all_doors = self._room_doors
@@ -1129,7 +1129,7 @@ function NavigationManager:_commence_coarce_searches(t)
 				for i_seg, seg_data in pairs(new_segments) do
 					local new_seg_weight = seg_data.weight
 					local search_index = #to_search
-					while search_index > 0 and new_seg_weight > to_search[search_index].weight do
+					while 0 < search_index and new_seg_weight > to_search[search_index].weight do
 						search_index = search_index - 1
 					end
 					table.insert(to_search, search_index + 1, seg_data)
@@ -1498,13 +1498,13 @@ function NavigationManager:nav_field_sanity_check()
 							for _, neighbour_door_id in ipairs(neighbour_door_list) do
 								if type(neighbour_door_id) == "number" then
 									reverse_check = true
-								else
+									break
 								end
 							end
 						end
 					end
 					if reverse_check then
-					else
+						break
 					end
 				end
 				if reverse_check == false then

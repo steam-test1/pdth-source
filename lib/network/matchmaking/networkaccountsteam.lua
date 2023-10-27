@@ -214,7 +214,7 @@ function NetworkAccountSTEAM:experience_loaded()
 end
 function NetworkAccountSTEAM:_check_for_unawarded_achievements()
 	self:_check_masks()
-	if not self._achievements_fetched or not self._challenges_loaded or not self._experience_loaded then
+	if not (self._achievements_fetched and self._challenges_loaded) or not self._experience_loaded then
 		return
 	end
 	print("[NetworkAccountSTEAM:_check_for_unawarded_achievements]")
@@ -288,7 +288,7 @@ function NetworkAccountSTEAM:publish_statistics(stats, success)
 				res = handler:set_stat(key, stat.value)
 			elseif stat.value > 0 then
 				local mval = val / 1000 + stat.value / 1000
-				if mval >= 2147483 then
+				if 2147483 <= mval then
 					Application:error("[NetworkAccountSTEAM:publish_statistics] Warning, trying to set too high a value on stat " .. key)
 					res = handler:set_stat(key, 2147483008)
 				else

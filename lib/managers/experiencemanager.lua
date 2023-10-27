@@ -127,9 +127,9 @@ function ExperienceManager:present()
 end
 function ExperienceManager:_present_xp(amount)
 	local event = "money_collect_small"
-	if amount > 999 then
+	if 999 < amount then
 		event = "money_collect_large"
-	elseif amount > 101 then
+	elseif 101 < amount then
 		event = "money_collect_medium"
 	end
 	managers.hud:present_text({
@@ -205,7 +205,7 @@ function ExperienceManager:load(data)
 			level = level + lvl
 		end
 		self._global.level = level
-		if not self._global.next_level_data or not tweak_data.experience_manager.levels[level + 1] or self._global.next_level_data.points ~= tweak_data.experience_manager.levels[level + 1].points then
+		if not (self._global.next_level_data and tweak_data.experience_manager.levels[level + 1]) or self._global.next_level_data.points ~= tweak_data.experience_manager.levels[level + 1].points then
 			self:_set_next_level_data(level + 1)
 		end
 	end

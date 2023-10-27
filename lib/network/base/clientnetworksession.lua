@@ -121,7 +121,7 @@ function ClientNetworkSession:on_host_discovered(new_host, new_host_name, level_
 			if host_data.host_name == new_host_name and host_data.rpc:ip_at_index(0) == new_host:ip_at_index(0) then
 				self._discovered_hosts[i_host] = new_host_data
 				already_known = true
-			else
+				break
 			end
 		end
 		if not already_known then
@@ -163,9 +163,7 @@ function ClientNetworkSession:peer_handshake(name, peer_id, peer_user_id, in_lob
 		end
 		return
 	end
-	if SystemInfo:platform() ~= self._ids_WIN32 or not peer_user_id then
-		peer_user_id = false
-	end
+	peer_user_id = SystemInfo:platform() == self._ids_WIN32 and peer_user_id or false
 	local id, peer = self:add_peer(name, nil, in_lobby, loading, synched, peer_id, mask_set, peer_user_id)
 	peer:set_character(character)
 	if peer_ip and SystemInfo:platform() == self._ids_WIN32 and managers.network:protocol_type() == "TCP_IP" then

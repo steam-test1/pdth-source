@@ -84,7 +84,9 @@ end
 function CoreMaterialEditor:_remot_compile()
 	local defines
 	for k, v in pairs(self._shader_defines) do
-		defines = not v._checked or defines and defines .. " " .. k or k
+		if v._checked then
+			defines = defines and defines .. " " .. k or k
+		end
 	end
 	local cmd = string.format("start /D \"%score\\utils\\shader_server\" lua5.1.exe client.lua %s %s %s %s", managers.database:base_path(), self._remote_host, Application:short_game_name(), self._compilable_shader_combo_box:get_value(), defines)
 	assert(os.execute(cmd) == 0)

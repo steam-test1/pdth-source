@@ -270,7 +270,7 @@ function TeamAILogicAssault._update_enemy_detection(data)
 			local max_dist = managers.groupai:state():get_assault_mode() and 700 or 1500
 			local dist = mvector3.distance(data.objective.follow_unit:movement():m_pos(), data.m_pos)
 			local zdist = math.abs(data.objective.follow_unit:movement():m_pos().z - data.m_pos.z)
-			if zdist > 300 or target_prio_slot > 3 and max_dist < dist or dist > max_dist * 2 then
+			if 300 < zdist or 3 < target_prio_slot and max_dist < dist or dist > max_dist * 2 then
 				data.objective.called = true
 				CopLogicBase._exit(data.unit, "travel")
 				return
@@ -279,7 +279,7 @@ function TeamAILogicAssault._update_enemy_detection(data)
 		TeamAILogicAssault._chk_change_weapon(data, my_data)
 		TeamAILogicAssault._upd_aim(data, my_data)
 		if not my_data._intimidate_t or my_data._intimidate_t + 2 < data.t and not my_data._turning_to_intimidate and data.unit:character_damage():health_ratio() > 0.5 then
-			local can_turn = not data.unit:movement():chk_action_forbidden("walk") and target_prio_slot > 3
+			local can_turn = not data.unit:movement():chk_action_forbidden("walk") and 3 < target_prio_slot
 			local is_assault = managers.groupai:state():get_assault_mode()
 			local civ = TeamAILogicIdle.find_civilian_to_intimidate(data.unit, can_turn and 180 or 60, is_assault and 800 or 1200)
 			if civ and (not is_assault or civ:anim_data().run or civ:anim_data().stand) then
@@ -604,7 +604,7 @@ function TeamAILogicAssault._update_cover(data)
 	local my_pos = data.m_pos
 	data.t = TimerManager:game():time()
 	if want_cover then
-		local find_new = my_data.focus_enemy and not my_data.moving_to_cover and (my_data.focus_enemy and (not best_cover or my_data.focus_enemy.dmg_t and data.t - my_data.focus_enemy.dmg_t < 4) or my_data.focus_enemy.verified_dis < 500)
+		local find_new = my_data.focus_enemy and not my_data.moving_to_cover and my_data.focus_enemy and (not best_cover or my_data.focus_enemy.dmg_t and data.t - my_data.focus_enemy.dmg_t < 4 or my_data.focus_enemy.verified_dis < 500)
 		if find_new then
 			local enemy_tracker = my_data.focus_enemy.unit:movement():nav_tracker()
 			local threat_pos = enemy_tracker:field_position()
@@ -619,7 +619,7 @@ function TeamAILogicAssault._update_cover(data)
 				local my_vec_len = my_vec:length()
 				local max_dis = my_vec_len + 800
 				if my_data.attitude == "engage" then
-					if my_vec_len > 700 then
+					if 700 < my_vec_len then
 						my_vec_len = 700
 						mvector3.set_length(my_vec, my_vec_len)
 					end

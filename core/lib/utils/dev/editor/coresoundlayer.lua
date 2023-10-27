@@ -166,7 +166,7 @@ function SoundLayer:build_panel(notebook)
 	local default_emitter_path = managers.sound_environment:game_default_emitter_path()
 	local emitter_paths = managers.sound_environment:emitter_paths()
 	self._emitter_paths = EWS:ComboBox(self._sound_panel, "", "", "CB_DROPDOWN,CB_READONLY")
-	if #emitter_paths > 0 then
+	if 0 < #emitter_paths then
 		for _, path in ipairs(emitter_paths) do
 			self._emitter_paths:append(path)
 		end
@@ -220,13 +220,11 @@ function SoundLayer:_build_defaults(sizer)
 	environments:connect("EVT_COMMAND_COMBOBOX_SELECTED", callback(self, self, "select_default_sound_environment"), nil)
 	local no_ambiences_availible = #managers.sound_environment:ambience_events() == 0
 	local error_text = "- No ambience soundbanks in project -"
-	if not no_ambiences_availible or not {error_text} then
-	end
 	self._default_ambience = {
 		name = "Ambience:",
 		panel = self._sound_panel,
 		sizer = sizer,
-		options = managers.sound_environment:ambience_events(),
+		options = no_ambiences_availible and {error_text} or managers.sound_environment:ambience_events(),
 		value = no_ambiences_availible and error_text or managers.sound_environment:game_default_ambience(),
 		tooltip = "Select default ambience from the combobox",
 		sizer_proportions = 1,
@@ -239,13 +237,11 @@ function SoundLayer:_build_defaults(sizer)
 	ambiences:connect("EVT_COMMAND_COMBOBOX_SELECTED", callback(self, self, "select_default_ambience"), nil)
 	local no_occasionals_availible = #managers.sound_environment:occasional_events() == 0
 	local error_text = "- No occasional soundbanks in project -"
-	if not no_occasionals_availible or not {error_text} then
-	end
 	self._default_occasional = {
 		name = "Occasional:",
 		panel = self._sound_panel,
 		sizer = sizer,
-		options = managers.sound_environment:occasional_events(),
+		options = no_occasionals_availible and {error_text} or managers.sound_environment:occasional_events(),
 		value = no_occasionals_availible and error_text or managers.sound_environment:game_default_occasional(),
 		tooltip = "Select default occasional from the combobox",
 		sizer_proportions = 1,

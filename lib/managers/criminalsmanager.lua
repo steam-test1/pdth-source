@@ -111,12 +111,10 @@ function CriminalsManager:add_character(name, unit, peer_id, ai)
 				end
 				unit:sound():set_voice(data.static_data.voice)
 				unit:inventory():set_mask_visibility(unit:inventory()._mask_visibility)
-			else
-				if not ai or not managers.localization:text("debug_" .. name) then
-				end
-				data.data.mugshot_id = managers.hud:add_mugshot_without_unit(name, ai, peer_id, (managers.network:session():peer(peer_id):name()))
+				break
 			end
-		else
+			data.data.mugshot_id = managers.hud:add_mugshot_without_unit(name, ai, peer_id, ai and managers.localization:text("debug_" .. name) or managers.network:session():peer(peer_id):name())
+			break
 		end
 	end
 end
@@ -138,7 +136,7 @@ function CriminalsManager:set_unit(name, unit)
 				managers.hud:reset_player_hpbar()
 			end
 			unit:sound():set_voice(data.static_data.voice)
-		else
+			break
 		end
 	end
 end
@@ -207,7 +205,7 @@ function CriminalsManager:get_free_character_name()
 			for _, member in pairs(managers.network:game():all_members()) do
 				if member._assigned_name == data.name then
 					taken = true
-				else
+					break
 				end
 			end
 		end
@@ -215,7 +213,7 @@ function CriminalsManager:get_free_character_name()
 			table.insert(available, data.name)
 		end
 	end
-	if #available > 0 then
+	if 0 < #available then
 		return available[math.random(1, #available)]
 	end
 end

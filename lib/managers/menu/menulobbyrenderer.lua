@@ -502,7 +502,7 @@ function MenuLobbyRenderer:set_kit_selection(peer_id, category, id, slot)
 	elseif category == "equipment" then
 		slot = slot + PlayerManager.WEAPON_SLOTS
 		local equipment_id = tweak_data.upgrades.definitions[id].equipment_id
-		icon, texture_rect = tweak_data.hud_icons:get_icon_data(tweak_data.equipments.specials[equipment_id] or tweak_data.equipments[equipment_id].icon)
+		icon, texture_rect = tweak_data.hud_icons:get_icon_data((tweak_data.equipments.specials[equipment_id] or tweak_data.equipments[equipment_id]).icon)
 	elseif category == "crew_bonus" then
 		slot = slot + (PlayerManager.WEAPON_SLOTS + 2)
 		icon, texture_rect = tweak_data.hud_icons:get_icon_data(tweak_data.upgrades.definitions[id].icon)
@@ -533,7 +533,7 @@ function MenuLobbyRenderer:_set_player_slot(nr, params)
 	slot.frame:set_color(tweak_data.hud.prime_color)
 	local _, _, tw = slot.name:text_rect()
 	local tp = tw / slot.name:parent():w()
-	local rep_txt = #params.name > 14 and tp > 0.6 and "" or managers.localization:text("menu_lobby_level")
+	local rep_txt = #params.name > 14 and 0.6 < tp and "" or managers.localization:text("menu_lobby_level")
 	slot.level:set_text(string.upper(rep_txt .. params.level))
 	slot.level:set_visible(true)
 	if params.status then
@@ -562,34 +562,34 @@ function MenuLobbyRenderer:remove_player_slot_by_peer_id(peer, reason)
 			slot.free = true
 			slot.join_msg_shown = nil
 			if not alive(slot.name) then
-			else
-				slot.name:set_text(string.upper(managers.localization:text("menu_lobby_player_slot_available")))
-				slot.name:set_color(Color(1, 0.5, 0.5, 0.5))
-				slot.level:set_text(string.upper(managers.localization:text("menu_lobby_level")))
-				slot.level:set_visible(false)
-				slot.status:set_text(string.upper(""))
-				slot.status:set_visible(false)
-				slot.character:set_text(string.upper(managers.localization:text("debug_random")))
-				slot.character:set_color(Color(1, 0.5, 0.5, 0.5))
-				local image, rect = tweak_data.hud_icons:get_icon_data(mugshots.undecided)
-				slot.mugshot:set_image(image, rect[1], rect[2], rect[3], rect[4])
-				slot.frame:set_color(Color.white)
-				slot.bg_rect:set_visible(false)
-				slot.p_panel:set_visible(false)
-				slot.voice:set_visible(false)
-				slot.kit_panel:set_visible(false)
-				for i, kit_slot in ipairs(slot.kit_slots) do
-					local icon, texture_rect = tweak_data.hud_icons:get_icon_data("fallback")
-					kit_slot:set_image(icon, texture_rect[1], texture_rect[2], texture_rect[3], texture_rect[4])
-				end
-				reason = reason or "left"
-				local peer_name = peer:name()
-				local reason_msg = managers.localization:text("menu_lobby_message_has_" .. reason, {NAME = peer_name})
-				local prefix = reason == "removed_dead" and "" or peer_name .. " "
-				local msg = managers.localization:text("menu_lobby_messenger_title") .. prefix .. reason_msg
-				self:sync_chat_message(msg, 1)
+				break
 			end
-		else
+			slot.name:set_text(string.upper(managers.localization:text("menu_lobby_player_slot_available")))
+			slot.name:set_color(Color(1, 0.5, 0.5, 0.5))
+			slot.level:set_text(string.upper(managers.localization:text("menu_lobby_level")))
+			slot.level:set_visible(false)
+			slot.status:set_text(string.upper(""))
+			slot.status:set_visible(false)
+			slot.character:set_text(string.upper(managers.localization:text("debug_random")))
+			slot.character:set_color(Color(1, 0.5, 0.5, 0.5))
+			local image, rect = tweak_data.hud_icons:get_icon_data(mugshots.undecided)
+			slot.mugshot:set_image(image, rect[1], rect[2], rect[3], rect[4])
+			slot.frame:set_color(Color.white)
+			slot.bg_rect:set_visible(false)
+			slot.p_panel:set_visible(false)
+			slot.voice:set_visible(false)
+			slot.kit_panel:set_visible(false)
+			for i, kit_slot in ipairs(slot.kit_slots) do
+				local icon, texture_rect = tweak_data.hud_icons:get_icon_data("fallback")
+				kit_slot:set_image(icon, texture_rect[1], texture_rect[2], texture_rect[3], texture_rect[4])
+			end
+			reason = reason or "left"
+			local peer_name = peer:name()
+			local reason_msg = managers.localization:text("menu_lobby_message_has_" .. reason, {NAME = peer_name})
+			local prefix = reason == "removed_dead" and "" or peer_name .. " "
+			local msg = managers.localization:text("menu_lobby_messenger_title") .. prefix .. reason_msg
+			self:sync_chat_message(msg, 1)
+			break
 		end
 	end
 end
@@ -618,7 +618,7 @@ function MenuLobbyRenderer:set_choose_character_enabled(enabled)
 		for _, item in ipairs(node:items()) do
 			if item:parameters().name == "choose_character" then
 				item:set_enabled(enabled)
-			else
+				break
 			end
 		end
 	end
@@ -699,7 +699,9 @@ function MenuLobbyRenderer:trigger_item(item)
 			end
 		elseif item_type == "slider" then
 			local percentage = item:percentage()
-		elseif percentage > 0 and not (percentage < 100) or item_type == "multi_choice" then
+			if not (0 < percentage) or percentage < 100 then
+			end
+		elseif item_type == "multi_choice" then
 		end
 	end
 end
@@ -761,10 +763,7 @@ function MenuLobbyRenderer:_layout_slot_progress_panel(slot, progress)
 	slot.p_ass:set_w(slot.params and slot.p_ass_bg:w() * (progress[1] / 49) or slot.p_ass:w())
 	slot.p_sha:set_w(slot.params and slot.p_sha_bg:w() * (progress[2] / 49) or slot.p_sha:w())
 	slot.p_sup:set_w(slot.params and slot.p_sup_bg:w() * (progress[3] / 49) or slot.p_sup:w())
-	if slot.params then
-	else
-	end
-	slot.p_tec:set_w(slot.p_sup_bg:w() * ((progress[4] or 0) / 49) or slot.p_tec:w())
+	slot.p_tec:set_w(slot.params and slot.p_sup_bg:w() * ((progress[4] or 0) / 49) or slot.p_tec:w())
 end
 function MenuLobbyRenderer:_layout_info_panel()
 	local res = RenderSettings.resolution

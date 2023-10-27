@@ -65,7 +65,7 @@ function EnvironmentData:_for_each(cb, data, path)
 				table.insert(t, k)
 				cb(v, unpack(t))
 				the_end = true
-			else
+				break
 			end
 		end
 		if not the_end then

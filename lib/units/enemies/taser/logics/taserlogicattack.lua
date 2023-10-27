@@ -124,7 +124,7 @@ function TaserLogicAttack.queued_update(data)
 		elseif my_data.cover_path then
 			local cover_dis = mvector3.distance(my_data.best_cover[1][1], focus_enemy.m_pos)
 			if engage then
-				if cover_dis > 400 and focus_enemy.verified_dis - cover_dis > 300 then
+				if 400 < cover_dis and focus_enemy.verified_dis - cover_dis > 300 then
 					move_to_cover = true
 				end
 			elseif cover_dis - focus_enemy.verified_dis > 300 then
@@ -243,7 +243,7 @@ function TaserLogicAttack._upd_enemy_detection(data)
 			num_attacking = num_attacking + 1
 		end
 	end
-	if num_attacking > 2 then
+	if 2 < num_attacking then
 		under_multiple_fire = true
 	end
 	my_data.under_fire = under_fire

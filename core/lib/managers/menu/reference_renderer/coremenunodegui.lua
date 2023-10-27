@@ -219,7 +219,7 @@ function NodeGui:scroll_setup()
 end
 function NodeGui:scroll_start(dy)
 	local speed = self._scroll_data.scroll_speed
-	if speed > 0 and math.abs(dy / speed) > self._scroll_data.max_scroll_duration then
+	if 0 < speed and math.abs(dy / speed) > self._scroll_data.max_scroll_duration then
 		speed = math.abs(dy) / self._scroll_data.max_scroll_duration
 	end
 	self._scroll_data.speed = speed
@@ -356,17 +356,15 @@ function NodeGui:_setup_size()
 	for _, row_item in pairs(self.row_items) do
 		if row_item.item:parameters().back then
 			row_item.gui_panel:set_font_size(self.font_size)
-			do
-				local x, y, w, h = row_item.gui_panel:text_rect()
-				local pad = 32
-				row_item.gui_panel:set_h(h + pad)
-				row_item.gui_panel:set_w(150)
-				row_item.gui_panel:set_rightbottom(self.back_panel:w() - 10 * _G.tweak_data.scale.align_line_padding_multiplier, self.back_panel:h())
-				row_item.gui_panel:set_top(self.back_panel:h() - _G.tweak_data.load_level.upper_saferect_border + _G.tweak_data.load_level.border_pad - pad)
-			end
-		else
-			self:_setup_item_size(row_item)
+			local x, y, w, h = row_item.gui_panel:text_rect()
+			local pad = 32
+			row_item.gui_panel:set_h(h + pad)
+			row_item.gui_panel:set_w(150)
+			row_item.gui_panel:set_rightbottom(self.back_panel:w() - 10 * _G.tweak_data.scale.align_line_padding_multiplier, self.back_panel:h())
+			row_item.gui_panel:set_top(self.back_panel:h() - _G.tweak_data.load_level.upper_saferect_border + _G.tweak_data.load_level.border_pad - pad)
+			break
 		end
+		self:_setup_item_size(row_item)
 	end
 end
 function NodeGui:_setup_item_size(row_item)

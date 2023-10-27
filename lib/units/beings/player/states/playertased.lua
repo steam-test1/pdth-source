@@ -140,14 +140,9 @@ function PlayerTased:_check_action_primary_attack(t, input)
 						elseif weap_tweak_data.animations.recoil_steelsight then
 						end
 						local kick_v = weap_tweak_data.kick.v[self._in_steelsight and "steelsight" or self._ducking and "crouching" or "standing"]
-						if weap_tweak_data.kick.h then
-						else
-							local kick_h = weap_tweak_data.kick.h[self._in_steelsight and "steelsight" or self._ducking and "crouching" or "standing"] or 0
-						end
+						local kick_h = weap_tweak_data.kick.h and weap_tweak_data.kick.h[self._in_steelsight and "steelsight" or self._ducking and "crouching" or "standing"] or 0
 						local recoil_multiplier = managers.player:upgrade_value(weap_base:get_name_id(), "recoil_multiplier")
-						if recoil_multiplier == 0 or not recoil_multiplier then
-							recoil_multiplier = 1
-						end
+						recoil_multiplier = recoil_multiplier ~= 0 and recoil_multiplier or 1
 						self._camera_unit:base():recoil_kick(kick_v * recoil_multiplier, kick_h * recoil_multiplier)
 						local spread_multiplier = weap_base:spread_multiplier()
 						managers.hud:_kick_crosshair_offset(weap_tweak_data.crosshair[self._in_steelsight and "steelsight" or self._ducking and "crouching" or "standing"].kick_offset * spread_multiplier)
@@ -161,10 +156,12 @@ function PlayerTased:_check_action_primary_attack(t, input)
 					end
 				end
 			end
-		elseif self:_is_reloading() and self._equipped_unit:base():reload_interuptable() and input.btn_primary_attack_press then
-			self._queue_reload_interupt = true
+		else
+			if self:_is_reloading() and self._equipped_unit:base():reload_interuptable() and input.btn_primary_attack_press then
+				self._queue_reload_interupt = true
+			else
+			end
 		end
-	else
 	end
 	if not new_action and self._shooting then
 		self._equipped_unit:base():stop_shooting()
@@ -193,10 +190,7 @@ function PlayerTased:call_teammate(line, t, no_gesture, skip_alert)
 		end
 	end
 	if interact_type then
-		if not no_gesture then
-		else
-		end
-		self:_do_action_intimidate(t, interact_type or nil, queue_name, skip_alert)
+		self:_do_action_intimidate(t, not no_gesture and interact_type or nil, queue_name, skip_alert)
 	end
 end
 function PlayerTased:_start_action_tased(t)

@@ -48,7 +48,7 @@ function CoreEditorGroups:new_group_name()
 	local i = 1
 	while self._groups[s .. i] do
 		i = i + 1
-		if i > 9 then
+		if 9 < i then
 			s = "Group"
 		end
 	end
@@ -368,7 +368,7 @@ function GroupPresetsDialog:init(files, path)
 end
 function GroupPresetsDialog:select_group()
 	local i = self._list:selected_index()
-	if i > -1 then
+	if -1 < i then
 		local name = self._list:get_string(i)
 		self._file = managers.database:base_path() .. self._path .. "\\" .. name
 	end

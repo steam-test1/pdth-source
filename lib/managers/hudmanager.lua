@@ -122,7 +122,7 @@ function HUDManager:load_hud(name, visible, using_collision, using_saferect, mut
 				if type(v) == "function" then
 					bb_list = v()
 				end
-			else
+				break
 			end
 		end
 	end
@@ -175,7 +175,7 @@ function HUDManager:layout(name)
 	for k, v in pairs(panel:script()) do
 		if k == "layout" then
 			panel:script().layout(self)
-		else
+			break
 		end
 	end
 end
@@ -364,7 +364,7 @@ function HUDManager:_create_bounding_boxes(panel)
 			for _, bb_rect_map in pairs(bounding_box_list) do
 				if self:_inside(rect_map, bb_rect_map) == false then
 					table.insert(bounding_box_list, rect_map)
-				else
+					break
 				end
 			end
 		end
@@ -465,7 +465,7 @@ function HUDManager:_update_name_labels(t, dt)
 			end
 		elseif mvector3.distance_sq(cam_pos, nl_w_pos) < 250000 then
 			text:set_visible(true)
-		elseif dot > 0.925 then
+		elseif 0.925 < dot then
 			text:set_visible(true)
 		else
 			text:set_visible(false)
@@ -1644,7 +1644,7 @@ function HUDManager:remove_mugshot_by_peer_id(peer_id)
 	for i, data in ipairs(self._hud.mugshots) do
 		if data.peer_id == peer_id then
 			self:_remove_mugshot(data.id)
-		else
+			break
 		end
 	end
 end
@@ -1652,7 +1652,7 @@ function HUDManager:remove_mugshot_by_character_name(character_name)
 	for i, data in ipairs(self._hud.mugshots) do
 		if data.character_name_id == character_name then
 			self:_remove_mugshot(data.id)
-		else
+			break
 		end
 	end
 end
@@ -1668,7 +1668,7 @@ function HUDManager:_remove_mugshot(id)
 		if data.id == id then
 			hud.panel:remove(data.panel)
 			table.remove(self._hud.mugshots, i)
-		else
+			break
 		end
 	end
 	self:_layout_mugshots()
@@ -1694,14 +1694,14 @@ function HUDManager:set_mugshot_crewbonus(id, hud_icon_id)
 				})
 			end
 			self:_layout_mugshot_equipment(data)
-		else
+			break
 		end
 	end
 end
 function HUDManager:set_mugshot_weapon(id, hud_icon_id)
 	for i, data in ipairs(self._hud.mugshots) do
 		if data.id == id then
-		else
+			break
 		end
 	end
 end
@@ -1716,7 +1716,7 @@ function HUDManager:set_mugshot_location(id, location_id)
 			local _, _, w, _ = data.location_text:text_rect()
 			data.location_text:set_w(w)
 			self:_update_mugshot_panel_size(data)
-		else
+			break
 		end
 	end
 end
@@ -1731,7 +1731,7 @@ function HUDManager:set_mugshot_damage_taken(id)
 	for i, data in ipairs(self._hud.mugshots) do
 		if data.id == id then
 			data.gradient:animate(hud.mugshot_damage_taken)
-		else
+			break
 		end
 	end
 end
@@ -1744,7 +1744,7 @@ function HUDManager:set_mugshot_armor(id, amount)
 		if data.id == id then
 			data.armor_amount = amount
 			self:layout_mugshot_armor(data, amount)
-		else
+			break
 		end
 	end
 end
@@ -1767,7 +1767,7 @@ function HUDManager:set_mugshot_health(id, amount)
 		if data.id == id then
 			data.health_amount = amount
 			self:layout_mugshot_health(data, amount)
-		else
+			break
 		end
 	end
 end
@@ -1792,7 +1792,7 @@ function HUDManager:set_mugshot_talk(id, active)
 			if not data.peer_id then
 				data.talk:set_visible(active)
 			end
-		else
+			break
 		end
 	end
 end
@@ -1803,7 +1803,7 @@ function HUDManager:set_mugshot_voice(id, active)
 	for i, data in ipairs(self._hud.mugshots) do
 		if data.id == id then
 			data.voice:set_visible(active)
-		else
+			break
 		end
 	end
 end
@@ -1811,7 +1811,7 @@ function HUDManager:set_mugshot_name(id, name)
 	for i, data in ipairs(self._hud.mugshots) do
 		if data.id == id then
 			data.name:set_text(name)
-		else
+			break
 		end
 	end
 end
@@ -1913,7 +1913,7 @@ function HUDManager:add_mugshot_equipment(id, equipment)
 			})
 			table.insert(data.equipment, {equipment = equipment, icon = icon})
 			self:_layout_mugshot_equipment(data)
-		else
+			break
 		end
 	end
 end
@@ -1927,11 +1927,11 @@ function HUDManager:remove_mugshot_equipment(id, equipment)
 				if e_data.equipment == equipment then
 					data.panel:remove(e_data.icon)
 					table.remove(data.equipment, i)
-				else
+					break
 				end
 			end
 			self:_layout_mugshot_equipment(data)
-		else
+			break
 		end
 	end
 end
@@ -2011,9 +2011,7 @@ function HUDManager:_layout_mugshots()
 		mugshot.state_text:set_top(mugshot.name:top())
 		mugshot.location_text:set_kern(tweak_data.scale.mugshot_name_kern)
 		mugshot.location_text:set_font_size(font_size)
-		if mugshot.state_name ~= "mugshot_normal" or not mugshot.name:right() then
-		end
-		mugshot.location_text:set_left(mugshot.state_text:right() + 4)
+		mugshot.location_text:set_left((mugshot.state_name == "mugshot_normal" and mugshot.name:right() or mugshot.state_text:right()) + 4)
 		mugshot.location_text:set_top(mugshot.name:top())
 		mugshot.panel:set_w(mugshot.name:w() + 4 + mugshot.state_text:w())
 		mugshot.timer_text:set_font_size(tweak_data.hud.small_font_size)
@@ -2065,7 +2063,7 @@ function HUDManager:_remove_name_label(id)
 		if data.id == id then
 			hud.panel:remove(data.text)
 			table.remove(self._hud.name_labels, i)
-		else
+			break
 		end
 	end
 end
@@ -2076,7 +2074,7 @@ function HUDManager:update_name_label_by_peer(peer)
 			data.text:set_text(string.upper(name))
 			local _, _, w, h = data.text:text_rect()
 			data.text:set_size(w + 4, h)
-		else
+			break
 		end
 	end
 end
@@ -2330,7 +2328,7 @@ function HUDManager:set_ammo_amount(max_clip, current_clip, current_left)
 	local height = hud.ammo_current:texture_height()
 	local d = max_clip / ((512 - hud.ammo_amount:w() - 140) / width)
 	width = width / (d < 1 and 1 or d)
-	local scale = max_clip > 100 and tweak_data.scale.hud_ammo_clip_large_multiplier or tweak_data.scale.hud_ammo_clip_multiplier
+	local scale = 100 < max_clip and tweak_data.scale.hud_ammo_clip_large_multiplier or tweak_data.scale.hud_ammo_clip_multiplier
 	hud.ammo_current:set_w(current_clip * width * scale)
 	hud.ammo_current:set_h(height * scale)
 	hud.ammo_current:set_texture_rect(0, 0, width * current_clip, height)
@@ -2521,7 +2519,7 @@ function HUDManager:_present_mid_text(params)
 	hud.present_mid_text:set_text(string.upper(text))
 	hud.present_mid_text:set_font_size(tweak_data.hud.present_mid_text_font_size)
 	local x, y, w, h = hud.present_mid_text:text_rect()
-	local scale = w > 880 and 880 / w or 1
+	local scale = 880 < w and 880 / w or 1
 	local icon, texture_rect
 	if params.icon then
 		icon, texture_rect = tweak_data.hud_icons:get_icon_data(params.icon)
@@ -2737,7 +2735,7 @@ function HUDManager:_update_waypoints(t, dt)
 					end
 				end
 				local alpha = 0.8
-				if dot > 0.99 then
+				if 0.99 < dot then
 					alpha = math.clamp((1 - dot) / 0.01, 0.4, alpha)
 				end
 				if data.bitmap:color().alpha ~= alpha then
@@ -3211,7 +3209,7 @@ function HUDManager:wfp_set_kit_selection(peer_id, category, id, slot)
 	elseif category == "equipment" then
 		slot = slot + PlayerManager.WEAPON_SLOTS
 		local equipment_id = tweak_data.upgrades.definitions[id].equipment_id
-		icon, texture_rect = tweak_data.hud_icons:get_icon_data(tweak_data.equipments.specials[equipment_id] or tweak_data.equipments[equipment_id].icon)
+		icon, texture_rect = tweak_data.hud_icons:get_icon_data((tweak_data.equipments.specials[equipment_id] or tweak_data.equipments[equipment_id]).icon)
 	elseif category == "crew_bonus" then
 		slot = slot + (PlayerManager.WEAPON_SLOTS + 3)
 		icon, texture_rect = tweak_data.hud_icons:get_icon_data(tweak_data.upgrades.definitions[id].icon)

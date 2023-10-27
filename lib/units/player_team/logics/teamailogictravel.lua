@@ -284,7 +284,7 @@ function TeamAILogicTravel._determine_destination_occupation(data, objective)
 		local max_dist = managers.groupai:state():get_assault_mode() and 500 or 1500
 		local dist2 = mvector3.distance_sq(follow_pos, data.m_pos)
 		local zdist = math.abs(follow_pos.z - data.m_pos.z)
-		if dist2 > max_dist * max_dist * 2 or zdist > 600 then
+		if dist2 > max_dist * max_dist * 2 or 600 < zdist then
 			threat_pos = follow_pos
 		elseif data.internal_data.focus_enemy then
 			local threat_tracker = data.internal_data.focus_enemy.unit:movement():nav_tracker()
@@ -438,7 +438,7 @@ function TeamAILogicTravel._update_enemy_detection(data)
 				local max_dist = managers.groupai:state():get_assault_mode() and 800 or 1500
 				local dist2 = mvector3.distance_sq(data.objective.follow_unit:movement():m_pos(), data.m_pos)
 				local zdist = math.abs(data.objective.follow_unit:movement():m_pos().z - data.m_pos.z)
-				if my_data.called or target_prio_slot > 3 and (dist2 > max_dist * max_dist or zdist > 300) or target_prio_slot <= 3 and (dist2 > max_dist * max_dist * 2 or zdist > 600) then
+				if my_data.called or 3 < target_prio_slot and (dist2 > max_dist * max_dist or 300 < zdist) or target_prio_slot <= 3 and (dist2 > max_dist * max_dist * 2 or 600 < zdist) then
 					dont_exit = true
 				end
 			end

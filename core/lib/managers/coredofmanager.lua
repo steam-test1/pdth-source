@@ -110,7 +110,7 @@ function DOFManager:remove_expired_effects(t, dt)
 	local id, effect = next(self._queued_effects)
 	while id do
 		if effect.prog_data.finish_t then
-			local eff_t = effect.preset.timer or self._game_timer:time()
+			local eff_t = (effect.preset.timer or self._game_timer):time()
 			if eff_t >= effect.prog_data.finish_t then
 				self:intern_remove_effect(id)
 			end
@@ -197,7 +197,7 @@ function DOFManager:play(dof_data, amplitude_multiplier)
 	prog_data.start_t = t
 	local cur_values
 	local near_min, near_max, far_min, far_max, clamp = self:get_dof_values()
-	if clamp > 0 then
+	if 0 < clamp then
 		cur_values = {
 			near_min = near_min,
 			near_max = near_max,
@@ -232,7 +232,7 @@ function DOFManager:add_to_sorted_list(new_id, prio)
 		if prio >= self._queued_effects[eff_id].preset.prio then
 			table.insert(self._sorted_effect_list, index, new_id)
 			allocated = true
-		else
+			break
 		end
 	end
 	if not allocated then
@@ -246,7 +246,7 @@ function DOFManager:remove_from_sorted_list(id)
 	for index, eff_id in ipairs(self._sorted_effect_list) do
 		if eff_id == id then
 			table.remove(self._sorted_effect_list, index)
-		else
+			break
 		end
 	end
 	for index, eff_id in ipairs(self._sorted_effect_list) do
@@ -262,7 +262,7 @@ function DOFManager:stop(id, instant)
 				self._current_effect = nil
 			end
 		else
-			local t = effect.preset.timer or self._game_timer:time()
+			local t = (effect.preset.timer or self._game_timer):time()
 			effect.prog_data.sustain_end = t
 			effect.prog_data.finish_t = t + (effect.preset.fade_out or 0)
 		end

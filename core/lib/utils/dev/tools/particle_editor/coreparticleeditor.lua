@@ -298,11 +298,11 @@ function CoreParticleEditor:on_effect_changed(arg, event)
 	end
 	local old_page = event:get_old_selection()
 	local new_page = event:get_selection()
-	if old_page >= 0 and old_page < #self._effects then
+	if 0 <= old_page and old_page < #self._effects then
 		local old_effect = self._effects[old_page + 1]
 		old_effect:on_lose_focus()
 	end
-	if new_page >= 0 and new_page < #self._effects then
+	if 0 <= new_page and new_page < #self._effects then
 		local new_effect = self._effects[new_page + 1]
 		new_effect:update_view(false)
 		if self._view_menu:is_checked("SHOW_STACK_OVERVIEW") then
@@ -469,7 +469,7 @@ function CoreParticleEditor:close()
 end
 function CoreParticleEditor:on_close_effect()
 	local curi = self:current_effect_index()
-	if curi > 0 then
+	if 0 < curi then
 		if not self:current_effect():close() then
 			return
 		end

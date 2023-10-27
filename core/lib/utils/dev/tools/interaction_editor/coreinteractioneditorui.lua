@@ -85,12 +85,10 @@ function InteractionEditorUI:create_graph_context_menu(system)
 	system:graph():connect("", "EVT_RIGHT_UP", callback(self._owner, self._owner, "on_show_graph_context_menu"), system)
 	local add_menu = EWS:Menu("")
 	for _, v in ipairs(InteractionDescription:node_types()) do
-		do
-			add_menu:append_item("ADD_NODE_" .. string.upper(v), string.upper(v), "")
-			system:graph():window():connect("ADD_NODE_" .. string.upper(v), "EVT_COMMAND_MENU_SELECTED", callback(self._owner, self._owner, "on_add_node"), function()
-				system:add_node(v)
-			end)
-		end
+		add_menu:append_item("ADD_NODE_" .. string.upper(v), string.upper(v), "")
+		system:graph():window():connect("ADD_NODE_" .. string.upper(v), "EVT_COMMAND_MENU_SELECTED", callback(self._owner, self._owner, "on_add_node"), function()
+			system:add_node(v)
+		end)
 	end
 	local menu = EWS:Menu("")
 	menu:append_menu("ADD_NODE", "Add Node", add_menu, "")

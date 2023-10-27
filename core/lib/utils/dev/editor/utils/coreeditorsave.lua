@@ -51,9 +51,9 @@ end
 function _triggers_data_table(unit)
 	local t = {}
 	local triggers = managers.sequence:get_trigger_list(unit:name())
-	if #triggers > 0 and unit:damage() then
+	if 0 < #triggers and unit:damage() then
 		local trigger_data = unit:damage():get_editor_trigger_data()
-		if trigger_data and #trigger_data > 0 then
+		if trigger_data and 0 < #trigger_data then
 			for _, data in ipairs(trigger_data) do
 				table.insert(t, {
 					name = data.trigger_name,

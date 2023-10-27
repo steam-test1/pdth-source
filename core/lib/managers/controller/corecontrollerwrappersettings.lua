@@ -101,7 +101,7 @@ function ControllerWrapperSettings:validate()
 				local unselectable_input = self._unselectable_input_map[input_name]
 				if unselectable_input then
 					local invalid
-					if #input_name_list > 1 and not connection:get_any_input() then
+					if 1 < #input_name_list and not connection:get_any_input() then
 						invalid = unselectable_input:get_multi()
 					else
 						invalid = unselectable_input:get_single()
@@ -383,7 +383,7 @@ function ControllerWrapperConnection:populate_data_attributes(sub_data)
 	if self._input_name_list then
 		for index, input_name in ipairs(self._input_name_list) do
 			local attribute = "input"
-			if index > 1 then
+			if 1 < index then
 				attribute = attribute .. index
 			end
 			sub_data[attribute] = input_name

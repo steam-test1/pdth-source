@@ -71,7 +71,7 @@ function ViewportManager:num_active_viewports()
 end
 function ViewportManager:first_active_viewport()
 	local all_active = self:_all_really_active()
-	return #all_active > 0 and all_active[1] or nil
+	return 0 < #all_active and all_active[1] or nil
 end
 function ViewportManager:viewports()
 	return self:_all_ao()
@@ -116,7 +116,7 @@ function ViewportManager:get_current_camera()
 		return self._current_camera
 	end
 	local vps = self:_all_really_active()
-	self._current_camera = #vps > 0 and vps[1]:camera()
+	self._current_camera = 0 < #vps and vps[1]:camera()
 	return self._current_camera
 end
 function ViewportManager:get_current_camera_position()
@@ -141,7 +141,7 @@ function ViewportManager:get_active_vp()
 end
 function ViewportManager:active_vp()
 	local vps = self:active_viewports()
-	return #vps > 0 and vps[1]
+	return 0 < #vps and vps[1]
 end
 local is_win32 = SystemInfo:platform() == Idstring("WIN32")
 function ViewportManager:get_safe_rect()

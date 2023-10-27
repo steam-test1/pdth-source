@@ -80,9 +80,9 @@ function CivilianLogicIdle._upd_outline_detection(data)
 				if not not_hit then
 					seen = true
 					seeing_unit = record.unit
+					break
 				end
 			end
-		else
 		end
 	end
 	if seen then
@@ -227,7 +227,9 @@ function CivilianLogicIdle._upd_detection(data)
 						dis,
 						enemy_unit
 					}
-				elseif dif_z_abs < 300 or math.abs(my_vec.z) < 0.2 then
+					break
+				end
+				if dif_z_abs < 300 or math.abs(my_vec.z) < 0.2 then
 					local min_dis = 1000
 					local max_dis = 10000 + min_dis
 					local vis_chance = math.lerp(1, 0.2, math.clamp(dis - min_dis, 0, max_dis) / max_dis)
@@ -240,36 +242,36 @@ function CivilianLogicIdle._upd_detection(data)
 								dis,
 								enemy_unit
 							}
-							else
-								elseif anim_in_idle_attention and enemy_unit:in_slot(harmless_criminals_slotmask) and chk_vis_func(my_tracker, record.tracker) then
-									local my_pos = data.unit:movement():m_head_pos()
-									local enemy_pos = record.m_det_pos
-									local my_vec = my_data.tmp_vec3
-									mvector3.set(my_vec, enemy_pos)
-									mvector3.subtract(my_vec, my_pos)
-									local dif_z_abs = math.abs(my_vec.z)
-									local dis = mvector3.normalize(my_vec)
-									local fwd_dot = mvector3.dot(data.unit:movement():m_fwd(), my_vec)
-									if dis < 400 and dif_z_abs < 250 and fwd_dot > 0.2 or idle_attention and idle_attention.unit:key() == e_key and dis < 650 and dif_z_abs < 330 and fwd_dot > 0.15 then
-										local vis_ray = World:raycast("ray", my_pos, enemy_pos, "slot_mask", visibility_slotmask, "ray_type", "ai_vision")
-										if not vis_ray then
-											if idle_attention and idle_attention.unit:key() == e_key then
-												idle_attention.dis = dis
-												idle_attention.verified = true
-											elseif not idle_attention or dis < idle_attention.dis * 0.5 then
-												idle_attention = idle_attention or {}
-												idle_attention.unit = enemy_unit
-												idle_attention.dis = dis
-												idle_attention.new = true
-												idle_attention.verified = nil
-											end
-										end
-									end
-								end
-							end
+							break
 						end
 					end
 				end
+			end
+		elseif anim_in_idle_attention and enemy_unit:in_slot(harmless_criminals_slotmask) and chk_vis_func(my_tracker, record.tracker) then
+			local my_pos = data.unit:movement():m_head_pos()
+			local enemy_pos = record.m_det_pos
+			local my_vec = my_data.tmp_vec3
+			mvector3.set(my_vec, enemy_pos)
+			mvector3.subtract(my_vec, my_pos)
+			local dif_z_abs = math.abs(my_vec.z)
+			local dis = mvector3.normalize(my_vec)
+			local fwd_dot = mvector3.dot(data.unit:movement():m_fwd(), my_vec)
+			if dis < 400 and dif_z_abs < 250 and 0.2 < fwd_dot or idle_attention and idle_attention.unit:key() == e_key and dis < 650 and dif_z_abs < 330 and 0.15 < fwd_dot then
+				local vis_ray = World:raycast("ray", my_pos, enemy_pos, "slot_mask", visibility_slotmask, "ray_type", "ai_vision")
+				if not vis_ray then
+					if idle_attention and idle_attention.unit:key() == e_key then
+						idle_attention.dis = dis
+						idle_attention.verified = true
+					elseif not idle_attention or dis < idle_attention.dis * 0.5 then
+						idle_attention = idle_attention or {}
+						idle_attention.unit = enemy_unit
+						idle_attention.dis = dis
+						idle_attention.new = true
+						idle_attention.verified = nil
+					end
+				end
+			end
+		end
 	end
 	if alert then
 		idle_attention = nil

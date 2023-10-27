@@ -487,7 +487,7 @@ function NetworkGame:_create_spawn_point_beanbag()
 	for sp_id, sp_data in pairs(spawn_points) do
 		table.insert(spawn_point_ids, sp_id)
 	end
-	while #spawn_point_ids > 0 do
+	while 0 < #spawn_point_ids do
 		local i_id = math.random(#spawn_point_ids)
 		local random_id = spawn_point_ids[i_id]
 		table.insert(self._spawn_point_beanbag, random_id)

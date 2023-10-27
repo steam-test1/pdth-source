@@ -65,7 +65,7 @@ function CoreEnvironmentControllerManager:hit_feedback_down()
 	self._hit_some = math.min(self._hit_some + self._hit_amount, 1.1)
 end
 function CoreEnvironmentControllerManager:set_blurzone(mode, pos, radius, height)
-	if mode > 0 then
+	if 0 < mode then
 		self._blurzone = mode
 		self._pos = pos
 		self._radius = radius
@@ -78,7 +78,7 @@ function CoreEnvironmentControllerManager:set_blurzone(mode, pos, radius, height
 			self._opacity = 0
 			self._blurzone_update = self.blurzone_fade_in
 		end
-		if height > 0 then
+		if 0 < height then
 			self._blurzone_check = self.blurzone_check_cylinder
 		else
 			self._blurzone_check = self.blurzone_check_sphere
@@ -133,18 +133,18 @@ function CoreEnvironmentControllerManager:blurzone_check_cylinder(camera_pos)
 	local cam_z = camera_pos.z
 	local len
 	if pos_z > cam_z then
-		len = self._pos - camera_pos:length()
+		len = (self._pos - camera_pos):length()
 	elseif cam_z > pos_z + self._height then
-		len = self._pos:with_z(pos_z + self._height) - camera_pos:length()
+		len = (self._pos:with_z(pos_z + self._height) - camera_pos):length()
 	else
-		len = self._pos:with_z(cam_z) - camera_pos:length()
+		len = (self._pos:with_z(cam_z) - camera_pos):length()
 	end
 	local result = math.min(len / self._radius, 1)
 	result = result * result
 	return (1 - result) * self._opacity
 end
 function CoreEnvironmentControllerManager:blurzone_check_sphere(camera_pos)
-	local len = self._pos - camera_pos:length()
+	local len = (self._pos - camera_pos):length()
 	local result = math.min(len / self._radius, 1)
 	result = result * result
 	return (1 - result) * self._opacity

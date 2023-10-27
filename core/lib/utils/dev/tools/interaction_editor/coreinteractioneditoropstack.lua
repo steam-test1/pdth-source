@@ -11,7 +11,7 @@ function InteractionEditorOpStack:init()
 end
 function InteractionEditorOpStack:has_unsaved_changes()
 	local size = #self._stack
-	return size > 0 and self._stack[size].op.name ~= "save"
+	return 0 < size and self._stack[size].op.name ~= "save"
 end
 function InteractionEditorOpStack:new_op_type(name, undo_cb, redo_cb)
 	self._ops[name] = {
@@ -34,7 +34,7 @@ function InteractionEditorOpStack:new_op(name, ...)
 end
 function InteractionEditorOpStack:undo()
 	local size = #self._stack
-	if size > 0 then
+	if 0 < size then
 		local op_data = self._stack[size]
 		table.insert(self._redo_stack, op_data)
 		table.remove(self._stack, size)
@@ -47,7 +47,7 @@ function InteractionEditorOpStack:undo()
 end
 function InteractionEditorOpStack:redo()
 	local size = #self._redo_stack
-	if size > 0 then
+	if 0 < size then
 		local op_data = self._redo_stack[size]
 		table.insert(self._stack, op_data)
 		table.remove(self._redo_stack, size)

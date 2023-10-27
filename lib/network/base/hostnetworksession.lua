@@ -301,7 +301,7 @@ function HostNetworkSession:remove_peer(peer, peer_id, reason)
 	HostNetworkSession.super.remove_peer(self, peer, peer_id, reason)
 	if self._dead_con_reports then
 		local i = #self._dead_con_reports
-		while i > 0 do
+		while 0 < i do
 			local dead_con_report = self._dead_con_reports[i]
 			if dead_con_report.reporter == peer or dead_con_report.reported == peer then
 				table.remove(self._dead_con_reports, i)

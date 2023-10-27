@@ -225,7 +225,7 @@ function StaticLayer:update(t, dt)
 	self:draw_rotation(t, dt)
 	StaticLayer.super.update(self, t, dt)
 	if not self:condition() then
-		if self._grab and self:shift() and not managers.editor:invert_move_shift() or not self:shift() and managers.editor:invert_move_shift() then
+		if not (not (self._grab and self:shift()) or managers.editor:invert_move_shift()) or not self:shift() and managers.editor:invert_move_shift() then
 			self._offset_move_vec = Vector3(0, 0, 0)
 		end
 		local current_pos, current_rot = managers.editor:current_orientation(self._offset_move_vec, self._selected_unit)
@@ -276,7 +276,7 @@ function StaticLayer:draw_marker(t, dt)
 	end
 end
 function StaticLayer:update_move_triggers(t, dt)
-	if not alive(self._selected_unit) or not self._editor_data.keyboard_available or self:condition() then
+	if not (alive(self._selected_unit) and self._editor_data.keyboard_available) or self:condition() then
 		return
 	end
 	if not self._move_unit_rep:update(d, dt) or CoreInput.shift() then
@@ -294,15 +294,15 @@ function StaticLayer:update_move_triggers(t, dt)
 		mov_vec = self:local_rot() and u_rot:x() or Vector3(1, 0, 0)
 	elseif self._ctrl:down(Idstring("move_up")) then
 		mov_vec = self:local_rot() and u_rot:z() or Vector3(0, 0, 1)
-	else
-		mov_vec = not self._ctrl:down(Idstring("move_down")) or self:local_rot() and u_rot:z() * -1 or Vector3(0, 0, 1) * -1
+	elseif self._ctrl:down(Idstring("move_down")) then
+		mov_vec = self:local_rot() and u_rot:z() * -1 or Vector3(0, 0, 1) * -1
 	end
 	if mov_vec then
 		self:set_unit_positions(self._selected_unit:position() + mov_vec * self:grid_size())
 	end
 end
 function StaticLayer:update_rotate_triggers(t, dt)
-	if not alive(self._selected_unit) or not self._editor_data.keyboard_available or self:condition() then
+	if not (alive(self._selected_unit) and self._editor_data.keyboard_available) or self:condition() then
 		return
 	end
 	local rot_speed = self:rotation_speed() * dt

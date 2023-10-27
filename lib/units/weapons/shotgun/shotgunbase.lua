@@ -81,7 +81,7 @@ function ShotgunBase:_fire_raycast(user_unit, from_pos, direction)
 		InstantBulletBase:on_collision(col_ray, self._unit, user_unit, damage)
 	end
 	result.hit_enemy = next(hit_enemies) and true or false
-	result.rays = #col_rays > 0 and col_rays
+	result.rays = 0 < #col_rays and col_rays
 	managers.statistics:shot_fired({
 		hit = result.hit_enemy,
 		weapon_unit = self._unit

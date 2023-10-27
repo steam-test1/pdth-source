@@ -2,7 +2,7 @@ core:import("CoreEditorUtils")
 core:import("CoreEws")
 EditUnitVariation = EditUnitVariation or class(EditUnitBase)
 function EditUnitVariation:init(editor)
-	local panel, sizer = editor or managers.editor:add_unit_edit_page({name = "Variations", class = self})
+	local panel, sizer = (editor or managers.editor):add_unit_edit_page({name = "Variations", class = self})
 	self._panel = panel
 	self._ctrls = {}
 	self._element_guis = {}
@@ -49,7 +49,7 @@ function EditUnitVariation:change_variation()
 				managers.sequence:run_sequence_simple2(reset, "change_state", unit)
 			end
 			local variations = managers.sequence:get_editable_state_sequence_list(unit:name())
-			if #variations > 0 then
+			if 0 < #variations then
 				if mesh_variation == "default" then
 					unit:unit_data().mesh_variation = "default"
 				elseif table.contains(variations, mesh_variation) then
@@ -79,15 +79,15 @@ function EditUnitVariation:is_editable(unit, units)
 	if alive(unit) then
 		local variations = managers.sequence:get_editable_state_sequence_list(unit:name())
 		local materials = self:get_material_configs_from_meta(unit:name())
-		if #variations > 0 or #materials > 0 then
+		if 0 < #variations or 0 < #materials then
 			self._ctrls.unit = unit
 			self._ctrls.units = units
 			CoreEws.update_combobox_options(self._mesh_params, variations)
 			CoreEws.change_combobox_value(self._mesh_params, self._ctrls.unit:unit_data().mesh_variation)
-			self._mesh_params.ctrlr:set_enabled(#variations > 0)
+			self._mesh_params.ctrlr:set_enabled(0 < #variations)
 			CoreEws.update_combobox_options(self._material_params, materials)
 			CoreEws.change_combobox_value(self._material_params, self._ctrls.unit:unit_data().material)
-			self._material_params.ctrlr:set_enabled(#materials > 0)
+			self._material_params.ctrlr:set_enabled(0 < #materials)
 			return true
 		end
 	end
@@ -106,7 +106,7 @@ function EditUnitVariation:get_material_configs_from_meta(unit_name)
 			table.insert(groups, child:parameter("material_config_group"))
 		end
 	end
-	if #groups > 0 then
+	if 0 < #groups then
 		for _, entry in ipairs(managers.database:list_entries_of_type("material_config")) do
 			local node = DB:load_node("material_config", entry)
 			for _, group in ipairs(groups) do

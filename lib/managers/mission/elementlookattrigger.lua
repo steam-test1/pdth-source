@@ -47,7 +47,7 @@ function ElementLookAtTrigger:update_lookat()
 		end
 		if self._values.in_front then
 			local dot = player:camera():forward():dot(self._values.rotation:y())
-			if dot > 0 then
+			if 0 < dot then
 				return
 			end
 		end

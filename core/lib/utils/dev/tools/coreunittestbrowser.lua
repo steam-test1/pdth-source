@@ -77,7 +77,7 @@ function CoreUnitTestBrowser:update(t, dt)
 end
 function CoreUnitTestBrowser:on_popup()
 	local selected_item = self._error_box.tree_ctrl:selected_item()
-	if selected_item > -1 then
+	if -1 < selected_item then
 		local found = false
 		for _, id in ipairs(self._error_box.tree_ctrl:get_children(self._failed_id)) do
 			if id == selected_item then
@@ -85,13 +85,13 @@ function CoreUnitTestBrowser:on_popup()
 					if ignore_id == selected_item then
 						self:include_popup()
 						found = true
-					else
+						break
 					end
 				end
 				if not found then
 					self:ignore_popup()
 				end
-			else
+				break
 			end
 		end
 		if not found then
@@ -101,13 +101,13 @@ function CoreUnitTestBrowser:on_popup()
 						if ignore_id == selected_item then
 							self:include_popup(true)
 							found = true
-						else
+							break
 						end
 					end
 					if not found then
 						self:ignore_popup(true)
 					end
-				else
+					break
 				end
 			end
 		end
@@ -153,7 +153,7 @@ function CoreUnitTestBrowser:on_ignore_all()
 		for _, ignore_id in ipairs(self._ignore_list) do
 			if ignore_id == id then
 				found = true
-			else
+				break
 			end
 		end
 		if not found then
@@ -167,7 +167,7 @@ function CoreUnitTestBrowser:on_ignore_all()
 		for _, ignore_id in ipairs(self._ignore_list) do
 			if ignore_id == id then
 				found = true
-			else
+				break
 			end
 		end
 		if not found then
@@ -186,7 +186,7 @@ function CoreUnitTestBrowser:on_ignore_none()
 					self._error_box.tree_ctrl:set_item_text_colour(id, Vector3(0.5, 0, 0))
 					self._error_box.tree_ctrl:set_item_background_colour(id, Vector3(1, 1, 1))
 					found = true
-				else
+					break
 				end
 			end
 			if not found then
@@ -195,7 +195,7 @@ function CoreUnitTestBrowser:on_ignore_none()
 						self._error_box.tree_ctrl:set_item_text_colour(id, Vector3(1, 0, 0))
 						self._error_box.tree_ctrl:set_item_background_colour(id, Vector3(1, 1, 1))
 						found = true
-					else
+						break
 					end
 				end
 			end
@@ -279,13 +279,13 @@ function CoreUnitTestBrowser:on_send_emails()
 			for _, ignore_id in ipairs(self._ignore_list) do
 				if unit_node:parameter("name") == self._error_box.tree_ctrl:get_item_text(ignore_id) then
 					found = true
-				else
+					break
 				end
 			end
 			for _, id in ipairs(self._error_box.tree_ctrl:get_children(self._passed_id)) do
 				if self._error_box.tree_ctrl:get_item_text(id) == unit_node:parameter("name") then
 					found_failed = false
-				else
+					break
 				end
 			end
 			if not found and found_failed then
@@ -305,13 +305,13 @@ function CoreUnitTestBrowser:on_send_emails_to()
 			for _, ignore_id in ipairs(self._ignore_list) do
 				if unit_node:parameter("name") == self._error_box.tree_ctrl:get_item_text(ignore_id) then
 					found = true
-				else
+					break
 				end
 			end
 			for _, id in ipairs(self._error_box.tree_ctrl:get_children(self._passed_id)) do
 				if self._error_box.tree_ctrl:get_item_text(id) == unit_node:parameter("name") then
 					found_failed = false
-				else
+					break
 				end
 			end
 			if not found and found_failed then
@@ -323,7 +323,7 @@ function CoreUnitTestBrowser:on_send_emails_to()
 end
 function CoreUnitTestBrowser:on_tree_ctrl_change()
 	local id = self._error_box.tree_ctrl:selected_item()
-	if id > -1 then
+	if -1 < id then
 		local text = self._error_box.tree_ctrl:get_item_text(id)
 		if text then
 			local str = self._unit_msg[text]
@@ -418,9 +418,7 @@ function CoreUnitTestBrowserInputDialog:show_modal()
 	self._done = false
 	self._return_val = true
 	self._dialog:show_modal()
-	while true do
-		if not self._done then
-		end
+	while not self._done do
 	end
 	return self._return_val
 end

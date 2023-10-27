@@ -295,15 +295,15 @@ function ActionSpooc:_upd_sprint(t)
 		local fwd_dot = mvector3.dot(move_dir_norm, face_fwd)
 		local wanted_walk_dir
 		if math.abs(fwd_dot) > math.abs(right_dot) then
-			if (anim_data.move_l and right_dot < 0 or anim_data.move_r and right_dot > 0) and math.abs(fwd_dot) < 0.73 then
+			if (anim_data.move_l and right_dot < 0 or anim_data.move_r and 0 < right_dot) and math.abs(fwd_dot) < 0.73 then
 				wanted_walk_dir = anim_data.move_side
 			else
-				wanted_walk_dir = fwd_dot > 0 and "fwd" or "bwd"
+				wanted_walk_dir = 0 < fwd_dot and "fwd" or "bwd"
 			end
-		elseif (anim_data.move_fwd and fwd_dot > 0 or anim_data.move_bwd and fwd_dot < 0) and math.abs(right_dot) < 0.73 then
+		elseif (anim_data.move_fwd and 0 < fwd_dot or anim_data.move_bwd and fwd_dot < 0) and math.abs(right_dot) < 0.73 then
 			wanted_walk_dir = anim_data.move_side
 		else
-			wanted_walk_dir = right_dot > 0 and "r" or "l"
+			wanted_walk_dir = 0 < right_dot and "r" or "l"
 		end
 		local wanted_u_fwd = self._move_dir:rotate_with(self._walk_side_rot[wanted_walk_dir])
 		local rot_new = self._common_data.rot:slerp(Rotation(wanted_u_fwd, math.UP), math.min(1, dt * 5))
@@ -318,7 +318,7 @@ function ActionSpooc:_upd_sprint(t)
 				else
 					variant = "run"
 				end
-			elseif real_velocity >= 300 then
+			elseif 300 <= real_velocity then
 				variant = "run"
 			else
 				variant = "walk"
@@ -370,10 +370,10 @@ function ActionSpooc:_upd_start_anim(t)
 	local dt = TimerManager:game():delta_time()
 	if self._start_run_turn then
 		local seg_rel_t = self._machine:segment_relative_time(Idstring("base"))
-		if seg_rel_t > 0.1 then
+		if 0.1 < seg_rel_t then
 			local delta_pos = self._common_data.unit:get_animation_delta_position()
 			mvector3.multiply(delta_pos, 2)
-			if seg_rel_t > 0.6 then
+			if 0.6 < seg_rel_t then
 				if self._correct_vel_from then
 					local lerp = (math.clamp(seg_rel_t, 0, 0.9) - 0.6) / 0.3
 					self._cur_vel = math.lerp(self._correct_vel_from, self._walk_velocity, lerp)
@@ -450,7 +450,7 @@ function ActionSpooc:get_husk_interrupt_desc()
 		path_index = self._nav_index,
 		nav_path = self._nav_path,
 		strike_nav_index = self._strike_nav_index,
-		stroke = (self._stroke or self._is_local) and true,
+		stroke = not self._stroke and self._is_local and true,
 		host_stop_pos_inserted = self._host_stop_pos_inserted,
 		nr_expected_nav_points = self._nr_expected_nav_points,
 		is_local = self._is_local
@@ -582,7 +582,7 @@ end
 function ActionSpooc:_upd_striking(t)
 	if self._ext_anim.act then
 		if self._is_local then
-			if not self._ext_anim.spooc_exit and not self._ext_anim.spooc_enter and (not alive(self._strike_unit) or not self._strike_unit:character_damage().incapacitated or not self._strike_unit:character_damage():incapacitated()) then
+			if not self._ext_anim.spooc_exit and not self._ext_anim.spooc_enter and (not (alive(self._strike_unit) and self._strike_unit:character_damage().incapacitated) or not self._strike_unit:character_damage():incapacitated()) then
 				self._ext_movement:play_redirect("spooc_exit")
 			end
 		elseif not self._ext_anim.spooc_exit and not self._ext_anim.spooc_enter and self._end_of_path then

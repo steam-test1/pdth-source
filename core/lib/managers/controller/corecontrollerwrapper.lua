@@ -120,7 +120,7 @@ function ControllerWrapper:update_multi_input()
 				for _, single_connection_name in ipairs(single_connection_name_list) do
 					bool = self._virtual_controller:down(Idstring(single_connection_name))
 					if not bool then
-					else
+						break
 					end
 				end
 				if bool then
@@ -143,7 +143,7 @@ function ControllerWrapper:update_delay_input()
 				local delay_time_map = delay_data.delay_time_map
 				local connection = delay_data.connection
 				local delay = connection:get_delay()
-				if delay > 0 then
+				if 0 < delay then
 					if not self:get_input_bool(connection_name) then
 						for delay_connection_name, delay_time in pairs(delay_time_map) do
 							local down = self:get_input_bool(delay_connection_name)
@@ -224,7 +224,7 @@ function ControllerWrapper:setup_connection(connection_name, connection, control
 	if self._debug or not connection:get_debug() then
 		local input_name_list = connection:get_input_name_list()
 		for index, input_name in ipairs(input_name_list) do
-			self:connect(controller_id, input_name, connection_name, connection, index ~= 1, #input_name_list > 0 and not connection:get_any_input())
+			self:connect(controller_id, input_name, connection_name, connection, index ~= 1, 0 < #input_name_list and not connection:get_any_input())
 		end
 		local delay_data
 		local delay_connection_list = connection:get_delay_connection_list()
@@ -245,11 +245,11 @@ function ControllerWrapper:setup_connection(connection_name, connection, control
 							delay_data.delay_time_map[delay_connection_name] = false
 							self._delay_bool_map[delay_connection_name] = true
 							can_delay = true
-						else
+							break
 						end
 					end
 					if can_delay then
-					else
+						break
 					end
 				end
 			else

@@ -5,7 +5,7 @@ function Xbox360SelectUserDialog:init(manager, data)
 	SelectUserDialog.init(self, manager, data)
 	local count = self._data.count
 	if count and count ~= 1 and count ~= 2 and count ~= 4 then
-		if count > 2 then
+		if 2 < count then
 			self._data.count = 4
 		else
 			self._data.count = 1

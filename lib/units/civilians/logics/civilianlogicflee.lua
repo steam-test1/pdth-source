@@ -148,8 +148,8 @@ function CivilianLogicFlee._update_pathing(data, my_data)
 				my_data.flee_path = path
 				if my_data.pathing_to_cover then
 					my_data.has_path_to_cover = my_data.pathing_to_cover
+				else
 				end
-			else
 			end
 			my_data.pathing_to_cover = nil
 			my_data.flee_path_search_id = nil

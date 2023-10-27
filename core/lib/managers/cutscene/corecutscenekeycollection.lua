@@ -9,40 +9,36 @@ function CoreCutsceneKeyCollection:keys_between(start_time, end_time, element_na
 	end
 	local keys = self:_all_keys_sorted_by_time()
 	if start_time < end_time then
-		do
-			local index = 0
-			local count = table.getn(keys)
-			return function()
-				while index < count do
-					index = index + 1
-					local key = keys[index]
-					if key and key:time() > start_time then
-						if key:time() <= end_time then
-							if element_name == nil or element_name == key.ELEMENT_NAME then
-								return key
-							end
-						else
-							break
+		local index = 0
+		local count = table.getn(keys)
+		return function()
+			while index < count do
+				index = index + 1
+				local key = keys[index]
+				if key and key:time() > start_time then
+					if key:time() <= end_time then
+						if element_name == nil or element_name == key.ELEMENT_NAME then
+							return key
 						end
+					else
+						break
 					end
 				end
 			end
 		end
 	else
-		do
-			local index = table.getn(keys) + 1
-			return function()
-				while index > 1 do
-					index = index - 1
-					local key = keys[index]
-					if key and key:time() <= start_time then
-						if key:time() > end_time then
-							if element_name == nil or element_name == key.ELEMENT_NAME then
-								return key
-							end
-						else
-							break
+		local index = table.getn(keys) + 1
+		return function()
+			while 1 < index do
+				index = index - 1
+				local key = keys[index]
+				if key and key:time() <= start_time then
+					if key:time() > end_time then
+						if element_name == nil or element_name == key.ELEMENT_NAME then
+							return key
 						end
+					else
+						break
 					end
 				end
 			end
@@ -67,31 +63,23 @@ function CoreCutsceneKeyCollection:keys_to_update(time, element_name)
 end
 function CoreCutsceneKeyCollection:first_key(time, element_name, properties)
 	for index, key in ipairs(self:_all_keys_sorted_by_time()) do
-		do
-			if time <= key:time() and (element_name == nil or element_name == key.ELEMENT_NAME) then
-				if properties ~= nil then
-				elseif table.true_for_all(properties, function(value, attribute_name)
-					return key[attribute_name](key) == value
-				end) then
-					return key, index
-				end
-			end
+		if time <= key:time() and (element_name == nil or element_name == key.ELEMENT_NAME) and (properties == nil or table.true_for_all(properties, function(value, attribute_name)
+			return key[attribute_name](key) == value
+		end)) then
+			return key, index
 		end
 	end
 end
 function CoreCutsceneKeyCollection:last_key_before(time, element_name, properties)
 	local last_key
 	for _, key in ipairs(self:_all_keys_sorted_by_time()) do
-		do
-			if time <= key:time() then
-			elseif element_name == nil or element_name == key.ELEMENT_NAME then
-				if properties ~= nil then
-				elseif table.true_for_all(properties, function(value, attribute_name)
-					return key[attribute_name](key) == value
-				end) then
-					last_key = key
-				end
-			end
+		if time <= key:time() then
+			break
+		end
+		if (element_name == nil or element_name == key.ELEMENT_NAME) and (properties == nil or table.true_for_all(properties, function(value, attribute_name)
+			return key[attribute_name](key) == value
+		end)) then
+			last_key = key
 		end
 	end
 	return last_key

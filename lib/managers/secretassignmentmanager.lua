@@ -73,12 +73,14 @@ function SecretAssignmentManager:register_unit(unit)
 				table.insert(self._assignments[name].available_units, unit)
 				if data.amount then
 					self._assignments[name].can_be_activated = #self._assignments[name].available_units >= data.amount
-					elseif data.type == "kill" then
-						self._assignments[name].unit = unit
-						unit:unit_data().mission_element:add_event_callback("death", callback(self, self, "unregister_unit"))
-					end
 				end
-		else
+				break
+			end
+			if data.type == "kill" then
+				self._assignments[name].unit = unit
+				unit:unit_data().mission_element:add_event_callback("death", callback(self, self, "unregister_unit"))
+			end
+			break
 		end
 	end
 end
@@ -105,18 +107,20 @@ function SecretAssignmentManager:unregister_unit(unit, failed)
 				for i, u in ipairs(self._assignments[name].available_units) do
 					if u == unit then
 						table.remove(self._assignments[name].available_units, i)
-					else
+						break
 					end
 				end
 				self._assignments[name].can_be_activated = #self._assignments[name].available_units > (data.amount or 0)
-			elseif data.type == "kill" and self._assignments[name].unit == unit then
+				break
+			end
+			if data.type == "kill" and self._assignments[name].unit == unit then
 				if failed and self._assignments[name].assigned then
 					self._assignments[name].peer:send_queued_sync("failed_secret_assignment", name)
 				end
 				self._assignments[name].unit = nil
 				self._assignments[name].can_be_activated = false
 			end
-		else
+			break
 		end
 	end
 end
@@ -282,7 +286,7 @@ function SecretAssignmentManager:_get_peer()
 			table.insert(members, id)
 		end
 	end
-	if #members > 0 then
+	if 0 < #members then
 		return managers.network:session():peer(members[math.random(#members)])
 	end
 	return nil

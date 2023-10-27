@@ -101,7 +101,7 @@ function HuskServerSyncedCivilianDamage:damage_bullet(attack_data)
 		return
 	end
 	local damage_abs, damage_percent = HuskServerSyncedCivilianDamage._clamp_health_percentage(self, attack_data.damage)
-	if damage_percent > 0 then
+	if 0 < damage_percent then
 		local body_index = self._unit:get_body_index(attack_data.col_ray.body:name())
 		local hit_offset_height = math.clamp(attack_data.col_ray.position.z - self._unit:movement():m_pos().z, 0, 300)
 		local attacker = attack_data.attacker_unit
@@ -116,7 +116,7 @@ function HuskServerSyncedCivilianDamage:damage_explosion(attack_data)
 		return
 	end
 	local damage_abs, damage_percent = HuskServerSyncedCivilianDamage._clamp_health_percentage(self, attack_data.damage)
-	if damage_percent > 0 then
+	if 0 < damage_percent then
 		local hit_offset_height = math.clamp(attack_data.col_ray.position.z - self._unit:movement():m_pos().z, 0, 300)
 		local attacker = attack_data.attacker_unit
 		if attacker:id() == -1 then
@@ -131,7 +131,7 @@ function HuskServerSyncedCivilianDamage:damage_melee(attack_data)
 		return
 	end
 	local damage_abs, damage_percent = HuskServerSyncedCivilianDamage._clamp_health_percentage(self, attack_data.damage)
-	if damage_percent > 0 then
+	if 0 < damage_percent then
 		local hit_offset_height = math.clamp(attack_data.col_ray.position.z - self._unit:movement():m_pos().z, 0, 300)
 		local attacker = attack_data.attacker_unit
 		if attacker:id() == -1 then

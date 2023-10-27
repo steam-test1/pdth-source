@@ -234,7 +234,7 @@ function DialogAction:setup_variable(data_node)
 				if variable.value == nil then
 					variable.value = data_node[k]
 				end
-			else
+				break
 			end
 		end
 		if not variable.condition then

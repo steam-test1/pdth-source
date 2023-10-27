@@ -52,7 +52,7 @@ function CoreMaterialEditorGlobalDialog:_fill_tree(id, parent, node)
 	for k, v in pairs(node:parameters()) do
 		if k == "name" then
 			text = text .. " | " .. k .. "=" .. v
-		else
+			break
 		end
 	end
 	for k, v in pairs(node:parameters()) do

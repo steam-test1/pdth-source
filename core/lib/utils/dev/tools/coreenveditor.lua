@@ -305,7 +305,7 @@ function CoreEnvEditor:flipp(...)
 	local v = {
 		...
 	}
-	if #v > 1 then
+	if 1 < #v then
 		local a = v[#v]
 		v[#v] = v[1]
 		v[1] = a

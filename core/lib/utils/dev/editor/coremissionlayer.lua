@@ -7,11 +7,9 @@ core:import("CoreEws")
 core:import("CoreClass")
 MissionLayer = MissionLayer or class(CoreStaticLayer.StaticLayer)
 function MissionLayer:init(owner)
-	if not CoreEditorUtils.layer_type("mission") then
-		local types = {
-			"mission_element"
-		}
-	end
+	local types = CoreEditorUtils.layer_type("mission") or {
+		"mission_element"
+	}
 	MissionLayer.super.init(self, owner, "mission", types, "mission_elements")
 	self._default_script_name = "default"
 	self._editing_mission_element = false
@@ -228,7 +226,7 @@ function MissionLayer:update(time, rel_time)
 	local lod_draw_distance = math.max(4000, 100000 - #self._created_units * 140)
 	lod_draw_distance = lod_draw_distance * lod_draw_distance
 	for _, unit in ipairs(self._created_units) do
-		if unit:mission_element_data().script == current_script and not current_continent_locked or self._show_all_scripts then
+		if not (unit:mission_element_data().script ~= current_script or current_continent_locked) or self._show_all_scripts then
 			local distance = mvector3.distance_sq(unit:position(), cam_pos)
 			unit:mission_element()._distance_to_camera = distance
 			local update_selected_on = unit:mission_element():update_selected_on()

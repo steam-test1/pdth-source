@@ -155,7 +155,9 @@ function CopLogicIdle._update_enemy_detection(data)
 	end
 	if focus_enemy then
 		local exit_state
-		exit_state = my_data.performing_act_objective and my_data.performing_act_objective.interrupt_on ~= "contact" and (my_data.performing_act_objective.interrupt_on ~= "obstructed" or not (focus_enemy.verified_dis < 800) or not (math.abs(focus_enemy.m_pos.z - data.m_pos.z) < 300)) and not data.unit:anim_data().act_idle or focus_type == "assault" and "attack" or focus_type
+		if not my_data.performing_act_objective or my_data.performing_act_objective.interrupt_on == "contact" or my_data.performing_act_objective.interrupt_on == "obstructed" and focus_enemy.verified_dis < 800 and math.abs(focus_enemy.m_pos.z - data.m_pos.z) < 300 or data.unit:anim_data().act_idle then
+			exit_state = focus_type == "assault" and "attack" or focus_type
+		end
 		if exit_state then
 			if focus_type == "assault" and focus_enemy.verified and data.t - managers.groupai:state():criminal_record(focus_enemy_key).det_t > 15 then
 				if not focus_enemy.is_deployable then
@@ -203,7 +205,7 @@ function CopLogicIdle._upd_pathing(data, my_data)
 	end
 end
 function CopLogicIdle._upd_scan(data, my_data)
-	if not my_data.stare_pos or not my_data.next_scan_t or data.t < my_data.next_scan_t or data.unit:movement():chk_action_forbidden("walk") then
+	if not (my_data.stare_pos and my_data.next_scan_t) or data.t < my_data.next_scan_t or data.unit:movement():chk_action_forbidden("walk") then
 		return
 	end
 	local beanbag = my_data.scan_beanbag
@@ -420,7 +422,7 @@ end
 function CopLogicIdle.on_intimidated(data, amount, aggressor_unit)
 	local surrender = false
 	local my_data = data.internal_data
-	if data.char_tweak.surrender_easy and (not next(my_data.detected_enemies) and not next(my_data.suspected_enemies) or data.unit:anim_data().equip) then
+	if data.char_tweak.surrender_easy and (not (next(my_data.detected_enemies) or next(my_data.suspected_enemies)) or data.unit:anim_data().equip) then
 		surrender = true
 	end
 	if data.char_tweak.surrender_hard and not my_data.detected_enemies[aggressor_unit:key()] then
@@ -428,7 +430,7 @@ function CopLogicIdle.on_intimidated(data, amount, aggressor_unit)
 		mvector3.normalize(vec)
 		local fwd = data.unit:movement():m_rot():y()
 		local fwd_dot = fwd:dot(vec)
-		if fwd_dot > 0 then
+		if 0 < fwd_dot then
 			surrender = true
 		end
 	end
@@ -489,11 +491,11 @@ function CopLogicIdle._chk_stare_into_wall_1(data)
 			end
 		end
 	end
-	if #stare_pos > 0 then
+	if 0 < #stare_pos then
 		my_data.stare_pos = stare_pos
 		my_data.next_scan_t = 0
 	end
-	if #path_tasks > 0 then
+	if 0 < #path_tasks then
 		my_data.stare_path_pos = path_tasks
 		data.unit:brain():search_for_path(my_data.stare_path_search_id, path_tasks[#path_tasks])
 	end
@@ -559,7 +561,7 @@ function CopLogicIdle._chk_stare_into_wall_2(data)
 	until i_loop == nr_loops
 	my_data.stare_path = nil
 	table.remove(path_jobs)
-	if #path_jobs > 0 then
+	if 0 < #path_jobs then
 		data.unit:brain():search_for_path(my_data.stare_path_search_id, path_jobs[#path_jobs])
 	else
 		my_data.stare_path_pos = nil

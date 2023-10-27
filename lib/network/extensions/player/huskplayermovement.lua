@@ -744,20 +744,20 @@ function HuskPlayerMovement:_upd_move_standard(t, dt)
 			local fwd_dot = walk_dir_flat:dot(fwd_new)
 			local right_dot = walk_dir_flat:dot(right_new)
 			if math.abs(fwd_dot) > math.abs(right_dot) then
-				anim_side = fwd_dot > 0 and "fwd" or "bwd"
+				anim_side = 0 < fwd_dot and "fwd" or "bwd"
 			else
-				anim_side = right_dot > 0 and "r" or "l"
+				anim_side = 0 < right_dot and "r" or "l"
 			end
 			local vel = displacement / dt
 			local vel_len = vel:length()
 			if self._ext_anim.run then
-				if vel_len > 250 and self._state ~= "mask_off" and self._state ~= "clean" then
+				if 250 < vel_len and self._state ~= "mask_off" and self._state ~= "clean" then
 					anim_velocity = "run"
 				else
 					anim_velocity = "walk"
 				end
 			elseif self._ext_anim.walk then
-				if vel_len > 300 and self._state ~= "mask_off" and self._state ~= "clean" then
+				if 300 < vel_len and self._state ~= "mask_off" and self._state ~= "clean" then
 					anim_velocity = "run"
 				else
 					anim_velocity = "walk"
@@ -773,9 +773,9 @@ function HuskPlayerMovement:_upd_move_standard(t, dt)
 			self:play_redirect("idle")
 		end
 	else
-		if abs_waist_twist > 1 then
+		if 1 < abs_waist_twist then
 			local sign_waist_twist = math.sign(waist_twist)
-			local side = "turn_" .. (sign_waist_twist > 0 and "l" or "r")
+			local side = "turn_" .. (0 < sign_waist_twist and "l" or "r")
 			self:_adjust_turn_anim(side, waist_twist)
 			local leg_rot_new
 			local waist_twist_max = 45
@@ -845,7 +845,7 @@ function HuskPlayerMovement:sync_action_walk_nav_point(pos)
 		local path = self._move_data.path
 		self._move_data.path_len = self._move_data.path_len + mvector3.distance(pos, path[#path])
 		table.insert(path, pos)
-	elseif nr_seq_events > 0 and self._sequenced_events[nr_seq_events].type == "move" then
+	elseif 0 < nr_seq_events and self._sequenced_events[nr_seq_events].type == "move" then
 		table.insert(self._sequenced_events[#self._sequenced_events].path, pos)
 	else
 		local event_desc = {
@@ -1077,9 +1077,6 @@ function HuskPlayerMovement:_adjust_walk_anim_speed(dt, target_speed)
 	end
 end
 function HuskPlayerMovement:sync_shot_blank(impact)
--- fail 32
-null
-6
 	if self._state == "mask_off" or self._state == "clean" then
 		return
 	end
@@ -1088,7 +1085,7 @@ null
 		self:_shoot_blank(impact)
 		self._aim_up_expire_t = TimerManager:game():time() + 2
 	end
-	self:_change_stance(3, {impact = impact})
+	self:_change_stance(3, delay and {impact = impact})
 end
 function HuskPlayerMovement:_shoot_blank(impact)
 	local equipped_weapon = self._unit:inventory():equipped_unit()

@@ -57,13 +57,13 @@ function CameraMixer:update(cud, cud_class, time, dt)
 	for index, _camera in ipairs(self._cameras) do
 		_camera.time = _camera.time + dt
 		local factor
-		if index > 1 then
+		if 1 < index then
 			factor = math.sin(math.clamp(safe_divide(_camera.time, _camera.blend_time), 0, 1) * 90)
 		else
 			factor = 1
 		end
 		cud:interpolate_to_target(_camera.cam_data, factor)
-		if factor >= 1 then
+		if 1 <= factor then
 			full_blend_index = index
 		end
 	end

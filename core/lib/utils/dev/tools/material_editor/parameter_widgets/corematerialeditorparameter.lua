@@ -39,11 +39,9 @@ function CoreMaterialEditorParameter:set_params(parent, editor, parameter_info, 
 			if self._parameter_info.type == "texture" and param:name() == self._parameter_info.name:s() then
 				self._parent_param_node = param
 				break
-			else
-				if param:parameter("name") == self._parameter_info.name:s() then
-					self._parent_param_node = param
-			end
-			else
+			elseif param:parameter("name") == self._parameter_info.name:s() then
+				self._parent_param_node = param
+				break
 			end
 		end
 		if not self._parent_param_node then

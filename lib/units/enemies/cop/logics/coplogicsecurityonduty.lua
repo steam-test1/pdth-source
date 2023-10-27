@@ -75,7 +75,7 @@ function CopLogicSecurityOnDuty._update_enemy_detection(data)
 			if reaction then
 				focus_enemy = enemy_data
 				focus_type = reaction
-			else
+				break
 			end
 		end
 		if focus_enemy then
@@ -133,7 +133,7 @@ function CopLogicSecurityOnDuty._react_to_suspects(data, my_data)
 				end
 			end
 		end
-		local suspect_spin = closest_suspect_unit:movement():m_pos() - data.m_pos:to_polar_with_reference(data.unit:movement():m_rot():y(), math.UP).spin
+		local suspect_spin = (closest_suspect_unit:movement():m_pos() - data.m_pos):to_polar_with_reference(data.unit:movement():m_rot():y(), math.UP).spin
 		if turn_spin_pos < suspect_spin or turn_spin_neg > suspect_spin then
 			CopLogicSecurityOnDuty._turn_by_spin(data, my_data, suspect_spin)
 			my_data.fwd_offset = true

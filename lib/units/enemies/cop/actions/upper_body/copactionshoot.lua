@@ -396,13 +396,13 @@ function CopActionShoot:update(t)
 				for i_mode, mode_chance in ipairs(falloff.mode) do
 					if mode_chance >= random_mode then
 						firemode = i_mode
-					else
+						break
 					end
 				end
 			else
 				firemode = 1
 			end
-			if firemode > 1 then
+			if 1 < firemode then
 				self._weapon_base:start_autofire(firemode < 4 and firemode)
 				self._autofiring = firemode < 4 and firemode or 5 + math.random(6)
 				self._autoshots_fired = 0
@@ -458,12 +458,12 @@ function CopActionShoot:_get_unit_shoot_pos(unit, t, pos, dis, w_tweak)
 	local focus_delay, focus_prog
 	if shoot_hist.focus_delay then
 		focus_delay = unit:character_damage():focus_delay_mul() * shoot_hist.focus_delay
-		focus_prog = focus_delay > 0 and (t - shoot_hist.focus_start_t) / focus_delay
+		focus_prog = 0 < focus_delay and (t - shoot_hist.focus_start_t) / focus_delay
 	end
 	local dis_lerp = math.min(1, dis / w_tweak.FALLOFF[#w_tweak.FALLOFF].r)
 	local hit_chances = w_tweak.hit_chance
 	local hit_chance
-	if not focus_prog or focus_prog >= 1 then
+	if not focus_prog or 1 <= focus_prog then
 		hit_chance = math.lerp(hit_chances.near[2], hit_chances.far[2], dis_lerp)
 		shoot_hist.focus_delay = nil
 	else
@@ -513,7 +513,7 @@ end
 function CopActionShoot:_get_transition_target_pos(shoot_from_pos, attention, t)
 	local transition = self._aim_transition
 	local prog = (t - transition.start_t) / transition.duration
-	if prog > 1 then
+	if 1 < prog then
 		self._aim_transition = nil
 		self._get_target_pos = nil
 		return self:_get_target_pos(shoot_from_pos, attention)
@@ -571,7 +571,7 @@ function CopActionShoot:_stop_ik_spine()
 	end
 end
 function CopActionShoot:_upd_ik_spine(target_vec, fwd_dot, t)
-	if fwd_dot > 0.5 then
+	if 0.5 < fwd_dot then
 		if not self._modifier_on then
 			self._modifier_on = true
 			self._machine:force_modifier(self._modifier_name)
@@ -612,7 +612,7 @@ function CopActionShoot:_stop_ik_r_arm()
 	end
 end
 function CopActionShoot:_upd_ik_r_arm(target_vec, fwd_dot, t)
-	if fwd_dot > 0.5 then
+	if 0.5 < fwd_dot then
 		if not self._modifier_on then
 			self._modifier_on = true
 			self._machine:force_modifier(self._head_modifier_name)

@@ -59,7 +59,7 @@ function EnemyManager:_update_gfx_lod()
 					end
 				end
 			end
-			if #states > 0 then
+			if 0 < #states then
 				local anim_lod = managers.user:get_setting("video_animation_lod")
 				local nr_lod_1 = self._nr_i_lod[anim_lod][1]
 				local nr_lod_2 = self._nr_i_lod[anim_lod][2]
@@ -74,7 +74,7 @@ function EnemyManager:_update_gfx_lod()
 				local start_i = i
 				repeat
 					if states[i] then
-						if not occ_skip_units[units[i]:key()] and (pl_tracker and not chk_vis_func(pl_tracker, trackers[i]) or unit_occluded(units[i])) then
+						if not occ_skip_units[units[i]:key()] and (not (not pl_tracker or chk_vis_func(pl_tracker, trackers[i])) or unit_occluded(units[i])) then
 							states[i] = false
 							units[i]:base():set_visibility_state(false)
 							self:_remove_i_from_lod_prio(i, anim_lod)
@@ -83,7 +83,7 @@ function EnemyManager:_update_gfx_lod()
 						else
 							local my_wgt = mvec3_dir(tmp_vec1, cam_pos, com[i])
 							local dot = mvec3_dot(tmp_vec1, pl_fwd)
-							if dt_lmt > dot and my_wgt > 210 then
+							if dt_lmt > dot and 210 < my_wgt then
 								states[i] = false
 								units[i]:base():set_visibility_state(false)
 								self:_remove_i_from_lod_prio(i, anim_lod)
@@ -94,13 +94,13 @@ function EnemyManager:_update_gfx_lod()
 								for prio, i_entry in ipairs(imp_i_list) do
 									if i == i_entry then
 										previous_prio = prio
-									else
+										break
 									end
 								end
 								my_wgt = my_wgt * my_wgt * (1 - dot)
 								local i_wgt = #imp_wgt_list
 								while true do
-									if not (i_wgt > 0) or previous_prio ~= i_wgt and my_wgt >= imp_wgt_list[i_wgt] then
+									if not (0 < i_wgt) or previous_prio ~= i_wgt and my_wgt >= imp_wgt_list[i_wgt] then
 										break
 									end
 									i_wgt = i_wgt - 1
@@ -194,7 +194,7 @@ function EnemyManager:_destroy_unit_gfx_lod_data(u_key)
 			for prio, i_entry in ipairs(self._gfx_lod_data.prio_i) do
 				if i_entry == nr_entries then
 					self._gfx_lod_data.prio_i[prio] = i
-				else
+					break
 				end
 			end
 			lod_entries.units[i] = lod_entries.units[nr_entries]
@@ -209,7 +209,7 @@ function EnemyManager:_destroy_unit_gfx_lod_data(u_key)
 			table.remove(lod_entries.com)
 			lod_entries.alerted[i] = lod_entries.alerted[nr_entries]
 			table.remove(lod_entries.alerted)
-		else
+			break
 		end
 	end
 end
@@ -283,7 +283,7 @@ end
 function EnemyManager:unqueue_task(id)
 	local tasks = self._queued_tasks
 	local i = #tasks
-	while i > 0 do
+	while 0 < i do
 		if tasks[i].id == id then
 			table.remove(tasks, i)
 			return
@@ -299,7 +299,7 @@ function EnemyManager:unqueue_task_debug(id)
 	local tasks = self._queued_tasks
 	local i = #tasks
 	local removed
-	while i > 0 do
+	while 0 < i do
 		if tasks[i].id == id then
 			if removed then
 				debug_pause("DOUBLE TASK AT ", i, id)
@@ -318,13 +318,13 @@ function EnemyManager:has_task(id)
 	local tasks = self._queued_tasks
 	local i = #tasks
 	local count = 0
-	while i > 0 do
+	while 0 < i do
 		if tasks[i].id == id then
 			count = count + 1
 		end
 		i = i - 1
 	end
-	return count > 0 and count
+	return 0 < count and count
 end
 function EnemyManager:_execute_queued_task(i)
 	local task = table.remove(self._queued_tasks, i)
@@ -369,7 +369,7 @@ function EnemyManager:add_delayed_clbk(id, clbk, execute_t)
 	}
 	local all_clbks = self._delayed_clbks
 	local i = #all_clbks
-	while i > 0 and execute_t < all_clbks[i][2] do
+	while 0 < i and execute_t < all_clbks[i][2] do
 		i = i - 1
 	end
 	table.insert(all_clbks, i + 1, clbk_data)
@@ -390,13 +390,13 @@ function EnemyManager:reschedule_delayed_clbk(id, execute_t)
 	for i, clbk_d in ipairs(all_clbks) do
 		if clbk_d[1] == id then
 			clbk_data = table.remove(all_clbks, i)
-		else
+			break
 		end
 	end
 	if clbk_data then
 		clbk_data[2] = execute_t
 		local i = #all_clbks
-		while i > 0 and execute_t < all_clbks[i][2] do
+		while 0 < i and execute_t < all_clbks[i][2] do
 			i = i - 1
 		end
 		table.insert(all_clbks, i + 1, clbk_data)
@@ -560,12 +560,12 @@ function EnemyManager:_upd_corpse_disposal()
 		if cam_pos then
 			for u_key, u_data in pairs(corpses) do
 				local u_pos = u_data.m_pos
-				if not to_dispose[u_key] and mvec3_dis(cam_pos, u_pos) > 300 and 0 > mvector3.dot(cam_fwd, u_pos - cam_pos) then
+				if not to_dispose[u_key] and 300 < mvec3_dis(cam_pos, u_pos) and 0 > mvector3.dot(cam_fwd, u_pos - cam_pos) then
 					to_dispose[u_key] = true
 					nr_found = nr_found + 1
 					if nr_found == disposals_needed then
+						break
 					end
-				else
 				end
 			end
 		end
@@ -589,7 +589,7 @@ function EnemyManager:_upd_corpse_disposal()
 		corpses[u_key] = nil
 	end
 	enemy_data.nr_corpses = nr_corpses - nr_found
-	if nr_corpses > 0 then
+	if 0 < nr_corpses then
 		local delay = enemy_data.nr_corpses > self._MAX_NR_CORPSES and 0 or self._corpse_disposal_upd_interval
 		self:queue_task("EnemyManager._upd_corpse_disposal", EnemyManager._upd_corpse_disposal, self, t + delay)
 	end

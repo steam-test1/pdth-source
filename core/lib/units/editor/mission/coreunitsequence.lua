@@ -21,7 +21,7 @@ function CoreUnitSequenceUnitElement:draw_links_unselected(...)
 end
 function CoreUnitSequenceUnitElement:_draw_trigger_units(r, g, b)
 	local trigger_data = self._unit:damage():get_editor_trigger_data()
-	if trigger_data and #trigger_data > 0 then
+	if trigger_data and 0 < #trigger_data then
 		for _, data in ipairs(trigger_data) do
 			if alive(data.notify_unit) then
 				local params = {
@@ -48,9 +48,9 @@ end
 function CoreUnitSequenceUnitElement:_set_trigger_list()
 	self._hed.trigger_list = {}
 	local triggers = managers.sequence:get_trigger_list(self._unit:name())
-	if #triggers > 0 then
+	if 0 < #triggers then
 		local trigger_data = self._unit:damage():get_editor_trigger_data()
-		if trigger_data and #trigger_data > 0 then
+		if trigger_data and 0 < #trigger_data then
 			for _, data in ipairs(trigger_data) do
 				table.insert(self._hed.trigger_list, {
 					name = data.trigger_name,

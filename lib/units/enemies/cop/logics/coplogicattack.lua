@@ -324,7 +324,7 @@ function CopLogicAttack._peek_for_pos_sideways(data, my_data, from_racker, peek_
 	}
 	local ray_res = managers.navigation:raycast(ray_params)
 	back_pos = ray_params.trace[1]
-	local back_polar = back_pos - my_pos:to_polar()
+	local back_polar = (back_pos - my_pos):to_polar()
 	local right_polar = back_polar:with_spin(back_polar.spin + 90):with_r(100)
 	local right_vec = right_polar:to_vector()
 	local right_pos = back_pos + right_vec
@@ -528,7 +528,7 @@ function CopLogicAttack._update_cover(data)
 				else
 					min_dis = 1800
 				end
-				if (not best_cover or not CopLogicAttack._verify_cover(best_cover[1], threat_pos, min_dis, max_dis) or flank_cover) and not my_data.processing_cover_path then
+				if (not (best_cover and CopLogicAttack._verify_cover(best_cover[1], threat_pos, min_dis, max_dis)) or flank_cover) and not my_data.processing_cover_path then
 					satisfied = false
 					local my_vec = my_pos - threat_pos
 					if flank_cover then
@@ -537,7 +537,7 @@ function CopLogicAttack._update_cover(data)
 					local my_vec_len = my_vec:length()
 					local max_dis = my_vec_len + 800
 					if my_data.attitude == "engage" then
-						if my_vec_len > 600 then
+						if 600 < my_vec_len then
 							my_vec_len = 600
 							mvector3.set_length(my_vec, my_vec_len)
 						end
@@ -820,13 +820,13 @@ function CopLogicAttack._update_enemy_detection(data)
 					CopLogicAttack._cancel_walking_to_cover(data, my_data)
 				end
 				CopLogicAttack._set_best_cover(data, my_data, nil)
-				if not focus_enemy.is_deployable and focus_type == "assault" and focus_enemy.verified and t_since_detected > 15 then
+				if not focus_enemy.is_deployable and focus_type == "assault" and focus_enemy.verified and 15 < t_since_detected then
 					data.unit:sound():say("_c01x_plu", true)
 					CopLogicAttack.dodge_attempt(data, "on_contact")
 				end
 			else
 				local t_since_verified = focus_enemy_verified_t and data.t - focus_enemy_verified_t or 1000
-				if focus_type == "assault" and focus_enemy.verified and not focus_enemy_verified and t_since_verified > 5 and t_since_detected > 2 then
+				if focus_type == "assault" and focus_enemy.verified and not focus_enemy_verified and 5 < t_since_verified and 2 < t_since_detected then
 					if not focus_enemy.is_deployable then
 						data.unit:sound():say("_c01x_plu", true)
 					end
@@ -835,7 +835,7 @@ function CopLogicAttack._update_enemy_detection(data)
 			end
 		else
 			managers.groupai:state():on_enemy_engaging(data.unit, focus_enemy_key)
-			if focus_type == "assault" and focus_enemy.verified and t_since_detected > 15 and not data.unit:sound():speaking(data.t) and (data.unit:anim_data().idle or data.unit:anim_data().move) then
+			if focus_type == "assault" and focus_enemy.verified and 15 < t_since_detected and not data.unit:sound():speaking(data.t) and (data.unit:anim_data().idle or data.unit:anim_data().move) then
 				if not focus_enemy.is_deployable then
 					data.unit:sound():say("_c01x_plu", true)
 				end
@@ -999,7 +999,7 @@ function CopLogicAttack._detect_enemies(data, my_data)
 					enemy_data.last_verified_pos = mvector3.copy(enemy_pos)
 				else
 					local displacement = mvec3_dis(enemy_pos, e_data.pos)
-					if displacement > 700 and not managers.groupai:state():is_detection_persistent() then
+					if 700 < displacement and not managers.groupai:state():is_detection_persistent() then
 						enemy_unit:base():remove_destroy_listener(enemy_data.destroy_clbk_key)
 						my_data.detected_enemies[e_key] = nil
 					else
@@ -1178,7 +1178,7 @@ function CopLogicAttack._upd_aim(data, my_data)
 			if not my_data.shooting and data.unit:anim_data().run then
 				local enemy_vec = temp_vec1
 				local dis = mvec3_dir(enemy_vec, data.m_pos, focus_enemy.m_pos)
-				if dis > 2000 and mvec3_dot(enemy_vec, data.unit:movement():m_rot():y()) > 0 then
+				if 2000 < dis and mvec3_dot(enemy_vec, data.unit:movement():m_rot():y()) > 0 then
 					aim = false
 				end
 			end
@@ -1305,7 +1305,7 @@ function CopLogicAttack._get_cover_offset_pos(data, cover_data, threat_pos)
 	local rot
 	if threat_spin < -20 then
 		rot = Rotation(90)
-	elseif threat_spin > 20 then
+	elseif 20 < threat_spin then
 		rot = Rotation(-90)
 	else
 		rot = Rotation(180)
@@ -1334,7 +1334,7 @@ function CopLogicAttack._find_flank_pos(data, my_data, flank_tracker, max_dist)
 		local best_error_dis, best_pos, best_is_hit, best_is_miss, best_has_too_much_error
 		for _, accross_pos in ipairs(accross_positions) do
 			local error_dis = math.abs(mvector3.distance(accross_pos[1], pos) - optimal_dis)
-			local too_much_error = error_dis / optimal_dis > 0.2
+			local too_much_error = 0.2 < error_dis / optimal_dis
 			local is_hit = accross_pos[2]
 			if best_is_hit then
 				if is_hit then
@@ -1447,10 +1447,8 @@ function CopLogicAttack.is_obstructed(data, objective)
 		if enemy_dis < min_dis and math.abs(my_data.focus_enemy.m_pos.z - data.m_pos.z) < 250 then
 			return true
 		end
-		if my_data.focus_enemy.dmg_t and data.t - my_data.focus_enemy.dmg_t < 5 then
-			if data.unit:character_damage():health_ratio() < (objective and objective.interrupt_dmg_ratio or 1) then
-				return true
-			end
+		if my_data.focus_enemy.dmg_t and data.t - my_data.focus_enemy.dmg_t < 5 and data.unit:character_damage():health_ratio() < (objective and objective.interrupt_dmg_ratio or 1) then
+			return true
 		end
 	end
 	return false
@@ -1501,7 +1499,7 @@ function CopLogicAttack._needs_cover(data, my_data, focus_enemy)
 	if focus_enemy and my_data.best_cover then
 		local cover_dis = mvector3.distance(my_data.best_cover[1][1], focus_enemy.m_head_pos)
 		if my_data.attitude == "engage" then
-			if cover_dis > 400 and focus_enemy.verified_dis - cover_dis > 300 then
+			if 400 < cover_dis and focus_enemy.verified_dis - cover_dis > 300 then
 				return true
 			end
 		elseif cover_dis - focus_enemy.verified_dis > 300 then
@@ -1588,7 +1586,7 @@ function CopLogicAttack._get_expected_attention_position(data, my_data)
 		for i, k in ipairs(expected_path) do
 			if k[1] == my_nav_seg then
 				i_from_seg = i
-			else
+				break
 			end
 		end
 		if i_from_seg then
@@ -1619,7 +1617,7 @@ function CopLogicAttack._get_expected_attention_position(data, my_data)
 				end
 			end
 			local i = #expected_path
-			while i > 0 do
+			while 0 < i do
 				if expected_path[i][1] == e_nav_seg then
 					to_nav_seg = expected_path[math.clamp(i, i_from_seg - 1, i_from_seg + 1)][1]
 					local aim_pos, too_close = _find_aim_pos(my_nav_seg, to_nav_seg)

@@ -136,9 +136,7 @@ end
 function MissionManager:runned_unit_sequence(unit, sequence, params)
 	if alive(unit) and unit:unit_data() then
 		local id = unit:unit_data().unit_id
-		if id == 0 or not id then
-			id = unit:editor_id()
-		end
+		id = id ~= 0 and id or unit:editor_id()
 		if self._runned_unit_sequences_callbacks[id] and self._runned_unit_sequences_callbacks[id][sequence] then
 			for _, call in ipairs(self._runned_unit_sequences_callbacks[id][sequence]) do
 				call(params and params.unit)

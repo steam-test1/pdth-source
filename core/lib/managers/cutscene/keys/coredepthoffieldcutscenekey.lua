@@ -65,7 +65,7 @@ function CoreDepthOfFieldCutsceneKey:play(player, undo, fast_forward)
 end
 function CoreDepthOfFieldCutsceneKey:update(player, time)
 	local transition_time = self:transition_time()
-	local t = transition_time > 0 and math.min(time / transition_time, 1) or 1
+	local t = 0 < transition_time and math.min(time / transition_time, 1) or 1
 	local alpha
 	if self:_is_editing_initial_values() then
 		alpha = 0
@@ -102,10 +102,10 @@ function CoreDepthOfFieldCutsceneKey:update_gui(time, delta_time, player)
 	end
 end
 function CoreDepthOfFieldCutsceneKey:is_valid_near_distance(value)
-	return value == nil or value >= 0
+	return value == nil or 0 <= value
 end
 function CoreDepthOfFieldCutsceneKey:is_valid_far_distance(value)
-	return value == nil or value >= 0
+	return value == nil or 0 <= value
 end
 function CoreDepthOfFieldCutsceneKey:is_valid_tracked_unit_name(value)
 	return value == nil or value == "" or CoreCutsceneKeyBase.is_valid_unit_name(self, value)
@@ -114,13 +114,13 @@ function CoreDepthOfFieldCutsceneKey:is_valid_tracked_object_name(value)
 	return value == nil or value == "" or table.contains(self:_unit_object_names(self:tracked_unit_name()), value) or false
 end
 function CoreDepthOfFieldCutsceneKey:is_valid_transition_time(value)
-	return value and value >= 0
+	return value and 0 <= value
 end
 function CoreDepthOfFieldCutsceneKey:is_valid_target_near_distance(value)
-	return value == nil or value >= 0
+	return value == nil or 0 <= value
 end
 function CoreDepthOfFieldCutsceneKey:is_valid_target_far_distance(value)
-	return value == nil or value >= 0
+	return value == nil or 0 <= value
 end
 function CoreDepthOfFieldCutsceneKey:is_valid_target_tracked_unit_name(value)
 	return value == nil or value == "" or CoreCutsceneKeyBase.is_valid_unit_name(self, value)

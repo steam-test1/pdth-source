@@ -406,9 +406,9 @@ function CoreDatabaseBrowser:on_revert_btn()
 			if not self._active_database:revert_changes(self._local_changes[entry].entry) then
 				self:append_local_changes()
 				flag = true
-			else
-				self:append_local_changes()
+				break
 			end
+			self:append_local_changes()
 		end
 		if flag then
 			EWS:MessageDialog(self._main_frame, "Could not revert the selected entry(s)!", "Error", "OK,ICON_ERROR"):show_modal()
@@ -516,7 +516,7 @@ function CoreDatabaseBrowser:on_view_metadata()
 		end
 	else
 		local ids = self._tree_box.tree_ctrl:selected_items()
-		if #ids > 0 then
+		if 0 < #ids then
 			for i = 1, #ids do
 				local selected = self._tree_box.tree_ctrl:get_item_text(ids[i])
 				local entry = self._active_database:lookup(self._entrys[selected]:type(), self._entrys[selected]:name(), self._entrys[selected]:properties())
@@ -548,7 +548,7 @@ function CoreDatabaseBrowser:on_set_metadata()
 		end
 	else
 		local ids = self._tree_box.tree_ctrl:selected_items()
-		if #ids > 0 and self._metadata_dialog:show_modal() then
+		if 0 < #ids and self._metadata_dialog:show_modal() then
 			for i = 1, #ids do
 				local selected = self._tree_box.tree_ctrl:get_item_text(ids[i])
 				local key, value = self._metadata_dialog:get_value()
@@ -827,7 +827,7 @@ function CoreDatabaseBrowser:on_search()
 		self:reset_preview()
 		local search_str = self._search_box.search_text_ctrl:get_value()
 		local type_filter = self._search_box.type_combobox:get_value()
-		if type_filter ~= "[all]" or #search_str > 2 then
+		if type_filter ~= "[all]" or 2 < #search_str then
 			for key, value in pairs(self._entrys) do
 				if string.find(key, search_str) then
 					self._search_box.list_box:append(key)
@@ -847,7 +847,7 @@ function CoreDatabaseBrowser:on_search()
 		self._tree_box.tree_ctrl:set_item_bold(self._folder_table.id, true)
 		local search_str = self._tree_box.search_text_ctrl:get_value()
 		local type_filter = self._tree_box.type_combobox:get_value()
-		if type_filter ~= "[all]" or #search_str > 2 then
+		if type_filter ~= "[all]" or 2 < #search_str then
 			for key, value in pairs(self._entrys) do
 				if string.find(key, search_str) then
 					local folder = value:metadata("db_browser_folder")
@@ -878,7 +878,7 @@ function CoreDatabaseBrowser:on_remove()
 	if not self._browser_data then
 		if self._main_notebook:get_current_page() == self._main_notebook:get_page(0) then
 			local ids = self._search_box.list_box:selected_indices()
-			if #ids > 0 and self._remove_dialog:show_modal() == "ID_YES" then
+			if 0 < #ids and self._remove_dialog:show_modal() == "ID_YES" then
 				for _, id in ipairs(ids) do
 					local selected = self._search_box.list_box:get_string(id)
 					self._active_database:remove(self._entrys[selected]:type(), self._entrys[selected]:name(), self._entrys[selected]:properties())
@@ -937,7 +937,7 @@ function CoreDatabaseBrowser:on_rename()
 	if not self._browser_data then
 		if self._main_notebook:get_current_page() == self._main_notebook:get_page(0) then
 			local ids = self._search_box.list_box:selected_indices()
-			if #ids > 0 then
+			if 0 < #ids then
 				self._rename_dialog:set_value(self._entrys[self._search_box.list_box:get_string(ids[1])]:name())
 				if self._rename_dialog:show_modal() then
 					for _, id in ipairs(ids) do
@@ -1065,9 +1065,7 @@ function CoreDatabaseBrowserMoveDialog:show_modal()
 	self._done = false
 	self._return_val = true
 	self._dialog:show_modal()
-	while true do
-		if not self._done then
-		end
+	while not self._done do
 	end
 	return self._return_val
 end
@@ -1115,9 +1113,7 @@ function CoreDatabaseBrowserImportDialog:show_modal()
 	self._done = false
 	self._return_val = true
 	self._dialog:show_modal()
-	while true do
-		if not self._done then
-		end
+	while not self._done do
 	end
 	return self._return_val
 end
@@ -1166,9 +1162,7 @@ function CoreDatabaseBrowserMetadataDialog:show_modal()
 	self._done = false
 	self._return_val = true
 	self._dialog:show_modal()
-	while true do
-		if not self._done then
-		end
+	while not self._done do
 	end
 	return self._return_val
 end
@@ -1212,9 +1206,7 @@ function CoreDatabaseBrowserInputDialog:show_modal()
 	self._done = false
 	self._return_val = true
 	self._dialog:show_modal()
-	while true do
-		if not self._done then
-		end
+	while not self._done do
 	end
 	return self._return_val
 end
@@ -1256,9 +1248,7 @@ function CoreDatabaseBrowserRenameDialog:show_modal()
 	self._done = false
 	self._return_val = true
 	self._dialog:show_modal()
-	while true do
-		if not self._done then
-		end
+	while not self._done do
 	end
 	return self._return_val
 end

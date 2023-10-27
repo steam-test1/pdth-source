@@ -64,19 +64,17 @@ function CoreCutsceneEditorProject:save(audio_clips, film_clips, cutscene_keys, 
 		return math.max(highest, clip.track_index or 0)
 	end)
 	for track_index = 1, highest_film_track_index do
-		do
-			local track_node = film_tracks_node:make_child("track")
-			for _, clip in ipairs(table.find_all_values(film_clips, function(clip)
-				return clip.track_index == track_index
-			end)) do
-				if is_valid(clip.cutscene) and is_valid(clip.camera) and 0 < clip.to - clip.from then
-					local clip_node = track_node:make_child("clip")
-					clip_node:set_parameter("offset", tostring(clip.offset or 0))
-					clip_node:set_parameter("cutscene", tostring(clip.cutscene))
-					clip_node:set_parameter("from", tostring(clip.from or 0))
-					clip_node:set_parameter("to", tostring(clip.to or 0))
-					clip_node:set_parameter("camera", tostring(clip.camera))
-				end
+		local track_node = film_tracks_node:make_child("track")
+		for _, clip in ipairs(table.find_all_values(film_clips, function(clip)
+			return clip.track_index == track_index
+		end)) do
+			if is_valid(clip.cutscene) and is_valid(clip.camera) and 0 < clip.to - clip.from then
+				local clip_node = track_node:make_child("clip")
+				clip_node:set_parameter("offset", tostring(clip.offset or 0))
+				clip_node:set_parameter("cutscene", tostring(clip.cutscene))
+				clip_node:set_parameter("from", tostring(clip.from or 0))
+				clip_node:set_parameter("to", tostring(clip.to or 0))
+				clip_node:set_parameter("camera", tostring(clip.camera))
 			end
 		end
 	end
@@ -153,15 +151,10 @@ end
 function CoreCutsceneEditorProject:child_node(child_name, parent_node, child_properties)
 	parent_node = parent_node or self:root_node()
 	for child_node in parent_node:children() do
-		do
-			if child_node:name() == child_name then
-				if child_properties ~= nil then
-				elseif table.true_for_all(child_properties, function(value, key)
-					return child_node:parameter(key) == value
-				end) then
-					return child_node
-				end
-			end
+		if child_node:name() == child_name and (child_properties == nil or table.true_for_all(child_properties, function(value, key)
+			return child_node:parameter(key) == value
+		end)) then
+			return child_node
 		end
 	end
 end

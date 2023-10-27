@@ -10,7 +10,7 @@ function CopActionReload:init(action_desc, common_data)
 	for _, other_action in ipairs(common_data.active_actions) do
 		if other_action and other_action.reload_t then
 			reload_t = other_action.reload_t
-		else
+			break
 		end
 	end
 	if reload_t or self:_play_reload() then

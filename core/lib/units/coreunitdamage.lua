@@ -48,7 +48,7 @@ function CoreUnitDamage:init(unit, default_body_extension_class, body_extension_
 		local body = self._unit:body(body_element._name)
 		if body then
 			body:set_extension(body:extension() or {})
-			local body_ext = body_extension_class_map[body_element._name] or default_body_extension_class:new(self._unit, self, body, body_element)
+			local body_ext = (body_extension_class_map[body_element._name] or default_body_extension_class):new(self._unit, self, body, body_element)
 			body:extension().damage = body_ext
 			local body_key
 			for _, damage_type in pairs(body_ext:get_endurance_map()) do
@@ -446,7 +446,7 @@ function CoreUnitDamage:save(data)
 		if self._unit_element._set_variables[k] ~= v and (k ~= "damage" or v ~= self._damage) then
 			state.variables = table.map_copy(self._variables)
 			changed = true
-		else
+			break
 		end
 	end
 	if self._proximity_count then
@@ -598,7 +598,7 @@ function CoreUnitDamage:remove_trigger_func(trigger_name, id, is_editor)
 			for index, data in ipairs(self._editor_trigger_data) do
 				if data.id == id then
 					table.remove(self._editor_trigger_data, index)
-				else
+					break
 				end
 			end
 		end
@@ -703,7 +703,7 @@ function CoreUnitDamage:set_trigger_sequence(id, trigger_name, notify_unit_seque
 			for _, data2 in ipairs(self._editor_trigger_data) do
 				if data2.id == id then
 					data = data2
-				else
+					break
 				end
 			end
 		end
@@ -743,7 +743,7 @@ function CoreUnitDamage:set_trigger_func(id, trigger_name, func, time, repeat_nr
 			function trigger_func(params2)
 				managers.sequence:add_time_callback(func, time, repeat_nr, params2)
 			end
-		elseif repeat_nr and repeat_nr > 1 then
+		elseif repeat_nr and 1 < repeat_nr then
 			function trigger_func(params2)
 				for i = 1, repeat_nr do
 					func(params2)
@@ -1017,11 +1017,11 @@ end
 function CoreUnitDamage:can_mover_collide(time, unit, other_unit, other_body, position, normal, collision_velocity, velocity, other_velocity)
 	local alive_other_body = alive(other_body)
 	local damage_ext = other_unit:damage()
-	return (not damage_ext or damage_ext:give_mover_collision_damage()) and not self._skip_receive_mover_collision_damage and self._unit:mover() and (alive_other_body or not self._ignore_mover_on_mover_collisions) and managers.sequence:is_collisions_enabled() and (not self._ignore_mover_collision_unit_map or not self._ignore_mover_collision_unit_map[other_unit:key()] or time > self._ignore_mover_collision_unit_map[other_unit:key()]) and (not alive_other_body or not self._ignore_mover_collision_body_map or not self._ignore_mover_collision_body_map[other_body:key()] or time > self._ignore_mover_collision_body_map[other_body:key()])
+	return (not damage_ext or damage_ext:give_mover_collision_damage()) and not self._skip_receive_mover_collision_damage and self._unit:mover() and (alive_other_body or not self._ignore_mover_on_mover_collisions) and managers.sequence:is_collisions_enabled() and (not (self._ignore_mover_collision_unit_map and self._ignore_mover_collision_unit_map[other_unit:key()]) or time > self._ignore_mover_collision_unit_map[other_unit:key()]) and (not alive_other_body or not self._ignore_mover_collision_body_map or not self._ignore_mover_collision_body_map[other_body:key()] or time > self._ignore_mover_collision_body_map[other_body:key()])
 end
 function CoreUnitDamage:can_body_collide(time, tag, unit, body, other_unit, other_body, position, normal, collision_velocity, velocity, other_velocity)
 	local damage_ext = other_unit:damage()
-	return (not damage_ext or damage_ext:give_body_collision_damage()) and not self._skip_receive_body_collision_damage and (managers.sequence:is_collisions_enabled() and (not self._ignore_body_collision_unit_map or not self._ignore_body_collision_unit_map[other_unit:key()]) or time > self._ignore_body_collision_unit_map[other_unit:key()])
+	return (not damage_ext or damage_ext:give_body_collision_damage()) and not self._skip_receive_body_collision_damage and managers.sequence:is_collisions_enabled() and (not self._ignore_body_collision_unit_map or not self._ignore_body_collision_unit_map[other_unit:key()] or time > self._ignore_body_collision_unit_map[other_unit:key()])
 end
 function CoreUnitDamage:get_collision_velocity(position, body, other_body, other_unit, collision_velocity, normal, is_mover, velocity, other_velocity)
 	local damage_ext = other_unit:damage()
@@ -1086,7 +1086,7 @@ function CoreUnitDamage:mover_collision_callback(unit, other_unit, other_body, p
 	if self:can_mover_collide(time, unit, other_unit, other_body, position, normal, collision_velocity, velocity, other_velocity) then
 		new_velocity, direction = self:get_collision_velocity(position, nil, other_body, other_unit, collision_velocity, normal, true, velocity, other_velocity)
 		damage = self:get_collision_damage(nil, nil, other_unit, other_body, position, normal, new_velocity, true)
-		if damage > 0 then
+		if 0 < damage then
 			if alive(other_body) then
 				local body_list = other_body:constrained_bodies()
 				table.insert(body_list, other_body)
@@ -1106,7 +1106,7 @@ function CoreUnitDamage:mover_collision_callback(unit, other_unit, other_body, p
 	end
 end
 function CoreUnitDamage:collision(tag, unit, body, other_unit, other_body, position, normal, direction, damage, collision_velocity, is_mover_collision)
-	if damage > 0 then
+	if 0 < damage then
 		if body then
 			local body_ext = body:extension()
 			if body_ext and body_ext.damage then
@@ -1475,7 +1475,7 @@ function CoreBodyDamage:save(data)
 		if v ~= 0 then
 			state.damage = table.map_copy(self._damage)
 			changed = true
-		else
+			break
 		end
 	end
 	for damage_type, inflict_data in pairs(self._inflict) do
@@ -1629,11 +1629,9 @@ function CoreDamageWaterCheck:check_active_body()
 	self._check_time = self._check_time + self._interval
 	self._current_ref_body_depth = alive(self._ref_body) and self._ref_body:in_water()
 	local static = not self._current_ref_body_depth or not self._ref_body:dynamic()
-	if not static and not self._ref_body:active() then
-		if self._current_ref_body_depth > 0 == self._enter_water then
-			self:set_activation_listener_enabled(true)
-			return false
-		end
+	if not static and not self._ref_body:active() and self._current_ref_body_depth > 0 == self._enter_water then
+		self:set_activation_listener_enabled(true)
+		return false
 	end
 	return true
 end
@@ -1905,7 +1903,7 @@ function CoreInflictFireUpdator:set_fire_object_name(name)
 end
 function CoreInflictFireUpdator:set_fire_height(height)
 	self._fire_height = height
-	self._sphere_check_range = self._fire_object:oobb():size() / 2:length() + self._fire_height + self.SPHERE_CHECK_PADDING
+	self._sphere_check_range = (self._fire_object:oobb():size() / 2):length() + self._fire_height + self.SPHERE_CHECK_PADDING
 end
 function CoreInflictFireUpdator:set_velocity(velocity)
 	self._velocity = velocity
@@ -1966,9 +1964,9 @@ function CoreInflictFireUpdator:check_damage(t, dt)
 					local body_center = body:center_of_mass()
 					local distance = oobb:principal_distance(body:oobb())
 					local position, normal
-					local direction = oobb_center - body_center:normalized()
+					local direction = (oobb_center - body_center):normalized()
 					local damage
-					if distance > 0 then
+					if 0 < distance then
 						position, normal = oobb:raycast(body_center, body_center - Vector3(0, 0, self._fire_height))
 						if position then
 							if self._falloff and 0 < self._fire_height then

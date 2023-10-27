@@ -226,7 +226,7 @@ function SavefileManager:_clean_meta_data_list(is_setting_slot)
 		for slot in pairs(Global.savefile_manager.meta_data_list) do
 			if slot ~= self.SETTING_SLOT then
 				empty_list = true
-			else
+				break
 			end
 		end
 		if empty_list then
@@ -554,9 +554,7 @@ function SavefileManager:_load_done(slot, cache_only, wrong_user)
 		end
 	end
 	local req_version = self:_load_cache(slot)
-	if req_version ~= nil or not success then
-		success = false
-	end
+	success = req_version == nil and success or false
 	self._load_done_callback_handler:dispatch(slot, success, is_setting_slot, cache_only)
 	if not success then
 		self._try_again = self._try_again or {}
@@ -566,62 +564,60 @@ function SavefileManager:_load_done(slot, cache_only, wrong_user)
 		ok_button.text = managers.localization:text("dialog_ok")
 		dialog_data.button_list = {ok_button}
 		if is_setting_slot or is_progress_slot then
-			do
-				local at_init = true
-				local error_msg = is_setting_slot and "dialog_fail_load_setting_" or is_progress_slot and "dialog_fail_load_progress_"
-				error_msg = error_msg .. (req_version == nil and "corrupt" or "wrong_version")
-				print("ERROR: ", error_msg)
-				if not self._try_again[slot] then
-					local yes_button = {}
-					yes_button.text = managers.localization:text("dialog_yes")
-					local no_button = {}
-					no_button.text = managers.localization:text("dialog_no")
-					dialog_data.button_list = {yes_button, no_button}
-					dialog_data.text = managers.localization:text(error_msg .. "_retry", {VERSION = req_version})
-					if is_setting_slot then
-						function yes_button.callback_func()
-							self:load_setting()
-						end
-					elseif is_progress_slot then
-						function yes_button.callback_func()
-							self:load_progress()
-						end
+			local at_init = true
+			local error_msg = is_setting_slot and "dialog_fail_load_setting_" or is_progress_slot and "dialog_fail_load_progress_"
+			error_msg = error_msg .. (req_version == nil and "corrupt" or "wrong_version")
+			print("ERROR: ", error_msg)
+			if not self._try_again[slot] then
+				local yes_button = {}
+				yes_button.text = managers.localization:text("dialog_yes")
+				local no_button = {}
+				no_button.text = managers.localization:text("dialog_no")
+				dialog_data.button_list = {yes_button, no_button}
+				dialog_data.text = managers.localization:text(error_msg .. "_retry", {VERSION = req_version})
+				if is_setting_slot then
+					function yes_button.callback_func()
+						self:load_setting()
 					end
-					function no_button.callback_func()
-						if is_progress_slot and self._backup_data then
-							self:_ask_load_backup("progress_" .. (req_version == nil and "corrupt" or "wrong_version"), false)
-							return
-						else
-							local rem_dialog_data = {}
-							rem_dialog_data.title = managers.localization:text("dialog_error_title")
-							rem_dialog_data.text = managers.localization:text(error_msg, {VERSION = req_version})
-							local ok_button = {}
-							ok_button.text = managers.localization:text("dialog_ok")
-							function ok_button.callback_func()
-								self:_remove(slot)
-							end
-							rem_dialog_data.button_list = {ok_button}
-							managers.system_menu:show(rem_dialog_data)
-						end
+				elseif is_progress_slot then
+					function yes_button.callback_func()
+						self:load_progress()
 					end
-					self._try_again[slot] = true
-				else
-					at_init = false
+				end
+				function no_button.callback_func()
 					if is_progress_slot and self._backup_data then
 						self:_ask_load_backup("progress_" .. (req_version == nil and "corrupt" or "wrong_version"), false)
 						return
 					else
-						dialog_data.text = managers.localization:text(error_msg, {VERSION = req_version})
+						local rem_dialog_data = {}
+						rem_dialog_data.title = managers.localization:text("dialog_error_title")
+						rem_dialog_data.text = managers.localization:text(error_msg, {VERSION = req_version})
+						local ok_button = {}
+						ok_button.text = managers.localization:text("dialog_ok")
 						function ok_button.callback_func()
 							self:_remove(slot)
 						end
+						rem_dialog_data.button_list = {ok_button}
+						managers.system_menu:show(rem_dialog_data)
 					end
 				end
-				if at_init then
-					managers.system_menu:add_init_show(dialog_data)
+				self._try_again[slot] = true
+			else
+				at_init = false
+				if is_progress_slot and self._backup_data then
+					self:_ask_load_backup("progress_" .. (req_version == nil and "corrupt" or "wrong_version"), false)
+					return
 				else
-					managers.system_menu:show(dialog_data)
+					dialog_data.text = managers.localization:text(error_msg, {VERSION = req_version})
+					function ok_button.callback_func()
+						self:_remove(slot)
+					end
 				end
+			end
+			if at_init then
+				managers.system_menu:add_init_show(dialog_data)
+			else
+				managers.system_menu:show(dialog_data)
 			end
 		else
 			dialog_data.text = managers.localization:text("dialog_fail_load_game_corrupt")

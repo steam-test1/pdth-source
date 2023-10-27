@@ -102,7 +102,7 @@ function CoreEffectStack:validate(channels)
 				local num_backlog = tonumber(m:get_property("size")._value)
 				local tesselation = tonumber(m:get_property("tesselation")._value)
 				local l = 1 + num_backlog * (tesselation + 1)
-				if l >= 80 then
+				if 80 <= l then
 					ret.valid = false
 					ret.message = "Trail visualizer has a too high tesselation or backlog size, decrease tesselation or backlog"
 					m._valid_properties = false
@@ -541,12 +541,12 @@ function CoreEffectAtom:validate()
 		return ret
 	end
 	local preroll = tonumber(self:get_property("preroll"):value())
-	if not preroll or preroll < 0 or preroll > 5 then
+	if not preroll or preroll < 0 or 5 < preroll then
 		ret.valid = false
 		ret.message = "Invalid preroll time for atom " .. self:name() .. ", must be between 0 and 5 seconds"
 		return ret
 	end
-	if lifetime >= 0 and preroll ~= 0 then
+	if 0 <= lifetime and preroll ~= 0 then
 		ret.valid = false
 		ret.message = "Atom " .. self:name() .. " cannot have  a preroll time set - only infinite-lifetime atoms can have a preroll time"
 		return ret

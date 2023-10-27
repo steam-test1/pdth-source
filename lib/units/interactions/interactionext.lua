@@ -359,7 +359,9 @@ function ReviveInteractionExt:set_active(active, sync, down_time)
 			down_time = down_time or 999
 			local text = managers.localization:text(self.tweak_data == "revive" and "debug_team_mate_need_revive" or "debug_team_mate_need_free")
 			local icon = self.tweak_data == "revive" and "wp_revive" or "wp_rescue"
-			local timer = self.tweak_data == "revive" and (self._unit:base().is_husk_player and down_time or tweak_data.character[self._unit:base()._tweak_table].damage.DOWNED_TIME) or self._unit:base().is_husk_player and tweak_data.player.damage.ARRESTED_TIME or tweak_data.character[self._unit:base()._tweak_table].damage.ARRESTED_TIME
+			if self.tweak_data == "revive" then
+			end
+			local timer = self._unit:base().is_husk_player and down_time or tweak_data.character[self._unit:base()._tweak_table].damage.DOWNED_TIME or self._unit:base().is_husk_player and tweak_data.player.damage.ARRESTED_TIME or tweak_data.character[self._unit:base()._tweak_table].damage.ARRESTED_TIME
 			managers.hud:add_waypoint(self._wp_id, {
 				text = text,
 				icon = icon,
@@ -590,7 +592,7 @@ function NPCInteractionExt:unselect()
 	managers.player:set_player_state(managers.player:default_player_state())
 end
 function NPCInteractionExt:interact(player)
-	self._unit:set_rotation(Rotation(self._unit:position() - player:position():with_z(0):normalized(), Vector3(0, 0, 1)))
+	self._unit:set_rotation(Rotation((self._unit:position() - player:position()):with_z(0):normalized(), Vector3(0, 0, 1)))
 	self._text:set_text(":)")
 	self:_do_interact()
 end

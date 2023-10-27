@@ -285,7 +285,7 @@ function ElementSpecialObjective:nav_link()
 	return self._nav_link
 end
 function ElementSpecialObjective:_is_nav_link()
-	return not self._values.is_navigation_link and self._values.navigation_link and self._values.navigation_link ~= -1
+	return self._values.is_navigation_link or self._values.navigation_link and self._values.navigation_link ~= -1
 end
 function ElementSpecialObjective:set_nav_link(nav_link)
 	self._nav_link = nav_link

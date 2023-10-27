@@ -79,7 +79,7 @@ function Item:set_callback_handler(callback_handler)
 		for _, enabled_callback_name in pairs(self._enabled_callback_name_list) do
 			if not callback_handler[enabled_callback_name](self) then
 				self:set_enabled(false)
-			else
+				break
 			end
 		end
 	end

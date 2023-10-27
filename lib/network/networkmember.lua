@@ -107,9 +107,11 @@ function NetworkMember:spawn_unit(spawn_point_id, is_drop_in, spawn_as)
 		end
 		character_name = self._assigned_name
 		self._assigned_name = nil
-		need_revive = not alive(old_unit) or old_unit:character_damage():bleed_out() or old_unit:character_damage():fatal() or old_unit:character_damage():arrested() or old_unit:character_damage():need_revive() or old_unit:character_damage():dead()
+		if alive(old_unit) then
+			need_revive = old_unit:character_damage():bleed_out() or old_unit:character_damage():fatal() or old_unit:character_damage():arrested() or old_unit:character_damage():need_revive() or old_unit:character_damage():dead()
+		end
 		need_revive = need_revive or Global.criminal_team_AI_disabled or not managers.groupai:state():is_AI_enabled()
-		need_res = trade_entry and true or Global.criminal_team_AI_disabled or true
+		need_res = trade_entry and true or Global.criminal_team_AI_disabled or not managers.groupai:state():is_AI_enabled()
 	else
 		character_name = managers.criminals:character_name_by_peer_id(peer_id)
 		if not character_name then

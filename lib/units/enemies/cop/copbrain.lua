@@ -321,12 +321,12 @@ function CopBrain:cancel_trade()
 	self:set_logic("intimidated")
 end
 function CopBrain:interaction_voice()
-	if self._logic_data.objective and self._logic_data.objective.followup_objective and self._logic_data.objective.followup_objective.trigger_on == "interact" and (not self._logic_data.objective or not self._logic_data.objective.nav_seg or not not self._logic_data.objective.in_place) and not self._unit:anim_data().unintimidateable then
+	if self._logic_data.objective and self._logic_data.objective.followup_objective and self._logic_data.objective.followup_objective.trigger_on == "interact" and (not (self._logic_data.objective and self._logic_data.objective.nav_seg) or not not self._logic_data.objective.in_place) and not self._unit:anim_data().unintimidateable then
 		return self._logic_data.objective.followup_objective.interaction_voice
 	end
 end
 function CopBrain:on_intimidated(amount, aggressor_unit)
-	if self._logic_data.objective and self._logic_data.objective.followup_objective and self._logic_data.objective.followup_objective.trigger_on == "interact" and (not self._logic_data.objective or not self._logic_data.objective.nav_seg or not not self._logic_data.objective.in_place) and not self._unit:anim_data().unintimidateable then
+	if self._logic_data.objective and self._logic_data.objective.followup_objective and self._logic_data.objective.followup_objective.trigger_on == "interact" and (not (self._logic_data.objective and self._logic_data.objective.nav_seg) or not not self._logic_data.objective.in_place) and not self._unit:anim_data().unintimidateable then
 		self:set_objective(self._logic_data.objective.followup_objective)
 		return self._logic_data.objective.interaction_voice
 	else
@@ -407,7 +407,7 @@ function CopBrain:on_nav_link_unregistered(element_id)
 					if not nav_point.x and nav_point:script_data().element._id == element_id then
 						failed_search_ids = failed_search_ids or {}
 						failed_search_ids[path_name] = true
-					else
+						break
 					end
 				end
 			end
@@ -428,7 +428,7 @@ function CopBrain:on_nav_link_unregistered(element_id)
 		for i, nav_point in ipairs(path) do
 			if not nav_point.x and nav_point:script_data().element._id == element_id then
 				path_is_ok = false
-			else
+				break
 			end
 		end
 		if path_is_ok then

@@ -14,22 +14,20 @@ function CoreCutsceneData:destroy()
 end
 function CoreCutsceneData:cutscene_player(__skip_stall_warning, __skip_priming)
 	if self.__cutscene_player == nil then
-		do
-			local cutscene = managers.cutscene:get_cutscene(self.__cutscene_name)
-			if not __skip_stall_warning then
-				cat_print("spam", "[CoreCutsceneData] The cutscene \"" .. cutscene:name() .. "\" has been cleaned up. Call CoreCutsceneData:reset_cutscene_player() before attempting to replay it.")
-			end
-			self.__cutscene_player = core_or_local("CutscenePlayer", cutscene)
-			self.__cutscene_player:add_keys()
-			if not __skip_priming then
-				self.__cutscene_player:prime()
-			end
-			local actual_destroy_func = self.__cutscene_player.destroy
-			function self.__cutscene_player.destroy(instance)
-				assert(instance == self.__cutscene_player)
-				self.__cutscene_player = nil
-				actual_destroy_func(instance)
-			end
+		local cutscene = managers.cutscene:get_cutscene(self.__cutscene_name)
+		if not __skip_stall_warning then
+			cat_print("spam", "[CoreCutsceneData] The cutscene \"" .. cutscene:name() .. "\" has been cleaned up. Call CoreCutsceneData:reset_cutscene_player() before attempting to replay it.")
+		end
+		self.__cutscene_player = core_or_local("CutscenePlayer", cutscene)
+		self.__cutscene_player:add_keys()
+		if not __skip_priming then
+			self.__cutscene_player:prime()
+		end
+		local actual_destroy_func = self.__cutscene_player.destroy
+		function self.__cutscene_player.destroy(instance)
+			assert(instance == self.__cutscene_player)
+			self.__cutscene_player = nil
+			actual_destroy_func(instance)
 		end
 	end
 	return self.__cutscene_player

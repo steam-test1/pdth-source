@@ -194,8 +194,8 @@ function Layer:_update_drag_select(t, dt)
 			p4
 		})
 	end
-	local len = self._drag_start_pos - end_pos:length()
-	if len > 0.05 then
+	local len = (self._drag_start_pos - end_pos):length()
+	if 0.05 < len then
 		local top_left = self._drag_start_pos
 		local bottom_right = end_pos
 		if top_left.y > bottom_right.y and top_left.x < bottom_right.x or top_left.y < bottom_right.y and top_left.x > bottom_right.x then
@@ -225,7 +225,7 @@ end
 function Layer:_update_draw_unit_trigger_sequences(t, dt)
 	if alive(self._selected_unit) and self._selected_unit:damage() and not self._selected_unit:mission_element() then
 		local trigger_data = self._selected_unit:damage():get_editor_trigger_data()
-		if trigger_data and #trigger_data > 0 then
+		if trigger_data and 0 < #trigger_data then
 			for _, data in ipairs(trigger_data) do
 				if alive(data.notify_unit) then
 					Application:draw_line(self._selected_unit:position(), data.notify_unit:position(), 0, 1, 1)
@@ -606,7 +606,7 @@ function Layer:prepare_replace(names, rules)
 		for _, unit in ipairs(World:find_units_quick("disabled", "all", slot)) do
 			if unit:name() == name:id() then
 				local continent = unit:unit_data().continent
-				if not rules.only_current_continent or not continent or managers.editor:current_continent() == continent then
+				if not (rules.only_current_continent and continent) or managers.editor:current_continent() == continent then
 					local unit_params = {
 						name = unit:name(),
 						continent = continent,
@@ -635,7 +635,7 @@ function Layer:recreate_units(name, data)
 	local reference_unit
 	self._continent_locked_picked = true
 	for _, params in ipairs(data) do
-		local unit_name = name or params.name:id()
+		local unit_name = (name or params.name):id()
 		local continent = params.continent
 		local pos = params.position
 		local rot = params.rotation
@@ -974,7 +974,7 @@ end
 function Layer:recalc_locals(unit, reference)
 	local pos = reference:position()
 	local rot = reference:rotation()
-	unit:unit_data().local_pos = unit:unit_data().world_pos - pos:rotate_with(rot:inverse())
+	unit:unit_data().local_pos = (unit:unit_data().world_pos - pos):rotate_with(rot:inverse())
 	unit:unit_data().local_rot = rot:inverse() * unit:rotation()
 end
 function Layer:selected_unit()
@@ -1242,7 +1242,7 @@ function Layer:test_spawn(type)
 			print("Spawning:", name)
 			local unit = self:do_spawn_unit(name, pos, rot)
 			local bsr = unit:bounding_sphere_radius() * 2
-			if bsr > 20000 then
+			if 20000 < bsr then
 				table.insert(removed, name)
 				print("  Removing:", name)
 				self:remove_unit(unit)

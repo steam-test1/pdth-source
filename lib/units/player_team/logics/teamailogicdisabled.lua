@@ -118,13 +118,13 @@ function TeamAILogicDisabled._consider_surrender(data, my_data)
 			local dis = mvector3.distance(c_data.m_pos, data.m_pos)
 			if dis < 700 then
 				total_scare = 0
-			else
-				support = 3 * support * (1 - math.clamp(dis - 300, 0, 2500) / 2500)
-				total_scare = total_scare - support
+				break
 			end
+			support = 3 * support * (1 - math.clamp(dis - 300, 0, 2500) / 2500)
+			total_scare = total_scare - support
 		end
 	end
-	if total_scare > 1 then
+	if 1 < total_scare then
 		my_data.stay_cool = true
 		if my_data.firing then
 			data.unit:movement():set_allow_fire(false)

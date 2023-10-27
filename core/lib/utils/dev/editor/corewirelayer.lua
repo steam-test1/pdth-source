@@ -5,15 +5,12 @@ core:import("CoreTable")
 core:import("CoreMath")
 WireLayer = WireLayer or class(CoreLayer.Layer)
 function WireLayer:init(owner, save_name, units_vector, slot_mask)
--- fail 27
-null
-7
 	WireLayer.super.init(self, owner, save_name or "wires")
 	self._current_pos = Vector3(0, 0, 0)
 	self._current_rot = Rotation()
 	self._ctrlrs = {}
 	self._mid_point_align = 0.5
-	self:load_unit_map_from_vector({"wire"})
+	self:load_unit_map_from_vector(units_vector or {"wire"})
 	self._unit_name = ""
 	self._target_name = Idstring("a_target")
 	self._middle_name = Idstring("a_bender")
@@ -112,7 +109,7 @@ function WireLayer:update(t, dt)
 		local n = ray.normal
 		local u_rot = Rotation()
 		local z = n
-		local x = u_rot:x() - z * z:dot(u_rot:x()):normalized()
+		local x = (u_rot:x() - z * z:dot(u_rot:x())):normalized()
 		local y = z:cross(x)
 		local rot = Rotation(x, y, z)
 		self._current_rot = rot

@@ -9,7 +9,7 @@ function CoreCutsceneManager:cutscene_actor_unit_type(original_unit_type)
 end
 function CoreCutsceneManager:replace_cutscene_actor_unit_type(original_unit_type, replacement_unit_type)
 	assert(DB:has("unit", original_unit_type), string.format("Unrecognized Unit \"%s\".", original_unit_type:t()))
-	assert(replacement_unit_type == nil or DB:has("unit", replacement_unit_type), string.format("Unrecognized Unit \"%s\".", replacement_unit_type or "":t()))
+	assert(replacement_unit_type == nil or DB:has("unit", replacement_unit_type), string.format("Unrecognized Unit \"%s\".", (replacement_unit_type or ""):t()))
 	Global.__CutsceneManager__replaced_actor_unit_types = Global.__CutsceneManager__replaced_actor_unit_types or {}
 	if replacement_unit_type then
 		cat_print("cutscene", string.format("[CoreCutsceneManager] Replacing all \"%s\" actors with instances of \"%s\".", original_unit_type, replacement_unit_type))

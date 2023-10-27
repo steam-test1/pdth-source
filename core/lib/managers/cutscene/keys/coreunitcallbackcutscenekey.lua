@@ -108,46 +108,44 @@ function CoreUnitCallbackCutsceneKey:refresh_control_for_arguments(panel)
 	local panel_sizer = EWS:BoxSizer("VERTICAL")
 	local methods = self:_unit_extension_info(self:unit_name())[self:extension()]
 	local method_arguments = methods and methods[self:method()] or {}
-	if #method_arguments > 0 then
+	if 0 < #method_arguments then
 		local headline = EWS:StaticText(panel, "Method Arguments")
 		headline:set_font_size(10)
 		panel_sizer:add(EWS:StaticLine(panel), 0, 10, "TOP,EXPAND")
 		panel_sizer:add(headline, 0, 5, "ALL,EXPAND")
 		panel_sizer:add(EWS:StaticLine(panel), 0, 0, "EXPAND")
 		for _, argument_name in ipairs(method_arguments) do
-			do
-				local param = self:_param_with_name(argument_name)
-				local value_field = EWS:TextCtrl(panel, "")
-				value_field:set_min_size(value_field:get_min_size():with_x(0))
-				value_field:connect("EVT_COMMAND_TEXT_UPDATED", function()
-					param.string_value = value_field:get_value()
-				end)
-				value_field:set_value(param.string_value)
+			local param = self:_param_with_name(argument_name)
+			local value_field = EWS:TextCtrl(panel, "")
+			value_field:set_min_size(value_field:get_min_size():with_x(0))
+			value_field:connect("EVT_COMMAND_TEXT_UPDATED", function()
+				param.string_value = value_field:get_value()
+			end)
+			value_field:set_value(param.string_value)
+			value_field:set_enabled(param.value_type ~= "nil")
+			local type_options = {
+				"nil",
+				"string",
+				"number",
+				"bool",
+				"unit"
+			}
+			local type_selector = EWS:ComboBox(panel, "", "", "CB_DROPDOWN,CB_READONLY")
+			type_selector:connect("EVT_COMMAND_COMBOBOX_SELECTED", function()
+				param.value_type = type_selector:get_value()
 				value_field:set_enabled(param.value_type ~= "nil")
-				local type_options = {
-					"nil",
-					"string",
-					"number",
-					"bool",
-					"unit"
-				}
-				local type_selector = EWS:ComboBox(panel, "", "", "CB_DROPDOWN,CB_READONLY")
-				type_selector:connect("EVT_COMMAND_COMBOBOX_SELECTED", function()
-					param.value_type = type_selector:get_value()
-					value_field:set_enabled(param.value_type ~= "nil")
-				end)
-				for _, option in ipairs(type_options) do
-					type_selector:append(option)
-					if param.value_type == option then
-						type_selector:set_value(option)
-					end
+			end)
+			for _, option in ipairs(type_options) do
+				type_selector:append(option)
+				if param.value_type == option then
+					type_selector:set_value(option)
 				end
-				local type_and_value_sizer = EWS:BoxSizer("HORIZONTAL")
-				type_and_value_sizer:add(type_selector, 0, 5, "RIGHT,EXPAND")
-				type_and_value_sizer:add(value_field, 1, 0, "EXPAND")
-				panel_sizer:add(EWS:StaticText(panel, string.pretty(param.name, true) .. ":"), 0, 5, "TOP,LEFT,RIGHT")
-				panel_sizer:add(type_and_value_sizer, 0, 5, "ALL,EXPAND")
 			end
+			local type_and_value_sizer = EWS:BoxSizer("HORIZONTAL")
+			type_and_value_sizer:add(type_selector, 0, 5, "RIGHT,EXPAND")
+			type_and_value_sizer:add(value_field, 1, 0, "EXPAND")
+			panel_sizer:add(EWS:StaticText(panel, string.pretty(param.name, true) .. ":"), 0, 5, "TOP,LEFT,RIGHT")
+			panel_sizer:add(type_and_value_sizer, 0, 5, "ALL,EXPAND")
 		end
 	end
 	panel:set_sizer(panel_sizer)

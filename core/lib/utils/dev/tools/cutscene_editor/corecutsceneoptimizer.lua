@@ -41,24 +41,22 @@ function CoreCutsceneOptimizer:_write_cutscene_xml(path, animation_blobs)
 		end
 	end
 	if not table.empty(self:_all_controlled_unit_names(true)) then
-		do
-			local controlled_units_node = cutscene_node:make_child("controlled_units")
-			local function add_controlled_unit(unit_type, unit_name)
-				local unit_node = controlled_units_node:make_child("unit")
-				unit_node:set_parameter("type", unit_type)
-				unit_node:set_parameter("name", unit_name)
-				local unit_is_patched = self.__animation_patches and self.__animation_patches[unit_name]
-				if unit_is_patched then
-					unit_node:set_parameter("blend_set", "patched")
-				end
+		local controlled_units_node = cutscene_node:make_child("controlled_units")
+		local function add_controlled_unit(unit_type, unit_name)
+			local unit_node = controlled_units_node:make_child("unit")
+			unit_node:set_parameter("type", unit_type)
+			unit_node:set_parameter("name", unit_name)
+			local unit_is_patched = self.__animation_patches and self.__animation_patches[unit_name]
+			if unit_is_patched then
+				unit_node:set_parameter("blend_set", "patched")
 			end
-			if self:_has_cameras() then
-				add_controlled_unit("locator", "camera")
-			end
-			for _, unit_name in ipairs(self:_all_controlled_unit_names()) do
-				local unit_type = self:_all_controlled_unit_types()[unit_name]
-				add_controlled_unit(unit_type, unit_name)
-			end
+		end
+		if self:_has_cameras() then
+			add_controlled_unit("locator", "camera")
+		end
+		for _, unit_name in ipairs(self:_all_controlled_unit_names()) do
+			local unit_type = self:_all_controlled_unit_types()[unit_name]
+			add_controlled_unit(unit_type, unit_name)
 		end
 	end
 	local keys_node = cutscene_node:make_child("keys")
@@ -79,29 +77,25 @@ function CoreCutsceneOptimizer:_add_unit_visibility_keys(keys_node)
 		was_visible[unit_name] = true
 	end
 	for _, clip in ipairs(self.__clips) do
-		do
-			local cutscene = clip:metadata():footage()._cutscene
-			for _, unit_name in ipairs(unit_names) do
-				do
-					local existing_visibility_key = table.find_value(self.__cutscene_keys, function(key)
-						return key:frame() == clip:start_time() and key.ELEMENT_NAME == CoreUnitVisibleCutsceneKey.ELEMENT_NAME and key:unit_name() == unit_name
-					end)
-					if existing_visibility_key then
-						was_visible[unit_name] = existing_visibility_key:visible()
-					else
-						local visible = cutscene:animation_for_unit(unit_name) ~= nil
-						if visible ~= was_visible[unit_name] then
-							local visibility_key = CoreCutsceneKey:create(CoreUnitVisibleCutsceneKey.ELEMENT_NAME)
-							function visibility_key.is_valid_unit_name()
-								return true
-							end
-							visibility_key:set_frame(clip:start_time())
-							visibility_key:set_unit_name(unit_name)
-							visibility_key:set_visible(visible)
-							visibility_key:_save_under(keys_node)
-							was_visible[unit_name] = visible
-						end
+		local cutscene = clip:metadata():footage()._cutscene
+		for _, unit_name in ipairs(unit_names) do
+			local existing_visibility_key = table.find_value(self.__cutscene_keys, function(key)
+				return key:frame() == clip:start_time() and key.ELEMENT_NAME == CoreUnitVisibleCutsceneKey.ELEMENT_NAME and key:unit_name() == unit_name
+			end)
+			if existing_visibility_key then
+				was_visible[unit_name] = existing_visibility_key:visible()
+			else
+				local visible = cutscene:animation_for_unit(unit_name) ~= nil
+				if visible ~= was_visible[unit_name] then
+					local visibility_key = CoreCutsceneKey:create(CoreUnitVisibleCutsceneKey.ELEMENT_NAME)
+					function visibility_key.is_valid_unit_name()
+						return true
 					end
+					visibility_key:set_frame(clip:start_time())
+					visibility_key:set_unit_name(unit_name)
+					visibility_key:set_visible(visible)
+					visibility_key:_save_under(keys_node)
+					was_visible[unit_name] = visible
 				end
 			end
 		end
@@ -110,19 +104,17 @@ end
 function CoreCutsceneOptimizer:_add_discontinuity_keys(keys_node)
 	local previous_clip
 	for _, clip in ipairs(self.__clips) do
-		do
-			if previous_clip == nil or clip:metadata():footage() ~= previous_clip:metadata():footage() or clip:start_time_in_source() ~= previous_clip:end_time_in_source() then
-				local existing_discontinuity_key = table.find_value(self.__cutscene_keys, function(key)
-					return key:frame() == clip:start_time() and key.ELEMENT_NAME == CoreDiscontinuityCutsceneKey.ELEMENT_NAME
-				end)
-				if existing_discontinuity_key == nil then
-					local discontinuity_key = CoreCutsceneKey:create(CoreDiscontinuityCutsceneKey.ELEMENT_NAME)
-					discontinuity_key:set_frame(clip:start_time())
-					discontinuity_key:_save_under(keys_node)
-				end
+		if previous_clip == nil or clip:metadata():footage() ~= previous_clip:metadata():footage() or clip:start_time_in_source() ~= previous_clip:end_time_in_source() then
+			local existing_discontinuity_key = table.find_value(self.__cutscene_keys, function(key)
+				return key:frame() == clip:start_time() and key.ELEMENT_NAME == CoreDiscontinuityCutsceneKey.ELEMENT_NAME
+			end)
+			if existing_discontinuity_key == nil then
+				local discontinuity_key = CoreCutsceneKey:create(CoreDiscontinuityCutsceneKey.ELEMENT_NAME)
+				discontinuity_key:set_frame(clip:start_time())
+				discontinuity_key:_save_under(keys_node)
 			end
-			previous_clip = clip
 		end
+		previous_clip = clip
 	end
 end
 function CoreCutsceneOptimizer:_write_cutscene_unit_xml(path)

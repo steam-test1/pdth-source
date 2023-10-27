@@ -253,7 +253,7 @@ function CoreSetup:__init()
 		self.__freeflight = CoreFreeFlight.FreeFlight:new(self.__gsm, managers.viewport, managers.controller)
 	end
 	if Application:editor() then
-		managers.editor = rawget(_G, "WorldEditor") or rawget(_G, "CoreEditor"):new(self.__gsm, self._session:session())
+		managers.editor = (rawget(_G, "WorldEditor") or rawget(_G, "CoreEditor")):new(self.__gsm, self._session:session())
 		managers.editor:toggle()
 	end
 	managers.cutscene:post_init()

@@ -47,7 +47,9 @@ end
 function CoreBaseTreeNode:for_each_child(func, recurse)
 	for _, child in ipairs(table.list_copy(self:children())) do
 		if not func(child) then
-		elseif recurse then
+			break
+		end
+		if recurse then
 			child:for_each_child(func, true)
 		end
 	end

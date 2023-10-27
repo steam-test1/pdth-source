@@ -2,7 +2,7 @@ DLCManager = DLCManager or class()
 DLCManager.PLATFORM_CLASS_MAP = {}
 function DLCManager:new(...)
 	local platform = SystemInfo:platform()
-	return self.PLATFORM_CLASS_MAP[platform:key()] or GenericDLCManager:new(...)
+	return (self.PLATFORM_CLASS_MAP[platform:key()] or GenericDLCManager):new(...)
 end
 GenericDLCManager = GenericDLCManager or class()
 function GenericDLCManager:init()
@@ -66,7 +66,7 @@ function PS3DLCManager:_verify_dlcs()
 			if dlc_data.filename == verified_filename then
 				print("DLC verified:", verified_filename)
 				dlc_data.verified = true
-			else
+				break
 			end
 		end
 	end

@@ -9,7 +9,7 @@ end
 function RepelRopeBase:update(unit, t, dt)
 	if self._retracting then
 		local prog = (t - self._retract_start_t) / self._retract_duration
-		if prog > 1 then
+		if 1 < prog then
 			unit:set_slot(0)
 		else
 			prog = prog ^ 3

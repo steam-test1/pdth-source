@@ -63,7 +63,7 @@ function MenuInput:input_slider(item, controller)
 		self:set_axis_x_timer(slider_delay_down)
 		if self:menu_right_pressed() then
 			local percentage = item:percentage()
-			if percentage > 0 and percentage < 100 then
+			if 0 < percentage and percentage < 100 then
 				self:post_event("slider_increase")
 			end
 			self:set_axis_x_timer(slider_delay_pressed)
@@ -75,7 +75,7 @@ function MenuInput:input_slider(item, controller)
 		if self:menu_left_pressed() then
 			self:set_axis_x_timer(slider_delay_pressed)
 			local percentage = item:percentage()
-			if percentage > 0 and percentage < 100 then
+			if 0 < percentage and percentage < 100 then
 				self:post_event("slider_decrease")
 			end
 		end
@@ -253,8 +253,8 @@ function MenuInput:next_item()
 					end
 				end
 				if done then
+					break
 				end
-			else
 			end
 		end
 	end
@@ -276,8 +276,8 @@ function MenuInput:prev_item()
 					end
 				end
 				if done then
+					break
 				end
-			else
 			end
 		end
 	end

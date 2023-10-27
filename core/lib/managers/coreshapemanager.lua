@@ -255,13 +255,13 @@ function ShapeBox:is_inside(pos)
 	local rot = self:rotation()
 	mrotation.x(rot, mvec2)
 	local inside = mvector3.dot(mvec2, mvec1)
-	if inside > 0 and inside < self._properties.width then
+	if 0 < inside and inside < self._properties.width then
 		mrotation.y(rot, mvec2)
 		inside = mvector3.dot(mvec2, mvec1)
-		if inside > 0 and inside < self._properties.depth then
+		if 0 < inside and inside < self._properties.depth then
 			mrotation.z(rot, mvec2)
 			inside = mvector3.dot(mvec2, mvec1)
-			if inside > 0 and inside < self._properties.height then
+			if 0 < inside and inside < self._properties.height then
 				return true
 			end
 		end
@@ -302,13 +302,13 @@ function ShapeBoxMiddle:is_inside(pos)
 	mvector3.add(pos_dir, pos)
 	mrotation.x(rot, x)
 	local inside = mvector3.dot(x, pos_dir)
-	if inside > 0 and inside < self._properties.width then
+	if 0 < inside and inside < self._properties.width then
 		mrotation.y(rot, y)
 		inside = mvector3.dot(y, pos_dir)
-		if inside > 0 and inside < self._properties.depth then
+		if 0 < inside and inside < self._properties.depth then
 			mrotation.z(rot, z)
 			inside = mvector3.dot(z, pos_dir)
-			if inside > 0 and inside < self._properties.height then
+			if 0 < inside and inside < self._properties.height then
 				return true
 			end
 		end
@@ -335,11 +335,11 @@ function ShapeBoxMiddleBottom:is_inside(pos)
 	local position = self:position() - x - y
 	local pos_dir = pos - position
 	local inside = rot:x():dot(pos_dir)
-	if inside > 0 and inside < self._properties.width then
+	if 0 < inside and inside < self._properties.width then
 		inside = rot:y():dot(pos_dir)
-		if inside > 0 and inside < self._properties.depth then
+		if 0 < inside and inside < self._properties.depth then
 			inside = rot:z():dot(pos_dir)
-			if inside > 0 and inside < self._properties.height then
+			if 0 < inside and inside < self._properties.height then
 				return true
 			end
 		end
@@ -376,7 +376,7 @@ function ShapeSphere:set_radius(radius)
 	self:set_property("radius", radius)
 end
 function ShapeSphere:is_inside(pos)
-	return pos - self:position():length() < self._properties.radius
+	return (pos - self:position()):length() < self._properties.radius
 end
 function ShapeSphere:draw(t, dt, r, g, b)
 	local brush = Draw:brush()
@@ -423,7 +423,7 @@ function ShapeCylinder:is_inside(pos)
 	local pos_dir = pos - self:position()
 	local rot = self:rotation()
 	local inside = rot:z():dot(pos_dir)
-	if inside > 0 and inside < self._properties.height then
+	if 0 < inside and inside < self._properties.height then
 		local pos_a = self:position()
 		local pos_b = pos_a + rot:z() * self._properties.height
 		if math.distance_to_segment(pos, pos_a, pos_b) <= self._properties.radius then

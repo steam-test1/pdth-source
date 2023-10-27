@@ -322,7 +322,7 @@ function AiLayer:_calc_graphs(params)
 		local type = self._graph_types[selection]
 		if type then
 			local settings = self:_get_build_settings(type, build_type)
-			if #settings > 0 then
+			if 0 < #settings then
 				self._saved_disabled_units = {}
 				for name, layer in pairs(managers.editor:layers()) do
 					for _, unit in ipairs(layer:created_units()) do

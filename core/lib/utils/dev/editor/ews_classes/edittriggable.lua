@@ -2,7 +2,7 @@ core:import("CoreEditorUtils")
 core:import("CoreEws")
 EditUnitTriggable = EditUnitTriggable or class(EditUnitBase)
 function EditUnitTriggable:init(editor)
-	local panel, sizer = editor or managers.editor:add_unit_edit_page({name = "Sequences", class = self})
+	local panel, sizer = (editor or managers.editor):add_unit_edit_page({name = "Sequences", class = self})
 	self._panel = panel
 	self._ctrls = {}
 	self._element_guis = {}
@@ -121,7 +121,7 @@ end
 function EditUnitTriggable:update_element_gui()
 	self:clear_element_gui()
 	local trigger_data = self._ctrls.unit:damage():get_editor_trigger_data()
-	if trigger_data and #trigger_data > 0 then
+	if trigger_data and 0 < #trigger_data then
 		for _, data in ipairs(trigger_data) do
 			if data.trigger_name == self._triggers_params.ctrlr:get_value() then
 				self:build_element_gui(data)
@@ -137,7 +137,7 @@ function EditUnitTriggable:update_element_gui()
 end
 function EditUnitTriggable:add_unit(unit)
 	local triggable_sequences = managers.sequence:get_triggable_sequence_list(unit:name())
-	if #triggable_sequences > 0 then
+	if 0 < #triggable_sequences then
 		self._ctrls.unit:damage():add_trigger_sequence(self._triggers_params.ctrlr:get_value(), triggable_sequences[1], unit, 0, nil, nil, true)
 		self:update_element_gui()
 	end
@@ -150,7 +150,7 @@ end
 function EditUnitTriggable:is_editable(unit)
 	if alive(unit) and unit:damage() then
 		local triggers = managers.sequence:get_trigger_list(unit:name())
-		if #triggers > 0 then
+		if 0 < #triggers then
 			self._ctrls.unit = unit
 			CoreEws.update_combobox_options(self._triggers_params, triggers)
 			CoreEws.change_combobox_value(self._triggers_params, triggers[1])

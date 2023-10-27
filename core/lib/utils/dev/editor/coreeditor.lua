@@ -689,7 +689,8 @@ function CoreEditor:set_up_portals(mask)
 		local top = portal.top
 		local bottom = portal.bottom
 		if top == 0 and bottom == 0 then
-			top, bottom = nil, nil
+			top = nil
+			bottom = nil
 		end
 		managers.portal:add_portal(t, bottom, top)
 	end
@@ -1722,7 +1723,7 @@ function CoreEditor:draw_occluders(t, dt)
 		local units = layer:created_units()
 		for _, unit in ipairs(units) do
 			local unit_pos = unit:position()
-			if cam_far_range > unit_pos - cam_pos:length() then
+			if cam_far_range > (unit_pos - cam_pos):length() then
 				local objects = unit:get_objects("oc_*")
 				for _, object in ipairs(objects) do
 					local object_dir = object:rotation():y()
@@ -1771,7 +1772,7 @@ end
 function CoreEditor:_draw_bodies(t, dt)
 	local pen = Draw:pen(Color(0.15, 1, 1, 1))
 	local units = self._current_layer:selected_units()
-	if #units > 0 then
+	if 0 < #units then
 		local brush = Draw:brush(Color(0.15, 1, 1, 1))
 		brush:set_font(Idstring("core/fonts/nice_editor_font"), 16)
 		brush:set_render_template(Idstring("OverlayVertexColorTextured"))
@@ -1892,7 +1893,7 @@ function CoreEditor:update(time, rel_time)
 				local rot = Rotation:yaw_pitch_roll(0, 0, 0)
 				Application:draw_sphere(pos, 50, 1, 1, 1)
 				Application:draw_rotation(pos, rot)
-				local length = cam_pos - pos:length()
+				local length = (cam_pos - pos):length()
 				local from = Vector3(pos.x, pos.y, pos.z - length / 2)
 				local to = Vector3(pos.x, pos.y, pos.z + length / 2)
 				Application:draw_cylinder(from, to, 50, 1, 1, 1)
@@ -1934,7 +1935,7 @@ function CoreEditor:update_ruler(t, dt)
 	if not ray or not ray.position then
 		return
 	end
-	local len = pos - ray.position:length()
+	local len = (pos - ray.position):length()
 	Application:draw_sphere(ray.position, 10, 1, 1, 1)
 	Application:draw_line(pos, ray.position, 1, 1, 1)
 	self:set_value_info(string.format("Length: %.2fm", len / 100))
@@ -1948,7 +1949,7 @@ function CoreEditor:current_orientation(offset_move_vec, unit)
 		if p1.z - p2.z ~= 0 then
 			local t = (p1.z - self:grid_altitude()) / (p1.z - p2.z)
 			local p = p1 + (p2 - p1) * t + offset_move_vec
-			if t < 1000 and t > -1000 then
+			if t < 1000 and -1000 < t then
 				local x = math.round(p.x / self:grid_size()) * self:grid_size()
 				local y = math.round(p.y / self:grid_size()) * self:grid_size()
 				local z = math.round(p.z / self:grid_size()) * self:grid_size()
@@ -1963,7 +1964,7 @@ function CoreEditor:current_orientation(offset_move_vec, unit)
 			for _, unit_r in ipairs(rays) do
 				if unit_r.unit ~= unit and unit_r.unit:visible() then
 					ray = unit_r
-				else
+					break
 				end
 			end
 		end
@@ -1977,7 +1978,7 @@ function CoreEditor:current_orientation(offset_move_vec, unit)
 			if alive(unit) then
 				local u_rot = unit:rotation()
 				local z = n
-				local x = u_rot:x() - z * z:dot(u_rot:x()):normalized()
+				local x = (u_rot:x() - z * z:dot(u_rot:x())):normalized()
 				local y = z:cross(x)
 				local rot = Rotation(x, y, z)
 				current_rot = rot * unit:rotation():inverse()
@@ -1992,12 +1993,12 @@ function CoreEditor:current_orientation(offset_move_vec, unit)
 		local closest_snap
 		for _, unit in ipairs(units) do
 			local aligns = unit:get_objects("snap*")
-			if #aligns > 0 then
+			if 0 < #aligns then
 				table.insert(aligns, unit:orientation_object())
 			end
 			for _, o in ipairs(aligns) do
-				local len = o:position() - pos:length()
-				if r > len and (not closest_snap or len < closest_snap:position() - pos:length()) then
+				local len = (o:position() - pos):length()
+				if r > len and (not closest_snap or len < (closest_snap:position() - pos):length()) then
 					closest_snap = o
 				end
 				Application:draw_rotation_size(o:position(), o:rotation(), 400)

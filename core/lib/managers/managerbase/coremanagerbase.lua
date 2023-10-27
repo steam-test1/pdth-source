@@ -21,7 +21,7 @@ end
 function ManagerBase:_add_accessobj(accessobj, prio)
 	assert(accessobj:active_requested() == false)
 	assert(accessobj:really_active() == false)
-	assert(prio > 0)
+	assert(0 < prio)
 	self.__ao2prio[accessobj] = prio
 	table.insert(self.__aos, accessobj)
 end

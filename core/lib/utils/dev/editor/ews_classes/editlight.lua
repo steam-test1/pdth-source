@@ -4,7 +4,7 @@ EditUnitLight = EditUnitLight or class(EditUnitBase)
 EditUnitLight.DEFAULT_SHADOW_RESOLUTION = 128
 function EditUnitLight:init(editor)
 	EditUnitLight.super.init(self)
-	local panel, sizer = editor or managers.editor:add_unit_edit_page({name = "Light", class = self})
+	local panel, sizer = (editor or managers.editor):add_unit_edit_page({name = "Light", class = self})
 	local debug_sizer = EWS:BoxSizer("VERTICAL")
 	local debug_ctrlr = EWS:CheckBox(panel, "Debug", "")
 	debug_ctrlr:set_value(self._debug)
@@ -235,11 +235,7 @@ function EditUnitLight:update_light_ctrls_from_light(light)
 	CoreEws.change_slider_and_number_value(self._falloff_params, light:falloff_exponent())
 	CoreEws.change_slider_and_number_value(self._spot_start_angle_params, light:spot_angle_start())
 	CoreEws.change_slider_and_number_value(self._spot_end_angle_params, light:spot_angle_end())
-	if string.match(light:properties(), "omni") then
-	else
-		-- unhandled boolean indicator
-	end
-	local is_spot = true
+	local is_spot = (not string.match(light:properties(), "omni") or false) and true
 	self._spot_start_angle_params.number_ctrlr:set_enabled(is_spot)
 	self._spot_start_angle_params.slider_ctrlr:set_enabled(is_spot)
 	self._spot_end_angle_params.number_ctrlr:set_enabled(is_spot)

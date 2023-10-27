@@ -61,7 +61,7 @@ function CollisionCameraNode:_update_smoother(t, dt, in_data, out_data)
 	local rotation = in_data._rotation
 	local safe_position = self._safe_position
 	local new_position = self._pop_controller:wanted_position(safe_position, position)
-	self._local_position = new_position - position:rotate_with(rotation:inverse())
+	self._local_position = (new_position - position):rotate_with(rotation:inverse())
 end
 function CollisionCameraNode:_update_fast_smooth(t, dt, in_data, out_data)
 	local position = in_data._position
@@ -70,7 +70,7 @@ function CollisionCameraNode:_update_fast_smooth(t, dt, in_data, out_data)
 	safe_position = safe_position or position
 	local camera_direction = position - safe_position
 	local camera_distance = camera_direction:length()
-	if camera_distance > 0 then
+	if 0 < camera_distance then
 		camera_direction = camera_direction * (1 / camera_distance)
 		local fraction = self._pop_controller:wanted_position(safe_position, position)
 		local collision_distance = fraction * camera_distance
@@ -81,9 +81,9 @@ function CollisionCameraNode:_update_fast_smooth(t, dt, in_data, out_data)
 			local diff = math.clamp(collision_distance - self._camera_distance, 0, self._camera_max_velocity * dt)
 			new_distance = self._camera_distance + diff
 		end
-		local new_position = safe_position + position - safe_position:normalized() * new_distance
+		local new_position = safe_position + (position - safe_position):normalized() * new_distance
 		self._camera_distance = new_distance
-		self._local_position = new_position - position:rotate_with(rotation:inverse())
+		self._local_position = (new_position - position):rotate_with(rotation:inverse())
 	else
 		self._local_position = Vector3(0, 0, 0)
 	end

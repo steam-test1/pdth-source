@@ -33,7 +33,7 @@ function SimpleCharacter:move(t, dt)
 			move_vec = move_vec + rotation:x()
 		end
 		local length = move_vec:length()
-		if length > 0.001 then
+		if 0.001 < length then
 			move_vec = move_vec / length
 		end
 		move_vec = move_vec * self.SPEED * dt

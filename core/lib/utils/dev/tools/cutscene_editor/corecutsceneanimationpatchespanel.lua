@@ -105,7 +105,7 @@ function CoreCutsceneAnimationPatchesPanel:_on_browse_for_animation(text_ctrl)
 	end
 end
 function CoreCutsceneAnimationPatchesPanel:_absolute_dir_and_path(relative_path)
-	relative_path = Application:nice_path(relative_path and "", false)
+	relative_path = Application:nice_path(relative_path or "", false)
 	if string.begins(relative_path, "data\\") then
 		local absolute_path = managers.database:base_path() .. relative_path
 		local absolute_dir = string.match(absolute_path, "^(.+)\\")

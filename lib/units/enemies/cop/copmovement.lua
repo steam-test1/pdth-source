@@ -322,7 +322,7 @@ function CopMovement:_upd_actions(t)
 				for _, action in ipairs(a_actions) do
 					if action then
 						has_no_action = nil
-					else
+						break
 					end
 				end
 			else
@@ -538,7 +538,7 @@ function CopMovement:set_stance(new_stance_name)
 	for i_stance, stance_name in ipairs(CopMovement._stance.names) do
 		if stance_name == new_stance_name then
 			self:set_stance_by_code(i_stance)
-		else
+			break
 		end
 	end
 end
@@ -579,7 +579,7 @@ function CopMovement:_change_stance(stance_code)
 	local vis_state = self._ext_base:lod_stage()
 	if vis_state then
 		delay = CopMovement._stance.blend[stance_code]
-		if vis_state > 2 then
+		if 2 < vis_state then
 			delay = delay * 0.5
 		end
 	else
@@ -969,7 +969,7 @@ function CopMovement:drop_held_items()
 						if item_unit:key() == wanted_item_key then
 							table.remove(item_list, i_item)
 							wanted_item_key = nil
-						else
+							break
 						end
 					end
 				else
@@ -1140,7 +1140,7 @@ function CopMovement:load(load_data)
 	self._attention = my_load_data.attention
 	if my_load_data.stance then
 		for i_stance, v in ipairs(my_load_data.stance) do
-			if v > 0 then
+			if 0 < v then
 				self:_change_stance(i_stance)
 			end
 		end

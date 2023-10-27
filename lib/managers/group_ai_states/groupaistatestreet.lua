@@ -255,8 +255,8 @@ function GroupAIStateStreet:_upd_blockade_task(t)
 	end
 	local undershot = task_data.force_required.defend - #blocker_pigs
 	local spawn_threshold = math.max(0, self._police_force_max - self._police_force)
-	if undershot > 0 then
-		if spawn_threshold > 0 and not self:_try_use_task_spawn_event(t, task_data.target_area, "assault") then
+	if 0 < undershot then
+		if 0 < spawn_threshold and not self:_try_use_task_spawn_event(t, task_data.target_area, "assault") then
 			local nr_wanted = math.min(spawn_threshold, undershot, math.random(2, 3))
 			local spawn_points = self:_find_spawn_points_behind_pos(task_data.target_area, target_pos, nr_wanted, task_data.mission_fwd)
 			if spawn_points then
@@ -288,7 +288,7 @@ function GroupAIStateStreet:_upd_blockade_task(t)
 		end
 	end
 	if not self._task_data.regroup.active then
-		if spawn_threshold > 0 then
+		if 0 < spawn_threshold then
 			local flank_assault = task_data.flank_assault
 			if flank_assault.sneak_unit_key and not self._police[flank_assault.sneak_unit_key] then
 				flank_assault.sneak_unit_key = nil
@@ -300,7 +300,7 @@ function GroupAIStateStreet:_upd_blockade_task(t)
 				for nav_seg, _ in pairs(relevant_areas) do
 					if target_area_neighbours[nav_seg] then
 						search_start_area = nav_seg
-					else
+						break
 					end
 				end
 				local spawn_points = self:_find_spawn_points_behind_pos(search_start_area, target_pos, 1, -task_data.mission_fwd, relevant_areas)
@@ -337,9 +337,9 @@ function GroupAIStateStreet:_upd_blockade_task(t)
 				end
 			end
 		end
-		if spawn_threshold > 0 and (phase == "build" or phase == "sustain") then
+		if 0 < spawn_threshold and (phase == "build" or phase == "sustain") then
 			local wanted_fwd = math.min(task_data.force_required.frontal - front_pigs, spawn_threshold)
-			if wanted_fwd > 0 and not self:_try_use_task_spawn_event(t, task_data.target_area, "assault") then
+			if 0 < wanted_fwd and not self:_try_use_task_spawn_event(t, task_data.target_area, "assault") then
 				wanted_fwd = math.min(wanted_fwd, math.random(2, 3))
 				local spawn_points = self:_find_spawn_points_behind_pos(task_data.target_area, target_pos, wanted_fwd, task_data.mission_fwd, nil)
 				if spawn_points then
@@ -378,37 +378,35 @@ function GroupAIStateStreet:_upd_blockade_task(t)
 		end
 	end
 	for u_key, u_data in pairs(self._police) do
-		if u_data.assigned_area then
-			if u_data.unit:brain():is_available_for_assignment({
-				type = "investigate_area",
-				interrupt_on = "obstructed"
-			}) then
-				local objective = u_data.unit:brain():objective()
-				if not objective or objective.type == "free" then
-					local closest_criminal_data, closest_dis
-					for c_key, c_data in pairs(relevant_players) do
-						if not c_data.status then
-							local my_dis = mvec3_dis(c_data.m_pos, u_data.m_pos)
-							if not closest_dis or closest_dis > my_dis then
-								closest_dis = my_dis
-								closest_criminal_data = c_data
-							end
+		if u_data.assigned_area and u_data.unit:brain():is_available_for_assignment({
+			type = "investigate_area",
+			interrupt_on = "obstructed"
+		}) then
+			local objective = u_data.unit:brain():objective()
+			if not objective or objective.type == "free" then
+				local closest_criminal_data, closest_dis
+				for c_key, c_data in pairs(relevant_players) do
+					if not c_data.status then
+						local my_dis = mvec3_dis(c_data.m_pos, u_data.m_pos)
+						if not closest_dis or closest_dis > my_dis then
+							closest_dis = my_dis
+							closest_criminal_data = c_data
 						end
 					end
-					if closest_criminal_data and closest_dis > 5000 then
-						local move_area = closest_criminal_data.tracker:nav_segment()
-						local new_objective = {
-							type = "investigate_area",
-							nav_seg = move_area,
-							status = "in_progress",
-							attitude = attitude,
-							stance = "hos",
-							interrupt_on = "obstructed",
-							pos = mvector3.copy(closest_criminal_data.m_pos)
-						}
-						u_data.unit:brain():set_objective(new_objective)
-						self:_set_enemy_assigned(self._area_data[move_area], u_key)
-					end
+				end
+				if closest_criminal_data and 5000 < closest_dis then
+					local move_area = closest_criminal_data.tracker:nav_segment()
+					local new_objective = {
+						type = "investigate_area",
+						nav_seg = move_area,
+						status = "in_progress",
+						attitude = attitude,
+						stance = "hos",
+						interrupt_on = "obstructed",
+						pos = mvector3.copy(closest_criminal_data.m_pos)
+					}
+					u_data.unit:brain():set_objective(new_objective)
+					self:_set_enemy_assigned(self._area_data[move_area], u_key)
 				end
 			end
 		end
@@ -433,7 +431,7 @@ function GroupAIStateStreet:_find_blockade_event(t)
 				for c_key, c_record in pairs(self._player_criminals) do
 					if not event_data.relevant_areas[c_record.tracker:nav_segment()] then
 						invalid = true
-					else
+						break
 					end
 				end
 				if not invalid then
@@ -444,11 +442,11 @@ function GroupAIStateStreet:_find_blockade_event(t)
 						for c_key, c_record in pairs(self._player_criminals) do
 							if min_dis > mvec3_dis(c_record.m_pos, blockade_pos) then
 								invalid = true
-							else
+								break
 							end
 						end
 						if invalid then
-						else
+							break
 						end
 					end
 					if not invalid then
@@ -498,7 +496,7 @@ function GroupAIStateStreet:_upd_reenforce_tasks(t)
 				self:_set_enemy_assigned(self._area_data[seg], u_key)
 				unit:brain():set_objective(new_objective)
 			end
-		elseif undershot > 0 then
+		elseif 0 < undershot then
 			local existing_cops = GroupAIStateBesiege._find_surplus_cops_around_area(self, target_area, math.min(undershot, math.random(1, 3)), spawn_threshold)
 			if existing_cops then
 				for _, unit in ipairs(existing_cops) do
@@ -515,7 +513,7 @@ function GroupAIStateStreet:_upd_reenforce_tasks(t)
 				end
 				undershot = undershot - #existing_cops
 			end
-			if undershot > 0 then
+			if 0 < undershot then
 				local spawn_points = GroupAIStateBesiege._find_spawn_points_near_area(self, target_area, undershot, nil, 4000)
 				if spawn_points then
 					local objective = {
@@ -655,8 +653,8 @@ function GroupAIStateStreet:_upd_assault_task(t)
 			local crim_area = criminal_data.tracker:nav_segment()
 			if crim_area == target_area then
 				area_safe = nil
+				break
 			end
-		else
 		end
 	end
 	if area_safe then
@@ -686,9 +684,9 @@ function GroupAIStateStreet:_upd_assault_task(t)
 	end
 	if task_phase == "anticipation" then
 		local spawn_threshold = math.max(0, self._police_force_max - self._police_force - 5)
-		if spawn_threshold > 0 then
+		if 0 < spawn_threshold then
 			local nr_wanted = math.min(spawn_threshold, task_data.force.defensive + task_data.force.aggressive - self._police_force)
-			if nr_wanted > 0 then
+			if 0 < nr_wanted then
 				nr_wanted = math.min(3, nr_wanted)
 				local spawn_points = GroupAIStateBesiege._find_spawn_points_near_area(self, target_area, nr_wanted, nil, 10000, callback(self, GroupAIStateBesiege, "_verify_anticipation_spawn_point"), self)
 				if spawn_points then
@@ -719,50 +717,48 @@ function GroupAIStateStreet:_upd_assault_task(t)
 		end
 		local wanted_nr_aggressive_cops = task_data.force.aggressive
 		local undershot_aggressive = wanted_nr_aggressive_cops - nr_agressive_cops
-		if undershot_aggressive > 0 then
+		if 0 < undershot_aggressive then
 			local u_key, u_data
-			while undershot_aggressive > 0 and nr_defensive_cops > 0 do
+			while 0 < undershot_aggressive and 0 < nr_defensive_cops do
 				u_key, u_data = next(defensive_cops, u_key)
 				if not u_key then
 					break
 				end
 				local unit = u_data.unit
-				if not u_data.follower then
-					if u_data.unit:brain():is_available_for_assignment({
-						type = "investigate_area",
-						interrupt_on = objective_interrupt
-					}) then
-						local closest_dis, closest_criminal_data
-						for c_key, c_data in pairs(healthy_criminals) do
-							local my_dis = mvec3_dis(c_data.m_pos, u_data.m_pos)
-							if not closest_dis or closest_dis > my_dis then
-								closest_dis = my_dis
-								closest_criminal_data = c_data
-							end
+				if not u_data.follower and u_data.unit:brain():is_available_for_assignment({
+					type = "investigate_area",
+					interrupt_on = objective_interrupt
+				}) then
+					local closest_dis, closest_criminal_data
+					for c_key, c_data in pairs(healthy_criminals) do
+						local my_dis = mvec3_dis(c_data.m_pos, u_data.m_pos)
+						if not closest_dis or closest_dis > my_dis then
+							closest_dis = my_dis
+							closest_criminal_data = c_data
 						end
-						if closest_criminal_data then
-							local crim_area = closest_criminal_data.tracker:nav_segment()
-							local new_objective = {
-								type = "investigate_area",
-								nav_seg = crim_area,
-								attitude = objective_attitude,
-								stance = "hos",
-								interrupt_on = objective_interrupt,
-								scan = true,
-								pos = mvector3.copy(closest_criminal_data.m_pos)
-							}
-							unit:brain():set_objective(new_objective)
-							self:_set_enemy_assigned(self._area_data[crim_area], unit:key())
-							defensive_cops[u_key] = nil
-							nr_defensive_cops = nr_defensive_cops - 1
-							aggressive_cops[u_key] = u_data
-							nr_agressive_cops = nr_agressive_cops + 1
-							undershot_aggressive = undershot_aggressive - 1
-						end
+					end
+					if closest_criminal_data then
+						local crim_area = closest_criminal_data.tracker:nav_segment()
+						local new_objective = {
+							type = "investigate_area",
+							nav_seg = crim_area,
+							attitude = objective_attitude,
+							stance = "hos",
+							interrupt_on = objective_interrupt,
+							scan = true,
+							pos = mvector3.copy(closest_criminal_data.m_pos)
+						}
+						unit:brain():set_objective(new_objective)
+						self:_set_enemy_assigned(self._area_data[crim_area], unit:key())
+						defensive_cops[u_key] = nil
+						nr_defensive_cops = nr_defensive_cops - 1
+						aggressive_cops[u_key] = u_data
+						nr_agressive_cops = nr_agressive_cops + 1
+						undershot_aggressive = undershot_aggressive - 1
 					end
 				end
 			end
-			if undershot_aggressive > 0 and spawn_threshold > 0 then
+			if 0 < undershot_aggressive and 0 < spawn_threshold then
 				local spawn_amount = math.min(undershot_aggressive, spawn_threshold)
 				local spawn_points = GroupAIStateBesiege._find_spawn_points_near_area(self, target_area, spawn_amount)
 				if spawn_points then
@@ -819,7 +815,7 @@ function GroupAIStateStreet:_upd_assault_task(t)
 		end
 		local wanted_nr_defensive_cops = task_data.force.defensive
 		local undershot_defensive = wanted_nr_defensive_cops - nr_defensive_cops
-		if undershot_defensive > 0 and spawn_threshold > 0 then
+		if 0 < undershot_defensive and 0 < spawn_threshold then
 			local spawn_amount = math.min(undershot_defensive, spawn_threshold)
 			local spawn_points = GroupAIStateBesiege._find_spawn_points_near_area(self, target_area, spawn_amount)
 			if spawn_points then
@@ -853,38 +849,36 @@ function GroupAIStateStreet:_upd_assault_task(t)
 		elseif task_phase == "fade" then
 			for u_key, u_data in pairs(defensive_cops) do
 				local unit = u_data.unit
-				if not u_data.follower then
-					if u_data.unit:brain():is_available_for_assignment({
-						type = "investigate_area",
-						interrupt_on = "contact"
-					}) then
-						local closest_dis, closest_criminal_data
-						for c_key, c_data in pairs(healthy_criminals) do
-							local my_dis = mvec3_dis(c_data.m_pos, u_data.m_pos)
-							if not closest_dis or closest_dis > my_dis then
-								closest_dis = my_dis
-								closest_criminal_data = c_data
-							end
+				if not u_data.follower and u_data.unit:brain():is_available_for_assignment({
+					type = "investigate_area",
+					interrupt_on = "contact"
+				}) then
+					local closest_dis, closest_criminal_data
+					for c_key, c_data in pairs(healthy_criminals) do
+						local my_dis = mvec3_dis(c_data.m_pos, u_data.m_pos)
+						if not closest_dis or closest_dis > my_dis then
+							closest_dis = my_dis
+							closest_criminal_data = c_data
 						end
-						if closest_criminal_data then
-							local crim_area = closest_criminal_data.tracker:nav_segment()
-							local new_objective = {
-								type = "investigate_area",
-								nav_seg = crim_area,
-								attitude = "engage",
-								stance = "hos",
-								interrupt_on = "contact",
-								scan = true,
-								pos = mvector3.copy(closest_criminal_data.m_pos)
-							}
-							unit:brain():set_objective(new_objective)
-							self:_set_enemy_assigned(self._area_data[crim_area], unit:key())
-							defensive_cops[u_key] = nil
-							nr_defensive_cops = nr_defensive_cops - 1
-							aggressive_cops[u_key] = u_data
-							nr_agressive_cops = nr_agressive_cops + 1
-							undershot_aggressive = undershot_aggressive - 1
-						end
+					end
+					if closest_criminal_data then
+						local crim_area = closest_criminal_data.tracker:nav_segment()
+						local new_objective = {
+							type = "investigate_area",
+							nav_seg = crim_area,
+							attitude = "engage",
+							stance = "hos",
+							interrupt_on = "contact",
+							scan = true,
+							pos = mvector3.copy(closest_criminal_data.m_pos)
+						}
+						unit:brain():set_objective(new_objective)
+						self:_set_enemy_assigned(self._area_data[crim_area], unit:key())
+						defensive_cops[u_key] = nil
+						nr_defensive_cops = nr_defensive_cops - 1
+						aggressive_cops[u_key] = u_data
+						nr_agressive_cops = nr_agressive_cops + 1
+						undershot_aggressive = undershot_aggressive - 1
 					end
 				end
 			end
@@ -1004,10 +998,10 @@ function GroupAIStateStreet:_find_spawn_points_behind_pos(start_nav_seg, target_
 						mvec3_set(my_vec, target_pos)
 						mvec3_sub(my_vec, sp_data.pos)
 						local my_dot = mvec3_dot(my_vec, fwd)
-						if my_dot > 0 then
+						if 0 < my_dot then
 							local i = #distances
 							while true do
-								if not (i > 0) or my_dot > distances[i] then
+								if not (0 < i) or my_dot > distances[i] then
 									break
 								end
 								i = i - 1
@@ -1044,7 +1038,7 @@ function GroupAIStateStreet:_find_spawn_points_behind_pos(start_nav_seg, target_
 			end
 		end
 	until #to_search_segs == 0
-	return #s_points > 0 and s_points
+	return 0 < #s_points and s_points
 end
 function GroupAIStateStreet:_spawn_cops_with_objective(area, spawn_points, objective, unit_weights)
 	local produce_data = {
@@ -1295,7 +1289,7 @@ function GroupAIStateStreet:remove_from_surrendered(unit)
 	for i, entry in ipairs(hos_data) do
 		if u_key == entry.u_key then
 			table.remove(hos_data, i)
-		else
+			break
 		end
 	end
 	if #hos_data == 0 then
@@ -1309,7 +1303,7 @@ function GroupAIStateStreet:_upd_hostage_task()
 	local first_entry = hos_data[1]
 	table.remove(hos_data, 1)
 	first_entry.clbk()
-	if not self._hostage_upd_key and #hos_data > 0 then
+	if not self._hostage_upd_key and 0 < #hos_data then
 		self._hostage_upd_key = "GroupAIStateStreet:_upd_hostage_task"
 		managers.enemy:queue_task(self._hostage_upd_key, self._upd_hostage_task, self, self._t + 1)
 	end
@@ -1326,7 +1320,7 @@ function GroupAIStateStreet:get_unit_assigned_area(u_key)
 end
 function GroupAIStateStreet:set_area_min_police_force(id, force, pos)
 	GroupAIStateBesiege.set_area_min_police_force(self, id, force, pos)
-	if force and force > 0 then
+	if force and 0 < force then
 		local nav_seg = managers.navigation:get_nav_seg_from_pos(pos)
 		local factors = self._area_data[nav_seg].factors
 		factors.force = {id = id, force = force}
@@ -1350,7 +1344,7 @@ function GroupAIStateStreet:set_area_min_police_force(id, force, pos)
 						if #tasks == 0 then
 							self._task_data.reenforce.active = nil
 						end
-					else
+						break
 					end
 				end
 				return

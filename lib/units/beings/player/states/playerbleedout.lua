@@ -224,7 +224,7 @@ function PlayerBleedOut:_update_movement(t, dt)
 	if self._ext_network then
 		local cur_pos = self._pos
 		local move_dis = mvector3.distance_sq(cur_pos, self._last_sent_pos)
-		if move_dis > 22500 or move_dis > 400 and t - self._last_sent_pos_t > 1.5 then
+		if 22500 < move_dis or 400 < move_dis and t - self._last_sent_pos_t > 1.5 then
 			self._ext_network:send("action_walk_nav_point", cur_pos)
 			mvector3.set(self._last_sent_pos, cur_pos)
 			self._last_sent_pos_t = t

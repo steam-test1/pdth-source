@@ -16,10 +16,8 @@ function MenuNodeCreditsGui:_build_credits_panel(file)
 	if Application:region() == Idstring("eu") and file == "eula" then
 		files[Idstring("english"):key()] = "_uk"
 	end
-	if file == "eula" or file == "trial" then
-		file = files[lang_key] and file .. files[lang_key] or file
-	end
-	local list = PackageManager:script_data(self.FILE_EXTENSION:id(), self.PATH .. file:id())
+	file = (file == "eula" or file == "trial") and files[lang_key] and file .. files[lang_key] or file
+	local list = PackageManager:script_data(self.FILE_EXTENSION:id(), (self.PATH .. file):id())
 	local ypos = 0
 	local safe_rect_pixels = managers.viewport:get_safe_rect_pixels()
 	local res = RenderSettings.resolution

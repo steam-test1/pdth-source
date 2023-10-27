@@ -42,7 +42,7 @@ function valid_ticket(ticket)
 end
 function update_tickets()
 	tc = tc + 1
-	if tc > 30 then
+	if 30 < tc then
 		tc = 0
 	end
 end

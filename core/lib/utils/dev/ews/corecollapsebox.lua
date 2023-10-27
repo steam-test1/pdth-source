@@ -5,9 +5,7 @@ function CoreCollapseBox:init(parent, orientation, caption, expanded_size, expan
 	self._parent = parent
 	self._expanded_size = expanded_size
 	self._panel = EWS:Panel(self._parent, "", "")
-	if style ~= "NO_BORDER" or not EWS:BoxSizer("VERTICAL") then
-	end
-	self._box = EWS:StaticBoxSizer(self._panel, "VERTICAL", "")
+	self._box = style == "NO_BORDER" and EWS:BoxSizer("VERTICAL") or EWS:StaticBoxSizer(self._panel, "VERTICAL", "")
 	self._panel:set_sizer(self._box)
 	self._btn = EWS:Button(self._panel, "", "", "NO_BORDER")
 	self._btn:set_font_family("FONTFAMILY_TELETYPE")

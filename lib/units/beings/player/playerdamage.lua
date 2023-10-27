@@ -184,7 +184,7 @@ function PlayerDamage:damage_bullet(attack_data)
 	health_subtracted = health_subtracted or self:_calc_health_damage(attack_data)
 	self._next_allowed_dmg_t = TimerManager:game():time() + self._dmg_interval
 	self._last_received_dmg = health_subtracted
-	if not self._bleed_out and health_subtracted > 0 then
+	if not self._bleed_out and 0 < health_subtracted then
 		self:_send_damage_drama(attack_data, health_subtracted)
 	elseif self._bleed_out then
 		managers.challenges:set_flag("bullet_to_bleed_out")
@@ -472,7 +472,7 @@ function PlayerDamage:_bleed_out_damage(attack_data)
 	if self._bleed_out_health <= 0 then
 		managers.player:set_player_state("fatal")
 	end
-	if health_subtracted > 0 then
+	if 0 < health_subtracted then
 		self:_send_damage_drama(attack_data, health_subtracted)
 	end
 end

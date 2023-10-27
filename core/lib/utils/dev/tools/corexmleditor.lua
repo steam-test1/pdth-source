@@ -231,9 +231,7 @@ function CoreXMLEditorNewDialog:show_modal()
 	self._done = false
 	self._return_val = true
 	self._dialog:show_modal()
-	while true do
-		if not self._done then
-		end
+	while not self._done do
 	end
 	return self._return_val
 end

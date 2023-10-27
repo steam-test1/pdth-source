@@ -52,13 +52,13 @@ function CoreOverlayFXCutsceneKey:is_valid_blend_mode(value)
 	return table.contains(self.VALID_BLEND_MODES, value)
 end
 function CoreOverlayFXCutsceneKey:is_valid_fade_in(value)
-	return value >= 0
+	return 0 <= value
 end
 function CoreOverlayFXCutsceneKey:is_valid_sustain(value)
-	return value >= 0
+	return 0 <= value
 end
 function CoreOverlayFXCutsceneKey:is_valid_fade_out(value)
-	return value >= 0
+	return 0 <= value
 end
 function CoreOverlayFXCutsceneKey:control_for_color(parent_frame)
 	local control = EWS:ColorWell(parent_frame, "")

@@ -159,12 +159,8 @@ function number_controller(params)
 end
 function verify_entered_number(params)
 	local value = tonumber(params.number_ctrlr:get_value()) or 0
-	if params.min and value < params.min then
-		value = params.min or value
-	end
-	if params.max and value > params.max then
-		value = params.max or value
-	end
+	value = params.min and value < params.min and params.min or value
+	value = params.max and value > params.max and params.max or value
 	params.value = value
 	local floats = params.floats or 0
 	params.number_ctrlr:change_value(string.format("%." .. floats .. "f", value))
@@ -310,12 +306,8 @@ end
 function verify_entered_number(params)
 	local ctrlr = params.ctrlr or params.number_ctrlr
 	local value = tonumber(ctrlr:get_value()) or 0
-	if params.min and value < params.min then
-		value = params.min or value
-	end
-	if params.max and value > params.max then
-		value = params.max or value
-	end
+	value = params.min and value < params.min and params.min or value
+	value = params.max and value > params.max and params.max or value
 	params.value = value
 	local floats = params.floats or 0
 	ctrlr:change_value(string.format("%." .. floats .. "f", value))

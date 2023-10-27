@@ -41,7 +41,7 @@ function ElementFeedback:on_executed(instigator)
 	ElementFeedback.super.on_executed(self, instigator)
 end
 function ElementFeedback:_check_value(params, cat, setting, value)
-	if value >= 0 then
+	if 0 <= value then
 		table.insert(params, cat)
 		table.insert(params, setting)
 		table.insert(params, value)
@@ -51,7 +51,7 @@ function ElementFeedback:_calc_multiplier(player)
 	if self._values.range == 0 then
 		return 1
 	end
-	local distance = self._values.position - player:position():length()
+	local distance = (self._values.position - player:position()):length()
 	local mul = math.clamp(1 - distance / self._values.range, 0, 1)
 	return mul
 end

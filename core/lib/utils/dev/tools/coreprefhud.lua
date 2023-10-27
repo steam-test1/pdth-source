@@ -64,12 +64,10 @@ function PrefHud:build_gui()
 	local s, v, k
 	while i < table.size(self._counters) do
 		for it_k, it_v in pairs(self._counters) do
-			if not it_v._obj then
-				if it_v._sort <= (s or it_v._sort) then
-					s = it_v._sort
-					v = it_v
-					k = it_k
-				end
+			if not it_v._obj and it_v._sort <= (s or it_v._sort) then
+				s = it_v._sort
+				v = it_v
+				k = it_k
 			end
 		end
 		s = nil

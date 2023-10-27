@@ -531,7 +531,7 @@ end
 function CoreEditor:ungroup()
 	if alive(self._current_layer:selected_unit()) then
 		local groups = self._current_layer:selected_unit():unit_data().editor_groups
-		if groups and #groups > 0 then
+		if groups and 0 < #groups then
 			local group = groups[#groups]
 			self:remove_group(group:name())
 		end
@@ -540,7 +540,7 @@ end
 function CoreEditor:save_group()
 	if alive(self._current_layer:selected_unit()) then
 		local groups = self._current_layer:selected_unit():unit_data().editor_groups
-		if groups and #groups > 0 then
+		if groups and 0 < #groups then
 			local group = groups[#groups]
 			group:save_to_file()
 		end
@@ -559,7 +559,7 @@ end
 function CoreEditor:dump_group()
 	if alive(self._current_layer:selected_unit()) then
 		local groups = self._current_layer:selected_unit():unit_data().editor_groups
-		if groups and #groups > 0 then
+		if groups and 0 < #groups then
 			local group = groups[#groups]
 			managers.editor:dump_mesh(group:units(), group:name())
 		end

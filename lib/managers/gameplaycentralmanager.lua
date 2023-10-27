@@ -219,7 +219,7 @@ function GamePlayCentralManager:remove_contour_unit(unit)
 	for i, data in pairs(self._contour.units) do
 		if data.unit == unit then
 			table.remove(self._contour.units, i)
-		else
+			break
 		end
 	end
 	self._contour.index = 1
@@ -228,7 +228,7 @@ function GamePlayCentralManager:flash_contour(unit)
 	for i, data in pairs(self._contour.units) do
 		if data.unit == unit then
 			data.flash = 3
-		else
+			break
 		end
 	end
 end

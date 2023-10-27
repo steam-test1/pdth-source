@@ -124,9 +124,9 @@ function CopLogicIntimidated._update_enemy_detection(data, my_data)
 				end
 				local look_dir = enemy_unit:movement():m_head_rot():y()
 				local focus = my_vec:dot(look_dir)
-				if focus > 0.65 then
+				if 0.65 < focus then
 					visible = true
-					if focus > 0.85 then
+					if 0.85 < focus then
 						my_data.submission_meter = math.min(my_data.submission_max, my_data.submission_meter + delta_t)
 					end
 				end

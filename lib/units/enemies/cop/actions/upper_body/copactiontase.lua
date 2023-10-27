@@ -139,7 +139,7 @@ function CopActionTase:update(t)
 	local target_vec_flat = target_vec:with_z(0)
 	mvector3.normalize(target_vec_flat)
 	local fwd_dot = mvector3.dot(self._common_data.fwd, target_vec_flat)
-	if fwd_dot > 0.7 then
+	if 0.7 < fwd_dot then
 		if not self._modifier_on then
 			self._modifier_on = true
 			self._machine:force_modifier(self._modifier_name)
@@ -154,7 +154,7 @@ function CopActionTase:update(t)
 		if self._turn_allowed and not self._ext_anim.walk and not self._ext_anim.turn and not self._ext_movement:chk_action_forbidden("walk") then
 			local spin = target_vec:to_polar_with_reference(self._common_data.fwd, math.UP).spin
 			local abs_spin = math.abs(spin)
-			if abs_spin > 27 then
+			if 27 < abs_spin then
 				local new_action_data = {}
 				new_action_data.type = "turn"
 				new_action_data.body_part = 2

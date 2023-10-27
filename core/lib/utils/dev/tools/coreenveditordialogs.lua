@@ -88,7 +88,7 @@ end
 function FormulaMixerDummy:update(t, dt)
 	local value = self._formula(self._master:get_value(), unpack(self._params))
 	local t = type(value)
-	if t == "string" and value ~= self._value or t == "number" and math.abs(value - self._value) > self._tol or t == "userdata" and value - self._value:length() > self._tol then
+	if t == "string" and value ~= self._value or t == "number" and math.abs(value - self._value) > self._tol or t == "userdata" and (value - self._value):length() > self._tol then
 		self._value = value
 	end
 end
@@ -591,7 +591,7 @@ function CustomCheckBox:get_value()
 	end
 end
 function CustomCheckBox:set_value(v)
-	self._check_box:set_value(v > 0)
+	self._check_box:set_value(0 < v)
 end
 ConnectDialog = ConnectDialog or class()
 function ConnectDialog:init(p)
@@ -621,9 +621,7 @@ function ConnectDialog:show_modal()
 	self._done = false
 	self._return_val = true
 	self._dialog:show_modal()
-	while true do
-		if not self._done then
-		end
+	while not self._done do
 	end
 	return self._return_val
 end

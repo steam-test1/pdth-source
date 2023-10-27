@@ -166,7 +166,7 @@ function EWSControlSettingSync:get_ews_control_value(data, control_info)
 		local type = controls_type[data]
 		if type == "list" then
 			local index = data:selected_index()
-			if index > -1 then
+			if -1 < index then
 				value = data:get_string(index)
 			end
 		elseif type == "listctrl" then
@@ -476,7 +476,7 @@ function EWSControlSettingSync:create_properties_list(id, add_vector, read_only)
 		sizer:add(value_sizer, 0, 0, "EXPAND")
 		self._ews_frame:connect(remove_id, "EVT_COMMAND_BUTTON_CLICKED", callback(self, self, "remove_selected_property_from_list"), id)
 	end
-	if add_vector and #add_vector > 0 then
+	if add_vector and 0 < #add_vector then
 		local add_sizer = EWS:BoxSizer("HORIZONTAL")
 		local combo = EWS:ComboBox(self._ews_frame, "", id, "CB_SORT,CB_DROPDOWN")
 		local add_btn = EWS:Button(self._ews_frame, "Add", id, "BU_EXACTFIT,NO_BORDER")

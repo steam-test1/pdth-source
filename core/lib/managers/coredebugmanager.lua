@@ -117,7 +117,7 @@ function DebugManager:set_enabled_all(enabled, include_non_preferred)
 	self:set_systems_enabled(enabled, include_non_preferred)
 end
 function DebugManager.trim_list(list, max_count)
-	if max_count > 0 then
+	if 0 < max_count then
 		while max_count < #list do
 			table.remove(list, 1)
 		end
@@ -138,7 +138,7 @@ function DebugManager.draw_point(index, count, old_point, point, skip_lines)
 		color = DebugManager.get_color_by_index(index, count)
 	end
 	if not skip_lines and old_point then
-		local dir = point._pos - old_point._pos:normalized()
+		local dir = (point._pos - old_point._pos):normalized()
 		Application:draw_line_unpaused(old_point._pos, point._pos, unpack(color))
 		Application:draw_cone(point._pos, point._pos - dir * point._radius * 2, point._radius, unpack(color))
 	else
@@ -161,7 +161,7 @@ function DebugManager.draw_rot_list(list)
 end
 function DebugManager.get_color_by_index(index, count)
 	local scale
-	if count > 1 then
+	if 1 < count then
 		scale = (index - 1) / (count - 1)
 	else
 		scale = 0
@@ -207,7 +207,7 @@ function DebugManager.args_to_string(...)
 	for i, arg in pairs({
 		...
 	}) do
-		if i > 1 then
+		if 1 < i then
 			s = s .. "    " .. tostring(arg)
 		else
 			s = tostring(arg)
@@ -263,17 +263,13 @@ function DebugRaycast:init(copy_ray_wrapper)
 	self._distance = nil
 	self._radius = copy_ray_wrapper and copy_ray_wrapper:radius()
 	self._bundle = copy_ray_wrapper and copy_ray_wrapper:bundle()
-	if not copy_ray_wrapper or not copy_ray_wrapper:color() then
-	end
-	self._color = {
+	self._color = copy_ray_wrapper and copy_ray_wrapper:color() or {
 		1,
 		1,
 		1
 	}
 	self._normal = copy_ray_wrapper and copy_ray_wrapper:normal() or nil
-	if not copy_ray_wrapper or not copy_ray_wrapper:normal_color() then
-	end
-	self._normal_color = {
+	self._normal_color = copy_ray_wrapper and copy_ray_wrapper:normal_color() or {
 		0,
 		0,
 		0
@@ -288,7 +284,7 @@ end
 function DebugRaycast:set_from(from)
 	self._from = from
 	if self._to then
-		self._dir = self._to - self._from:normalized()
+		self._dir = (self._to - self._from):normalized()
 	end
 end
 function DebugRaycast:to()
@@ -300,8 +296,8 @@ function DebugRaycast:set_to(to)
 end
 function DebugRaycast:update_from_to_vars()
 	if self._from and self._to then
-		self._dir = self._to - self._from:normalized()
-		self._distance = self._to - self._from:length()
+		self._dir = (self._to - self._from):normalized()
+		self._distance = (self._to - self._from):length()
 		if self._distance < self.MAX_ARROW_SIZE then
 			self._arrow_size = self._distance
 		else
@@ -423,37 +419,35 @@ function DebugProfilerCounter:set_enabled(enabled)
 	enabled = not not enabled
 	if self._enabled ~= enabled then
 		if enabled then
-			do
-				local obj_class = getmetatable(self._obj)
-				if not obj_class then
-					self._instance_override = true
-					obj_class = self._obj
-				end
-				local meta_func = obj_class[self._func_name]
-				local instance_func = self._obj[self._func_name]
-				local name = self._name
-				local old_func, obj
-				if self._instance_override or self._instance_override == nil and meta_func ~= instance_func then
-					old_func = instance_func
-					self._instance_override = true
-					obj = self._obj
-				else
-					old_func = meta_func
-					self._instance_override = false
-					obj = obj_class
-				end
-				self._old_func = self._old_func or old_func
-				function self._new_func(...)
-					local id = Profiler:start(name)
-					local return_list = {
-						old_func(...)
-					}
-					Profiler:stop(id)
-					return unpack(return_list)
-				end
-				rawset(obj, self._func_name, self._new_func)
-				Application:console_command("profiler add " .. self._name)
+			local obj_class = getmetatable(self._obj)
+			if not obj_class then
+				self._instance_override = true
+				obj_class = self._obj
 			end
+			local meta_func = obj_class[self._func_name]
+			local instance_func = self._obj[self._func_name]
+			local name = self._name
+			local old_func, obj
+			if self._instance_override or self._instance_override == nil and meta_func ~= instance_func then
+				old_func = instance_func
+				self._instance_override = true
+				obj = self._obj
+			else
+				old_func = meta_func
+				self._instance_override = false
+				obj = obj_class
+			end
+			self._old_func = self._old_func or old_func
+			function self._new_func(...)
+				local id = Profiler:start(name)
+				local return_list = {
+					old_func(...)
+				}
+				Profiler:stop(id)
+				return unpack(return_list)
+			end
+			rawset(obj, self._func_name, self._new_func)
+			Application:console_command("profiler add " .. self._name)
 		else
 			Application:console_command("profiler remove " .. self._name)
 			if self._old_func then
@@ -592,8 +586,8 @@ function FuncDebug:delete(func, all)
 			self:remove(index)
 			count = count + 1
 			if not all then
+				break
 			end
-		else
 		end
 	end
 	return count
@@ -662,9 +656,7 @@ end
 function PosDebug:get(index, list_index)
 	list_index = list_index or 1
 	if self._pos_list[list_index] and #self._pos_list[list_index] > 0 then
-		if not index or not self._pos_list[list_index][index] then
-		end
-		return self._pos_list[list_index][#self._pos_list[list_index]]
+		return index and self._pos_list[list_index][index] or self._pos_list[list_index][#self._pos_list[list_index]]
 	end
 	return nil
 end
@@ -830,7 +822,7 @@ function GUIDebug:setup()
 	end
 end
 function GUIDebug:set_func(index, func)
-	if index >= 1 and index <= self.GUI_TEXT_COUNT then
+	if 1 <= index and index <= self.GUI_TEXT_COUNT then
 		if self._workspace == nil then
 			self:setup()
 		end
@@ -838,7 +830,7 @@ function GUIDebug:set_func(index, func)
 	end
 end
 function GUIDebug:get(index)
-	if index >= 1 and index <= self.GUI_TEXT_COUNT then
+	if 1 <= index and index <= self.GUI_TEXT_COUNT then
 		if self._workspace == nil then
 			self:setup()
 		end
@@ -852,7 +844,7 @@ function GUIDebug:get(index)
 	end
 end
 function GUIDebug:set(index, ...)
-	if index >= 1 and index <= self.GUI_TEXT_COUNT then
+	if 1 <= index and index <= self.GUI_TEXT_COUNT then
 		if self._workspace == nil then
 			self:setup()
 		end
@@ -862,7 +854,7 @@ function GUIDebug:set(index, ...)
 	end
 end
 function GUIDebug:get(index)
-	if index >= 1 and index <= self.GUI_TEXT_COUNT then
+	if 1 <= index and index <= self.GUI_TEXT_COUNT then
 		if self._workspace == nil then
 			self:setup()
 		end
@@ -870,7 +862,7 @@ function GUIDebug:get(index)
 	end
 end
 function GUIDebug:set_color(index, red, green, blue, alpha)
-	if index >= 1 and index <= self.GUI_TEXT_COUNT then
+	if 1 <= index and index <= self.GUI_TEXT_COUNT then
 		if self._workspace == nil then
 			self:setup()
 		end
@@ -1407,21 +1399,21 @@ function HijackDebug:unhijack_func(obj, func_name, is_metatable)
 end
 function HijackDebug:play_unit_state(unit, state)
 	local result = unit:hijacked_play_state(state)
-	if #result > 0 then
+	if 0 < #result then
 		cat_debug("debug", "STATE \"" .. tostring(state) .. "\" --> \"" .. tostring(result) .. "\".")
 	end
 	return result
 end
 function HijackDebug:play_machine_state(machine, state)
 	local result = machine:hijacked_play(state)
-	if #result > 0 then
+	if 0 < #result then
 		cat_debug("debug", "STATE \"" .. tostring(state) .. "\" --> \"" .. tostring(result) .. "\".")
 	end
 	return result
 end
 function HijackDebug:play_redirect(machine_or_unit, redirect)
 	local result = machine_or_unit:hijacked_play_redirect(redirect)
-	if #result > 0 then
+	if 0 < #result then
 		cat_debug("debug", "REDIRECT \"" .. tostring(redirect) .. "\" --> \"" .. tostring(result) .. "\".")
 	end
 	return result
@@ -1772,9 +1764,7 @@ end
 function MacroDebug:get_ray(skip_last_unit_assign)
 	local cam = managers.viewport:get_current_camera()
 	local from = cam and cam:position() or Vector3()
-	if not cam or not cam:rotation():y() then
-	end
-	local to = from + Vector3(0, 1, 0) * 100000
+	local to = from + (cam and cam:rotation():y() or Vector3(0, 1, 0)) * 100000
 	local ray = World:raycast("ray", from, to, "ray_type", "body editor phantom bullet")
 	if ray then
 		self:set_last_ray(ray)
@@ -1816,7 +1806,7 @@ function MacroDebug:print_unit_info(unit)
 	if alive(unit) then
 		local unit_file, object_file, sequence_file, anim_machine = self:get_unit_files(unit)
 		local unit_string = "Name: " .. tostring(unit:name():s()) .. ", Slot:" .. tostring(unit:slot()) .. ", Author: " .. tostring(unit:author():s())
-		if #anim_machine > 0 then
+		if 0 < #anim_machine then
 			unit_string = unit_string .. ", Anim: " .. tostring(anim_machine)
 		end
 		cat_print("debug", unit_string)
@@ -2120,10 +2110,10 @@ function MacroDebug:update(t, dt)
 		else
 			local duration = wall_time - self._check_fps_time
 			self._check_fps_count = self._check_fps_count + 1
-			if duration > 0 then
+			if 0 < duration then
 				avg_fps = self._check_fps_count / duration
 			end
-			if dt > 0 then
+			if 0 < dt then
 				fps = 1 / dt
 				if (not self._check_fps_min or fps < self._check_fps_min) and self._check_fps_old and self._check_fps_old - fps < 5 then
 					self._check_fps_min = fps
@@ -2173,7 +2163,7 @@ function MacroDebug:toggle_endurance_damage_hook(skip_print, line_duration)
 		managers.debug.hijack:unhijack_func(CoreSequenceManager.EnduranceElement, "activate", true)
 		cat_debug("debug", "Disabled endurance damage hook.")
 		self._endurance_damage_hook = nil
-	elseif not skip_print or line_duration and line_duration > 0 then
+	elseif not skip_print or line_duration and 0 < line_duration then
 		managers.debug.hijack:hijack_func(CoreSequenceManager.EnduranceElement, "activate", callback(self, self, "_hijacked_endurance_activate", {skip_print = skip_print, line_duration = line_duration}), true)
 		cat_debug("debug", "Enabled endurance damage hook. Output: " .. tostring(not skip_print) .. ", Line duration: " .. tostring(line_duration))
 		self._endurance_damage_hook = true
@@ -2192,11 +2182,11 @@ function MacroDebug:_hijacked_endurance_activate(option_map, endurance, env)
 end
 MemoryDebug = MemoryDebug or class(BaseDebug)
 MemoryDebug.CALC_TYPE_FUNC_MAP = DebugManager.CALC_TYPE_FUNC_MAP or {
-	["string"] = "add_calc_string",
-	["boolean"] = "add_calc_boolean",
-	["number"] = "add_calc_number",
-	["userdata"] = "add_calc_userdata",
-	["table"] = "add_calc_table",
+	string = "add_calc_string",
+	boolean = "add_calc_boolean",
+	number = "add_calc_number",
+	userdata = "add_calc_userdata",
+	table = "add_calc_table",
 	["function"] = "add_calc_function"
 }
 MemoryDebug.PRIMITIVE_VALUE_TYPE_MAP = DebugManager.PRIMITIVE_VALUE_TYPE_MAP or {
@@ -2515,7 +2505,7 @@ function ConsoleDebug:get_arg_text(...)
 	for i, arg in ipairs({
 		...
 	}) do
-		if i > 1 then
+		if 1 < i then
 			text = text .. "\t"
 		end
 		text = text .. tostring(arg)
@@ -2551,8 +2541,8 @@ function ConsoleDebug:invalidate()
 		config.wrap = true
 		config.width = self._panel:width()
 		local remainder_scroll = self._scroll - floored_scroll
-		local scroll_first = remainder_scroll > 0
-		while index > 0 and y > 0 do
+		local scroll_first = 0 < remainder_scroll
+		while 0 < index and 0 < y do
 			local text_data = self._text_list[index]
 			config.color = text_data.color or Color.white
 			config.text = string.format("[%.2f] %s", text_data.time, text_data.text)
@@ -2761,7 +2751,7 @@ function MenuDebug:confirm_button_pressed()
 	if self._current_menu_data then
 		local next_menu_data = self._current_menu_data[self._current_menu_index or 1]
 		if next_menu_data then
-			if #next_menu_data > 0 then
+			if 0 < #next_menu_data then
 				self._prev_menu_data_list = self._prev_menu_data_list or {}
 				table.insert(self._prev_menu_data_list, self._current_menu_data)
 				self._prev_menu_index_list = self._prev_menu_index_list or {}
@@ -2881,7 +2871,7 @@ function MenuDebug:setup_menu_shape()
 		option:set_shape(0, option_h, w, h)
 		option_h = option_h + h + option_spacing
 	end
-	if option_h > 0 then
+	if 0 < option_h then
 		option_h = option_h - option_spacing
 	end
 	local panel_y = (res.y - option_h) / 2
@@ -2893,9 +2883,9 @@ function MenuDebug:setup_menu_shape()
 			local center_dist = math.abs(panel_y + option:y() - safe_rect.y - safe_rect.height / 2)
 			local edge_dist = safe_rect.height / 2 - center_dist
 			local fade
-			if fade_dist > 0 then
+			if 0 < fade_dist then
 				fade = math.clamp(edge_dist / fade_dist, 0, 1)
-			elseif edge_dist > 0 then
+			elseif 0 < edge_dist then
 				fade = 1
 			else
 				fade = 0

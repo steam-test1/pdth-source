@@ -101,13 +101,13 @@ end
 function wire_set_midpoint(unit, source, target, middle)
 	local s_pos = unit:get_object(source):position()
 	local e_pos = unit:get_object(target):position()
-	local n = e_pos - s_pos:normalized():cross(Vector3(0, 0, 1))
-	local dir = e_pos - s_pos:normalized():cross(n)
+	local n = (e_pos - s_pos):normalized():cross(Vector3(0, 0, 1))
+	local dir = (e_pos - s_pos):normalized():cross(n)
 	local m_point = s_pos + (e_pos - s_pos) * 0.5
 	unit:get_object(middle):set_position(m_point + dir * unit:wire_data().slack)
 	local co = unit:get_object(Idstring("co_cable"))
 	if co then
-		co:set_rotation(Rotation:look_at(e_pos - s_pos:normalized(), math.UP))
+		co:set_rotation(Rotation:look_at((e_pos - s_pos):normalized(), math.UP))
 	end
 end
 function probability(chance_table, result_table)
@@ -118,7 +118,7 @@ function probability(chance_table, result_table)
 		total_chance = total_chance + chance
 		if random <= total_chance then
 			choice = id
-		else
+			break
 		end
 	end
 	if result_table then
@@ -223,7 +223,7 @@ function math.spline_len(points, n)
 	local old_p = points[1]
 	for i = 1, n do
 		local p = math.spline(points, i / n)
-		len = len + p - old_p:length()
+		len = len + (p - old_p):length()
 		old_p = p
 	end
 	return len
@@ -257,14 +257,14 @@ function math.bezier_len(points, n)
 	local old_p = points[1]
 	for i = 1, n do
 		local p = math.bezier(points, i / n)
-		len = len + p - old_p:length()
+		len = len + (p - old_p):length()
 		old_p = p
 	end
 	return len
 end
 function math.point_on_line(l1, l2, p)
 	local u = (p.x - l1.x) * (l2.x - l1.x) + (p.y - l1.y) * (l2.y - l1.y) + (p.z - l1.z) * (l2.z - l1.z)
-	local u = math.clamp(u / math.pow(l2 - l1:length(), 2), 0, 1)
+	local u = math.clamp(u / math.pow((l2 - l1):length(), 2), 0, 1)
 	local x = l1.x + u * (l2.x - l1.x)
 	local y = l1.y + u * (l2.y - l1.y)
 	local z = l1.z + u * (l2.z - l1.z)
@@ -272,7 +272,7 @@ function math.point_on_line(l1, l2, p)
 end
 function math.distance_to_line(l1, l2, p)
 	local closest_point = math.point_on_line(l1, l2, p)
-	return closest_point - p:length(), closest_point
+	return (closest_point - p):length(), closest_point
 end
 function math.limitangle(angle)
 	local newangle = math.fmod(angle, 360)

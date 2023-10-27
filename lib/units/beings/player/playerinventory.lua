@@ -95,7 +95,7 @@ function PlayerInventory:clbk_weapon_unit_destroyed(weap_unit)
 	for i_sel, sel_data in pairs(self._available_selections) do
 		if sel_data.unit:key() == weapon_key then
 			self:remove_selection(i_sel, true)
-		else
+			break
 		end
 	end
 end

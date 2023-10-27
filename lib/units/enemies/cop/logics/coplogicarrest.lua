@@ -194,17 +194,17 @@ function CopLogicArrest._update_enemy_detection(data)
 					focus_enemy = enemy_data
 					focus_type = reaction
 					focus_enemy_key = key
-				else
-					elseif reaction == "arrest" then
-						focus_enemy = enemy_data
-						focus_type = reaction
-						focus_enemy_key = key
-						arrest_targets[key] = {
-							unit = enemy_data.unit
-						}
-						managers.groupai:state():on_arrest_start(data.key, key)
-					end
+					break
 				end
+			elseif reaction == "arrest" then
+				focus_enemy = enemy_data
+				focus_type = reaction
+				focus_enemy_key = key
+				arrest_targets[key] = {
+					unit = enemy_data.unit
+				}
+				managers.groupai:state():on_arrest_start(data.key, key)
+			end
 		end
 	end
 	if not focus_enemy or focus_type == "arrest" and arrest_targets[focus_enemy_key].intro_pos then
@@ -213,7 +213,7 @@ function CopLogicArrest._update_enemy_detection(data)
 				focus_enemy = enemies[enemy_key]
 				focus_enemy_key = enemy_key
 				focus_type = "arrest"
-			else
+				break
 			end
 		end
 		if not focus_enemy then
@@ -265,7 +265,7 @@ function CopLogicArrest._chk_reaction_to_criminal(data, key_criminal, criminal_d
 		local criminal_vec = u_criminal:movement():m_pos() - data.m_pos
 		mvector3.normalize(criminal_vec)
 		local criminal_look_dot = mvector3.dot(criminal_vec, criminal_fwd)
-		if visible and not assault_mode and criminal_look_dot > -0.2 then
+		if visible and not assault_mode and -0.2 < criminal_look_dot then
 			reaction = "arrest"
 		else
 			reaction = "assault"
@@ -285,13 +285,13 @@ function CopLogicArrest._verify_arrest_targets(data, my_data, arrest_targets, en
 		elseif enemies[enemy_key] then
 			if arrest_data.intro_pos then
 				local move_dis = mvector3.distance(enemies[enemy_key].m_pos, arrest_data.intro_pos)
-				if move_dis > 200 then
+				if 200 < move_dis then
 					group_ai:on_arrest_end(data.unit:key(), enemy_key)
 					arrest_targets[enemy_key] = nil
 					record.arrest_timeout = data.t + arrest_timeout
 					arrest_terminated = true
 					data.unit:sound():say("_r01x_sin", true)
-				elseif move_dis > 20 and not record.arrest_warn_timeout then
+				elseif 20 < move_dis and not record.arrest_warn_timeout then
 					record.arrest_warn_timeout = data.t + 2 + math.random(2)
 					record.arrest_warn_pos = mvector3.copy(enemies[enemy_key].m_pos)
 				end

@@ -338,7 +338,7 @@ function CopLogicFlee._chk_reaction_to_criminal(data, my_data, key_criminal, u_c
 		elseif dis < 3000 then
 			local criminal_fwd = u_criminal:movement():m_head_rot():y()
 			local criminal_look_dot = mvector3.dot(my_vec, criminal_fwd)
-			if criminal_look_dot > 0.9 then
+			if 0.9 < criminal_look_dot then
 				local aggression_age = data.t - record.assault_t
 				if aggression_age < 2 then
 					reaction = "assault"
@@ -384,7 +384,7 @@ function CopLogicFlee.action_complete_clbk(data, action)
 			my_data.moving_to_cover = nil
 		elseif my_data.best_cover then
 			local dis = mvector3.distance(my_data.best_cover[1][1], data.unit:movement():m_pos())
-			if dis > 100 then
+			if 100 < dis then
 				managers.navigation:release_cover(my_data.best_cover[1])
 				my_data.best_cover = nil
 			end
@@ -423,7 +423,7 @@ function CopLogicFlee._update_cover(data)
 	if want_cover and my_data.focus_enemy then
 		local threat_pos = my_data.focus_enemy.verified_pos
 		local min_threat_dis = 700
-		if not my_data.moving_to_cover and (not best_cover or not CopLogicAttack._verify_cover(best_cover[1], threat_pos, min_threat_dis) or not (min_threat_dis < mvector3.distance(best_cover[1][1], threat_pos))) then
+		if not my_data.moving_to_cover and (not (best_cover and CopLogicAttack._verify_cover(best_cover[1], threat_pos, min_threat_dis)) or not (min_threat_dis < mvector3.distance(best_cover[1][1], threat_pos))) then
 			local better_cover
 			if nearest_cover and CopLogicAttack._verify_cover(nearest_cover[1], threat_pos, min_threat_dis) then
 				better_cover = nearest_cover

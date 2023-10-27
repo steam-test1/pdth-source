@@ -220,7 +220,7 @@ function CoreEffectProperty:validate()
 		end
 	elseif self._type == "percentage" then
 		local v = tonumber(self._value)
-		if not v or v < 0 or v > 1 then
+		if not v or v < 0 or 1 < v then
 			ret.valid = false
 			ret.message = self._value .. " is not a valid number in [0,1]"
 			return ret
@@ -237,7 +237,7 @@ function CoreEffectProperty:validate()
 		end
 	elseif self._type == "opacity" then
 		local c = tonumber(self._value)
-		if not c or c < 0 or c > 255 then
+		if not c or c < 0 or 255 < c then
 			ret.valid = false
 			ret.message = self._value .. " is not a valid opacity"
 			return ret

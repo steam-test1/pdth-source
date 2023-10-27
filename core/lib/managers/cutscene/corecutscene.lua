@@ -133,13 +133,10 @@ function CoreCutscene:_parse_animation_blob_list(cutscene_node)
 	return nil
 end
 function CoreCutscene:_parse_single_animation_blob(cutscene_node)
--- fail 15
-null
-7
 	for collection_node in cutscene_node:children() do
 		if collection_node:name() == "controlled_units" then
 			local animation_blob = collection_node:parameter("animation_blob")
-			return {animation_blob}
+			return animation_blob and {animation_blob}
 		end
 	end
 	return nil

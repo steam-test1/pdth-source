@@ -32,10 +32,7 @@ function DatabaseManager:list_entries_of_type(type, pattern)
 end
 function DatabaseManager:list_entries_in_index(index, pattern)
 	local entries = self:_entries_in_index(index)
-	if pattern then
-	else
-	end
-	return table.find_all_values(entries, function(e)
+	return pattern and table.find_all_values(entries, function(e)
 		return string.find(e, pattern:s()) ~= nil
 	end) or entries
 end
@@ -77,7 +74,7 @@ function DatabaseManager:root_path()
 	local f
 	function f(s)
 		local str, i = string.gsub(s, "\\[%w_%.%s]+\\%.%.", "")
-		return i > 0 and f(str) or str
+		return 0 < i and f(str) or str
 	end
 	return f(path)
 end

@@ -157,10 +157,8 @@ function IngameWaitingForRespawnState:update(t, dt)
 		local time = self._auto_respawn_t - t
 		local s = time % 60
 		local m = math.floor(time / 60)
-		if time > 0 then
-			if not (math.round(s) < 10) or not ("0" .. math.round(s)) then
-			end
-			local text = m .. ":" .. math.round(s)
+		if 0 < time then
+			local text = m .. ":" .. (math.round(s) < 10 and "0" .. math.round(s) or math.round(s))
 			managers.hud:script(self.GUI_SPECTATOR).trade_text4:set_text(string.upper(managers.localization:text("menu_spectator_respawning_in", {
 				TIME = tostring(text)
 			})))
@@ -303,7 +301,7 @@ function IngameWaitingForRespawnState:_refresh_teammate_list()
 	local teammate_list = self._spectator_data.teammate_list
 	local lost_teammate_at_i
 	local i = #teammate_list
-	while i > 0 do
+	while 0 < i do
 		local u_key = teammate_list[i]
 		local teammate_data = all_teammates[u_key]
 		if not teammate_data then
@@ -321,7 +319,7 @@ function IngameWaitingForRespawnState:_refresh_teammate_list()
 			for i_key, test_u_key in ipairs(teammate_list) do
 				if test_u_key == u_key then
 					add = false
-				else
+					break
 				end
 			end
 			if add then

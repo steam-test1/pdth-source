@@ -183,11 +183,9 @@ function EnvironmentMixer:internal_output(...)
 end
 function EnvironmentMixer:_create_modifier(full_control, interface_name, func, shared, ...)
 	local interface = assert(self._interfaces[interface_name], "[EnvironmentMixer] Could not find interface with name: " .. interface_name)
-	if not interface.DATA_PATH then
-		local path = {
-			...
-		}
-	end
+	local path = interface.DATA_PATH or {
+		...
+	}
 	local is_shared = interface.SHARED or shared
 	local name = self:_create_handle_name_from_params(unpack(path))
 	local handle = self:_get_handle_by_name(name) or self._cache:shared_handle(nil, name)
@@ -250,7 +248,7 @@ function EnvironmentMixer:_mix(target_block, from_block, to_block, scale)
 	for key, value in pairs(from_block) do
 		assert(target_block[key] and to_block[key], "[EnvironmentMixer] Mixing failed, parameters does not match.")
 		if type(value) == "string" then
-			if scale >= 0.5 then
+			if 0.5 <= scale then
 				target_block[key] = value
 			end
 		else

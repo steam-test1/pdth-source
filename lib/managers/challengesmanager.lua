@@ -400,7 +400,7 @@ function ChallengesManager:aquired_money()
 	for name, challenge in pairs(self._challenges_map) do
 		if challenge.id == "aquired_money" and self._global.active[name] then
 			ach_name = name
-		else
+			break
 		end
 	end
 	if not ach_name then

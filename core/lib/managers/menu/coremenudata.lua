@@ -33,7 +33,7 @@ function Data:load_data(file_path, menu_id)
 	for _, c in ipairs(root) do
 		if c._meta == "menu" and c.id and c.id == menu_id then
 			menu = c
-		else
+			break
 		end
 	end
 	if not menu then

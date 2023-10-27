@@ -539,7 +539,7 @@ end
 function TeamAILogicIdle.intimidate_civilians(data, criminal, play_sound, play_action, primary_target)
 	local best_civ, highest_wgt, intimidateable_civilians = TeamAILogicIdle._find_intimidateable_civilians(criminal, true)
 	local plural = false
-	if #intimidateable_civilians > 1 then
+	if 1 < #intimidateable_civilians then
 		plural = true
 	elseif #intimidateable_civilians <= 0 then
 		return false
@@ -655,10 +655,8 @@ function TeamAILogicIdle.is_obstructed_strict(data, objective)
 		if my_data.focus_enemy.verified and mvector3.distance(my_data.focus_enemy.m_pos, data.m_pos) < 800 and math.abs(my_data.focus_enemy.m_pos.z - data.m_pos.z) < 300 then
 			return true
 		end
-		if my_data.focus_enemy.dmg_t and data.t - my_data.focus_enemy.dmg_t < 7.5 and objective.interrupt_dmg_ratio then
-			if data.unit:character_damage():health_ratio() < (objective and objective.interrupt_dmg_ratio ^ 0.5 or 1) then
-				return true
-			end
+		if my_data.focus_enemy.dmg_t and data.t - my_data.focus_enemy.dmg_t < 7.5 and objective.interrupt_dmg_ratio and data.unit:character_damage():health_ratio() < (objective and objective.interrupt_dmg_ratio ^ 0.5 or 1) then
+			return true
 		end
 	end
 	return false

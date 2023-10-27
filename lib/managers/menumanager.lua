@@ -76,17 +76,19 @@ function MenuManager:init(is_start_menu)
 		}
 		self:register_menu(kit_menu)
 		if Application:production_build() then
-			do break end
-			local menu_inventory_outfit = {
-				name = "menu_inventory_outfit",
-				id = "inventory_outfit_menu",
-				content_file = "gamedata/menus/inventory_outfit_menu",
-				callback_handler = MenuCallbackHandler:new(),
-				input = "MenuInput",
-				renderer = "MenuPauseRenderer"
-			}
-			self:register_menu(menu_inventory_outfit)
-			self._controller:add_trigger("back", callback(self, self, "toggle_inventory_outfit"))
+			repeat
+				do break end -- pseudo-goto
+				local menu_inventory_outfit = {
+					name = "menu_inventory_outfit",
+					id = "inventory_outfit_menu",
+					content_file = "gamedata/menus/inventory_outfit_menu",
+					callback_handler = MenuCallbackHandler:new(),
+					input = "MenuInput",
+					renderer = "MenuPauseRenderer"
+				}
+				self:register_menu(menu_inventory_outfit)
+				self._controller:add_trigger("back", callback(self, self, "toggle_inventory_outfit"))
+			until true
 		end
 		local menu_dialog_options = {
 			name = "menu_dialog_options",
@@ -640,7 +642,7 @@ function MenuManager:show_global_success(node)
 	end
 	rate = rate * 100
 	local rate_str
-	if rate >= 10 then
+	if 10 <= rate then
 		rate_str = string.format("%.0f", rate)
 	else
 		rate_str = string.format("%.1f", rate)
@@ -2396,9 +2398,7 @@ function MenuManager.refresh_level_select(node, verify_dlc_owned)
 			end
 		end
 	end
-	if not (min_difficulty < tweak_data:difficulty_to_index(Global.game_settings.difficulty)) or not Global.game_settings.difficulty then
-	end
-	Global.game_settings.difficulty = tweak_data:index_to_difficulty(min_difficulty)
+	Global.game_settings.difficulty = min_difficulty < tweak_data:difficulty_to_index(Global.game_settings.difficulty) and Global.game_settings.difficulty or tweak_data:index_to_difficulty(min_difficulty)
 	local item_difficulty = node:item("lobby_difficulty")
 	if item_difficulty then
 		for i, option in ipairs(item_difficulty:options()) do
@@ -2964,7 +2964,7 @@ function MenuPlayerInventory:modify_player_outfit(node)
 			for _, category in ipairs(slot:categories()) do
 				if not outfit:check_category_against_rules(category) then
 					slot_available = false
-				else
+					break
 				end
 			end
 		end
@@ -3035,7 +3035,7 @@ function MenuPlayerInventory:equippable_slot_items(node, inventory_slot)
 				}
 				local menu_item = new_node:create_item(nil, params)
 				new_node:add_item(menu_item)
-			else
+				break
 			end
 		end
 	end

@@ -70,7 +70,7 @@ Date: %s%s]], output, v.date, v.text) or string.format("Date: %s%s", v.date, v.t
 		return output
 	else
 		local start = 0
-		if #news > 20 then
+		if 20 < #news then
 			start = math.abs(20 - #news)
 		end
 		local output = {}
@@ -80,7 +80,7 @@ Date: %s%s]], output, v.date, v.text) or string.format("Date: %s%s", v.date, v.t
 				table.insert(output, self:replace(str))
 			end
 		end
-		return #output > 0 and output
+		return 0 < #output and output
 	end
 end
 function NewsReportManager:write_new_date()

@@ -155,17 +155,15 @@ function LuaProfilerGridBox:_sort_funcnodes()
 			return self._lpd:fn_num_sub_calls(fnid)
 		end
 	else
-		do
-			local i = self._sortcolumn - 9
-			local index = math.floor(i / 2)
-			if i % 2 == 0 then
-				function convert(fnid)
-					return self._lpd:fn_diff(fnid, index)
-				end
-			else
-				function convert(fnid)
-					return self._lpd:fn_peak(fnid, index)
-				end
+		local i = self._sortcolumn - 9
+		local index = math.floor(i / 2)
+		if i % 2 == 0 then
+			function convert(fnid)
+				return self._lpd:fn_diff(fnid, index)
+			end
+		else
+			function convert(fnid)
+				return self._lpd:fn_peak(fnid, index)
 			end
 		end
 	end

@@ -89,9 +89,9 @@ function MoneyManager:_present(amount)
 		present = present .. string.sub(reverse, i, i) .. (math.mod(i, 3) == 0 and i ~= string.len(reverse) and "," or "")
 	end
 	local event = "money_collect_small"
-	if amount > 999 then
+	if 999 < amount then
 		event = "money_collect_large"
-	elseif amount > 101 then
+	elseif 101 < amount then
 		event = "money_collect_medium"
 	end
 end

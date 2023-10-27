@@ -58,7 +58,7 @@ function BaseNetworkHandler._verify_in_session()
 end
 function BaseNetworkHandler._verify_in_server_session()
 	local session = managers.network:session()
-	if not session or not session:is_host() or session:closing() then
+	if not (session and session:is_host()) or session:closing() then
 		print("[BaseNetworkHandler._verify_in_server_session] Discarding message")
 		Application:stack_dump()
 		return
@@ -67,7 +67,7 @@ function BaseNetworkHandler._verify_in_server_session()
 end
 function BaseNetworkHandler._verify_in_client_session()
 	local session = managers.network:session()
-	if not session or not session:is_client() or session:closing() then
+	if not (session and session:is_client()) or session:closing() then
 		print("[BaseNetworkHandler._verify_in_client_session] Discarding message")
 		Application:stack_dump()
 		return

@@ -229,13 +229,13 @@ function TripMineBase:_explode(col_ray)
 			end
 		end
 	end
-	if amount >= 2 then
+	if 2 <= amount then
 		managers.challenges:count_up("dual_tripmine")
 	end
-	if amount >= 3 then
+	if 3 <= amount then
 		managers.challenges:count_up("tris_tripmine")
 	end
-	if amount >= 4 then
+	if 4 <= amount then
 		managers.challenges:count_up("quad_tripmine")
 	end
 	if managers.network:session() then

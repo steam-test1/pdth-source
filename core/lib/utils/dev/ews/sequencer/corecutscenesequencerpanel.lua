@@ -137,7 +137,7 @@ function CoreCutsceneSequencerPanel:remove_items(clip_list)
 			for _, track in ipairs(self:film_tracks()) do
 				if track:remove_clip(clip) then
 					removed_count = removed_count + 1
-				else
+					break
 				end
 			end
 		end

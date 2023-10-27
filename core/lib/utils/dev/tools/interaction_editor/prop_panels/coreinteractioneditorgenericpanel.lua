@@ -52,7 +52,7 @@ end
 function InteractionEditorGenericPanel:_build_ui(desc, node)
 	self._prop_box = EWS:BoxSizer("VERTICAL")
 	local properties = desc:node_properties(node)
-	if #properties > 0 then
+	if 0 < #properties then
 		local static_prop_box = EWS:StaticBoxSizer(self._scrolled_window, "VERTICAL", "Properties")
 		for _, prop in ipairs(properties) do
 			local prop_type = desc:property_type(node, prop)
@@ -161,7 +161,7 @@ function InteractionEditorGenericPanel:_build_ui(desc, node)
 		self._prop_box:add(static_prop_box, 0, 2, "EXPAND,ALL")
 	end
 	local patterns = desc:node_patterns(node)
-	if #patterns > 0 then
+	if 0 < #patterns then
 		local static_patterns_box = EWS:StaticBoxSizer(self._scrolled_window, "VERTICAL", "Patterns")
 		local cb_box = EWS:BoxSizer("HORIZONTAL")
 		local combo_box = EWS:ComboBox(self._scrolled_window, "", "", "CB_SORT,CB_READONLY")
@@ -276,7 +276,7 @@ function InteractionEditorGenericPanel:on_add_pat(data, event)
 end
 function InteractionEditorGenericPanel:on_remove_pat(data, event)
 	local idx = data.list_box:selected_index()
-	if idx > -1 then
+	if -1 < idx then
 		local selected = data.list_box:get_string(idx)
 		local system = assert(self._owner:active_system())
 		local node, pat, ptype, name, full_name = system:pattern_data(data.node, selected)

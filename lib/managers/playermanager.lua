@@ -177,7 +177,7 @@ function PlayerManager:remove_crew_bonus(peer_id)
 			upgrade = data.upgrade
 			table.remove(self._global.synced_bonuses, i)
 			self:_crew_bonus_consequence(upgrade)
-		else
+			break
 		end
 	end
 end
@@ -273,9 +273,7 @@ function PlayerManager:_internal_load()
 end
 function PlayerManager:_add_level_equipment(player)
 	local id = Global.running_simulation and managers.editor:layer("Level Settings"):get_setting("simulation_level_id")
-	if id == "none" or not id then
-		id = nil
-	end
+	id = id ~= "none" and id or nil
 	id = id or Global.level_data.level_id
 	if not id then
 		return
@@ -712,10 +710,10 @@ function PlayerManager:peer_dropped_out(peer)
 				if not self._global.synced_equipment_possession[id] or not self._global.synced_equipment_possession[id][name] then
 					if p == managers.network:session():local_peer() then
 						managers.player:add_special({name = name})
-					else
-						p:send("give_equipment", name)
+						break
 					end
-				else
+					p:send("give_equipment", name)
+					break
 				end
 			end
 		end

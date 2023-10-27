@@ -284,26 +284,26 @@ function NetworkMatchMakingPSN:update(time)
 	if self._trytime and TimerManager:wall():time() > self._trytime then
 		self._trytime = nil
 		print("self._trytime run out!", inspect(self))
-		do
-			local is_server = self._is_server_var
-			self._is_server_var = false
-			self._is_client_var = false
-			managers.platform:set_presence("Signed_in")
-			self._players = {}
-			self._server_rpc = nil
-			if self._joining_lobby then
-				self:_error_cb({error = "8002231d"})
+		local is_server = self._is_server_var
+		self._is_server_var = false
+		self._is_client_var = false
+		managers.platform:set_presence("Signed_in")
+		self._players = {}
+		self._server_rpc = nil
+		if self._joining_lobby then
+			self:_error_cb({error = "8002231d"})
+		end
+		if self._room_id then
+			if not is_server then
+				print(" LEAVE SESSION BECAUSE OF TIME OUT", self._room_id)
+				self:leave_game()
 			end
-			if self._room_id then
-				if not is_server then
-					print(" LEAVE SESSION BECAUSE OF TIME OUT", self._room_id)
-					self:leave_game()
-				end
-			elseif not self._last_settings then
+		else
+			if not self._last_settings then
 				self:_call_callback("cancel_done")
+			else
 			end
 		end
-	else
 	end
 	if self._leave_time and TimerManager:wall():time() > self._leave_time then
 		local closed = false
@@ -510,18 +510,16 @@ function NetworkMatchMakingPSN:create_lobby(settings)
 		managers.network.matchmake:_created_lobby(roomid)
 	end
 	PSN:set_matchmaking_callback("session_created", session_created)
-	if not settings or not settings.numbers then
-		local numbers = {
-			2,
-			3,
-			1,
-			1,
-			1,
-			1,
-			0,
-			1
-		}
-	end
+	local numbers = settings and settings.numbers or {
+		2,
+		3,
+		1,
+		1,
+		1,
+		1,
+		0,
+		1
+	}
 	numbers[4] = 1
 	numbers[5] = self:_game_version()
 	numbers[8] = 1
@@ -638,7 +636,7 @@ function NetworkMatchMakingPSN:start_search_lobbys(friends_only)
 				managers.menu:active_menu().logic:refresh_node("play_online", true, self._lobbys_info_list, self._friends_only)
 				managers.network.matchmake:search_lobby_done()
 			end
-			if #room_ids > 0 then
+			if 0 < #room_ids then
 				PSN:set_matchmaking_callback("fetch_session_attributes", f2)
 				local wanted_attributes = {
 					numbers = {
@@ -667,18 +665,16 @@ function NetworkMatchMakingPSN:start_search_lobbys(friends_only)
 	end
 end
 function NetworkMatchMakingPSN:search_lobby(settings)
-	if not settings or not settings.numbers then
-		local numbers = {
-			1,
-			2,
-			3,
-			4,
-			5,
-			6,
-			7,
-			8
-		}
-	end
+	local numbers = settings and settings.numbers or {
+		1,
+		2,
+		3,
+		4,
+		5,
+		6,
+		7,
+		8
+	}
 	local table_description = {numbers = numbers}
 	local filter = {
 		closed = nil,

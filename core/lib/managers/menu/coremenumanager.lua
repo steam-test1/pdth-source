@@ -73,7 +73,7 @@ function Manager:close_menu(menu_name)
 		for _, open_menu in ipairs(self._open_menus) do
 			if open_menu.name == menu_name then
 				menu = open_menu
-			else
+				break
 			end
 		end
 	else

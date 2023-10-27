@@ -150,19 +150,17 @@ end
 function responder_map(response_table)
 	local responder = {}
 	for key, value in pairs(response_table) do
-		do
-			if key == "default" then
-				setmetatable(responder, {
-					__index = function()
-						return function()
-							return value
-						end
+		if key == "default" then
+			setmetatable(responder, {
+				__index = function()
+					return function()
+						return value
 					end
-				})
-			else
-				responder[key] = function()
-					return value
 				end
+			})
+		else
+			responder[key] = function()
+				return value
 			end
 		end
 	end
@@ -171,14 +169,12 @@ end
 GetSet = GetSet or class()
 function GetSet:init(t)
 	for k, v in pairs(t) do
-		do
+		self["_" .. k] = v
+		self[k] = function(self)
+			return self["_" .. k]
+		end
+		self["set_" .. k] = function(self, v)
 			self["_" .. k] = v
-			self[k] = function(self)
-				return self["_" .. k]
-			end
-			self["set_" .. k] = function(self, v)
-				self["_" .. k] = v
-			end
 		end
 	end
 end

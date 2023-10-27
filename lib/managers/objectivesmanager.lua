@@ -187,7 +187,7 @@ function ObjectivesManager:complete_sub_objective(id, sub_id, load_data)
 	for _, sub_objective in pairs(objective.sub_objectives) do
 		if not sub_objective.completed then
 			completed = false
-		else
+			break
 		end
 	end
 	if completed then

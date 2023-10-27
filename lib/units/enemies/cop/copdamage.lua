@@ -292,7 +292,7 @@ function CopDamage:get_ranged_attack_autotarget_data(shoot_from_pos, aim_vec)
 		body = self._unit:body("b_spine1")
 	}
 	local dis = mvector3.distance(shoot_from_pos, self._unit:position())
-	if dis > 3500 then
+	if 3500 < dis then
 		autotarget_data = {
 			body = self._unit:body("b_spine1")
 		}
@@ -313,8 +313,8 @@ function CopDamage:get_ranged_attack_autotarget_data(shoot_from_pos, aim_vec)
 				if not aim_ray then
 					uncovered_body = body
 					best_angle = body_angle
+				else
 				end
-			else
 			end
 		end
 		if uncovered_body then
@@ -353,9 +353,9 @@ function CopDamage:die(variant)
 		for _, enemy_data in pairs(managers.enemy:all_enemies()) do
 			if enemy_data.unit:key() ~= key and radius > mvector3.distance_sq(pos, enemy_data.m_pos) and enemy_data.unit:character_damage():dodge(false) then
 				num_dodged = num_dodged + 1
-				if num_dodged >= 4 then
+				if 4 <= num_dodged then
+					break
 				end
-			else
 			end
 		end
 	end

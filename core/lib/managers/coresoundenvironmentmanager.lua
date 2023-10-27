@@ -555,7 +555,7 @@ function CoreSoundEnvironmentManager:environment_at_position(pos)
 			environment = area:environment()
 			ambience = area:ambience_event()
 			occasional = area:occasional_event()
-		else
+			break
 		end
 	end
 	return environment, ambience, occasional

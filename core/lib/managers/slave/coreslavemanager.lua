@@ -24,7 +24,7 @@ function SlaveManager:act_master(host, port, lsport, manual_pumping)
 	return self._status
 end
 function SlaveManager:set_batch_count(count)
-	assert(not count or count > 0, "[SlaveManager] Batch count must be more then 0!")
+	assert(not count or 0 < count, "[SlaveManager] Batch count must be more then 0!")
 	self._updator:set_batch_count(count)
 end
 function SlaveManager:connected()

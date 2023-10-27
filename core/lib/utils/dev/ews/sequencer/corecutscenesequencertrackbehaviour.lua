@@ -147,7 +147,7 @@ end
 function ClipDragTrackBehaviour:_determine_snapped_edge(position)
 	if self._mode == "CLIP" then
 		local drag_delta_x = position.x - self._previous_mouse_position.x
-		if drag_delta_x > 0 then
+		if 0 < drag_delta_x then
 			self._snapped_edge = "RIGHT"
 		elseif drag_delta_x < 0 then
 			self._snapped_edge = "LEFT"

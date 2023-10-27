@@ -749,7 +749,7 @@ function CopActionAct:_ik_update_func(t)
 		if self._look_trans then
 			local look_trans = self._look_trans
 			local prog = (t - look_trans.start_t) / look_trans.duration
-			if prog > 1 then
+			if 1 < prog then
 				self._look_trans = nil
 			else
 				local end_vec

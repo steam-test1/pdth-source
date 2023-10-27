@@ -628,7 +628,8 @@ function CoreOldWorldDefinition:create_portals(portals, offset)
 		local top = portal.top
 		local bottom = portal.bottom
 		if top == 0 and bottom == 0 then
-			top, bottom = nil, nil
+			top = nil
+			bottom = nil
 		end
 		managers.portal:add_portal(t, bottom, top)
 	end
@@ -1144,7 +1145,8 @@ function CorePortal:create(offset)
 			local top = portal.top
 			local bottom = portal.bottom
 			if top == 0 and bottom == 0 then
-				top, bottom = nil, nil
+				top = nil
+				bottom = nil
 			end
 			managers.portal:add_portal(t, bottom, top)
 		end

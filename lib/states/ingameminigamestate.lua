@@ -73,7 +73,7 @@ function IngameMinigameState:update(t, dt)
 	end
 	if self._user then
 		local a = 0.4 * (Application:time() - math.floor(Application:time()))
-		if a > 0.2 then
+		if 0.2 < a then
 			a = 0.2 - (a - 0.2)
 		end
 		self._rect:set_color(Color.white:with_alpha(0.1 + a))

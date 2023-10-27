@@ -212,7 +212,7 @@ function CivilianLogicSurrender.on_intimidated(data, amount, aggressor_unit, ski
 		return
 	end
 	local my_data = data.internal_data
-	if not my_data.delayed_intimidate_id or not my_data.delayed_clbks or not my_data.delayed_clbks[my_data.delayed_intimidate_id] then
+	if not (my_data.delayed_intimidate_id and my_data.delayed_clbks) or not my_data.delayed_clbks[my_data.delayed_intimidate_id] then
 		if skip_delay then
 			CivilianLogicSurrender._delayed_intimidate_clbk(nil, {
 				data,
@@ -247,7 +247,7 @@ function CivilianLogicSurrender._delayed_intimidate_clbk(ignore_this, params)
 	local adj_scare = amount * data.char_tweak.scare_intimidate
 	my_data.scare_meter = math.max(0, my_data.scare_meter + adj_scare)
 	if anim_data.drop or anim_data.react_enter then
-	elseif anim_data.react and not anim_data.react_enter or anim_data.panic or anim_data.halt then
+	elseif not (not anim_data.react or anim_data.react_enter) or anim_data.panic or anim_data.halt then
 		local action_data = {
 			type = "act",
 			body_part = 1,
@@ -339,9 +339,9 @@ function CivilianLogicSurrender._update_enemy_detection(data, my_data)
 			local look_dir = enemy_unit:movement():m_head_rot():y()
 			local enemy_head_pos = enemy_unit:movement():m_head_pos()
 			local focus = my_vec:dot(look_dir)
-			if focus > 0.65 then
+			if 0.65 < focus then
 				visible = true
-				if focus > 0.8 then
+				if 0.8 < focus then
 					my_data.submission_meter = math.min(my_data.submission_max, my_data.submission_meter + delta_t)
 				end
 			end

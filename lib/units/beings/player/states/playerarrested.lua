@@ -115,10 +115,7 @@ function PlayerArrested:call_teammate(line, t, no_gesture, skip_alert)
 		end
 	end
 	if interact_type then
-		if not no_gesture then
-		else
-		end
-		self:_do_action_intimidate(t, interact_type or nil, queue_name, skip_alert)
+		self:_do_action_intimidate(t, not no_gesture and interact_type or nil, queue_name, skip_alert)
 	end
 end
 function PlayerArrested:_update_movement(t, dt)

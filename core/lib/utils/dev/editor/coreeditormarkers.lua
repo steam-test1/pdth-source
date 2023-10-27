@@ -71,7 +71,7 @@ end
 function CoreEditor:get_marker_string()
 	if self._ews_markers:nr_items() > 0 then
 		local i = self._ews_markers:selected_index()
-		if i >= 0 then
+		if 0 <= i then
 			return self._ews_markers:get_string(i)
 		end
 	end

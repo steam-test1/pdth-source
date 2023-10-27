@@ -544,7 +544,7 @@ function UnitTreeBrowser:_populate_tree()
 		local layer = self._tree_data.layers[layer_name]
 		local preview = layer.total_layer_units_preview
 		local total = layer.total_layer_units
-		if filter == "" and not self._not_preview:get_value() or total > 0 then
+		if not (filter ~= "" or self._not_preview:get_value()) or 0 < total then
 			local layer_id = self._unit_tree:append(self._root, layer_name .. " [" .. preview .. "/" .. total .. "]")
 			self._unit_tree:set_item_image(layer_id, self._layer_icon)
 			self._unit_tree:set_item_image(layer_id, self._layer_expand_icon, "EXPANDED")
@@ -553,7 +553,7 @@ function UnitTreeBrowser:_populate_tree()
 				local category = layer.categories[category_name]
 				local preview = category.total_preview_units
 				local total = category.total_units
-				if total > 0 then
+				if 0 < total then
 					local category_id = self._unit_tree:append(layer_id, category_name .. " [" .. preview .. "/" .. total .. "]")
 					self._unit_tree:set_item_image(category_id, self._category_icon)
 					self._unit_tree:set_item_image(category_id, self._category_expand_icon, "EXPANDED")
@@ -821,7 +821,7 @@ function ReplaceUnit:init(name, types)
 end
 function ReplaceUnit:replace_unit_name(units)
 	local i = units:selected_index()
-	if i > -1 then
+	if -1 < i then
 		self._replace_unit_name = units:get_string(i)
 	end
 end
@@ -904,7 +904,7 @@ function LayerReplaceUnit:replace_unit(data)
 	if self._layer:selected_unit() and data then
 		local units = data.units
 		local i = units:selected_index()
-		if i > -1 then
+		if -1 < i then
 			local name = managers.editor:get_real_name(units:get_string(i))
 			self._layer:replace_unit(name, data.all)
 		end
@@ -1344,9 +1344,7 @@ function CameraTransformTypeIn:update_fov()
 end
 function CameraTransformTypeIn:update_far_range()
 	local value = tonumber(self._far_range:get_value()) or managers.editor:camera_far_range() / 100
-	if value < 1 then
-		value = 1 or value
-	end
+	value = value < 1 and 1 or value
 	value = value * 100
 	self._far_range:set_value(string.format("%.2f", value / 100))
 	self._far_range:set_selection(-1, -1)

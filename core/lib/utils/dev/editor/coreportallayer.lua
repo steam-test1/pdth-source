@@ -348,7 +348,7 @@ function PortalLayer:set_unit_visible_state()
 end
 function PortalLayer:change_draw_base(draw_base)
 	local i = self._ctrlrs.portals:selected_index()
-	if i > -1 then
+	if -1 < i then
 		local name = self._ctrlrs.portals:get_string(i)
 		if self._portal_shapes[name] then
 			self._portal_shapes[name].draw_base = draw_base:get_value()
@@ -357,7 +357,7 @@ function PortalLayer:change_draw_base(draw_base)
 end
 function PortalLayer:update_spin(data)
 	local i = self._ctrlrs.portals:selected_index()
-	if i > -1 then
+	if -1 < i then
 		local name = self._ctrlrs.portals:get_string(i)
 		if self._portal_shapes[name] then
 			self._portal_shapes[name][data.value] = data.spin:get_value() * 100
@@ -366,7 +366,7 @@ function PortalLayer:update_spin(data)
 end
 function PortalLayer:set_height(data)
 	local i = self._ctrlrs.portals:selected_index()
-	if i > -1 then
+	if -1 < i then
 		local name = self._ctrlrs.portals:get_string(i)
 		if self._portal_shapes[name] then
 			local value = math.round(managers.editor:camera_position().z / 100)
@@ -502,7 +502,7 @@ function PortalLayer:set_selection_shapes_listbox(portals, name)
 end
 function PortalLayer:select_portal()
 	local i = self._ctrlrs.portals:selected_index()
-	if i >= 0 then
+	if 0 <= i then
 		local name = self._ctrlrs.portals:get_string(i)
 		if self._current_shape ~= self._portal_shapes[name] then
 			self._current_shape = self._portal_shapes[name]
@@ -521,7 +521,7 @@ function PortalLayer:select_portal()
 end
 function PortalLayer:select_group()
 	local i = self._ctrlrs.groups:selected_index()
-	if i > -1 then
+	if -1 < i then
 		local name = self._ctrlrs.groups:get_string(i)
 		if self._current_group ~= managers.portal:unit_group(name) then
 			self._current_group = managers.portal:unit_group(name)

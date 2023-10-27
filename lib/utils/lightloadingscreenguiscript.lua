@@ -149,7 +149,7 @@ function LightLoadingScreenGuiScript:setup(res, progress)
 	self._bar_bg_gui:set_shape(self._bar_border_gui:x() + bar_size, self._bar_border_gui:y() + bar_size, self._bar_border_gui:w() - border_size * 2, bar_size)
 	self._bar_gui:set_shape(self._bar_bg_gui:x(), self._bar_bg_gui:y(), 0, self._bar_bg_gui:h())
 	self._max_bar_width = self._bar_bg_gui:w()
-	if progress > 0 then
+	if 0 < progress then
 		self._init_progress = progress
 	end
 end

@@ -11,7 +11,7 @@ function CoreLuaPreprocessor:preprocess(path, code)
 	local out, nr = self:multiline(self:singleline(code, 0))
 	out, nr = self:regx(out, nr, path)
 	cat_print("spam", "[CoreLuaPreprocessor] " .. tostring(nr) .. " macros found.")
-	if self.DEBUG and nr > 0 then
+	if self.DEBUG and 0 < nr then
 		cat_print("spam", out)
 	end
 	return out
@@ -23,7 +23,7 @@ function CoreLuaPreprocessor:regx(str, nr, path)
 		for _, skip in ipairs(exp.skip) do
 			if string.find(path, skip) then
 				skip_file = true
-			else
+				break
 			end
 		end
 		if not skip_file then
@@ -57,7 +57,7 @@ function CoreLuaPreprocessor:multiline(str, innr)
 			end
 		end
 	end)
-	if nr > 0 then
+	if 0 < nr then
 		return self:multiline(ret, nr + innr)
 	else
 		return ret, innr
@@ -79,7 +79,7 @@ function CoreLuaPreprocessor:singleline(str, innr)
 			end
 		end
 	end)
-	if nr > 0 then
+	if 0 < nr then
 		return self:singleline(ret, nr + innr)
 	else
 		return ret, innr

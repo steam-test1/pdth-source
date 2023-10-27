@@ -12,7 +12,7 @@ function MenuItemKitSlot:init(data_node, parameters)
 		for i, option in ipairs(self._options) do
 			if option == selected_weapon then
 				self._current_index = i
-			else
+				break
 			end
 		end
 	elseif self._parameters.category == "equipment" then
@@ -21,7 +21,7 @@ function MenuItemKitSlot:init(data_node, parameters)
 		for i, option in ipairs(self._options) do
 			if option == selected then
 				self._current_index = i
-			else
+				break
 			end
 		end
 	elseif self._parameters.category == "crew_bonus" then
@@ -30,7 +30,7 @@ function MenuItemKitSlot:init(data_node, parameters)
 		for i, option in ipairs(self._options) do
 			if option == selected then
 				self._current_index = i
-			else
+				break
 			end
 		end
 	end
@@ -113,7 +113,7 @@ function MenuItemKitSlot:text()
 	elseif self._parameters.category == "equipment" then
 		local id = self._options[self._current_index]
 		local equipment_id = tweak_data.upgrades.definitions[id].equipment_id
-		local name_id = tweak_data.equipments.specials[equipment_id] or tweak_data.equipments[equipment_id].text_id
+		local name_id = (tweak_data.equipments.specials[equipment_id] or tweak_data.equipments[equipment_id]).text_id
 		return managers.localization:text(name_id)
 	elseif self._parameters.category == "crew_bonus" then
 		local id = self._options[self._current_index]

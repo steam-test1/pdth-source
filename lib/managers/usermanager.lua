@@ -5,7 +5,7 @@ UserManager = UserManager or class()
 UserManager.PLATFORM_CLASS_MAP = {}
 function UserManager:new(...)
 	local platform = SystemInfo:platform()
-	return self.PLATFORM_CLASS_MAP[platform:key()] or GenericUserManager:new(...)
+	return (self.PLATFORM_CLASS_MAP[platform:key()] or GenericUserManager):new(...)
 end
 GenericUserManager = GenericUserManager or class()
 GenericUserManager.STORE_SETTINGS_ON_PROFILE = false

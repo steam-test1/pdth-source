@@ -59,14 +59,14 @@ function DoctorBagBase:take(unit)
 		return
 	end
 	local taken = self:_take(unit)
-	if taken > 0 then
+	if 0 < taken then
 		unit:sound():play("pickup_ammo")
 		managers.network:session():send_to_peers_synched("sync_doctor_bag_taken", self._unit, taken)
 	end
 	if 0 >= self._amount then
 		self:_set_empty()
 	end
-	return taken > 0
+	return 0 < taken
 end
 function DoctorBagBase:sync_taken(amount)
 	self._amount = self._amount - amount

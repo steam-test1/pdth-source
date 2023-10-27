@@ -30,8 +30,8 @@ function CoreChangeCameraAttributeCutsceneKey:evaluate(player, fast_forward)
 	end
 end
 function CoreChangeCameraAttributeCutsceneKey:is_valid_near_range(value)
-	return value == nil or value > 0 and nil
+	return value == nil or 0 < value and value < (self:far_range() or math.huge)
 end
 function CoreChangeCameraAttributeCutsceneKey:is_valid_far_range(value)
-	return value == nil or nil
+	return value == nil or value > (self:near_range() or 0)
 end

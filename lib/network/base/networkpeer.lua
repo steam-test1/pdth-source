@@ -346,14 +346,12 @@ function NetworkPeer:_flush_queue(queue_name)
 			if param_type == "Unit" then
 				if not alive(param) or param:id() == -1 then
 					ok = nil
-				else
-					else
-						if param_type == "Body" and not alive(param) then
-							ok = nil
-					end
-					else
-					end
+					break
 				end
+			elseif param_type == "Body" and not alive(param) then
+				ok = nil
+				break
+			end
 		end
 		if ok then
 			self:send(unpack(msg))
