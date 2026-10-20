@@ -193,6 +193,7 @@ function IngameWaitingForPlayersState:at_enter()
 		Global.local_member:sync_lobby_data(managers.network:session():server_peer())
 		Global.local_member:sync_data(managers.network:session():server_peer())
 	end
+	managers.platform:set_rich_presence_state(Global.game_settings.single_player and "SPPlaying" or "MPPlaying")
 end
 
 function IngameWaitingForPlayersState:start_game_intro()

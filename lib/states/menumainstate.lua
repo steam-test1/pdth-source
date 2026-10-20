@@ -6,6 +6,7 @@ function MenuMainState:init(game_state_machine)
 end
 
 function MenuMainState:at_enter(old_state)
+	managers.platform:set_rich_presence_state("Idle")
 	if old_state:name() ~= "freeflight" or not managers.menu:is_active() then
 		self._camera_object = World:create_camera()
 		self._camera_object:set_near_range(3)

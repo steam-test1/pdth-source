@@ -663,31 +663,42 @@ function HUDManager:_player_info_hud_layout()
 	self:_layout_point_of_no_return_panel()
 	self:_layout_mugshots()
 	if not is_PS3 then
-		local say_text = full_hud.panel:child("say_text")
-		say_text:set_font_size(tweak_data.hud.chatinput_size)
-		local _, _, w, h = say_text:text_rect()
-		say_text:set_size(w, h)
-		say_text:set_position(4, 4)
-		full_hud.panel:child("chat_input"):set_size(500 * tweak_data.scale.chat_multiplier, 25 * tweak_data.scale.chat_multiplier)
-		full_hud.panel:child("chat_input"):set_y(4)
-		full_hud.panel:child("chat_input"):set_left(say_text:right())
-		full_hud.panel:child("chat_input"):script().text:set_font_size(tweak_data.hud.chatinput_size)
-		full_hud.panel:child("textscroll"):set_size(400 * tweak_data.scale.chat_multiplier, 118 * tweak_data.scale.chat_multiplier)
-		full_hud.panel:child("textscroll"):script().scrollus:set_font_size(tweak_data.hud.chatoutput_size)
-		full_hud.panel:child("textscroll"):set_x(4)
-		self:_layout_chat_output()
+		self:_layout_ingame_chat()
 	end
+end
+
+function HUDManager:_layout_ingame_chat()
+	local hud = managers.hud:script(PlayerBase.PLAYER_INFO_HUD)
+	local full_hud = managers.hud:script(PlayerBase.PLAYER_INFO_HUD_FULLSCREEN)
+	local state = full_hud:chat_output_state()
+	print("[HUDManager:_player_info_hud_layout] ", state)
+	local say_text = full_hud.panel:child("say_text")
+	say_text:set_font_size(tweak_data.hud.chatinput_size)
+	local _, _, w, h = say_text:text_rect()
+	say_text:set_size(w, h)
+	local chat_input_y
+	if state == "default" then
+		chat_input_y = hud.health_panel:top() - 12
+	else
+		chat_input_y = hud.health_panel:bottom() - 12
+	end
+	say_text:set_position(4, chat_input_y)
+	full_hud.panel:child("chat_input"):set_size(500 * tweak_data.scale.chat_multiplier, 25 * tweak_data.scale.chat_multiplier)
+	full_hud.panel:child("chat_input"):set_y(chat_input_y)
+	full_hud.panel:child("chat_input"):set_left(say_text:right())
+	full_hud.panel:child("chat_input"):script().text:set_font_size(tweak_data.hud.chatinput_size)
+	full_hud.panel:child("textscroll"):set_size(400 * tweak_data.scale.chat_multiplier, 118 * tweak_data.scale.chat_multiplier)
+	full_hud.panel:child("textscroll"):script().scrollus:set_font_size(tweak_data.hud.chatoutput_size)
+	full_hud.panel:child("textscroll"):set_x(4)
+	self:_layout_chat_output()
 end
 
 function HUDManager:_layout_chat_output()
 	local hud = managers.hud:script(PlayerBase.PLAYER_INFO_HUD)
 	local full_hud = managers.hud:script(PlayerBase.PLAYER_INFO_HUD_FULLSCREEN)
 	local state = full_hud:chat_output_state()
-	if state == "default" then
-		full_hud.panel:child("textscroll"):set_bottom(hud.health_panel:top() + self._saferect_size.y * self._workspace_size.h - 12)
-	else
-		full_hud.panel:child("textscroll"):set_bottom(hud.health_panel:bottom() + self._saferect_size.y * self._workspace_size.h - 4)
-	end
+	print("[HUDManager:_layout_chat_output] ", state)
+	full_hud.panel:child("textscroll"):set_bottom(full_hud.panel:child("chat_input"):top() - 12)
 end
 
 function HUDManager:set_chat_output_state(state)
@@ -699,7 +710,7 @@ function HUDManager:set_chat_output_state(state)
 	end
 	local full_hud = managers.hud:script(PlayerBase.PLAYER_INFO_HUD_FULLSCREEN)
 	full_hud:set_chat_output_state(state)
-	self:_layout_chat_output()
+	self:_layout_ingame_chat()
 end
 
 function HUDManager:_layout_player_info_hud_fullscreen()
@@ -1477,6 +1488,7 @@ function HUDManager:add_mugshot_by_unit(unit)
 	end
 	local mask_name = managers.criminals:character_data_by_name(character_name_id).mask_icon
 	local mask_icon, mask_texture_rect = tweak_data.hud_icons:get_icon_data(mask_name)
+	print("[HudManager] add_mugshot_by_unit ", character_name_id, unit, mask_name, mask_icon, inspect(mask_texture_rect))
 	local use_lifebar = is_husk_player and true or false
 	local mugshot_id = managers.hud:add_mugshot({
 		name = string.upper(character_name),
@@ -1539,6 +1551,7 @@ function HUDManager:add_mugshot(data)
 			Color(0, 0, 0, 0)
 		}
 	})
+	print(inspect(data))
 	local mask = panel:bitmap({
 		name = "mask",
 		texture = data.mask_icon,
@@ -2975,6 +2988,7 @@ function HUDManager:reset_player_hpbar()
 	hud.health_health:set_image(health_gui_image)
 	hud.health_armor:set_image(health_gui_image)
 	local x = tweak_data.mask_sets[mask_set][crim_entry.mask_id].health_gui_offset
+	print("[HudManager] reset_player_location ", mask_set, crim_entry.mask_id, x, health_gui_image)
 	hud.health_health:set_texture_rect(x, 0, 64, 130)
 	hud.health_armor:set_texture_rect(x, 130, 64, 130)
 	hud.health_background:set_texture_rect(x, 260, 64, 130)

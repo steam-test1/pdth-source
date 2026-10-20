@@ -657,6 +657,7 @@ function MenuManager:created_lobby()
 	Global.game_settings.single_player = false
 	managers.menu:close_menu("menu_main")
 	managers.menu:open_menu("lobby_menu")
+	managers.platform:set_rich_presence_state("MPLobby")
 end
 
 function MenuManager:exit_online_menues()
@@ -675,6 +676,7 @@ function MenuManager:on_leave_lobby()
 	managers.network:prepare_stop_network()
 	managers.menu:close_menu("lobby_menu")
 	managers.menu:open_menu("menu_main")
+	managers.platform:set_rich_presence_state("Idle")
 	managers.network.matchmake:leave_game()
 	managers.network.voice_chat:destroy_voice()
 	if Global.game_settings.difficulty == "overkill_145" and managers.experience:current_level() < 145 then
@@ -896,7 +898,7 @@ function MenuCallbackHandler:leave_online_menu()
 end
 
 function MenuCallbackHandler:on_visit_forum()
-	Steam:overlay_activate("url", "http://forums.steampowered.com/forums/forumdisplay.php?f=1225")
+	Steam:overlay_activate("game", "OfficialGameGroup")
 end
 
 function MenuCallbackHandler:on_buy_dlc1()
@@ -1023,6 +1025,39 @@ end
 function MenuCallbackHandler:hold_to_duck(item)
 	local hold = item:value() == "on"
 	managers.user:set_setting("hold_to_duck", hold)
+end
+
+function MenuCallbackHandler:choice_choose_window_mode(item)
+	local option_value = item:value()
+	local windowed = true
+	local borderless = false
+	if option_value == "borderless" then
+		borderless = true
+	elseif option_value == "fullscreen" then
+		windowed = false
+	end
+	local previous_fullscreen = managers.viewport:is_fullscreen()
+	local previous_borderless = managers.viewport:is_borderless()
+	managers.viewport:set_fullscreen(not windowed)
+	managers.viewport:set_borderless(borderless)
+	if borderless then
+		local resolutions = clone(RenderSettings.modes)
+		table.sort(resolutions)
+		local highest_resolution = resolutions[#resolutions]
+		managers.viewport:set_resolution(highest_resolution)
+		managers.viewport:set_aspect_ratio(highest_resolution.x / highest_resolution.y)
+	end
+	managers.menu:show_accept_gfx_settings_dialog(function()
+		managers.viewport:set_fullscreen(previous_fullscreen)
+		managers.viewport:set_borderless(previous_borderless)
+		local value = "windowed"
+		if previous_borderless then
+			value = "borderless"
+		elseif previous_fullscreen then
+			value = "fullscreen"
+		end
+		item:set_value(value)
+	end)
 end
 
 function MenuCallbackHandler:toggle_fullscreen(item)
@@ -1229,6 +1264,9 @@ end
 
 function MenuCallbackHandler:update_matchmake_attributes()
 	managers.network.matchmake:set_server_attributes(self:get_matchmake_attributes())
+	if managers.platform then
+		managers.platform:refresh_rich_presence_state()
+	end
 end
 
 function MenuCallbackHandler:create_lobby()
@@ -1397,6 +1435,7 @@ function MenuCallbackHandler:connect_to_host_rpc(item)
 			managers.menu:close_menu("menu_main")
 			
 			managers.menu:open_menu("lobby_menu")
+			managers.platform:set_rich_presence_state("MPLobby")
 		elseif res == "JOINED_GAME" then
 			local level_id = tweak_data.levels:get_level_name_from_world_name(item:parameters().level_name)
 			managers.network:session():load_level(item:parameters().level_name, nil, nil, nil, level_id, nil)
@@ -3054,13 +3093,15 @@ function MenuOptionInitiator:modify_adv_video(node)
 end
 
 function MenuOptionInitiator:modify_video(node)
-	local option_value = "off"
-	local fs_item = node:item("toggle_fullscreen")
-	if fs_item then
-		if RenderSettings.fullscreen then
-			option_value = "on"
+	local window_item = node:item("window_mode")
+	local option_value = "windowed"
+	if window_item then
+		if managers.viewport:is_fullscreen() then
+			option_value = "fullscreen"
+		elseif managers.viewport:is_borderless() then
+			option_value = "borderless"
 		end
-		fs_item:set_value(option_value)
+		window_item:set_value(option_value)
 	end
 	option_value = "off"
 	local st_item = node:item("toggle_subtitle")

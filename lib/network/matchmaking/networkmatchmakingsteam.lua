@@ -1,6 +1,6 @@
 NetworkMatchMakingSTEAM = NetworkMatchMakingSTEAM or class()
 NetworkMatchMakingSTEAM.OPEN_SLOTS = 4
-NetworkMatchMakingSTEAM._BUILD_SEARCH_INTEREST_KEY = "1.21.0"
+NetworkMatchMakingSTEAM._BUILD_SEARCH_INTEREST_KEY = "1.23.0"
 
 function NetworkMatchMakingSTEAM:init()
 	cat_print("lobby", "matchmake = NetworkMatchMakingSTEAM")
@@ -389,6 +389,7 @@ function NetworkMatchMakingSTEAM:join_server(room_id, skip_showing_dialog, owner
 				if res == "JOINED_LOBBY" then
 					managers.menu:close_menu("menu_main")
 					managers.menu:open_menu("lobby_menu")
+					managers.platform:set_rich_presence_state("MPLobby")
 					managers.network:session():send_to_peers_loaded("set_peer_entered_lobby")
 				elseif res == "JOINED_GAME" then
 					local level_id = tweak_data.levels:get_level_name_from_index(level_index)

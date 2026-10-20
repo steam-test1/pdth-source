@@ -194,6 +194,21 @@ function ViewportManager:get_safe_rect_pixels()
 	return safe_rect_pixels
 end
 
+function ViewportManager:set_borderless(borderless)
+	if not RenderSettings.borderless ~= not borderless or self._render_settings_change_map and not self._render_settings_change_map.borderless ~= not borderless then
+		self._render_settings_change_map = self._render_settings_change_map or {}
+		self._render_settings_change_map.borderless = not not borderless
+	end
+end
+
+function ViewportManager:is_borderless()
+	if self._render_settings_change_map and self._render_settings_change_map.borderless ~= nil then
+		return self._render_settings_change_map.borderless
+	else
+		return RenderSettings.borderless
+	end
+end
+
 function ViewportManager:set_resolution(resolution)
 	if RenderSettings.resolution ~= resolution or self._render_settings_change_map and self._render_settings_change_map.resolution ~= resolution then
 		self._render_settings_change_map = self._render_settings_change_map or {}
@@ -205,6 +220,14 @@ function ViewportManager:set_fullscreen(fullscreen)
 	if not RenderSettings.fullscreen ~= not fullscreen or self._render_settings_change_map and not self._render_settings_change_map.fullscreen ~= not fullscreen then
 		self._render_settings_change_map = self._render_settings_change_map or {}
 		self._render_settings_change_map.fullscreen = not not fullscreen
+	end
+end
+
+function ViewportManager:is_fullscreen()
+	if self._render_settings_change_map and self._render_settings_change_map.fullscreen ~= nil then
+		return self._render_settings_change_map.fullscreen
+	else
+		return RenderSettings.fullscreen
 	end
 end
 

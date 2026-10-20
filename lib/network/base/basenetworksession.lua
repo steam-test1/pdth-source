@@ -175,6 +175,9 @@ function BaseNetworkSession:add_peer(name, rpc, in_lobby, loading, synched, id, 
 	if synched then
 		managers.network:game():on_peer_sync_complete(peer, id)
 	end
+	if managers.platform then
+		managers.platform:refresh_rich_presence_state()
+	end
 	if rpc then
 		self:remove_connection_from_trash(rpc)
 		self:remove_connection_from_soft_remove_peers(rpc)
@@ -196,6 +199,9 @@ function BaseNetworkSession:remove_peer(peer, peer_id, reason)
 		peer:destroy()
 	end
 	managers.network:game():on_peer_removed(peer, peer_id, reason)
+	if managers.platform then
+		managers.platform:refresh_rich_presence_state()
+	end
 end
 
 function BaseNetworkSession:_soft_remove_peer(peer)

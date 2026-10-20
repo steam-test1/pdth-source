@@ -31,7 +31,10 @@ function NetworkAccountSTEAM:init()
 	Steam:sa_handler():stats_store_callback(NetworkAccountSTEAM._on_stats_stored)
 	Steam:sa_handler():init()
 	self._masks = {}
-	Steam:http_request("http://steamcommunity.com/gid/103582791433201592/memberslistxml/?xml=1", NetworkAccountSTEAM._on_troll_group_recieved)
+	self._masks.troll = Steam:is_user_in_group(Steam:userid(), "103582791433201592")
+	self._masks.vyse = Steam:is_user_in_group(Steam:userid(), "103582791433578383")
+	self._masks.tester_group = Steam:is_user_in_group(Steam:userid(), "103582791433732274")
+	Steam:http_request("https://p2wapi.paydaythegame.com/pdthmasks/v1/steam?id=" .. Steam:userid(), NetworkAccountSTEAM._on_pdth_masks_received)
 	Steam:lb_handler():register_storage_done_callback(NetworkAccountSTEAM._on_leaderboard_stored)
 	Steam:lb_handler():register_mappings_done_callback(NetworkAccountSTEAM._on_leaderboard_mapped)
 	self:_check_masks()
@@ -144,42 +147,20 @@ function NetworkAccountSTEAM:set_lightfx()
 	end
 end
 
+function NetworkAccountSTEAM._on_pdth_masks_received(success, page)
+	if not success then
+		return
+	end
+	for k, v in string.gmatch(page, "\"([%w_]+)\":%s*%c*([%w]+)") do
+		if v == "true" then
+			print("[NetworkAccountSTEAM] user owns mask through web: ", k, v)
+		end
+		managers.network.account._masks[k] = managers.network.account._masks[k] or v == "true"
+	end
+end
+
 function NetworkAccountSTEAM:has_mask(mask)
 	return self._masks[mask]
-end
-
-function NetworkAccountSTEAM._on_troll_group_recieved(success, page)
-	if success and string.find(page, "<steamID64>" .. Steam:userid() .. "</steamID64>") then
-		managers.network.account._masks.troll = true
-	end
-	Steam:http_request("http://steamcommunity.com/gid/103582791432592205/memberslistxml/?xml=1", NetworkAccountSTEAM._on_com_group_recieved)
-end
-
-function NetworkAccountSTEAM._on_com_group_recieved(success, page)
-	if success and string.find(page, "<steamID64>" .. Steam:userid() .. "</steamID64>") then
-		managers.network.account._masks.hockey_com = true
-	end
-	Steam:http_request("http://steamcommunity.com/gid/103582791433578383/memberslistxml/?xml=1", NetworkAccountSTEAM._on_vyse_group_recieved)
-end
-
-function NetworkAccountSTEAM._on_vyse_group_recieved(success, page)
-	if success and string.find(page, "<steamID64>" .. Steam:userid() .. "</steamID64>") then
-		managers.network.account._masks.vyse = true
-	end
-	Steam:http_request("http://steamcommunity.com/gid/103582791433732274/memberslistxml/?xml=1", NetworkAccountSTEAM._on_tester_group_recieved)
-end
-
-function NetworkAccountSTEAM._on_tester_group_recieved(success, page)
-	if success and string.find(page, "<steamID64>" .. Steam:userid() .. "</steamID64>") then
-		managers.network.account._masks.tester_group = true
-	end
-	Steam:http_request("http://steamcommunity.com/gid/103582791432508229/memberslistxml/?xml=1", NetworkAccountSTEAM._on_dev_group_recieved)
-end
-
-function NetworkAccountSTEAM._on_dev_group_recieved(success, page)
-	if success and string.find(page, "<steamID64>" .. Steam:userid() .. "</steamID64>") then
-		managers.network.account._masks.developer = true
-	end
 end
 
 function NetworkAccountSTEAM:has_alienware()
