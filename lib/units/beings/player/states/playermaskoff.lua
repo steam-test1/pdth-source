@@ -1,12 +1,15 @@
 PlayerMaskOff = PlayerMaskOff or class(PlayerStandard)
+
 function PlayerMaskOff:init(unit)
 	PlayerMaskOff.super.init(self, unit)
 	self._ids_unequip = Idstring("unequip")
 end
+
 function PlayerMaskOff:enter(enter_data)
 	self._ducking = enter_data and enter_data.ducking
 	PlayerMaskOff.super.enter(self, enter_data)
 end
+
 function PlayerMaskOff:_enter(enter_data)
 	local equipped_selection = self._unit:inventory():equipped_selection()
 	if equipped_selection ~= 1 then
@@ -19,6 +22,7 @@ function PlayerMaskOff:_enter(enter_data)
 	end
 	self._unit:base():set_slot(self._unit, 4)
 end
+
 function PlayerMaskOff:exit(new_state_name)
 	PlayerMaskOff.super.exit(self)
 	if self._previous_equipped_selection then
@@ -28,9 +32,11 @@ function PlayerMaskOff:exit(new_state_name)
 	self._unit:base():set_slot(self._unit, 2)
 	return
 end
+
 function PlayerMaskOff:update(t, dt)
 	PlayerMaskOff.super.update(self, t, dt)
 end
+
 function PlayerMaskOff:_update_check_actions(t, dt)
 	local input = self:_get_input()
 	self._stick_move = self._controller:get_input_axis("move")
@@ -54,9 +60,11 @@ function PlayerMaskOff:_update_check_actions(t, dt)
 	end
 	new_action = new_action or self:_check_action_interact(t, input)
 end
+
 function PlayerMaskOff:_get_walk_headbob()
 	return 0.0125
 end
+
 function PlayerMaskOff:_check_action_interact(t, input)
 	local new_action
 	local interaction_wanted = input.btn_interact_press
@@ -68,6 +76,7 @@ function PlayerMaskOff:_check_action_interact(t, input)
 	end
 	return new_action
 end
+
 function PlayerMaskOff:_check_action_primary_attack(t, input)
 	local new_action
 	local action_forbidden = self:chk_action_forbidden("primary_attack")
@@ -78,6 +87,7 @@ function PlayerMaskOff:_check_action_primary_attack(t, input)
 	end
 	return new_action
 end
+
 function PlayerMaskOff:_start_action_state_standard(t)
 	PlayerStandard.say_line(self, "a01x_any")
 	managers.player:set_player_state("standard")

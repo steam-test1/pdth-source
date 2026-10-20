@@ -1,8 +1,10 @@
 core:import("CoreMenuNodeGui")
 MenuPauseRenderer = MenuPauseRenderer or class(MenuRenderer)
+
 function MenuPauseRenderer:init(logic)
 	MenuRenderer.init(self, logic)
 end
+
 function MenuPauseRenderer:show_node(node)
 	local gui_class = MenuNodeGui
 	if node:parameters().gui_class then
@@ -19,6 +21,7 @@ function MenuPauseRenderer:show_node(node)
 	}
 	MenuPauseRenderer.super.super.show_node(self, node, parameters)
 end
+
 function MenuPauseRenderer:open(...)
 	MenuPauseRenderer.super.super.open(self, ...)
 	self._menu_bg = self._main_panel:bitmap({
@@ -29,6 +32,7 @@ function MenuPauseRenderer:open(...)
 	MenuRenderer.setup_frames_and_logo(self)
 	self:_layout_menu_bg()
 end
+
 function MenuPauseRenderer:_layout_menu_bg()
 	local res = RenderSettings.resolution
 	local safe_rect_pixels = managers.viewport:get_safe_rect_pixels()
@@ -36,10 +40,12 @@ function MenuPauseRenderer:_layout_menu_bg()
 	self._menu_bg:set_center(self._menu_bg:parent():center())
 	MenuRenderer.layout_frames_and_logo(self)
 end
+
 function MenuPauseRenderer:resolution_changed(...)
 	MenuPauseRenderer.super.resolution_changed(self, ...)
 	self:_layout_menu_bg()
 end
+
 function MenuPauseRenderer:close(...)
 	MenuPauseRenderer.super.close(self, ...)
 end

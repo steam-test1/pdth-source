@@ -2,6 +2,7 @@ core:module("CoreInteractionEditorOpStack")
 core:import("CoreClass")
 core:import("CoreCode")
 InteractionEditorOpStack = InteractionEditorOpStack or CoreClass.class()
+
 function InteractionEditorOpStack:init()
 	self._stack = {}
 	self._redo_stack = {}
@@ -9,10 +10,12 @@ function InteractionEditorOpStack:init()
 		save = {name = "save"}
 	}
 end
+
 function InteractionEditorOpStack:has_unsaved_changes()
 	local size = #self._stack
 	return 0 < size and self._stack[size].op.name ~= "save"
 end
+
 function InteractionEditorOpStack:new_op_type(name, undo_cb, redo_cb)
 	self._ops[name] = {
 		name = name,
@@ -20,9 +23,11 @@ function InteractionEditorOpStack:new_op_type(name, undo_cb, redo_cb)
 		redo_cb = redo_cb
 	}
 end
+
 function InteractionEditorOpStack:mark_save()
 	self:new_op("save")
 end
+
 function InteractionEditorOpStack:new_op(name, ...)
 	table.insert(self._stack, {
 		op = assert(self._ops[name]),
@@ -32,6 +37,7 @@ function InteractionEditorOpStack:new_op(name, ...)
 	})
 	self._redo_stack = {}
 end
+
 function InteractionEditorOpStack:undo()
 	local size = #self._stack
 	if 0 < size then
@@ -45,6 +51,7 @@ function InteractionEditorOpStack:undo()
 		end
 	end
 end
+
 function InteractionEditorOpStack:redo()
 	local size = #self._redo_stack
 	if 0 < size then

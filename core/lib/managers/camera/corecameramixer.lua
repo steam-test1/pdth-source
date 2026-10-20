@@ -15,16 +15,19 @@ local safe_divide = function(a, b)
 	return a / b
 end
 CameraMixer = CameraMixer or CoreClass.class()
+
 function CameraMixer:init(name)
 	self._name = name
 	self._cameras = {}
 end
+
 function CameraMixer:destroy()
 	for index, camera in ipairs(self._cameras) do
 		camera.camera:destroy()
 	end
 	self._cameras = {}
 end
+
 function CameraMixer:add_camera(camera, blend_time)
 	table.insert(self._cameras, {
 		camera = camera,
@@ -33,12 +36,14 @@ function CameraMixer:add_camera(camera, blend_time)
 		cam_data = nil
 	})
 end
+
 function CameraMixer:stop()
 	for index, camera in ipairs(self._cameras) do
 		camera.camera:destroy()
 	end
 	self._cameras = {}
 end
+
 function CameraMixer:update(cud, cud_class, time, dt)
 	for index, camera in ipairs(self._cameras) do
 		local _camera = camera.camera
@@ -75,6 +80,7 @@ function CameraMixer:update(cud, cud_class, time, dt)
 		assert(not camera.camera._destroyed)
 	end
 end
+
 function CameraMixer:debug_render(t, dt)
 	local pen = Draw:pen(Color(0.05, 0, 0, 1))
 	for _, camera in ipairs(self._cameras) do
@@ -89,6 +95,7 @@ function CameraMixer:debug_render(t, dt)
 		end
 	end
 end
+
 function CameraMixer:active_camera()
 	local camera_count = #self._cameras
 	if camera_count == 0 then
@@ -96,6 +103,7 @@ function CameraMixer:active_camera()
 	end
 	return self._cameras[camera_count].camera
 end
+
 function CameraMixer:cameras()
 	local cameras = {}
 	for _, camera in ipairs(self._cameras) do

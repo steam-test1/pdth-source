@@ -1,7 +1,9 @@
 CorePostEffectModifier = CorePostEffectModifier or class()
+
 function CorePostEffectModifier:init()
 	self._params = {}
 end
+
 function CorePostEffectModifier:add(from)
 	for key, value in pairs(from._params) do
 		if self._params[key] then
@@ -13,11 +15,13 @@ function CorePostEffectModifier:add(from)
 		end
 	end
 end
+
 function CorePostEffectModifier:scale(scale)
 	for key, value in pairs(self._params) do
 		self._params[key] = self._params[key] * scale
 	end
 end
+
 function CorePostEffectModifier:copy(from)
 	for key, value in pairs(from._params) do
 		if type(value) ~= "number" then
@@ -27,6 +31,7 @@ function CorePostEffectModifier:copy(from)
 		end
 	end
 end
+
 function CorePostEffectModifier:interpolate(postfx, with, scale)
 	for key, value in pairs(postfx._params) do
 		if type(value) ~= "string" then
@@ -39,6 +44,7 @@ function CorePostEffectModifier:interpolate(postfx, with, scale)
 		end
 	end
 end
+
 function CorePostEffectModifier:interpolate_value(postfx, with, key, scale)
 	if not with._params[key] or not postfx._params[key] then
 		return
@@ -47,6 +53,7 @@ function CorePostEffectModifier:interpolate_value(postfx, with, key, scale)
 		self._params[key] = postfx._params[key] * invscale + with._params[key] * scale
 	end
 end
+
 function CorePostEffectModifier:parse(xml_node)
 	self._params = {}
 	for child in xml_node:children() do
@@ -65,12 +72,15 @@ function CorePostEffectModifier:parse(xml_node)
 		end
 	end
 end
+
 function CorePostEffectModifier:set_value(key, value)
 	self._params[key] = value
 end
+
 function CorePostEffectModifier:value(key)
 	return self._params[key]
 end
+
 function CorePostEffectModifier:database_lookup(str)
 	local i = string.find(str, "#")
 	local db_key = string.sub(str, 1, i - 1)
@@ -80,10 +90,13 @@ function CorePostEffectModifier:database_lookup(str)
 	assert(value)
 	return value
 end
+
 CorePostProcessor = CorePostProcessor or class()
+
 function CorePostProcessor:init()
 	self._modifiers = {}
 end
+
 function CorePostProcessor:add(from)
 	for name, modifier in pairs(from._modifiers) do
 		if not self._modifiers[name] then
@@ -92,11 +105,13 @@ function CorePostProcessor:add(from)
 		modifier:add(from._modifiers[name])
 	end
 end
+
 function CorePostProcessor:scale(scale)
 	for name, modifier in pairs(self._modifiers) do
 		modifier:scale(scale)
 	end
 end
+
 function CorePostProcessor:copy(from)
 	for name, modifier in pairs(from._modifiers) do
 		if not self._modifiers[name] then
@@ -105,6 +120,7 @@ function CorePostProcessor:copy(from)
 		self._modifiers[name]:copy(modifier)
 	end
 end
+
 function CorePostProcessor:interpolate(postfx, with, scale)
 	for name, modifier in pairs(postfx._modifiers) do
 		if not with._modifiers[name] then
@@ -126,6 +142,7 @@ function CorePostProcessor:interpolate(postfx, with, scale)
 		modifier:interpolate(postfx._modifiers[name], with._modifiers[name], scale)
 	end
 end
+
 function CorePostProcessor:interpolate_value(postfx, with, modifier, key, scale)
 	if not with._modifiers[modifier] or not postfx._modifiers[modifier] then
 		return
@@ -135,6 +152,7 @@ function CorePostProcessor:interpolate_value(postfx, with, modifier, key, scale)
 	end
 	self._modifiers[modifier]:interpolate_value(postfx._modifiers[modifier], with._modifiers[modifier], key, scale)
 end
+
 function CorePostProcessor:parse(xml_node)
 	for child in xml_node:children() do
 		local name = child:parameter("name")
@@ -146,12 +164,14 @@ function CorePostProcessor:parse(xml_node)
 		end
 	end
 end
+
 function CorePostProcessor:set_value(modifier, key, value)
 	if not self._modifiers[modifier] then
 		self._modifiers[modifier] = CorePostEffectModifier:new()
 	end
 	self._modifiers[modifier]:set_value(key, value)
 end
+
 function CorePostProcessor:value(modifier, key)
 	if self._modifiers[modifier] then
 		return self._modifiers[modifier]:value(key)
@@ -159,17 +179,22 @@ function CorePostProcessor:value(modifier, key)
 		return nil
 	end
 end
+
 CorePostEffect = CorePostEffect or class()
+
 function CorePostEffect:init()
 	self:set_default()
 end
+
 function CorePostEffect:set_name(name)
 	self._name = name
 end
+
 function CorePostEffect:set_default()
 	self._post_processors = {}
 	self._name = "default"
 end
+
 function CorePostEffect:add(from)
 	for name, processor in pairs(from._post_processors) do
 		if not self._post_processors[name] then
@@ -179,11 +204,13 @@ function CorePostEffect:add(from)
 		processor:add(from._post_processors[name])
 	end
 end
+
 function CorePostEffect:scale(scale)
 	for name, processor in pairs(self._post_processors) do
 		processor:scale(scale)
 	end
 end
+
 function CorePostEffect:copy(from)
 	for name, processor in pairs(from._post_processors) do
 		if not self._post_processors[name] then
@@ -194,6 +221,7 @@ function CorePostEffect:copy(from)
 	end
 	self._name = from._name
 end
+
 function CorePostEffect:interpolate(postfx, with, scale)
 	for name, processor in pairs(postfx._post_processors) do
 		if not with._post_processors[name] then
@@ -220,6 +248,7 @@ function CorePostEffect:interpolate(postfx, with, scale)
 	end
 	self._name = postfx._name
 end
+
 function CorePostEffect:interpolate_value(postfx, with, processor, modifier, key, scale)
 	if not with._post_processors[processor] or not postfx._post_processors[processor] then
 		return
@@ -231,6 +260,7 @@ function CorePostEffect:interpolate_value(postfx, with, processor, modifier, key
 	self._name = postfx._name
 	self._post_processors[processor]:interpolate_value(postfx._post_processors[processor], with._post_processors[processor], modifier, key, scale)
 end
+
 function CorePostEffect:parse(xml_node)
 	for child in xml_node:children() do
 		local name = child:parameter("name")
@@ -244,12 +274,14 @@ function CorePostEffect:parse(xml_node)
 		end
 	end
 end
+
 function CorePostEffect:set_value(processor, modifier, key, value)
 	if not self._post_processors[processor] then
 		self._post_processors[processor] = CorePostProcessor:new()
 	end
 	self._post_processors[processor]:set_value(modifier, key, value)
 end
+
 function CorePostEffect:value(processor, modifier, key)
 	if self._post_processors[processor] then
 		return self._post_processors[processor]:value(modifier, key)

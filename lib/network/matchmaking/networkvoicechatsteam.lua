@@ -1,12 +1,15 @@
 NetworkVoiceChatSTEAM = NetworkVoiceChatSTEAM or class()
+
 function NetworkVoiceChatSTEAM:init()
 	self.handler = Steam:voip_handler()
 	self._enabled = false
 	self._users_talking = {}
 end
+
 function NetworkVoiceChatSTEAM:set_volume(volume)
 	self.handler:set_out_volume(volume)
 end
+
 function NetworkVoiceChatSTEAM:open()
 	self._push_to_talk = managers.user:get_setting("push_to_talk")
 	if not self._enabled and managers.user:get_setting("voice_chat") then
@@ -17,6 +20,7 @@ function NetworkVoiceChatSTEAM:open()
 		end
 	end
 end
+
 function NetworkVoiceChatSTEAM:destroy_voice(disconnected)
 	if self._enabled then
 		self.handler:stop_recording()
@@ -24,12 +28,14 @@ function NetworkVoiceChatSTEAM:destroy_voice(disconnected)
 		self._enabled = false
 	end
 end
+
 function NetworkVoiceChatSTEAM:_load_globals()
 	if Global.steam and Global.steam.voip then
 		self.handler = Global.steam.voip.handler
 		Global.steam.voip = nil
 	end
 end
+
 function NetworkVoiceChatSTEAM:_save_globals()
 	if not Global.steam then
 		Global.steam = {}
@@ -37,9 +43,11 @@ function NetworkVoiceChatSTEAM:_save_globals()
 	Global.steam.voip = {}
 	Global.steam.voip.handler = self.handler
 end
+
 function NetworkVoiceChatSTEAM:enabled()
 	return managers.user:get_setting("voice_chat")
 end
+
 function NetworkVoiceChatSTEAM:set_recording(enabled)
 	if not self._push_to_talk then
 		return
@@ -50,6 +58,7 @@ function NetworkVoiceChatSTEAM:set_recording(enabled)
 		self.handler:stop_recording()
 	end
 end
+
 function NetworkVoiceChatSTEAM:update()
 	self.handler:update()
 	local t = Application:time()
@@ -80,17 +89,21 @@ function NetworkVoiceChatSTEAM:update()
 		end
 	end
 end
+
 function NetworkVoiceChatSTEAM:on_member_added(peer)
 	if peer:rpc() then
 		self.handler:add_receiver(peer:id(), peer:rpc())
 	end
 end
+
 function NetworkVoiceChatSTEAM:on_member_removed(peer)
 	self.handler:remove_receiver(peer:id())
 end
+
 function NetworkVoiceChatSTEAM:mute_player(peer, mute)
 	self.handler:mute_voice_receiver(peer:id(), mute)
 end
+
 function NetworkVoiceChatSTEAM:is_muted(peer)
 	return self.handler:is_voice_receiver_muted(peer:id())
 end

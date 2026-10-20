@@ -4,9 +4,11 @@ core:import("CoreDependencyNode")
 UNIT = CoreDependencyNode.UNIT
 CUTSCENE = CoreDependencyNode.CUTSCENE
 CutsceneDependencyNode = CutsceneDependencyNode or CoreClass.class(CoreDependencyNode.DependencyNodeBase)
+
 function CutsceneDependencyNode:init(name, get_dn_cb, database)
 	self.super.init(self, CUTSCENE, "cutscene", name, get_dn_cb, database)
 end
+
 function CutsceneDependencyNode:_walkxml2dependencies(xmlnode, deps)
 	local node_name = xmlnode:name()
 	if node_name == "unit" then

@@ -11,10 +11,12 @@ local mrotation_set_zero = mrotation.set_zero
 local mrotation_mul = mrotation.multiply
 local mrotation_inv = mrotation.invert
 AimCameraNode = AimCameraNode or CoreClass.class(CoreTransformCameraNode.TransformCameraNode)
+
 function AimCameraNode:init(settings)
 	AimCameraNode.super.init(self, settings)
 	self._pitch_offset = settings.pitch_offset
 end
+
 function AimCameraNode.compile_settings(xml_node, settings)
 	AimCameraNode.super.compile_settings(xml_node, settings)
 	if xml_node:has_parameter("pitch_offset") then
@@ -23,9 +25,11 @@ function AimCameraNode.compile_settings(xml_node, settings)
 		settings.pitch_offset = false
 	end
 end
+
 function AimCameraNode:set_eye_target_position(position)
 	self._eye_target_position = position
 end
+
 function AimCameraNode:update(t, dt, in_data, out_data)
 	local eye_target_position = self._eye_target_position
 	if not eye_target_position then
@@ -49,6 +53,7 @@ function AimCameraNode:update(t, dt, in_data, out_data)
 	out_data:set_constraints(Rotation(), 10, 10)
 	AimCameraNode.super.update(self, t, dt, in_data, out_data)
 end
+
 function AimCameraNode:_update_pitch_offset(parent_position, parent_rotation)
 	local current_position = parent_position + self:local_position():rotate_with(parent_rotation)
 	local current_position_to_eye_target = self._camera_data.eye_target_position - current_position

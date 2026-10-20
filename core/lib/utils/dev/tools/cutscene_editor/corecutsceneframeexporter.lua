@@ -1,9 +1,11 @@
 require("core/lib/utils/dev/tools/cutscene_editor/CoreCutsceneFrameVisitor")
 CoreCutsceneFrameExporter = CoreCutsceneFrameExporter or class(CoreCutsceneFrameVisitor)
+
 function CoreCutsceneFrameExporter:init(parent_window, cutscene_editor, start_frame, end_frame, collection_name)
 	self.super.init(self, parent_window, cutscene_editor, start_frame, end_frame)
 	self.__collection_name = assert(tostring(collection_name))
 end
+
 function CoreCutsceneFrameExporter:begin()
 	self.super.begin(self)
 	if not SystemFS:is_dir("/frames") then
@@ -17,20 +19,25 @@ function CoreCutsceneFrameExporter:begin()
 	SystemFS:make_dir(output_dir)
 	self:_disable_visual_aids()
 end
+
 function CoreCutsceneFrameExporter:_progress_message(frame)
 	return "Writing image " .. self:_image_file_name(frame)
 end
+
 function CoreCutsceneFrameExporter:_visit_frame(frame)
 	local file_path = string.format("/frames/%s/%s", self.__collection_name, self:_image_file_name(frame))
 	Application:screenshot(file_path)
 end
+
 function CoreCutsceneFrameExporter:_cleanup()
 	self:_enable_visual_aids()
 	self.super._cleanup(self)
 end
+
 function CoreCutsceneFrameExporter:_image_file_name(frame)
 	return string.format("%08i.tga", frame)
 end
+
 function CoreCutsceneFrameExporter:_enable_visual_aids()
 	if self.__cutscene_editor_camera_was_enabled ~= nil then
 		self.__cutscene_editor:set_cutscene_camera_enabled(self.__cutscene_editor_camera_was_enabled)
@@ -50,6 +57,7 @@ function CoreCutsceneFrameExporter:_enable_visual_aids()
 		end
 	end
 end
+
 function CoreCutsceneFrameExporter:_disable_visual_aids()
 	self.__cutscene_editor_camera_was_enabled = self.__cutscene_editor:cutscene_camera_enabled()
 	self.__cutscene_editor:set_cutscene_camera_enabled(true)

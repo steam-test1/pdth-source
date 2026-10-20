@@ -20,6 +20,7 @@ if TeamAIBrain._reload_clbks then
 else
 	TeamAIBrain._reload_clbks = {}
 end
+
 function TeamAIBrain:init(unit)
 	self._unit = unit
 	self._timer = TimerManager:game()
@@ -29,6 +30,7 @@ function TeamAIBrain:init(unit)
 	self._active = true
 	self._reload_clbks[unit:key()] = callback(self, self, "on_reload")
 end
+
 function TeamAIBrain:post_init()
 	self:_reset_logic_data()
 	local my_key = tostring(self._unit:key())
@@ -48,34 +50,43 @@ function TeamAIBrain:post_init()
 		self:set_init_logic("idle")
 	end
 end
+
 function TeamAIBrain:set_spawn_ai(spawn_ai)
 	TeamAIBrain.super.set_spawn_ai(self, spawn_ai)
 	self:clbk_heat()
 	TeamAILogicAssault._chk_change_weapon(self._logic_data, self._logic_data.internal_data)
 end
+
 function TeamAIBrain:clbk_damage(my_unit, damage_info)
 	self._current_logic.damage_clbk(self._logic_data, damage_info)
 end
+
 function TeamAIBrain:clbk_death(my_unit, damage_info)
 	TeamAIBrain.super.clbk_death(self, my_unit, damage_info)
 	self:set_objective()
 end
+
 function TeamAIBrain:on_cop_neutralized(cop_key)
 	return self._current_logic.on_cop_neutralized(self._logic_data, cop_key)
 end
+
 function TeamAIBrain:on_long_dis_interacted(other_unit)
 	return self._current_logic.on_long_dis_interacted(self._logic_data, other_unit)
 end
+
 function TeamAIBrain:on_recovered(reviving_unit)
 	self._current_logic.on_recovered(self._logic_data, reviving_unit)
 end
+
 function TeamAIBrain:clbk_heat()
 	self._current_logic.clbk_heat(self._logic_data)
 end
+
 function TeamAIBrain:pre_destroy(unit)
 	TeamAIBrain.super.pre_destroy(self, unit)
 	managers.groupai:state():remove_listener("TeamAIBrain" .. tostring(self._unit:key()))
 end
+
 function TeamAIBrain:set_active(state)
 	TeamAIBrain.super.set_active(self, state)
 	if not state then

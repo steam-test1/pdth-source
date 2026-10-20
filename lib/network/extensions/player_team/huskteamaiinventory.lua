@@ -1,4 +1,5 @@
 HuskTeamAIInventory = HuskTeamAIInventory or class(HuskCopInventory)
+
 function HuskTeamAIInventory:add_unit_by_name(new_unit_name, equip)
 	local new_unit = World:spawn_unit(new_unit_name, Vector3(), Rotation())
 	local setup_data = {}

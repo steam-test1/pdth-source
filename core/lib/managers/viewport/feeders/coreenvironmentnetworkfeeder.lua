@@ -4,10 +4,12 @@ core:import("CoreCode")
 NETWORK_SLAVE_RECEIVER = Idstring("envnetfeeder_slave")
 NETWORK_MASTER_RECEIVER = Idstring("envnetfeeder_master")
 EnvironmentNetworkFeeder = EnvironmentNetworkFeeder or CoreClass.class()
+
 function EnvironmentNetworkFeeder:init()
 	self._verification_table = {}
 	self._block_nr = 1
 end
+
 function EnvironmentNetworkFeeder:feed(nr, scene, vp, data, block, ...)
 	if nr == 1 then
 		if assert(managers.slave:type()) == "slave" then
@@ -29,17 +31,21 @@ function EnvironmentNetworkFeeder:feed(nr, scene, vp, data, block, ...)
 	end
 	return false
 end
+
 function EnvironmentNetworkFeeder:end_feed(nr)
 	self._block_nr = nr == 1 and 1 or self._block_nr
 end
+
 function EnvironmentNetworkFeeder:env_data_block_sync(data, id, rpc)
 	local block, params = assert(loadstring("return " .. data))()
 	self._data_cache:set_parameter_block(block, unpack(params))
 	rpc:env_data_verify_block(id)
 end
+
 function EnvironmentNetworkFeeder:env_data_verify_block(id)
 	self._verification_table[tostring(id)] = true
 end
+
 function EnvironmentNetworkFeeder:send(id, block, params, peer)
 	local id_str = tostring(id)
 	local ver = self._verification_table[id_str]
@@ -48,6 +54,7 @@ function EnvironmentNetworkFeeder:send(id, block, params, peer)
 		peer:env_data_block_sync(self:pack_data(block, params), id)
 	end
 end
+
 function EnvironmentNetworkFeeder:pack_data(block, params)
 	assert(table.size(block) > 0 and table.size(params) > 0)
 	local str = ""

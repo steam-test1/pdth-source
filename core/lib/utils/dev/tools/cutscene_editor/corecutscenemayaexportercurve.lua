@@ -20,6 +20,7 @@ for _, char in ipairs({
 	table.insert(VALID_MAYA_NODE_TYPES, "animCurveT" .. char)
 	table.insert(VALID_MAYA_NODE_TYPES, "animCurveU" .. char)
 end
+
 function CoreCutsceneMayaExporterCurve:init(maya_node_type, node_name, attribute_name)
 	self.__samples = {}
 	self.__sample_count = 0
@@ -29,6 +30,7 @@ function CoreCutsceneMayaExporterCurve:init(maya_node_type, node_name, attribute
 	assert(table.contains(VALID_MAYA_NODE_TYPES, self.__maya_node_type), string.format("Unsupported maya node type \"%s\". Only subclasses of animCurve are supported.", self.__maya_node_type))
 	assert(string.match(self.__node_name, "^%l"), string.format("Unsupported node name \"%s\". Must start with a lower-case letter.", self.__node_name))
 end
+
 function CoreCutsceneMayaExporterCurve:add_sample(frame, value)
 	if frame ~= (self.__previous_frame or -1) + 1 then
 		self.__previous_value = nil
@@ -40,9 +42,11 @@ function CoreCutsceneMayaExporterCurve:add_sample(frame, value)
 	end
 	self.__previous_frame = frame
 end
+
 function CoreCutsceneMayaExporterCurve:last_added_value()
 	return self.__previous_value
 end
+
 function CoreCutsceneMayaExporterCurve:write(file)
 	if self.__sample_count >= 1 then
 		local curve_name = string.gsub(self.__node_name, "[:|]", "_") .. "_" .. self.__attribute_name
@@ -65,6 +69,7 @@ function CoreCutsceneMayaExporterCurve:write(file)
 		file:write(string.format("connectAttr \"%s.output\" \"%s.%s\";\n", curve_name, self.__node_name, self.__attribute_name))
 	end
 end
+
 function CoreCutsceneMayaExporterCurveSet:init(target_object_name)
 	self.__curves = {}
 	for _, axis in ipairs(SAMPLED_COMPONENTS) do
@@ -72,6 +77,7 @@ function CoreCutsceneMayaExporterCurveSet:init(target_object_name)
 		self.__curves["r" .. axis] = CoreCutsceneMayaExporterCurve:new("animCurveTA", target_object_name, "r" .. axis)
 	end
 end
+
 function CoreCutsceneMayaExporterCurveSet:add_sample(frame, object)
 	local position = object:local_position()
 	local rotation = object:new_local_rotation()
@@ -83,6 +89,7 @@ function CoreCutsceneMayaExporterCurveSet:add_sample(frame, object)
 		self.__curves["r" .. component]:add_sample(frame, rotation_value)
 	end
 end
+
 function CoreCutsceneMayaExporterCurveSet:write(file)
 	for _, curve in pairs(self.__curves) do
 		curve:write(file)

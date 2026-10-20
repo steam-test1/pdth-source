@@ -3,9 +3,11 @@ require("core/lib/managers/cutscene/CoreCutsceneKeyCollection")
 CoreCutscene = CoreCutscene or frozen_class()
 mixin(CoreCutscene, CoreCutsceneKeyCollection)
 local CUTSCENE_FRAMES_PER_SECOND = 30
+
 function CoreCutscene:_all_keys_sorted_by_time()
 	return self._keys or {}
 end
+
 function CoreCutscene:init(cutscene_node, cutscene_manager)
 	assert(cutscene_node, "No cutscene XML node supplied.")
 	assert(cutscene_manager, "Must supply a reference to the CutsceneManager.")
@@ -43,30 +45,39 @@ function CoreCutscene:init(cutscene_node, cutscene_manager)
 	end)
 	freeze(self._keys, self._unit_types, self._unit_animations, self._unit_blend_sets, self._camera_names)
 end
+
 function CoreCutscene:is_valid()
 	return table.empty(self._unit_types) or DB:has("unit", self:unit_name())
 end
+
 function CoreCutscene:name()
 	return self._name or ""
 end
+
 function CoreCutscene:unit_name()
 	return self._unit_name or ""
 end
+
 function CoreCutscene:frames_per_second()
 	return CUTSCENE_FRAMES_PER_SECOND
 end
+
 function CoreCutscene:frame_count()
 	return self._frame_count or 1
 end
+
 function CoreCutscene:duration()
 	return self:frame_count() / self:frames_per_second()
 end
+
 function CoreCutscene:is_optimized()
 	return table.empty(self._unit_animations)
 end
+
 function CoreCutscene:has_cameras()
 	return not table.empty(self._camera_names)
 end
+
 function CoreCutscene:has_unit(unit_name, include_units_spawned_through_keys)
 	if self:controlled_unit_types()[unit_name] ~= nil then
 		return true
@@ -80,32 +91,41 @@ function CoreCutscene:has_unit(unit_name, include_units_spawned_through_keys)
 	end
 	return false
 end
+
 function CoreCutscene:controlled_unit_types()
 	return self._unit_types
 end
+
 function CoreCutscene:camera_names()
 	return self._camera_names
 end
+
 function CoreCutscene:default_camera()
 	for _, name in ipairs(self:camera_names()) do
 		return name
 	end
 end
+
 function CoreCutscene:objects_in_unit(unit_name)
 	return self:_actor_database_info(unit_name):object_names()
 end
+
 function CoreCutscene:extensions_on_unit(unit_name)
 	return self:_actor_database_info(unit_name):extensions()
 end
+
 function CoreCutscene:animation_for_unit(unit_name)
 	return self._unit_animations[unit_name]
 end
+
 function CoreCutscene:blend_set_for_unit(unit_name)
 	return self._unit_blend_sets[unit_name] or "all"
 end
+
 function CoreCutscene:animation_blobs()
 	return self._animation_blobs
 end
+
 function CoreCutscene:find_spawned_orientation_unit()
 	local spawned_cutscene_units = World:unit_manager():get_units(managers.slot:get_mask("cutscenes"))
 	for _, unit in ipairs(spawned_cutscene_units) do
@@ -114,9 +134,11 @@ function CoreCutscene:find_spawned_orientation_unit()
 		end
 	end
 end
+
 function CoreCutscene:_parse_animation_blobs(cutscene_node)
 	return self:_parse_animation_blob_list(cutscene_node) or self:_parse_single_animation_blob(cutscene_node)
 end
+
 function CoreCutscene:_parse_animation_blob_list(cutscene_node)
 	for collection_node in cutscene_node:children() do
 		if collection_node:name() == "animation_blobs" then
@@ -132,6 +154,7 @@ function CoreCutscene:_parse_animation_blob_list(cutscene_node)
 	end
 	return nil
 end
+
 function CoreCutscene:_parse_single_animation_blob(cutscene_node)
 	for collection_node in cutscene_node:children() do
 		if collection_node:name() == "controlled_units" then
@@ -141,17 +164,20 @@ function CoreCutscene:_parse_single_animation_blob(cutscene_node)
 	end
 	return nil
 end
+
 function CoreCutscene:_actor_database_info(unit_name)
 	local unit_type = assert(self:controlled_unit_types()[unit_name], string.format("Unit \"%s\" is not in cutscene \"%s\".", unit_name, self:name()))
 	local unit_info = assert(managers.cutscene:actor_database():unit_type_info(unit_type), string.format("Unit type \"%s\", used in cutscene \"%s\", is not registered in the actor database.", unit_type, self:name()))
 	return unit_info
 end
+
 function CoreCutscene:_cutscene_specific_unit_type(unit_type)
 	if unit_type ~= "locator" and DB:has("unit", unit_type .. "_cutscene") then
 		unit_type = unit_type .. "_cutscene"
 	end
 	return unit_type
 end
+
 function CoreCutscene:_debug_persistent_keys()
 	local persistent_keys = {}
 	local unit_types = self:controlled_unit_types()

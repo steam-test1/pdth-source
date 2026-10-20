@@ -1,11 +1,13 @@
 core:module("SystemMenuManager")
 require("lib/managers/dialogs/BaseDialog")
 Dialog = Dialog or class(BaseDialog)
+
 function Dialog:init(manager, data)
 	BaseDialog.init(self, manager, data)
 	self._button_text_list = {}
 	self:init_button_text_list()
 end
+
 function Dialog:init_button_text_list()
 	local button_list = self._data.button_list
 	if button_list then
@@ -21,15 +23,19 @@ function Dialog:init_button_text_list()
 		table.insert(self._button_text_list, self._data.button_list[1].text)
 	end
 end
+
 function Dialog:title()
 	return self._data.title
 end
+
 function Dialog:text()
 	return self._data.text
 end
+
 function Dialog:focus_button()
 	return self._data.focus_button
 end
+
 function Dialog:button_pressed(button_index)
 	cat_print("dialog_manager", "[SystemMenuManager] Button index pressed: " .. tostring(button_index))
 	local button_list = self._data.button_list
@@ -45,9 +51,11 @@ function Dialog:button_pressed(button_index)
 	end
 	self:fade_out_close()
 end
+
 function Dialog:button_text_list()
 	return self._button_text_list
 end
+
 function Dialog:to_string()
 	local buttons = ""
 	if self._data.button_list then
@@ -57,6 +65,7 @@ function Dialog:to_string()
 	end
 	return string.format("%s, Title: %s, Text: %s, Buttons: %s", tostring(BaseDialog.to_string(self)), tostring(self._data.title), tostring(self:_strip_to_string_text(self._data.text)), buttons)
 end
+
 function Dialog:_strip_to_string_text(text)
 	return string.gsub(tostring(text), "\n", "\\n")
 end

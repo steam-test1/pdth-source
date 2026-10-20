@@ -1,4 +1,5 @@
 CubeMapCreator = CubeMapCreator or class()
+
 function CubeMapCreator:init()
 	self._camera = World:create_camera()
 	self._vp = Application:create_world_viewport(0, 0, 1, 1)
@@ -9,27 +10,32 @@ function CubeMapCreator:init()
 	self._camera:set_far_range(100000)
 	self._creating_cube_map = false
 end
+
 function CubeMapCreator:destroy()
 	if self._vp then
 		Application:destroy_viewport(self._vp)
 		self._vp = nil
 	end
 end
+
 function CubeMapCreator:set_camera_rot(rot)
 	local yaw = rot:yaw()
 	local pitch = rot:pitch()
 	self._camera:set_rotation(Rotation(yaw, pitch, 0))
 end
+
 function CubeMapCreator:render()
 	if self._creating_cube_map then
 		self._creating_cube_map = false
 		self:create_cube_map()
 	end
 end
+
 function CubeMapCreator:start_cube_map(pos)
 	self._camera:set_position(pos)
 	self._creating_cube_map = true
 end
+
 function CubeMapCreator:create_cube_map()
 	local ypos = Application:create_texture("render_target", 512, 512)
 	local xneg = Application:create_texture("render_target", 512, 512)

@@ -4,6 +4,7 @@ ActionSpooc._walk_anim_lengths = CopActionWalk._walk_anim_lengths
 ActionSpooc._matching_walk_anims = CopActionWalk._matching_walk_anims
 ActionSpooc._walk_side_rot = CopActionWalk._walk_side_rot
 ActionSpooc._anim_movement = CopActionWalk._anim_movement
+
 function ActionSpooc:init(action_desc, common_data)
 	self._tmp_vec1 = Vector3()
 	self._common_data = common_data
@@ -79,6 +80,7 @@ function ActionSpooc:init(action_desc, common_data)
 	end
 	return true
 end
+
 function ActionSpooc:_upd_chk_walkway(t)
 	if self:_chk_target_invalid() then
 		if Network:is_server() then
@@ -109,6 +111,7 @@ function ActionSpooc:_upd_chk_walkway(t)
 		return
 	end
 end
+
 function ActionSpooc:on_exit()
 	if self._root_blend_disabled then
 		self._ext_movement:set_root_blend(true)
@@ -128,6 +131,7 @@ function ActionSpooc:on_exit()
 		self._ext_movement:set_m_host_stop_pos(self._ext_movement:m_pos())
 	end
 end
+
 function ActionSpooc:_chk_can_strike()
 	if self._stroke then
 		return
@@ -135,12 +139,14 @@ function ActionSpooc:_chk_can_strike()
 	local my_pos = self._common_data.pos
 	local target_pos = self._tmp_vec1
 	self._chase_tracker:m_position(target_pos)
+	
 	local function _dis_chk(pos)
 		mvector3.subtract(pos, my_pos)
 		local dif_z = math.abs(mvector3.z(pos))
 		mvector3.set_z(pos, 0)
 		return mvector3.length_sq(pos) < 10000 and dif_z < 75
 	end
+	
 	if not _dis_chk(target_pos) then
 		return
 	end
@@ -149,6 +155,7 @@ function ActionSpooc:_chk_can_strike()
 		return true
 	end
 end
+
 function ActionSpooc:_chk_target_invalid()
 	if not self._target_unit then
 		return true
@@ -158,6 +165,7 @@ function ActionSpooc:_chk_target_invalid()
 		return true
 	end
 end
+
 function ActionSpooc:_start_sprint()
 	CopActionWalk._chk_start_anim(self, self._nav_path[self._nav_index + 1])
 	if self._start_run then
@@ -167,10 +175,12 @@ function ActionSpooc:_start_sprint()
 		self._common_data.unit:base():chk_freeze_anims()
 	end
 end
+
 function ActionSpooc:_strike()
 	self._strike_now = nil
 	self:_set_updator("_upd_strike_first_frame")
 end
+
 function ActionSpooc:_wait()
 	self._end_of_path = true
 	self:_set_updator("_upd_wait")
@@ -178,6 +188,7 @@ function ActionSpooc:_wait()
 		self:_stop_walk()
 	end
 end
+
 function ActionSpooc:_upd_strike_first_frame(t)
 	if self._is_local and self:_chk_target_invalid() then
 		if Network:is_server() then
@@ -203,6 +214,7 @@ function ActionSpooc:_upd_strike_first_frame(t)
 	self:_set_updator("_upd_striking")
 	self._common_data.unit:base():chk_freeze_anims()
 end
+
 function ActionSpooc:_upd_chase_path()
 	local ray_params = {
 		tracker_from = self._common_data.nav_tracker,
@@ -240,6 +252,7 @@ function ActionSpooc:_upd_chase_path()
 		mvector3.set(self._nav_path[#self._nav_path], ray_params.trace[1])
 	end
 end
+
 function ActionSpooc:_upd_sprint(t)
 	if self._is_local and not self._was_interrupted then
 		if self:_chk_target_invalid() then
@@ -335,6 +348,7 @@ function ActionSpooc:_upd_sprint(t)
 		self:_strike()
 	end
 end
+
 function ActionSpooc:_upd_start_anim_first_frame(t)
 	local pose = self._ext_anim.pose
 	local speed_mul = self._walk_velocity / self._walk_anim_velocities[pose].run.fwd
@@ -342,6 +356,7 @@ function ActionSpooc:_upd_start_anim_first_frame(t)
 	self:_set_updator("_upd_start_anim")
 	self._common_data.unit:base():chk_freeze_anims()
 end
+
 function ActionSpooc:_upd_start_anim(t)
 	if self._is_local and not self._was_interrupted then
 		if self:_chk_target_invalid() then
@@ -431,15 +446,19 @@ function ActionSpooc:_upd_start_anim(t)
 		return
 	end
 end
+
 function ActionSpooc:_set_new_pos(dt)
 	CopActionWalk._set_new_pos(self, dt)
 end
+
 function ActionSpooc._apply_freefall(...)
 	return CopActionWalk._apply_freefall(...)
 end
+
 function ActionSpooc:type()
 	return "spooc"
 end
+
 function ActionSpooc:get_husk_interrupt_desc()
 	local old_action_desc = {
 		type = "spooc",
@@ -464,15 +483,19 @@ function ActionSpooc:get_husk_interrupt_desc()
 	end
 	return old_action_desc
 end
+
 function ActionSpooc:expired()
 	return self._expired
 end
+
 function ActionSpooc:_expire()
 	self._expired = true
 end
+
 function ActionSpooc:_get_max_walk_speed()
 	return self._common_data.char_tweak.SPEED_SPRINT
 end
+
 function ActionSpooc:save(save_data)
 	save_data.type = "spooc"
 	save_data.body_part = 1
@@ -496,6 +519,7 @@ function ActionSpooc:save(save_data)
 	end
 	save_data.nav_path = sync_path
 end
+
 function ActionSpooc:_nav_chk(t, dt)
 	local path = self._nav_path
 	local old_nav_index = self._nav_index
@@ -561,24 +585,30 @@ function ActionSpooc:_nav_chk(t, dt)
 	end
 	self._last_pos = mvector3.copy(new_pos)
 end
+
 function ActionSpooc:_adjust_walk_anim_speed(dt, target_speed)
 	local state = self._machine:segment_state(Idstring("base"))
 	self._machine:set_speed(state, target_speed)
 end
+
 function ActionSpooc:_adjust_move_anim(...)
 	return CopActionWalk._adjust_move_anim(self, ...)
 end
+
 function ActionSpooc:_start_move_anim(...)
 	return CopActionWalk._start_move_anim(self, ...)
 end
+
 function ActionSpooc:_stop_walk()
 	return CopActionWalk._stop_walk(self)
 end
+
 function ActionSpooc:_upd_wait(t)
 	if self._ext_anim.move then
 		self:_stop_walk()
 	end
 end
+
 function ActionSpooc:_upd_striking(t)
 	if self._ext_anim.act then
 		if self._is_local then
@@ -594,6 +624,7 @@ function ActionSpooc:_upd_striking(t)
 		self:_start_sprint()
 	end
 end
+
 function ActionSpooc:sync_stop(pos, stop_nav_index)
 	if self._host_stop_pos_inserted then
 		stop_nav_index = stop_nav_index + self._host_stop_pos_inserted
@@ -614,6 +645,7 @@ function ActionSpooc:sync_stop(pos, stop_nav_index)
 		self:_start_sprint()
 	end
 end
+
 function ActionSpooc:sync_append_nav_point(nav_point)
 	if self._stop_pos and not self._nr_expected_nav_points then
 		return
@@ -635,6 +667,7 @@ function ActionSpooc:sync_append_nav_point(nav_point)
 		self:_start_sprint()
 	end
 end
+
 function ActionSpooc:sync_strike(pos)
 	if self._stop_pos and not self._nr_expected_nav_points then
 		return
@@ -655,24 +688,30 @@ function ActionSpooc:sync_strike(pos)
 		self:_start_sprint()
 	end
 end
+
 function ActionSpooc:chk_block(action_type, t)
 	return CopActionAct.chk_block(self, action_type, t)
 end
+
 function ActionSpooc:chk_block_client(action_desc, action_type, t)
 	if CopActionAct.chk_block(self, action_type, t) and (not action_desc or action_desc.body_part ~= 3) then
 		return true
 	end
 end
+
 function ActionSpooc:need_upd()
 	return true
 end
+
 function ActionSpooc:_send_nav_point(nav_point)
 	self._ext_network:send("action_spooc_nav_point", nav_point)
 	mvector3.set(self._last_sent_pos, nav_point)
 end
+
 function ActionSpooc:_set_updator(name)
 	self.update = self[name]
 end
+
 function ActionSpooc:on_attention(attention)
 	if self._target_unit and attention and attention.unit and attention.unit:key() == self._target_unit:key() then
 		return

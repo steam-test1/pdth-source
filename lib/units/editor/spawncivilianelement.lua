@@ -1,4 +1,5 @@
 SpawnCivilianUnitElement = SpawnCivilianUnitElement or class(MissionElement)
+
 function SpawnCivilianUnitElement:init(unit)
 	SpawnCivilianUnitElement.super.init(self, unit)
 	self._enemies = {}
@@ -77,9 +78,11 @@ function SpawnCivilianUnitElement:init(unit)
 	table.insert(self._save_values, "state")
 	table.insert(self._save_values, "force_pickup")
 end
+
 function SpawnCivilianUnitElement:test_element()
 	SpawnEnemyUnitElement.test_element(self)
 end
+
 function SpawnCivilianUnitElement:stop_test_element()
 	for _, enemy in ipairs(self._enemies) do
 		if enemy:base() and enemy:base().set_slot then
@@ -90,6 +93,7 @@ function SpawnCivilianUnitElement:stop_test_element()
 	end
 	self._enemies = {}
 end
+
 function SpawnCivilianUnitElement:select_civilian_btn()
 	local dialog = SelectNameModal:new("Select unit", self._options)
 	if dialog:cancelled() then
@@ -100,6 +104,7 @@ function SpawnCivilianUnitElement:select_civilian_btn()
 		CoreEws.change_combobox_value(self._enemies_params, self._hed.enemy)
 	end
 end
+
 function SpawnCivilianUnitElement:select_state_btn()
 	local dialog = SelectNameModal:new("Select state", self._states)
 	if dialog:cancelled() then
@@ -110,6 +115,7 @@ function SpawnCivilianUnitElement:select_state_btn()
 		CoreEws.change_combobox_value(self._states_params, self._hed.state)
 	end
 end
+
 function SpawnCivilianUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel
@@ -181,5 +187,6 @@ function SpawnCivilianUnitElement:_build_panel(panel, panel_sizer)
 		value = "force_pickup"
 	})
 end
+
 function SpawnCivilianUnitElement:add_to_mission_package()
 end

@@ -7,36 +7,48 @@ core:import("CoreSubtitleSequence")
 SubtitlePresenter = SubtitlePresenter or CoreClass.class()
 DebugPresenter = DebugPresenter or CoreClass.class(SubtitlePresenter)
 OverlayPresenter = OverlayPresenter or CoreClass.class(SubtitlePresenter)
+
 function SubtitlePresenter:destroy()
 end
+
 function SubtitlePresenter:update(time, delta_time)
 end
+
 function SubtitlePresenter:show()
 end
+
 function SubtitlePresenter:hide()
 end
+
 function SubtitlePresenter:show_text(text, duration)
 end
+
 function SubtitlePresenter:preprocess_sequence(sequence)
 	return sequence
 end
+
 function DebugPresenter:destroy()
 	CoreDebug.cat_print("subtitle_manager", string.format("SubtitlePresenter is destroyed."))
 end
+
 function DebugPresenter:show()
 	CoreDebug.cat_print("subtitle_manager", string.format("SubtitlePresenter is shown."))
 end
+
 function DebugPresenter:hide()
 	CoreDebug.cat_print("subtitle_manager", string.format("SubtitlePresenter hides."))
 end
+
 function DebugPresenter:show_text(text, duration)
 	CoreDebug.cat_print("subtitle_manager", string.format("SubtitlePresenter displays \"%s\" %s.", text, duration and string.format("for %g seconds", duration) or "until further notice"))
 end
+
 function OverlayPresenter:init(font_name, font_size)
 	self:set_font(font_name or self:_default_font_name(), font_size or self:_default_font_size())
 	self:_clear_workspace()
 	self.__resolution_changed_id = managers.viewport:add_resolution_changed_func(CoreEvent.callback(self, self, "_on_resolution_changed"))
 end
+
 function OverlayPresenter:destroy()
 	if self.__resolution_changed_id and managers.viewport then
 		managers.viewport:remove_resolution_changed_func(self.__resolution_changed_id)
@@ -52,17 +64,21 @@ function OverlayPresenter:destroy()
 	end
 	self.__ws = nil
 end
+
 function OverlayPresenter:show()
 	self.__ws:show()
 end
+
 function OverlayPresenter:hide()
 	self.__ws:hide()
 end
+
 function OverlayPresenter:set_debug(enabled)
 	if self.__ws then
 		self.__ws:panel():set_debug(enabled)
 	end
 end
+
 function OverlayPresenter:set_font(font_name, font_size)
 	self.__font_name = assert(tostring(font_name), "Invalid font name parameter.")
 	self.__font_size = assert(tonumber(font_size), "Invalid font size parameter.")
@@ -85,6 +101,7 @@ function OverlayPresenter:set_font(font_name, font_size)
 		string_width_measure_text_field:set_font_size(self.__font_size)
 	end
 end
+
 function OverlayPresenter:set_width(pixels)
 	local safe_rect = managers.viewport:get_safe_rect()
 	local safe_width = self:_gui_width() * safe_rect.width
@@ -93,6 +110,7 @@ function OverlayPresenter:set_width(pixels)
 		self:_layout_text_field():set_width(self.__width)
 	end
 end
+
 function OverlayPresenter:show_text(text, duration)
 	local label = self.__subtitle_panel:child("label") or self.__subtitle_panel:text({
 		name = "label",
@@ -123,6 +141,7 @@ function OverlayPresenter:show_text(text, duration)
 	label:set_text(text)
 	shadow:set_text(text)
 end
+
 function OverlayPresenter:preprocess_sequence(sequence)
 	local new_sequence = CoreSubtitleSequence.SubtitleSequence:new()
 	for _, subtitle in ipairs(sequence:subtitles()) do
@@ -143,6 +162,7 @@ function OverlayPresenter:preprocess_sequence(sequence)
 	end
 	return new_sequence
 end
+
 function OverlayPresenter:_clear_workspace()
 	if CoreCode.alive(self.__ws) then
 		Overlay:newgui():destroy_workspace(self.__ws)
@@ -151,9 +171,11 @@ function OverlayPresenter:_clear_workspace()
 	self.__subtitle_panel = self.__ws:panel():panel({layer = 150})
 	self:_on_resolution_changed()
 end
+
 function OverlayPresenter:_split_string_into_lines(subtitle_string, owning_sequence)
 	return self:_auto_word_wrap_string(subtitle_string)
 end
+
 function OverlayPresenter:_auto_word_wrap_string(subtitle_string)
 	local layout_text_field = self:_layout_text_field()
 	layout_text_field:set_text(subtitle_string)
@@ -169,6 +191,7 @@ function OverlayPresenter:_auto_word_wrap_string(subtitle_string)
 	end
 	return wrapped_lines
 end
+
 function OverlayPresenter:_layout_text_field()
 	assert(self.__subtitle_panel)
 	return self.__subtitle_panel:child("layout") or self.__subtitle_panel:text({
@@ -183,6 +206,7 @@ function OverlayPresenter:_layout_text_field()
 		word_wrap = true
 	})
 end
+
 function OverlayPresenter:_string_width(subtitle_string)
 	local string_width_measure_text_field = self.__ws:panel():child("string_width") or self.__ws:panel():text({
 		name = "string_width",
@@ -195,6 +219,7 @@ function OverlayPresenter:_string_width(subtitle_string)
 	local x, y, width, height = string_width_measure_text_field:text_rect()
 	return width
 end
+
 function OverlayPresenter:_on_resolution_changed()
 	self:set_font(self.__font_name or self:_default_font_name(), 28 * _G.tweak_data.scale.subtitle_font_multiplier)
 	local width = self:_gui_width()
@@ -217,16 +242,20 @@ function OverlayPresenter:_on_resolution_changed()
 		shadow:set_w(self.__subtitle_panel:w())
 	end
 end
+
 function OverlayPresenter:_gui_width()
 	return RenderSettings.resolution.x
 end
+
 function OverlayPresenter:_gui_height()
 	local resolution = RenderSettings.resolution
 	return self:_gui_width() / (resolution.x / resolution.y)
 end
+
 function OverlayPresenter:_default_font_name()
 	return "core/fonts/system_font"
 end
+
 function OverlayPresenter:_default_font_size()
 	return 22
 end

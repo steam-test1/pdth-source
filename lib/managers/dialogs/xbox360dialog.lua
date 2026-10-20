@@ -1,6 +1,7 @@
 core:module("SystemMenuManager")
 require("lib/managers/dialogs/Dialog")
 Xbox360Dialog = Xbox360Dialog or class(Dialog)
+
 function Xbox360Dialog:show()
 	local focus_button = self:focus_button()
 	if focus_button then
@@ -15,6 +16,7 @@ function Xbox360Dialog:show()
 	end
 	return success
 end
+
 function Xbox360Dialog:button_pressed(button_index)
 	if button_index == -1 then
 		button_index = self:focus_button() or 1

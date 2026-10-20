@@ -1,4 +1,5 @@
 CivilianLogicEscort = class(CopLogicBase)
+
 function CivilianLogicEscort.enter(data, new_logic_name, enter_params)
 	CopLogicBase.enter(data, new_logic_name, enter_params)
 	data.unit:brain():cancel_all_pathing_searches()
@@ -31,6 +32,7 @@ function CivilianLogicEscort.enter(data, new_logic_name, enter_params)
 		CopLogicBase.queue_task(my_data, my_data.outline_detection_task_key, CivilianLogicIdle._upd_outline_detection, data, data.t + 2)
 	end
 end
+
 function CivilianLogicEscort.exit(data, new_logic_name, enter_params)
 	CopLogicBase.exit(data, new_logic_name, enter_params)
 	local my_data = data.internal_data
@@ -41,6 +43,7 @@ function CivilianLogicEscort.exit(data, new_logic_name, enter_params)
 		data.unit:brain():set_update_enabled_state(true)
 	end
 end
+
 function CivilianLogicEscort.update(data)
 	local my_data = data.internal_data
 	local unit = data.unit
@@ -97,6 +100,7 @@ function CivilianLogicEscort.update(data)
 		CopLogicBase._exit(data.unit, "idle")
 	end
 end
+
 function CivilianLogicEscort.on_intimidated(data, amount, aggressor_unit)
 	local scared_reason = CivilianLogicEscort.too_scared_to_move(data)
 	if scared_reason then
@@ -105,6 +109,7 @@ function CivilianLogicEscort.on_intimidated(data, amount, aggressor_unit)
 		data.internal_data.commanded_to_move = true
 	end
 end
+
 function CivilianLogicEscort.action_complete_clbk(data, action)
 	CopLogicTravel.action_complete_clbk(data, action)
 	local my_data = data.internal_data
@@ -115,6 +120,7 @@ function CivilianLogicEscort.action_complete_clbk(data, action)
 		my_data.getting_up = nil
 	end
 end
+
 function CivilianLogicEscort._upd_pathing(data, my_data)
 	if data.pathing_results then
 		local pathing_results = data.pathing_results
@@ -145,11 +151,14 @@ function CivilianLogicEscort._upd_pathing(data, my_data)
 		end
 	end
 end
+
 function CivilianLogicEscort.on_new_objective(data, old_objective)
 	CivilianLogicIdle.on_new_objective(data, old_objective)
 end
+
 function CivilianLogicEscort.damage_clbk(data, damage_info)
 end
+
 function CivilianLogicEscort._get_objective_path_data(data, my_data)
 	local objective = data.objective
 	local path_data = objective.path_data
@@ -202,6 +211,7 @@ function CivilianLogicEscort._get_objective_path_data(data, my_data)
 		end
 	end
 end
+
 function CivilianLogicEscort.too_scared_to_move(data)
 	local my_data = data.internal_data
 	local nobody_close = true
@@ -229,6 +239,7 @@ function CivilianLogicEscort.too_scared_to_move(data)
 	end
 	return
 end
+
 function CivilianLogicEscort._begin_advance_action(data, my_data)
 	CopLogicAttack._correct_path_start_pos(data, my_data.advance_path)
 	local objective = data.objective
@@ -254,6 +265,7 @@ function CivilianLogicEscort._begin_advance_action(data, my_data)
 		debug_pause("[CivilianLogicEscort._begin_advance_action] failed to start")
 	end
 end
+
 function CivilianLogicEscort._begin_stand_hesitant_action(data, my_data)
 	local action = {
 		type = "act",
@@ -269,11 +281,13 @@ function CivilianLogicEscort._begin_stand_hesitant_action(data, my_data)
 	}
 	my_data.getting_up = data.unit:movement():action_request(action)
 end
+
 function CivilianLogicEscort._get_all_paths(data)
 	return {
 		advance_path = data.internal_data.advance_path
 	}
 end
+
 function CivilianLogicEscort._set_verified_paths(data, verified_paths)
 	data.internal_data.stare_path = verified_paths.stare_path
 end

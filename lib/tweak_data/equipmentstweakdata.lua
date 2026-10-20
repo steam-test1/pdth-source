@@ -1,4 +1,5 @@
 EquipmentsTweakData = EquipmentsTweakData or class()
+
 function EquipmentsTweakData:init()
 	self.trip_mine = {
 		icon = "equipment_trip_mine",

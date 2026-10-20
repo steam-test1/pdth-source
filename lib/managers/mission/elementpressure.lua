@@ -1,10 +1,13 @@
 core:import("CoreMissionScriptElement")
 ElementPressure = ElementPressure or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementPressure:init(...)
 	ElementPressure.super.init(self, ...)
 end
+
 function ElementPressure:client_on_executed(...)
 end
+
 function ElementPressure:on_executed(instigator)
 	if not self._values.enabled then
 		return

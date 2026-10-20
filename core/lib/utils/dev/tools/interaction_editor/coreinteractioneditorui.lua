@@ -4,6 +4,7 @@ core:import("CoreCode")
 core:import("CoreInteractionEditorConfig")
 core:import("CoreInteractionEditorPropUI")
 InteractionEditorUI = InteractionEditorUI or CoreClass.class()
+
 function InteractionEditorUI:init(owner)
 	self._main_frame = EWS:Frame(CoreInteractionEditorConfig.EDITOR_TITLE, Vector3(-1, -1, -1), Vector3(1000, 800, 0), "", Global.frame)
 	local menu_bar = EWS:MenuBar()
@@ -59,15 +60,19 @@ function InteractionEditorUI:init(owner)
 	self._owner = owner
 	self:connect_events()
 end
+
 function InteractionEditorUI:frame()
 	return self._main_frame
 end
+
 function InteractionEditorUI:set_position(pos)
 	self._main_frame:set_position(pos)
 end
+
 function InteractionEditorUI:set_title(text)
 	self._main_frame:set_title(text and CoreInteractionEditorConfig.EDITOR_TITLE .. " - " .. text or CoreInteractionEditorConfig.EDITOR_TITLE)
 end
+
 function InteractionEditorUI:connect_events()
 	self._main_frame:connect("NEW", "EVT_COMMAND_MENU_SELECTED", callback(self._owner, self._owner, "on_new"), nil)
 	self._main_frame:connect("OPEN", "EVT_COMMAND_MENU_SELECTED", callback(self._owner, self._owner, "on_open"), nil)
@@ -81,6 +86,7 @@ function InteractionEditorUI:connect_events()
 	self._main_frame:connect("", "EVT_CLOSE_WINDOW", callback(self._owner, self._owner, "on_close"), nil)
 	self._main_frame:connect("", "EVT_COMMAND_NOTEBOOK_PAGE_CHANGED", callback(self._owner, self._owner, "on_notebook_changing"), nil)
 end
+
 function InteractionEditorUI:create_graph_context_menu(system)
 	system:graph():connect("", "EVT_RIGHT_UP", callback(self._owner, self._owner, "on_show_graph_context_menu"), system)
 	local add_menu = EWS:Menu("")
@@ -101,26 +107,32 @@ function InteractionEditorUI:create_graph_context_menu(system)
 	end)
 	return menu
 end
+
 function InteractionEditorUI:show_graph_context_menu(system)
 	system:context_menu():set_enabled("DELETE_NODE", false)
 	system:graph():window():popup_menu(system:context_menu(), Vector3(-1, -1, 0))
 end
+
 function InteractionEditorUI:destroy()
 	if CoreCode.alive(self._main_frame) then
 		self._main_frame:destroy()
 		self._main_frame = nil
 	end
 end
+
 function InteractionEditorUI:clean_prop_panel()
 	self._prop_panel:clean()
 end
+
 function InteractionEditorUI:rebuild_prop_panel(desc, node)
 	self._prop_panel:rebuild(desc, node)
 end
+
 function InteractionEditorUI:create_nb_page(caption, select)
 	local panel = EWS:Panel(self._main_notebook, "", "")
 	return panel, self._main_notebook:add_page(panel, caption, select)
 end
+
 function InteractionEditorUI:destroy_nb_page(id)
 	self._main_notebook:freeze()
 	local newid = math.clamp(self:set_nb_page(0), 0, math.clamp(self:get_nb_page_count() - 2, 0, math.huge))
@@ -129,21 +141,27 @@ function InteractionEditorUI:destroy_nb_page(id)
 	self._main_notebook:thaw()
 	self._main_notebook:refresh()
 end
+
 function InteractionEditorUI:current_nb_page()
 	return self._main_notebook:get_current_page()
 end
+
 function InteractionEditorUI:get_nb_page_count()
 	return self._main_notebook:get_page_count()
 end
+
 function InteractionEditorUI:set_nb_page(id)
 	return self._main_notebook:set_page(id)
 end
+
 function InteractionEditorUI:get_nb_page(id)
 	return self._main_notebook:get_page(id)
 end
+
 function InteractionEditorUI:update_nb_page_caption(id, text)
 	self._main_notebook:set_page_text(id, text)
 end
+
 function InteractionEditorUI:get_nb_page_by_caption(text)
 	for i = 0, self._main_notebook:get_page_count() - 1 do
 		if self._main_notebook:get_page_text(i) == text then
@@ -151,6 +169,7 @@ function InteractionEditorUI:get_nb_page_by_caption(text)
 		end
 	end
 end
+
 function InteractionEditorUI:get_nb_page_id(panel)
 	for i = 0, self._main_notebook:get_page_count() - 1 do
 		if self._main_notebook:get_page(i) == panel then
@@ -158,6 +177,7 @@ function InteractionEditorUI:get_nb_page_id(panel)
 		end
 	end
 end
+
 function InteractionEditorUI:set_save_close_option_enabled(b)
 	self._file_menu:set_enabled("SAVE", b)
 	self._tool_bar:set_tool_enabled("SAVE", b)
@@ -167,6 +187,7 @@ function InteractionEditorUI:set_save_close_option_enabled(b)
 	self._file_menu:set_enabled("CLOSE", b)
 	self._tool_bar:set_tool_enabled("CLOSE", b)
 end
+
 function InteractionEditorUI:want_to_save(path)
 	return EWS:message_box(self._main_frame, path .. [[
  has changed.

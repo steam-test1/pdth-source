@@ -2,9 +2,11 @@ core:import("CoreMenuNodeGui")
 MenuGameoverRenderer = MenuGameoverRenderer or class(MenuRenderer)
 MenuGameoverRenderer.GUI_FULLSCREEN = Idstring("guis/gameoverscreen/gameoverscreen_fullscreen")
 MenuGameoverRenderer.GUI_SAFERECT = Idstring("guis/gameoverscreen/gameoverscreen_saferect")
+
 function MenuGameoverRenderer:init(logic)
 	MenuRenderer.init(self, logic)
 end
+
 function MenuGameoverRenderer:show_node(node)
 	local layer = self._base_layer
 	local previous_node_gui = self:active_node_gui()
@@ -20,6 +22,7 @@ function MenuGameoverRenderer:show_node(node)
 	self:_flash_background(0.2)
 	self:disable_input(0.2)
 end
+
 function MenuGameoverRenderer:open(...)
 	MenuRenderer.open(self, ...)
 	if not managers.hud:exists(self.GUI_SAFERECT) then
@@ -31,11 +34,13 @@ function MenuGameoverRenderer:open(...)
 	managers.hud:show(self.GUI_SAFERECT)
 	managers.hud:show(self.GUI_FULLSCREEN)
 end
+
 function MenuGameoverRenderer:close()
 	MenuRenderer.close(self)
 	managers.hud:hide(self.GUI_SAFERECT)
 	managers.hud:hide(self.GUI_FULLSCREEN)
 end
+
 function MenuGameoverRenderer:update(t, dt)
 	MenuRenderer.update(self, t, dt)
 	managers.hud:script(self.GUI_SAFERECT):update(t, dt)

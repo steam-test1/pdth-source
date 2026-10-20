@@ -1,4 +1,5 @@
 CoreBaseTreeNode = CoreBaseTreeNode or class()
+
 function CoreBaseTreeNode:path(separator)
 	separator = separator or "/"
 	local parent = self:parent()
@@ -7,9 +8,11 @@ function CoreBaseTreeNode:path(separator)
 	end
 	return self:text()
 end
+
 function CoreBaseTreeNode:has_children()
 	return table.getn(self:children()) > 0
 end
+
 function CoreBaseTreeNode:child(text, separator)
 	for _, child in ipairs(self:children()) do
 		if child:text() == text then
@@ -17,6 +20,7 @@ function CoreBaseTreeNode:child(text, separator)
 		end
 	end
 end
+
 function CoreBaseTreeNode:child_at_path(path, separator)
 	separator = separator or "/"
 	local first_path_component, remaining_path = string.split(path, separator, false, 1)
@@ -26,6 +30,7 @@ function CoreBaseTreeNode:child_at_path(path, separator)
 	end
 	return child
 end
+
 function CoreBaseTreeNode:append_path(path, separator)
 	separator = separator or "/"
 	local first_path_component, remaining_path = unpack(string.split(path, separator, false, 1))
@@ -35,6 +40,7 @@ function CoreBaseTreeNode:append_path(path, separator)
 	end
 	return node
 end
+
 function CoreBaseTreeNode:append_copy_of_node(node, recurse)
 	local new_node = self:append(node:text())
 	if recurse then
@@ -44,6 +50,7 @@ function CoreBaseTreeNode:append_copy_of_node(node, recurse)
 	end
 	return new_node
 end
+
 function CoreBaseTreeNode:for_each_child(func, recurse)
 	for _, child in ipairs(table.list_copy(self:children())) do
 		if not func(child) then
@@ -54,6 +61,7 @@ function CoreBaseTreeNode:for_each_child(func, recurse)
 		end
 	end
 end
+
 function CoreBaseTreeNode:remove_children()
 	for _, child in ipairs(table.list_copy(self:children())) do
 		child:remove()

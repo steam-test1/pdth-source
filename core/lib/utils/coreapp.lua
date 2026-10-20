@@ -1,4 +1,5 @@
 core:module("CoreApp")
+
 function arg_supplied(key)
 	for _, arg in ipairs(Application:argv()) do
 		if arg == key then
@@ -7,6 +8,7 @@ function arg_supplied(key)
 	end
 	return false
 end
+
 function arg_value(key)
 	local found
 	for _, arg in ipairs(Application:argv()) do
@@ -17,5 +19,6 @@ function arg_value(key)
 		end
 	end
 end
+
 function min_exe_version(version, system_name)
 end

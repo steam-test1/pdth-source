@@ -1,8 +1,10 @@
 core:import("CoreMenuNodeGui")
 MenuNodeKitGui = MenuNodeKitGui or class(MenuNodeGui)
+
 function MenuNodeKitGui:init(node, layer, parameters)
 	MenuNodeKitGui.super.init(self, node, layer, parameters)
 end
+
 function MenuNodeKitGui:_create_menu_item(row_item)
 	local safe_rect = managers.viewport:get_safe_rect_pixels()
 	local align_x = safe_rect.width * self._align_line_proportions
@@ -167,9 +169,11 @@ function MenuNodeKitGui:_create_menu_item(row_item)
 		MenuNodeKitGui.super._create_menu_item(self, row_item)
 	end
 end
+
 function MenuNodeKitGui:_setup_main_panel(safe_rect, shape)
 	MenuNodeKitGui.super._setup_main_panel(self, safe_rect, shape)
 end
+
 function MenuNodeKitGui:reload_item(item)
 	local type = item:type()
 	if type == "kitslot" then
@@ -178,6 +182,7 @@ function MenuNodeKitGui:reload_item(item)
 		MenuNodeKitGui.super.reload_item(self, item)
 	end
 end
+
 function MenuNodeKitGui:_reload_kitslot_item(item)
 	local row_item = self:row_item(item)
 	local icon_id, description = item:icon_and_description()
@@ -194,6 +199,7 @@ function MenuNodeKitGui:_reload_kitslot_item(item)
 	row_item.arrow_left:set_color(item:left_arrow_visible() and tweak_data.menu.arrow_available or tweak_data.menu.arrow_unavailable)
 	row_item.arrow_right:set_color(item:right_arrow_visible() and tweak_data.menu.arrow_available or tweak_data.menu.arrow_unavailable)
 end
+
 function MenuNodeKitGui:_setup_item_size(row_item)
 	local type = row_item.item:type()
 	if type == "kitslot" then
@@ -202,8 +208,10 @@ function MenuNodeKitGui:_setup_item_size(row_item)
 		MenuNodeKitGui.super._setup_item_size(self, row_item)
 	end
 end
+
 function MenuNodeKitGui:_setup_kitslot_size(row_item)
 end
+
 function MenuNodeKitGui:_highlight_row_item(row_item)
 	if row_item then
 		self:_align_marker(row_item)
@@ -221,6 +229,7 @@ function MenuNodeKitGui:_highlight_row_item(row_item)
 		end
 	end
 end
+
 function MenuNodeKitGui:_fade_row_item(row_item)
 	if row_item then
 		row_item.color = self.row_item_color
@@ -237,6 +246,7 @@ function MenuNodeKitGui:_fade_row_item(row_item)
 		end
 	end
 end
+
 function MenuNodeKitGui:_align_kitslot(row_item)
 	local safe_rect = managers.viewport:get_safe_rect_pixels()
 	local xl_pad = 64
@@ -293,10 +303,12 @@ function MenuNodeKitGui:_align_kitslot(row_item)
 	row_item.progress_text:set_size(row_item.progress_bg:size())
 	row_item.progress_text:set_position(row_item.progress_bg:x(), row_item.progress_bg:y())
 end
+
 function MenuNodeKitGui:_update_scaled_values()
 	MenuNodeKitGui.super._update_scaled_values(self)
 	self.font_size = tweak_data.menu.kit_default_font_size
 end
+
 function MenuNodeKitGui:resolution_changed()
 	self:_update_scaled_values()
 	for _, row_item in pairs(self.row_items) do

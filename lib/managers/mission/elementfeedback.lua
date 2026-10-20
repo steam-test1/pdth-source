@@ -1,6 +1,7 @@
 core:import("CoreMissionScriptElement")
 ElementFeedback = ElementFeedback or class(CoreMissionScriptElement.MissionScriptElement)
 ElementFeedback.IDS_EFFECT = Idstring("effect")
+
 function ElementFeedback:init(...)
 	ElementFeedback.super.init(self, ...)
 	self._feedback = managers.feedback:create(self._values.effect)
@@ -8,9 +9,11 @@ function ElementFeedback:init(...)
 		CoreEngineAccess._editor_load(self.IDS_EFFECT, self._values.above_camera_effect:id())
 	end
 end
+
 function ElementFeedback:client_on_executed(...)
 	self:on_executed(...)
 end
+
 function ElementFeedback:on_executed(instigator)
 	if not self._values.enabled then
 		return
@@ -40,6 +43,7 @@ function ElementFeedback:on_executed(instigator)
 	end
 	ElementFeedback.super.on_executed(self, instigator)
 end
+
 function ElementFeedback:_check_value(params, cat, setting, value)
 	if 0 <= value then
 		table.insert(params, cat)
@@ -47,6 +51,7 @@ function ElementFeedback:_check_value(params, cat, setting, value)
 		table.insert(params, value)
 	end
 end
+
 function ElementFeedback:_calc_multiplier(player)
 	if self._values.range == 0 then
 		return 1

@@ -1,22 +1,27 @@
 require("lib/states/GameState")
 CreditsState = CreditsState or class(GameState)
+
 function CreditsState:init(game_state_machine, setup)
 	GameState.init(self, "menu_credits", game_state_machine)
 	self._setup = false
 	self._active = false
 end
+
 function CreditsState:set_controller_enabled(enabled)
 	self._active = enabled
 end
+
 function CreditsState:setup()
 	self._credits_list = PackageManager:script_data(Idstring("credits"), Idstring("gamedata/credits"))
 	local meta_credits = {}
 	meta_credits.__index = meta_credits
 	meta_credits._index = 1
 	meta_credits._sub_index = 0
+	
 	function meta_credits:has_next()
 		return not not self[self._index]
 	end
+	
 	function meta_credits:get_next(index, sub_index)
 		local data = self[index]
 		local name = ""
@@ -44,6 +49,7 @@ function CreditsState:setup()
 			name = name
 		}
 	end
+	
 	function meta_credits:step()
 		if self._index == 0 then
 			self._index = 1
@@ -55,11 +61,13 @@ function CreditsState:setup()
 			self._index = self._index + 1
 		end
 	end
+	
 	function meta_credits:next()
 		local ret = self:get_next(self._index, self._sub_index)
 		self:step()
 		return ret
 	end
+	
 	setmetatable(self._credits_list, meta_credits)
 	local res = RenderSettings.resolution
 	local gui = Overlay:gui()
@@ -73,6 +81,7 @@ function CreditsState:setup()
 	self:add_credit()
 	self._setup = true
 end
+
 function CreditsState:add_credit()
 	local data = self._credits_list:next()
 	local offset = data.offset
@@ -95,17 +104,21 @@ function CreditsState:add_credit()
 	self._text_panel:text(text_params):move(-2, 2)
 	self._text_panel:grow(0, text:h() + offset)
 end
+
 function CreditsState:at_enter(old_state)
 	self:setup()
 end
+
 function CreditsState:at_exit(new_state)
 	self._credits_list = nil
 	self._setup = false
 	Overlay:gui():destroy_workspace(self._workspace)
 end
+
 function CreditsState:continue()
 	setup:load_start_menu()
 end
+
 function CreditsState:update(t, dt)
 	if not self._setup or not self._active then
 		return

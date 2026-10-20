@@ -1,4 +1,5 @@
 TeamAILogicSurrender = class(TeamAILogicBase)
+
 function TeamAILogicSurrender.enter(data, new_logic_name, enter_params)
 	TeamAILogicBase.enter(data, new_logic_name, enter_params)
 	data.unit:brain():cancel_all_pathing_searches()
@@ -39,6 +40,7 @@ function TeamAILogicSurrender.enter(data, new_logic_name, enter_params)
 		data.unit:brain():set_objective(nil)
 	end
 end
+
 function TeamAILogicSurrender.exit(data, new_logic_name, enter_params)
 	TeamAILogicBase.exit(data, new_logic_name, enter_params)
 	local my_data = data.internal_data
@@ -55,16 +57,21 @@ function TeamAILogicSurrender.exit(data, new_logic_name, enter_params)
 	end
 	data.unit:interaction():set_active(false, false)
 end
+
 function TeamAILogicSurrender.action_complete_clbk(data, action)
 end
+
 function TeamAILogicSurrender.can_activate()
 end
+
 function TeamAILogicSurrender.on_detected_enemy_destroyed(data, enemy_unit)
 	TeamAILogicIdle.on_cop_neutralized(data, enemy_unit:key())
 end
+
 function TeamAILogicSurrender.on_cop_neutralized(data, cop_key)
 	TeamAILogicIdle.on_cop_neutralized(data, cop_key)
 end
+
 function TeamAILogicSurrender.on_alert(data, alert_data)
 	local enemy = alert_data[4]
 	local my_data = data.internal_data
@@ -73,8 +80,10 @@ function TeamAILogicSurrender.on_alert(data, alert_data)
 	local enemy_data = CopLogicAttack._create_detected_enemy_data(data, enemy)
 	my_data.detected_enemies[enemy_key] = enemy_data
 end
+
 function TeamAILogicSurrender.is_available_for_assignment(data)
 end
+
 function TeamAILogicSurrender.on_recovered(data, reviving_unit)
 	return TeamAILogicDisabled.on_recovered(data, reviving_unit)
 end

@@ -1,8 +1,10 @@
 CoreWorldCameraTriggerUnitElement = CoreWorldCameraTriggerUnitElement or class(MissionElement)
 WorldCameraTriggerUnitElement = WorldCameraTriggerUnitElement or class(CoreWorldCameraTriggerUnitElement)
+
 function WorldCameraTriggerUnitElement:init(...)
 	CoreWorldCameraTriggerUnitElement.init(self, ...)
 end
+
 function CoreWorldCameraTriggerUnitElement:init(unit)
 	MissionElement.init(self, unit)
 	self._hed.worldcamera_trigger_sequence = "none"
@@ -10,6 +12,7 @@ function CoreWorldCameraTriggerUnitElement:init(unit)
 	table.insert(self._save_values, "worldcamera_trigger_sequence")
 	table.insert(self._save_values, "worldcamera_trigger_after_clip")
 end
+
 function CoreWorldCameraTriggerUnitElement:selected()
 	MissionElement.selected(self)
 	self:_populate_sequences()
@@ -19,6 +22,7 @@ function CoreWorldCameraTriggerUnitElement:selected()
 	end
 	self:_populate_after_clip()
 end
+
 function CoreWorldCameraTriggerUnitElement:_populate_sequences()
 	self._sequences:clear()
 	self._sequences:append("none")
@@ -27,6 +31,7 @@ function CoreWorldCameraTriggerUnitElement:_populate_sequences()
 	end
 	self._sequences:set_value(self._hed.worldcamera_trigger_sequence)
 end
+
 function CoreWorldCameraTriggerUnitElement:_populate_after_clip()
 	self._after_clip:clear()
 	self._after_clip:append("done")
@@ -43,6 +48,7 @@ function CoreWorldCameraTriggerUnitElement:_populate_after_clip()
 	end
 	self._after_clip:set_value(self._hed.worldcamera_trigger_after_clip)
 end
+
 function CoreWorldCameraTriggerUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

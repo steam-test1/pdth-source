@@ -2,6 +2,7 @@ core:import("CoreMenuItem")
 core:import("CoreMenuItemOption")
 MenuItemMultiChoice = MenuItemMultiChoice or class(CoreMenuItem.Item)
 MenuItemMultiChoice.TYPE = "multi_choice"
+
 function MenuItemMultiChoice:init(data_node, parameters)
 	CoreMenuItem.Item.init(self, data_node, parameters)
 	self._type = MenuItemMultiChoice.TYPE
@@ -24,17 +25,21 @@ function MenuItemMultiChoice:init(data_node, parameters)
 	self._enabled = true
 	self:_show_options(nil)
 end
+
 function MenuItemMultiChoice:set_enabled(enabled)
 	self._enabled = enabled
 	self:dirty()
 end
+
 function MenuItemMultiChoice:set_callback_handler(callback_handler)
 	MenuItemMultiChoice.super.set_callback_handler(self, callback_handler)
 end
+
 function MenuItemMultiChoice:visible(...)
 	self:_show_options(self._callback_handler)
 	return MenuItemMultiChoice.super.visible(self, ...)
 end
+
 function MenuItemMultiChoice:_show_options(callback_handler)
 	local selected_value = self:selected_option() and self:selected_option():value()
 	self._options = {}
@@ -57,22 +62,28 @@ function MenuItemMultiChoice:_show_options(callback_handler)
 		self:set_value(selected_value)
 	end
 end
+
 function MenuItemMultiChoice:add_option(option)
 	table.insert(self._all_options, option)
 end
+
 function MenuItemMultiChoice:options()
 	return self._options
 end
+
 function MenuItemMultiChoice:selected_option()
 	return self._options[self._current_index]
 end
+
 function MenuItemMultiChoice:current_index()
 	return self._current_index
 end
+
 function MenuItemMultiChoice:set_current_index(index)
 	self._current_index = index
 	self:dirty()
 end
+
 function MenuItemMultiChoice:set_value(value)
 	for i, option in ipairs(self._options) do
 		if option:parameters().value == value then
@@ -82,6 +93,7 @@ function MenuItemMultiChoice:set_value(value)
 	end
 	self:dirty()
 end
+
 function MenuItemMultiChoice:value()
 	local value = ""
 	local selected_option = self:selected_option()
@@ -90,6 +102,7 @@ function MenuItemMultiChoice:value()
 	end
 	return value
 end
+
 function MenuItemMultiChoice:_highest_option_index()
 	local index = 1
 	for i, option in ipairs(self._options) do
@@ -99,6 +112,7 @@ function MenuItemMultiChoice:_highest_option_index()
 	end
 	return index
 end
+
 function MenuItemMultiChoice:_lowest_option_index()
 	for i, option in ipairs(self._options) do
 		if not option:parameters().exclude then
@@ -106,6 +120,7 @@ function MenuItemMultiChoice:_lowest_option_index()
 		end
 	end
 end
+
 function MenuItemMultiChoice:next()
 	if not self._enabled then
 		return
@@ -121,6 +136,7 @@ function MenuItemMultiChoice:next()
 	until not self._options[self._current_index]:parameters().exclude
 	return true
 end
+
 function MenuItemMultiChoice:previous()
 	if not self._enabled then
 		return
@@ -136,12 +152,15 @@ function MenuItemMultiChoice:previous()
 	until not self._options[self._current_index]:parameters().exclude
 	return true
 end
+
 function MenuItemMultiChoice:left_arrow_visible()
 	return self._current_index > self:_lowest_option_index() and self._enabled
 end
+
 function MenuItemMultiChoice:right_arrow_visible()
 	return self._current_index < self:_highest_option_index() and self._enabled
 end
+
 function MenuItemMultiChoice:arrow_visible()
 	return #self._options > 1
 end

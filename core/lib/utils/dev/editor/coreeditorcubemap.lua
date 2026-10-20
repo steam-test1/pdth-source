@@ -1,4 +1,5 @@
 core:import("CoreEditorUtils")
+
 function CoreEditor:create_projection_light(type)
 	local lights = {}
 	local units = {}
@@ -61,6 +62,7 @@ function CoreEditor:create_projection_light(type)
 		saved_environment = saved_environment
 	})
 end
+
 function CoreEditor:_create_cube_light(params)
 	if not self._lastdir then
 		return
@@ -72,6 +74,7 @@ function CoreEditor:_create_cube_light(params)
 	params.output_path = self._lastdir .. "\\" .. folder_name .. "\\"
 	self:create_cube_map(params)
 end
+
 function CoreEditor:create_cube_map(params)
 	assert(self._vp:push_ref_fov(500))
 	self._vp:set_width_mul_enabled(false)
@@ -124,6 +127,7 @@ function CoreEditor:create_cube_map(params)
 	end
 	self:next_cube()
 end
+
 function CoreEditor:next_cube()
 	if #self._cubes_que > 0 then
 		local cube = table.remove(self._cubes_que, 1)
@@ -146,6 +150,7 @@ function CoreEditor:next_cube()
 	end
 	return false
 end
+
 function CoreEditor:cube_map_done()
 	if self:next_cube() then
 		return

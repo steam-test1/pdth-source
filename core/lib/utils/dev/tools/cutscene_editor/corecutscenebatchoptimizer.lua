@@ -2,10 +2,12 @@ require("core/lib/utils/dev/tools/cutscene_editor/CoreCutsceneOptimizer")
 require("core/lib/utils/dev/tools/cutscene_editor/CoreCutsceneEditorProject")
 require("core/lib/utils/dev/tools/cutscene_editor/CoreCutsceneFootage")
 CoreCutsceneBatchOptimizer = CoreCutsceneBatchOptimizer or class()
+
 function CoreCutsceneBatchOptimizer:init()
 	self.__prioritized_queue = {}
 	self.__queue = {}
 end
+
 function CoreCutsceneBatchOptimizer:add_project(project_name, optimized_cutscene_name)
 	local project = assert(self:_load_project(project_name), string.format("Cutscene Project \"%s\" not found in database.", project_name))
 	local optimizer = self:_create_optimizer_for_project(project)
@@ -24,10 +26,12 @@ function CoreCutsceneBatchOptimizer:add_project(project_name, optimized_cutscene
 	end
 	self.__max_queue_size = math.max(self.__max_queue_size or 0, self:queue_size())
 end
+
 function CoreCutsceneBatchOptimizer:next_project()
 	local front = self.__prioritized_queue[1] or self.__queue[1]
 	return front and front.project_name
 end
+
 function CoreCutsceneBatchOptimizer:consume_project()
 	local front = table.remove(self.__prioritized_queue, 1) or table.remove(self.__queue, 1)
 	if front then
@@ -36,12 +40,15 @@ function CoreCutsceneBatchOptimizer:consume_project()
 	end
 	return self:queue_size()
 end
+
 function CoreCutsceneBatchOptimizer:queue_size()
 	return #self.__queue + #self.__prioritized_queue
 end
+
 function CoreCutsceneBatchOptimizer:max_queue_size()
 	return self.__max_queue_size or 0
 end
+
 function CoreCutsceneBatchOptimizer:_load_project(project_name)
 	local database_entry = self.__database:has("cutscene_project", project_name) and self.__database:lookup("cutscene_project", project_name)
 	if database_entry then
@@ -51,6 +58,7 @@ function CoreCutsceneBatchOptimizer:_load_project(project_name)
 	end
 	return nil
 end
+
 function CoreCutsceneBatchOptimizer:_create_optimizer_for_project(project)
 	local optimizer = core_or_local("CutsceneOptimizer")
 	optimizer:set_compression_enabled("win32", project:export_type() == "in_game_use")
@@ -71,6 +79,7 @@ function CoreCutsceneBatchOptimizer:_create_optimizer_for_project(project)
 	end
 	return optimizer
 end
+
 function CoreCutsceneBatchOptimizer:_create_clip(clip_descriptor)
 	local footage = assert(core_or_local("CutsceneFootage", managers.cutscene:get_cutscene(clip_descriptor.cutscene)), "Cutscene \"" .. clip_descriptor.cutscene .. "\" does not exist.")
 	local clip = footage:create_clip(clip_descriptor.from, clip_descriptor.to, clip_descriptor.camera)

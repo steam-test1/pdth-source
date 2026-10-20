@@ -1,11 +1,14 @@
 core:import("CoreMissionScriptElement")
 ElementObjective = ElementObjective or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementObjective:init(...)
 	ElementObjective.super.init(self, ...)
 end
+
 function ElementObjective:client_on_executed(...)
 	self:on_executed(...)
 end
+
 function ElementObjective:on_executed(instigator)
 	if not self._values.enabled then
 		return

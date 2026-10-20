@@ -1,5 +1,6 @@
 require("lib/states/GameState")
 IngameDuelState = IngameDuelState or class(GameState)
+
 function IngameDuelState:init(game_state_machine)
 	GameState.init(self, "ingame_duel", game_state_machine)
 	self._ws = Overlay:newgui():create_screen_workspace()
@@ -14,6 +15,7 @@ function IngameDuelState:init(game_state_machine)
 	})
 	self._ws:hide()
 end
+
 function IngameDuelState:set_controller_enabled(enabled)
 	local players = managers.player:players()
 	for _, player in ipairs(players) do
@@ -23,6 +25,7 @@ function IngameDuelState:set_controller_enabled(enabled)
 		end
 	end
 end
+
 function IngameDuelState:at_enter()
 	local players = managers.player:players()
 	for k, player in ipairs(players) do
@@ -35,6 +38,7 @@ function IngameDuelState:at_enter()
 	end
 	self._ws:show()
 end
+
 function IngameDuelState:at_exit()
 	local players = managers.player:players()
 	for _, player in ipairs(players) do

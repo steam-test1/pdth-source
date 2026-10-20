@@ -1,9 +1,11 @@
 core:import("CoreElementArea")
 core:import("CoreClass")
 ElementAreaTrigger = ElementAreaTrigger or class(CoreElementArea.ElementAreaTrigger)
+
 function ElementAreaTrigger:init(...)
 	ElementAreaTrigger.super.init(self, ...)
 end
+
 function ElementAreaTrigger:project_instigators()
 	local instigators = {}
 	if Network:is_client() then
@@ -43,6 +45,7 @@ function ElementAreaTrigger:project_instigators()
 	end
 	return instigators
 end
+
 function ElementAreaTrigger:project_amount_all()
 	if self._values.instigator == "criminals" then
 		local i = 0
@@ -53,4 +56,5 @@ function ElementAreaTrigger:project_amount_all()
 	end
 	return managers.network:game():amount_of_alive_players()
 end
+
 CoreClass.override_class(CoreElementArea.ElementAreaTrigger, ElementAreaTrigger)

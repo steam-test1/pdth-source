@@ -2,9 +2,11 @@ core:module("CoreMenuData")
 core:import("CoreMenuNode")
 core:import("CoreSerialize")
 Data = Data or class()
+
 function Data:init()
 	self._nodes = {}
 end
+
 function Data:get_node(node_name, ...)
 	local node
 	if node_name then
@@ -27,6 +29,7 @@ function Data:get_node(node_name, ...)
 	end
 	return node
 end
+
 function Data:load_data(file_path, menu_id)
 	local root = PackageManager:script_data(Idstring("menu"), file_path:id())
 	local menu
@@ -59,6 +62,7 @@ function Data:load_data(file_path, menu_id)
 		end
 	end
 end
+
 function Data:set_callback_handler(callback_handler)
 	for name, node in pairs(self._nodes) do
 		node:set_callback_handler(callback_handler)

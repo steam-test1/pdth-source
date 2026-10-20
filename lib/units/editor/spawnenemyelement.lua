@@ -1,4 +1,5 @@
 SpawnEnemyUnitElement = SpawnEnemyUnitElement or class(MissionElement)
+
 function SpawnEnemyUnitElement:init(unit)
 	SpawnEnemyUnitElement.super.init(self, unit)
 	self._enemies = {}
@@ -49,6 +50,7 @@ function SpawnEnemyUnitElement:init(unit)
 	table.insert(self._save_values, "amount")
 	table.insert(self._save_values, "accessibility")
 end
+
 function SpawnEnemyUnitElement:test_element()
 	if self._hed.enemy ~= "none" then
 		local enemy = safe_spawn_unit(Idstring(self._hed.enemy), self._unit:position(), self._unit:rotation())
@@ -56,12 +58,14 @@ function SpawnEnemyUnitElement:test_element()
 		ElementSpawnEnemyDummy.produce_test(self._hed, enemy)
 	end
 end
+
 function SpawnEnemyUnitElement:stop_test_element()
 	for _, enemy in ipairs(self._enemies) do
 		enemy:set_slot(0)
 	end
 	self._enemies = {}
 end
+
 function SpawnEnemyUnitElement:add_unit_list_btn()
 	local dialog = SelectNameModal:new("Select unit", self._options)
 	if dialog:cancelled() then
@@ -72,6 +76,7 @@ function SpawnEnemyUnitElement:add_unit_list_btn()
 		CoreEws.change_combobox_value(self._enemies_params, self._hed.enemy)
 	end
 end
+
 function SpawnEnemyUnitElement:select_spawn_action_btn()
 	local dialog = SelectNameModal:new("Select unit", clone(ElementSpawnEnemyDummy._spawn_actions))
 	if dialog:cancelled() then
@@ -82,6 +87,7 @@ function SpawnEnemyUnitElement:select_spawn_action_btn()
 		CoreEws.change_combobox_value(self._spawn_action_params, self._hed.spawn_action)
 	end
 end
+
 function SpawnEnemyUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel
@@ -211,5 +217,6 @@ function SpawnEnemyUnitElement:_build_panel(panel, panel_sizer)
 		value = "force_pickup"
 	})
 end
+
 function SpawnEnemyUnitElement:add_to_mission_package()
 end

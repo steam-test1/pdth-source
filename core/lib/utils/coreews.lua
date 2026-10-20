@@ -1,6 +1,7 @@
 core:module("CoreEws")
 core:import("CoreClass")
 core:import("CoreApp")
+
 function verify_number(ctrlr, event)
 	if EWS:name_to_key_code("K_BACK") == event:key_code() or EWS:name_to_key_code("K_RIGHT") == event:key_code() or EWS:name_to_key_code("K_LEFT") == event:key_code() or event:key_code() >= 48 and event:key_code() <= 57 or event:key_code() == 45 or event:key_code() == 46 or EWS:name_to_key_code("K_RETURN") == event:key_code() or EWS:name_to_key_code("K_TAB") == event:key_code() or EWS:name_to_key_code("K_DELETE") == event:key_code() then
 		if event:key_code() == 46 then
@@ -12,6 +13,7 @@ function verify_number(ctrlr, event)
 		event:skip()
 	end
 end
+
 function image_path(file_name)
 	file_name = file_name or ""
 	local base_path = managers.database and managers.database:base_path() or Application:base_path() .. (CoreApp.arg_value("-assetslocation") or "../../") .. "assets\\"
@@ -21,7 +23,9 @@ function image_path(file_name)
 	end
 	return path .. file_name
 end
+
 EWSConfirmDialog = EWSConfirmDialog or CoreClass.class()
+
 function EWSConfirmDialog:init(label, message)
 	self._yes = false
 	self._no = false
@@ -48,53 +52,69 @@ function EWSConfirmDialog:init(label, message)
 	dialog_sizer:add(panel_sizer, 1, 0, "EXPAND")
 	panel:fit()
 end
+
 function EWSConfirmDialog:show_modal()
 	self._dialog:show_modal()
 	return true
 end
+
 function EWSConfirmDialog:set_value(value)
 	self[value] = true
 	self._dialog:end_modal()
 end
+
 function EWSConfirmDialog:yes()
 	return self._yes
 end
+
 function EWSConfirmDialog:no()
 	return self._no
 end
+
 function EWSConfirmDialog:cancel()
 	return self._cancel
 end
+
 LocalizerTextCtrl = LocalizerTextCtrl or CoreClass.class()
+
 function LocalizerTextCtrl:init(panel, sizer, text)
 	self._text_ctrlr = EWS:TextCtrl(panel, Localizer:lookup(text), "", "TE_CENTRE,TE_READONLY")
 	sizer:add(self._text_ctrlr, 1, 0, "EXPAND")
 end
+
 function LocalizerTextCtrl:get()
 	return self._text_ctrlr
 end
+
 function LocalizerTextCtrl:get_value()
 	return self._text_ctrlr:get_value()
 end
+
 function LocalizerTextCtrl:set_value(value)
 	return self._text_ctrlr:set_value(Localizer:lookup(value))
 end
+
 EWSRadioBitmapButton = EWSRadioBitmapButton or CoreClass.class()
+
 function EWSRadioBitmapButton:init(panel, bmp, id, style)
 	self._on_bmp = bmp
 	self._off_bmp = bmp
 	self._button = EWS:BitmapButton(panel, bmp, "", "")
 	self._value = true
 end
+
 function EWSRadioBitmapButton:button()
 	return self._button
 end
+
 function EWSRadioBitmapButton:set_on_bmp(bmp)
 	self._on_bmp = bmp
 end
+
 function EWSRadioBitmapButton:set_off_bmp(bmp)
 	self._off_bmp = bmp
 end
+
 function EWSRadioBitmapButton:set_value(value)
 	self._value = value
 	if value then
@@ -103,10 +123,13 @@ function EWSRadioBitmapButton:set_value(value)
 		self._button:set_label_bitmap(self._off_bmp)
 	end
 end
+
 function EWSRadioBitmapButton:value()
 	return self._value
 end
+
 EwsTextDialog = EwsTextDialog or CoreClass.class()
+
 function EwsTextDialog:init(name, init_text)
 	init_text = init_text or "new"
 	self._dialog = EWS:Dialog(nil, name, "", Vector3(525, 400, 0), Vector3(230, 150, 0), "CAPTION,CLOSE_BOX")
@@ -130,19 +153,24 @@ function EwsTextDialog:init(name, init_text)
 	})
 	dialog_main_sizer:add(button_sizer, 0, 0, "ALIGN_RIGHT")
 end
+
 function EwsTextDialog:close(data)
 	data.dialog:end_modal()
 	self._cancel_dialog = data.cancel
 end
+
 function EwsTextDialog:cancel_dialog()
 	return self._cancel_dialog
 end
+
 function EwsTextDialog:dialog()
 	return self._dialog
 end
+
 function EwsTextDialog:text()
 	return self._text
 end
+
 function number_controller(params)
 	params.value = params.value or 0
 	params.name_proportions = params.name_proportions or 1
@@ -157,6 +185,7 @@ function number_controller(params)
 	_connect_events(params)
 	return params.number_ctrlr, params.name_ctrlr, params
 end
+
 function verify_entered_number(params)
 	local value = tonumber(params.number_ctrlr:get_value()) or 0
 	value = params.min and value < params.min and params.min or value
@@ -166,16 +195,19 @@ function verify_entered_number(params)
 	params.number_ctrlr:change_value(string.format("%." .. floats .. "f", value))
 	params.number_ctrlr:set_selection(-1, -1)
 end
+
 function change_entered_number(params, value)
 	local floats = params.floats or 0
 	params.value = value
 	params.number_ctrlr:change_value(string.format("%." .. floats .. "f", params.value))
 end
+
 function change_slider_and_number_value(params, value)
 	params.value = value
 	params.slider_ctrlr:set_value(value * params.slider_multiplier)
 	change_entered_number(params, value)
 end
+
 function _connect_events(params)
 	if not params.events then
 		return
@@ -184,6 +216,7 @@ function _connect_events(params)
 		params.number_ctrlr:connect(data.event, data.callback, params)
 	end
 end
+
 function combobox(params)
 	local name = params.name
 	local panel = params.panel
@@ -225,10 +258,12 @@ function combobox(params)
 	_connect_events(params)
 	return ctrlr, name_ctrlr, params
 end
+
 function _set_combobox_value(params)
 	params.value = params.ctrlr:get_value()
 	params.value = params.numbers and tonumber(params.value) or params.value
 end
+
 function update_combobox_options(params, options)
 	params.ctrlr:clear()
 	if params.sorted then
@@ -241,11 +276,13 @@ function update_combobox_options(params, options)
 		params.ctrlr:append(option)
 	end
 end
+
 function change_combobox_value(params, value)
 	params.value = value
 	params.value = params.numbers and tonumber(params.value) or params.value
 	params.ctrlr:set_value(value)
 end
+
 function slider_and_number_controller(params)
 	params.value = params.value or 0
 	params.name_proportions = params.name_proportions or 1
@@ -272,6 +309,7 @@ function slider_and_number_controller(params)
 	params.sizer:add(params.ctrl_sizer, 0, 0, "EXPAND")
 	return params
 end
+
 function _ctrlr_tooltip(params)
 	local max = params.max
 	local min = params.min
@@ -283,10 +321,12 @@ function _ctrlr_tooltip(params)
 		params.tooltip = (params.tooltip or "") .. " (Below " .. string.format("%." .. params.floats .. "f", max) .. ")"
 	end
 end
+
 function _slider_ctrlr(params)
 	params.slider_ctrlr = EWS:Slider(params.panel, params.value * params.slider_multiplier, params.min * params.slider_multiplier, params.max * params.slider_multiplier, "", "")
 	params.slider_ctrlr:set_tool_tip(params.tooltip)
 end
+
 function _number_ctrlr(params)
 	if CoreClass.type_name(params.value) ~= "number" then
 		params.value = params.min or 0
@@ -297,12 +337,14 @@ function _number_ctrlr(params)
 	params.number_ctrlr:connect("EVT_COMMAND_TEXT_ENTER", callback(nil, _M, "verify_entered_number"), params)
 	params.number_ctrlr:connect("EVT_KILL_FOCUS", callback(nil, _M, "verify_entered_number"), params)
 end
+
 function _name_ctrlr(params)
 	if params.name then
 		params.name_ctrlr = EWS:StaticText(params.panel, params.name, 0, "")
 		params.ctrl_sizer:add(params.name_ctrlr, params.name_proportions, 0, "ALIGN_CENTER_VERTICAL")
 	end
 end
+
 function verify_entered_number(params)
 	local ctrlr = params.ctrlr or params.number_ctrlr
 	local value = tonumber(ctrlr:get_value()) or 0
@@ -313,9 +355,11 @@ function verify_entered_number(params)
 	ctrlr:change_value(string.format("%." .. floats .. "f", value))
 	ctrlr:set_selection(-1, -1)
 end
+
 function update_slider_from_number(params)
 	params.slider_ctrlr:set_value(params.value * params.slider_multiplier)
 end
+
 function update_number_from_slider(params)
 	params.value = params.slider_ctrlr:get_value() / params.slider_multiplier
 	change_entered_number(params, params.value)

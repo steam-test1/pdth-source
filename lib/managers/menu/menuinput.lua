@@ -1,5 +1,6 @@
 core:import("CoreMenuInput")
 MenuInput = MenuInput or class(CoreMenuInput.MenuInput)
+
 function MenuInput:init(logic, ...)
 	MenuInput.super.init(self, logic, ...)
 	self._move_axis_limit = 0.5
@@ -15,6 +16,7 @@ function MenuInput:init(logic, ...)
 	self._item_input_action_map[MenuItemFriend.TYPE] = callback(self, self, "input_item")
 	self._item_input_action_map[MenuItemCustomizeController.TYPE] = callback(self, self, "input_customize_controller")
 end
+
 function MenuInput:back(...)
 	self._slider_marker = nil
 	local node_gui = managers.menu:active_menu().renderer:active_node_gui()
@@ -23,6 +25,7 @@ function MenuInput:back(...)
 	end
 	MenuInput.super.back(self, ...)
 end
+
 function MenuInput:activate_mouse()
 	if self._controller.TYPE ~= "pc" then
 		return
@@ -36,6 +39,7 @@ function MenuInput:activate_mouse()
 	data.id = self._menu_name
 	managers.mouse_pointer:use_mouse(data)
 end
+
 function MenuInput:deactivate_mouse()
 	if not self._mouse_active then
 		return
@@ -43,6 +47,7 @@ function MenuInput:deactivate_mouse()
 	self._mouse_active = false
 	managers.mouse_pointer:remove_mouse(self._menu_name)
 end
+
 function MenuInput:open(...)
 	MenuInput.super.open(self, ...)
 	self.AXIS_STATUS_UP = 0
@@ -55,10 +60,12 @@ function MenuInput:open(...)
 	}
 	self:activate_mouse()
 end
+
 function MenuInput:close(...)
 	MenuInput.super.close(self, ...)
 	self:deactivate_mouse()
 end
+
 function MenuInput:mouse_moved(o, x, y)
 	self._keyboard_used = false
 	if self._slider_marker then
@@ -82,6 +89,7 @@ function MenuInput:mouse_moved(o, x, y)
 		managers.menu:active_menu().logic:mouse_over_select_item(select_item, false)
 	end
 end
+
 function MenuInput:input_kitslot(item, controller, mouse_click)
 	local slider_delay_down = 0.1
 	local slider_delay_pressed = 0.2
@@ -111,6 +119,7 @@ function MenuInput:input_kitslot(item, controller, mouse_click)
 		self._logic:trigger_item(true, item)
 	end
 end
+
 function MenuInput:input_multi_choice(item, controller, mouse_click)
 	local slider_delay_down = 0.1
 	local slider_delay_pressed = 0.2
@@ -138,10 +147,12 @@ function MenuInput:input_multi_choice(item, controller, mouse_click)
 		self._logic:trigger_item(true, item)
 	end
 end
+
 function MenuInput:input_chat(item, controller, mouse_click)
 	if controller:get_input_pressed("confirm") or mouse_click then
 	end
 end
+
 function MenuInput:input_customize_controller(item, controller, mouse_click)
 	if controller:get_input_pressed("confirm") or mouse_click then
 		local node_gui = managers.menu:active_menu().renderer:active_node_gui()
@@ -152,6 +163,7 @@ function MenuInput:input_customize_controller(item, controller, mouse_click)
 		node_gui:activate_customize_controller(item)
 	end
 end
+
 function MenuInput:mouse_pressed(o, button, x, y)
 	if not self._accept_input then
 		return
@@ -233,14 +245,17 @@ function MenuInput:mouse_pressed(o, button, x, y)
 		end
 	end
 end
+
 function MenuInput:mouse_released(o, button, x, y)
 	if self._slider_marker then
 		self:post_event("slider_release")
 	end
 	self._slider_marker = nil
 end
+
 function MenuInput:mouse_clicked(o, button, x, y)
 end
+
 function MenuInput:update(t, dt)
 	if self._menu_plane then
 		self._menu_plane:set_rotation(Rotation(math.sin(t * 60) * 40, math.sin(t * 50) * 30, 0))
@@ -251,6 +266,7 @@ function MenuInput:update(t, dt)
 		self:mouse_moved(managers.mouse_pointer:mouse(), managers.mouse_pointer:world_position())
 	end
 end
+
 function MenuInput:menu_axis_move()
 	local axis_moved = {x = 0, y = 0}
 	if self._controller then
@@ -261,45 +277,59 @@ function MenuInput:menu_axis_move()
 	end
 	return axis_moved
 end
+
 function MenuInput:post_event(event)
 	self._sound_source:post_event(event)
 end
+
 function MenuInput:menu_up_input_bool()
 	return MenuInput.super.menu_up_input_bool(self) or self:menu_axis_move().y > self._move_axis_limit
 end
+
 function MenuInput:menu_up_pressed()
 	return MenuInput.super.menu_up_pressed(self) or self._axis_status.y == self.AXIS_STATUS_PRESSED and self:menu_axis_move().y > 0
 end
+
 function MenuInput:menu_up_released()
 	return MenuInput.super.menu_up_released(self) or self._axis_status.y == self.AXIS_STATUS_RELEASED
 end
+
 function MenuInput:menu_down_input_bool()
 	return MenuInput.super.menu_down_input_bool(self) or self:menu_axis_move().y < -self._move_axis_limit
 end
+
 function MenuInput:menu_down_pressed()
 	return MenuInput.super.menu_down_pressed(self) or self._axis_status.y == self.AXIS_STATUS_PRESSED and self:menu_axis_move().y < 0
 end
+
 function MenuInput:menu_down_released()
 	return MenuInput.super.menu_down_released(self) or self._axis_status.y == self.AXIS_STATUS_RELEASED
 end
+
 function MenuInput:menu_left_input_bool()
 	return MenuInput.super.menu_left_input_bool(self) or self:menu_axis_move().x < -self._move_axis_limit
 end
+
 function MenuInput:menu_left_pressed()
 	return MenuInput.super.menu_left_pressed(self) or self._axis_status.x == self.AXIS_STATUS_PRESSED and self:menu_axis_move().x < 0
 end
+
 function MenuInput:menu_left_released()
 	return MenuInput.super.menu_left_released(self) or self._axis_status.x == self.AXIS_STATUS_RELEASED
 end
+
 function MenuInput:menu_right_input_bool()
 	return MenuInput.super.menu_right_input_bool(self) or self:menu_axis_move().x > self._move_axis_limit
 end
+
 function MenuInput:menu_right_pressed()
 	return MenuInput.super.menu_right_pressed(self) or self._axis_status.x == self.AXIS_STATUS_PRESSED and self:menu_axis_move().x > 0
 end
+
 function MenuInput:menu_right_released()
 	return MenuInput.super.menu_right_released(self) or self._axis_status.x == self.AXIS_STATUS_RELEASED
 end
+
 function MenuInput:_update_axis_status()
 	local axis_moved = self:menu_axis_move()
 	if self._axis_status.x == self.AXIS_STATUS_UP and math.abs(axis_moved.x) - self._move_axis_limit > 0 then

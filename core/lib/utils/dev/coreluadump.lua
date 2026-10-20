@@ -7,6 +7,7 @@ local string_to_binary = function(str)
 	end
 	return out_str or ""
 end
+
 local function dump_collect(tab, t, level, max_level)
 	if level < max_level then
 		for k, v in pairs(tab) do
@@ -69,6 +70,7 @@ local function dump_collect(tab, t, level, max_level)
 	end
 	return t
 end
+
 local function write_to_file(file, t, level)
 	for k, v in pairs(t) do
 		if v._type == "table" then
@@ -80,6 +82,7 @@ local function write_to_file(file, t, level)
 		end
 	end
 end
+
 local function write_locals(file)
 	local i = 1
 	local value = 1
@@ -104,6 +107,7 @@ local function write_locals(file)
 		end
 	end
 end
+
 function core_lua_dump(file_name, root, max_level, no_bin)
 	local file = File:open(file_name or "lua_dump.xml", "w")
 	assert(file)

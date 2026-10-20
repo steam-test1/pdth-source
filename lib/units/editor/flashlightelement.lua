@@ -1,4 +1,5 @@
 FlashlightUnitElement = FlashlightUnitElement or class(MissionElement)
+
 function FlashlightUnitElement:init(unit)
 	FlashlightUnitElement.super.init(self, unit)
 	self._hed.state = false
@@ -6,6 +7,7 @@ function FlashlightUnitElement:init(unit)
 	table.insert(self._save_values, "state")
 	table.insert(self._save_values, "on_player")
 end
+
 function FlashlightUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

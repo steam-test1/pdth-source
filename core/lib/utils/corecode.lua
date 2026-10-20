@@ -11,6 +11,7 @@ local open_lua_source_file = function(source)
 	local entry_name = source:match("([^.]*)"):lower()
 	return DB:has(entry_type, entry_name:id()) and DB:open(entry_type, entry_name:id()) or nil
 end
+
 function get_prototype(info)
 	if info.source == "=[C]" then
 		return "(C++ method)"
@@ -25,6 +26,7 @@ function get_prototype(info)
 	end
 	return prototype
 end
+
 function get_source(info)
 	if info.source == "=[C]" then
 		return "(C++ method)"
@@ -45,6 +47,7 @@ function get_source(info)
 	source_file:close()
 	return table.concat(lines, "\n")
 end
+
 function traceback(max_level)
 	max_level = max_level or 2
 	local level = 2
@@ -61,15 +64,18 @@ function traceback(max_level)
 		level = level + 1
 	end
 end
+
 function alive(obj)
 	if obj and obj:alive() then
 		return true
 	end
 	return false
 end
+
 function deprecation_warning(method_name, breaking_release_name)
 	CoreDebug.cat_print("debug", string.format("DEPRECATION WARNING: %s will be removed in %s", method_name, breaking_release_name or "a future release"))
 end
+
 local sort_iterator = function(t, raw)
 	local sorted = {}
 	for k, v in pairs(t) do
@@ -98,6 +104,7 @@ local sort_iterator = function(t, raw)
 		end
 	end
 end
+
 function line_representation(x, seen, raw)
 	if DB:is_bundled() then
 		return "[N/A in bundle]"
@@ -141,6 +148,7 @@ function line_representation(x, seen, raw)
 		return tostring(x)
 	end
 end
+
 function full_representation(x, seen)
 	if DB:is_bundled() then
 		return "[N/A in bundle]"
@@ -154,7 +162,9 @@ function full_representation(x, seen)
 		return tostring(x)
 	end
 end
+
 inspect = full_representation
+
 function properties(x)
 	local t = {}
 	for i, p in ipairs(x.__properties) do
@@ -162,8 +172,10 @@ function properties(x)
 	end
 	CoreDebug.cat_print("debug", ascii_table(t))
 end
+
 function help(o)
 	local methods = {}
+	
 	local function add_methods(t)
 		if type(t) == "table" then
 			for k, v in pairs(t) do
@@ -194,6 +206,7 @@ function help(o)
 			add_methods(getmetatable(t))
 		end
 	end
+	
 	add_methods(o)
 	local sorted_methods = {}
 	for k, v in pairs(methods) do
@@ -204,6 +217,7 @@ function help(o)
 		CoreDebug.cat_print("debug", name)
 	end
 end
+
 function ascii_table(t, raw)
 	local out = ""
 	local klen = 20
@@ -225,6 +239,7 @@ function ascii_table(t, raw)
 	out = out .. ("-"):rep(klen + vlen + 5) .. "\n"
 	return out
 end
+
 function memory_report(limit)
 	local seen = {}
 	local count = {}
@@ -244,6 +259,7 @@ function memory_report(limit)
 		end
 		return true
 	end
+	
 	local function recurse(item, parent, key)
 		local index = type(item) == "userdata" and item:key() or item
 		if seen[index] then
@@ -269,6 +285,7 @@ function memory_report(limit)
 			recurse(getmetatable(item), t, "metatable")
 		end
 	end
+	
 	recurse(_G, nil, nil)
 	local units = World:unit_manager():get_units()
 	for _, u in ipairs(units) do
@@ -290,6 +307,7 @@ function memory_report(limit)
 
 %6i  TOTAL]], total))
 end
+
 __old_profiled = __old_profiled or {}
 if __profiled then
 	__old_profiled = __profiled
@@ -298,6 +316,7 @@ if __profiled then
 	end
 end
 __profiled = {}
+
 function profile(s)
 	if __profiled[s] then
 		return
@@ -313,12 +332,14 @@ function profile(s)
 			return
 		end
 		t.f = rawget(_G, t.class)[t.name]
+		
 		function t.patch(f)
 			_G[t.class][t.name] = f
 		end
 	else
 		t.name = s
 		t.f = rawget(_G, t.name)
+		
 		function t.patch(f)
 			_G[t.name] = f
 		end
@@ -327,16 +348,19 @@ function profile(s)
 		CoreDebug.cat_print("debug", "Could not find function " .. s)
 		return
 	end
+	
 	function t.instrumented(...)
 		local id = Profiler:start(t.s)
 		res = t.f(...)
 		Profiler:stop(id)
 		return res
 	end
+	
 	t.patch(t.instrumented)
 	__profiled[s] = t
 	Application:console_command("profiler add " .. s)
 end
+
 function unprofile(s)
 	local t = __profiled[s]
 	if t then
@@ -345,6 +369,7 @@ function unprofile(s)
 	Application:console_command("profiler remove " .. s)
 	__profiled[s] = nil
 end
+
 function reprofile()
 	for k, v in pairs(__old_profiled) do
 		profile(k)

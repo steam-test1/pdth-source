@@ -1,4 +1,5 @@
 LevelsTweakData = LevelsTweakData or class()
+
 function LevelsTweakData:init()
 	self.sony_tutorial1 = {}
 	self.sony_tutorial1.name_id = "debug_sony_level1"
@@ -489,18 +490,22 @@ function LevelsTweakData:init()
 		"sony_tutorial2"
 	}
 end
+
 function LevelsTweakData:get_level_index()
 	return self._level_index
 end
+
 function LevelsTweakData:get_world_name_from_index(index)
 	if not self._level_index[index] then
 		return
 	end
 	return self[self._level_index[index]].world_name
 end
+
 function LevelsTweakData:get_level_name_from_index(index)
 	return self._level_index[index]
 end
+
 function LevelsTweakData:get_index_from_world_name(world_name)
 	for index, entry_name in ipairs(self._level_index) do
 		if world_name == self[entry_name].world_name then
@@ -508,6 +513,7 @@ function LevelsTweakData:get_index_from_world_name(world_name)
 		end
 	end
 end
+
 function LevelsTweakData:get_index_from_level_id(level_id)
 	for index, entry_name in ipairs(self._level_index) do
 		if entry_name == level_id then
@@ -515,12 +521,15 @@ function LevelsTweakData:get_index_from_level_id(level_id)
 		end
 	end
 end
+
 function LevelsTweakData:requires_dlc(level_id)
 	return self[level_id].dlc
 end
+
 function LevelsTweakData:requires_dlc_by_index(index)
 	return self[self._level_index[index]].dlc
 end
+
 function LevelsTweakData:get_level_name_from_world_name(world_name)
 	for _, entry_name in ipairs(self._level_index) do
 		if world_name == self[entry_name].world_name then
@@ -528,6 +537,7 @@ function LevelsTweakData:get_level_name_from_world_name(world_name)
 		end
 	end
 end
+
 function LevelsTweakData:get_localized_level_name_from_world_name(world_name)
 	for _, entry_name in ipairs(self._level_index) do
 		if world_name == self[entry_name].world_name then
@@ -535,6 +545,7 @@ function LevelsTweakData:get_localized_level_name_from_world_name(world_name)
 		end
 	end
 end
+
 function LevelsTweakData:get_localized_level_name_from_level_id(level_id)
 	for _, entry_name in ipairs(self._level_index) do
 		if level_id == entry_name then
@@ -542,6 +553,7 @@ function LevelsTweakData:get_localized_level_name_from_level_id(level_id)
 		end
 	end
 end
+
 function LevelsTweakData:get_music_event(stage)
 	local level_data = Global.level_data.level_id and tweak_data.levels[Global.level_data.level_id]
 	local music_id = level_data and level_data.music or "default"

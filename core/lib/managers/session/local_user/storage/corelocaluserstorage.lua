@@ -4,6 +4,7 @@ core:import("CoreFiniteStateMachine")
 core:import("CoreLocalUserStorageStates")
 core:import("CoreSessionGenericState")
 Storage = Storage or class(CoreSessionGenericState.State)
+
 function Storage:init(local_user, settings_handler, progress_handler, profile_data_loaded_callback)
 	self._load = CoreRequester.Requester:new()
 	self._state = CoreFiniteStateMachine.FiniteStateMachine:new(CoreLocalUserStorageStates.Init, "storage", self)
@@ -13,14 +14,18 @@ function Storage:init(local_user, settings_handler, progress_handler, profile_da
 	self._progress_handler = progress_handler
 	self._profile_data_loaded_callback = profile_data_loaded_callback
 end
+
 function Storage:transition()
 	self._state:transition()
 end
+
 function Storage:request_load()
 	self._load:request()
 end
+
 function Storage:request_save()
 end
+
 function Storage:_common_save_params()
 	return {
 		save_slots = {1},
@@ -28,12 +33,14 @@ function Storage:_common_save_params()
 		user_index = self._user_index
 	}
 end
+
 function Storage:_start_load_task()
 	local save_param = self:_common_save_params()
 	local callback
 	self._load_task = NewSave:load(save_param, callback)
 	self._load:task_started()
 end
+
 function Storage:_load_status()
 	if not self._load_task:has_next() then
 		return
@@ -44,10 +51,12 @@ function Storage:_load_status()
 	end
 	return profile_data:status()
 end
+
 function Storage:_close_load_task()
 	self._load_task = nil
 	self._load:task_completed()
 end
+
 function Storage:_fast_forward_profile_data(handler, profile_data, stored_version)
 	local func
 	repeat
@@ -60,15 +69,18 @@ function Storage:_fast_forward_profile_data(handler, profile_data, stored_versio
 	until func == nil
 	return profile_data, stored_version
 end
+
 function Storage:_profile_data_loaded(profile_data)
 	profile_data.settings, profile_data.settings.version = self:_fast_forward_profile_data(self._settings_handler, profile_data.settings.title_data, profile_data.settings.version)
 	profile_data.progress, profile_data.progress.version = self:_fast_forward_profile_data(self._progress_handler, profile_data.progress.title_data, profile_data.progress.version)
 	self._profile_data = profile_data
 	self._local_user:local_user_handler():profile_data_loaded()
 end
+
 function Storage:profile_data_is_loaded()
 	return self._profile_data ~= nil
 end
+
 function Storage:_create_profile_data()
 	local profile_data = {}
 	profile_data.settings = {}
@@ -79,9 +91,11 @@ function Storage:_create_profile_data()
 	profile_data.progress.version = 0
 	self:_profile_data_loaded(profile_data)
 end
+
 function Storage:profile_settings()
 	return self._profile_data.settings.title_data
 end
+
 function Storage:profile_progress()
 	return self._profile_data.progress.title_data
 end

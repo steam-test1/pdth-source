@@ -1,6 +1,7 @@
 core:module("CoreEditorUtils")
 core:import("CoreEngineAccess")
 core:import("CoreClass")
+
 function all_lights()
 	local lights = {}
 	local all_units = World:find_units_quick("all")
@@ -11,6 +12,7 @@ function all_lights()
 	end
 	return lights
 end
+
 function get_editable_lights(unit)
 	local lights = {}
 	local object_file = CoreEngineAccess._editor_unit_data(unit:name():id()):model()
@@ -28,6 +30,7 @@ function get_editable_lights(unit)
 	end
 	return lights
 end
+
 function has_projection_light(unit)
 	local object_file = CoreEngineAccess._editor_unit_data(unit:name():id()):model()
 	local node = DB:has("object", object_file) and DB:load_node("object", object_file)
@@ -44,6 +47,7 @@ function has_projection_light(unit)
 	end
 	return nil
 end
+
 function is_projection_light(unit, light)
 	local object_file = CoreEngineAccess._editor_unit_data(unit:name():id()):model()
 	local node = DB:has("object", object_file) and DB:load_node("object", object_file)
@@ -60,6 +64,7 @@ function is_projection_light(unit, light)
 	end
 	return false
 end
+
 function intensity_value()
 	local t = {}
 	for _, intensity in ipairs(LightIntensityDB:list()) do
@@ -68,7 +73,9 @@ function intensity_value()
 	table.sort(t)
 	return t
 end
+
 INTENSITY_VALUES = intensity_value()
+
 function get_intensity_preset(multiplier)
 	local intensity = LightIntensityDB:reverse_lookup(multiplier)
 	if intensity:s() ~= "undefined" then
@@ -92,18 +99,24 @@ function get_intensity_preset(multiplier)
 		end
 	end
 end
+
 GrabInfo = GrabInfo or CoreClass.class()
+
 function GrabInfo:init(o)
 	self._pos = o:position()
 	self._rot = o:rotation()
 end
+
 function GrabInfo:rotation()
 	return self._rot
 end
+
 function GrabInfo:position()
 	return self._pos
 end
+
 layer_types = layer_types or {}
+
 function parse_layer_types()
 	assert(DB:has("xml", "core/settings/editor_types"), "Editor type settings are missing from core settings.")
 	local node = DB:load_node("xml", "core/settings/editor_types")
@@ -123,12 +136,15 @@ function parse_layer_types()
 		end
 	end
 end
+
 function layer_type(layer)
 	return layer_types[layer]
 end
+
 function get_layer_types()
 	return layer_types
 end
+
 function toolbar_toggle(data, event)
 	local c = data.class
 	local toolbar = c[data.toolbar]
@@ -137,6 +153,7 @@ function toolbar_toggle(data, event)
 		c[data.menu]:set_checked(event:get_id(), c[data.value])
 	end
 end
+
 function toolbar_toggle_trg(data)
 	local c = data.class
 	local toolbar = c[data.toolbar]
@@ -146,6 +163,7 @@ function toolbar_toggle_trg(data)
 		c[data.menu]:set_checked(data.id, c[data.value])
 	end
 end
+
 function dump_mesh(units, name, get_objects_string)
 	name = name or "dump_mesh"
 	get_objects_string = get_objects_string or "g_*"
@@ -187,6 +205,7 @@ function dump_mesh(units, name, get_objects_string)
 	cat_print("editor", "  Dumped " .. #objects .. " objects")
 	MeshDumper:dump_meshes(managers.database:root_path() .. name, objects, Rotation(Vector3(1, 0, 0), Vector3(0, 0, -1), Vector3(0, 1, 0)))
 end
+
 function dump_all(units, name, get_objects_string)
 	name = name or "all_dumped"
 	get_objects_string = get_objects_string or "g_*"

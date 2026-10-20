@@ -3,6 +3,7 @@ core:import("CoreStaticLayer")
 core:import("CoreEws")
 require("core/lib/units/data/CoreEditorSoundData")
 SoundLayer = SoundLayer or class(CoreStaticLayer.StaticLayer)
+
 function SoundLayer:init(owner)
 	SoundLayer.super.init(self, owner, "sounds", {"sound"}, "sound_layer")
 	self._muted = false
@@ -12,6 +13,7 @@ function SoundLayer:init(owner)
 	self._ignore_global_select = true
 	self._position_as_slot_mask = self._position_as_slot_mask + managers.slot:get_mask("statics")
 end
+
 function SoundLayer:load(world_holder, offset)
 	local sound = world_holder:create_world("world", self._save_name, offset)
 	CoreEws.change_combobox_value(self._default_ambience, managers.sound_environment:default_ambience())
@@ -35,6 +37,7 @@ function SoundLayer:load(world_holder, offset)
 	end
 	self:set_select_unit(nil)
 end
+
 function SoundLayer:save(save_params)
 	local file_name = "world_sounds"
 	local t = {
@@ -109,10 +112,13 @@ function SoundLayer:save(save_params)
 	file:puts(ScriptSerializer:to_generic_xml(sound_data))
 	SystemFS:close(file)
 end
+
 function SoundLayer:hide()
 end
+
 function SoundLayer:disable()
 end
+
 function SoundLayer:update(t, dt)
 	SoundLayer.super.update(self, t, dt)
 	for _, unit in ipairs(self._created_units) do
@@ -141,6 +147,7 @@ function SoundLayer:update(t, dt)
 		end
 	end
 end
+
 function SoundLayer:build_panel(notebook)
 	SoundLayer.super.build_panel(self, notebook)
 	self._sound_panel = EWS:Panel(self._ews_panel, "", "TAB_TRAVERSAL")
@@ -203,6 +210,7 @@ function SoundLayer:build_panel(notebook)
 	self._sizer:add(self._sound_panel, 2, 0, "EXPAND")
 	return self._ews_panel
 end
+
 function SoundLayer:_build_defaults(sizer)
 	self._default_environment = {
 		name = "Environment:",
@@ -258,6 +266,7 @@ function SoundLayer:_build_defaults(sizer)
 	self._ambience_enabled:connect("EVT_COMMAND_CHECKBOX_CLICKED", callback(self, self, "set_ambience_enabled"), self._ambience_enabled)
 	self._ambience_enabled:set_enabled(not no_ambiences_availible)
 end
+
 function SoundLayer:_build_environment()
 	local sound_environment_sizer = EWS:StaticBoxSizer(self._sound_panel, "VERTICAL", "Sound Environment")
 	local environment_sizer = EWS:BoxSizer("HORIZONTAL")
@@ -323,64 +332,80 @@ function SoundLayer:_build_environment()
 	self._sound_environment_sizer = sound_environment_sizer
 	self._sound_sizer:add(sound_environment_sizer, 0, 0, "EXPAND")
 end
+
 function SoundLayer:toggle_show_sound(show_sound)
 	Application:console_command("set show_sound " .. tostring(show_sound:get_value()))
 end
+
 function SoundLayer:toggle_sound_always_on(sound_always_on)
 	managers.editor:set_listener_always_enabled(sound_always_on:get_value())
 end
+
 function SoundLayer:select_default_ambience()
 	managers.sound_environment:set_default_ambience(self._default_ambience.value)
 end
+
 function SoundLayer:select_default_occasional()
 	managers.sound_environment:set_default_occasional(self._default_occasional.value)
 end
+
 function SoundLayer:set_ambience_enabled(ambience_enabled)
 	managers.sound_environment:set_ambience_enabled(ambience_enabled:get_value())
 end
+
 function SoundLayer:select_default_sound_environment(environments)
 	managers.sound_environment:set_default_environment(self._default_environment.value)
 end
+
 function SoundLayer:select_emitter_path()
 	local emitter = self._selected_unit:sound_data().emitter
 	emitter:set_emitter_path(self._emitter_paths:get_value())
 	self:set_sound_emitter_events(self._emitter_paths:get_value())
 	self._emitter_events:set_value(emitter:emitter_event())
 end
+
 function SoundLayer:set_sound_emitter_events(path)
 	self._emitter_events:clear()
 	for _, event in ipairs(managers.sound_environment:emitter_events(path)) do
 		self._emitter_events:append(event)
 	end
 end
+
 function SoundLayer:select_emitter_event()
 	local emitter = self._selected_unit:sound_data().emitter
 	emitter:set_emitter_event(self._emitter_events:get_value())
 end
+
 function SoundLayer:select_sound_environment()
 	local area = self._selected_unit:sound_data().environment_area
 	area:set_environment(self._effect_params.value)
 end
+
 function SoundLayer:toggle_use_environment()
 	local area = self._selected_unit:sound_data().environment_area
 	area:set_use_environment(self._use_environment:get_value())
 end
+
 function SoundLayer:select_environment_ambience()
 	local area = self._selected_unit:sound_data().environment_area
 	area:set_environment_ambience(self._ambience_params.value)
 end
+
 function SoundLayer:toggle_use_ambience()
 	local area = self._selected_unit:sound_data().environment_area
 	area:set_use_ambience(self._use_ambience:get_value())
 end
+
 function SoundLayer:select_environment_occasional()
 	local area = self._selected_unit:sound_data().environment_area
 	area:set_environment_occasional(self._occasional_params.value)
 end
+
 function SoundLayer:toggle_use_occasional()
 	local area = self._selected_unit:sound_data().environment_area
 	area:set_use_occasional(self._use_occasional:get_value())
 end
+
 function SoundLayer:on_restart_emitters()
 	for _, unit in ipairs(self._created_units) do
 		if unit:name() == Idstring(self._emitter_unit) or unit:name() == Idstring(self._area_emitter_unit) then
@@ -388,6 +413,7 @@ function SoundLayer:on_restart_emitters()
 		end
 	end
 end
+
 function SoundLayer:clear()
 	managers.sound_environment:set_to_default()
 	CoreEws.change_combobox_value(self._default_environment, managers.sound_environment:game_default_environment())
@@ -408,6 +434,7 @@ function SoundLayer:clear()
 	SoundLayer.super.clear(self)
 	self:set_sound_environment_parameters()
 end
+
 function SoundLayer:do_spawn_unit(...)
 	local unit = SoundLayer.super.do_spawn_unit(self, ...)
 	if alive(unit) then
@@ -437,12 +464,14 @@ function SoundLayer:do_spawn_unit(...)
 	end
 	return unit
 end
+
 function SoundLayer:select_unit_ray_authorised(ray)
 	local unit = ray and ray.unit
 	if unit then
 		return unit:name() == Idstring(self._emitter_unit) or unit:name() == Idstring(self._environment_unit) or unit:name() == Idstring(self._area_emitter_unit)
 	end
 end
+
 function SoundLayer:clone_edited_values(unit, source)
 	SoundLayer.super.clone_edited_values(self, unit, source)
 	if unit:name() == Idstring(self._environment_unit) then
@@ -460,6 +489,7 @@ function SoundLayer:clone_edited_values(unit, source)
 		emitter:set_emitter_event(source_emitter:emitter_event())
 	end
 end
+
 function SoundLayer:delete_unit(unit)
 	if unit:name() == Idstring(self._environment_unit) then
 		managers.sound_environment:remove_area(unit:sound_data().environment_area)
@@ -479,6 +509,7 @@ function SoundLayer:delete_unit(unit)
 	end
 	SoundLayer.super.delete_unit(self, unit)
 end
+
 function SoundLayer:update_unit_settings()
 	SoundLayer.super.update_unit_settings(self)
 	if self._current_shape_panel then
@@ -487,6 +518,7 @@ function SoundLayer:update_unit_settings()
 	self:set_sound_emitter_parameters()
 	self:set_sound_environment_parameters()
 end
+
 function SoundLayer:set_sound_environment_parameters()
 	self._effect_params.ctrlr:set_enabled(false)
 	self._ambience_params.ctrlr:set_enabled(false)
@@ -515,6 +547,7 @@ function SoundLayer:set_sound_environment_parameters()
 	end
 	self._sound_panel:layout()
 end
+
 function SoundLayer:set_sound_emitter_parameters()
 	self._emitter_paths:set_enabled(false)
 	self._emitter_events:set_enabled(false)
@@ -536,11 +569,13 @@ function SoundLayer:set_sound_emitter_parameters()
 		end
 	end
 end
+
 function SoundLayer:activate()
 	SoundLayer.super.activate(self)
 	managers.editor:set_listener_enabled(true)
 	managers.editor:set_wanted_mute(false)
 end
+
 function SoundLayer:deactivate(params)
 	managers.editor:set_listener_enabled(false)
 	SoundLayer.super.deactivate(self)
@@ -548,12 +583,15 @@ function SoundLayer:deactivate(params)
 		managers.editor:set_wanted_mute(true)
 	end
 end
+
 function SoundLayer:add_triggers()
 	SoundLayer.super.add_triggers(self)
 end
+
 function SoundLayer:get_layer_name()
 	return "Sound"
 end
+
 function SoundLayer:set_unit_name(units)
 	SoundLayer.super.set_unit_name(self, units)
 	if (self._unit_name == self._emitter_unit or self._unit_name == self._area_emitter_unit) and #managers.sound_environment:emitter_paths() == 0 then

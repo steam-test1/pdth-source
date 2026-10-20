@@ -6,6 +6,7 @@ ElementSpecialObjective._pathing_types = {
 	"coarse"
 }
 ElementSpecialObjective._pathing_type_default = "destination"
+
 function ElementSpecialObjective:init(...)
 	ElementSpecialObjective.super.init(self, ...)
 	if self._values.SO_access then
@@ -20,6 +21,7 @@ function ElementSpecialObjective:init(...)
 	end
 	self._events = {}
 end
+
 function ElementSpecialObjective:event(name, unit)
 	if self._events[name] then
 		for _, callback in ipairs(self._events[name]) do
@@ -27,27 +29,33 @@ function ElementSpecialObjective:event(name, unit)
 		end
 	end
 end
+
 function ElementSpecialObjective:clbk_objective_action_start(unit)
 	self:event("anim_start", unit)
 end
+
 function ElementSpecialObjective:clbk_objective_administered(unit)
 	self._administered_to_unit = unit
 	self:event("administered", unit)
 end
+
 function ElementSpecialObjective:clbk_objective_complete(unit)
 	self._administered_to_unit = nil
 	self:event("complete", unit)
 end
+
 function ElementSpecialObjective:clbk_objective_failed(unit)
 	if managers.editor and managers.editor._stopping_simulation then
 		return
 	end
 	self:event("fail", unit)
 end
+
 function ElementSpecialObjective:add_event_callback(name, callback)
 	self._events[name] = self._events[name] or {}
 	table.insert(self._events[name], callback)
 end
+
 function ElementSpecialObjective:on_executed(instigator)
 	if not self._values.enabled or Network:is_client() then
 		return
@@ -112,6 +120,7 @@ function ElementSpecialObjective:on_executed(instigator)
 	end
 	ElementSpecialObjective.super.on_executed(self, instigator)
 end
+
 function ElementSpecialObjective:operation_remove()
 	if self._nav_link then
 		managers.navigation:unregister_anim_nav_link(self)
@@ -119,6 +128,7 @@ function ElementSpecialObjective:operation_remove()
 		managers.groupai:state():remove_special_objective(self._id)
 	end
 end
+
 function ElementSpecialObjective:get_objective(instigator)
 	local is_AI_SO = self._is_AI_SO or string.begins(self._values.so_action, "AI")
 	local pose, stance, attitude, path_style, pos, rot, interrupt, haste, trigger_on, interaction_voice = self:_get_misc_SO_params()
@@ -226,6 +236,7 @@ function ElementSpecialObjective:get_objective(instigator)
 	end
 	return objective
 end
+
 function ElementSpecialObjective:_get_hunt_location(instigator)
 	if not alive(instigator) then
 		return
@@ -251,6 +262,7 @@ function ElementSpecialObjective:_get_hunt_location(instigator)
 	local objective_nav_seg = criminal_tracker:nav_segment()
 	return objective_nav_seg, criminal_tracker:field_position()
 end
+
 function ElementSpecialObjective:_get_misc_SO_params()
 	local pose, stance, attitude, path_style, pos, rot, interrupt, haste, trigger_on, interaction_voice
 	local values = self._values
@@ -266,9 +278,11 @@ function ElementSpecialObjective:_get_misc_SO_params()
 	interaction_voice = values.interaction_voice ~= "default" and values.interaction_voice
 	return pose, stance, attitude, path_style, pos, rot, interrupt, haste, trigger_on, interaction_voice
 end
+
 function ElementSpecialObjective:nav_link_end_pos()
 	return self._values.search_position
 end
+
 function ElementSpecialObjective:nav_link_access()
 	local access
 	if self._values.SO_access then
@@ -278,21 +292,27 @@ function ElementSpecialObjective:nav_link_access()
 	end
 	return access
 end
+
 function ElementSpecialObjective:nav_link_delay()
 	return self._values.interval
 end
+
 function ElementSpecialObjective:nav_link()
 	return self._nav_link
 end
+
 function ElementSpecialObjective:_is_nav_link()
 	return self._values.is_navigation_link or self._values.navigation_link and self._values.navigation_link ~= -1
 end
+
 function ElementSpecialObjective:set_nav_link(nav_link)
 	self._nav_link = nav_link
 end
+
 function ElementSpecialObjective:nav_link_wants_align_pos()
 	return self._values.align_position
 end
+
 function ElementSpecialObjective:_select_units_from_spawners()
 	local candidates = {}
 	for _, element_id in ipairs(self._values.spawn_instigator_ids) do
@@ -317,9 +337,11 @@ function ElementSpecialObjective:_select_units_from_spawners()
 	end
 	return chosen_units
 end
+
 function ElementSpecialObjective:get_objective_trigger()
 	return self._values.trigger_on ~= "none" and self._values.trigger_on
 end
+
 function ElementSpecialObjective:_administer_objective(unit, objective)
 	if objective.trigger_on == "interact" then
 		if not unit:brain():objective() then

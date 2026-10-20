@@ -13,6 +13,7 @@ HostNetworkSession._STATES = {
 	closing = HostStateClosing
 }
 HostNetworkSession._DEAD_CONNECTION_REPORT_PROCESS_DELAY = BaseNetworkSession.CONNECTION_TIMEOUT + BaseNetworkSession.TIMEOUT_CHK_INTERVAL + 1
+
 function HostNetworkSession:init()
 	HostNetworkSession.super.init(self)
 	print("[HostNetworkSession:init]")
@@ -26,18 +27,23 @@ function HostNetworkSession:init()
 	}
 	self:set_state("in_lobby")
 end
+
 function HostNetworkSession:on_join_request_received(peer_name, client_mask_set, dlcs, client_ip, client_user_id, sender)
 	return self._state.on_join_request_received and self._state:on_join_request_received(self._state_data, peer_name, client_mask_set, dlcs, client_ip, client_user_id, sender)
 end
+
 function HostNetworkSession:send_to_host(...)
 	debug_pause("[HostNetworkSession:send_to_host] This is dumb. call the function directly instead of sending it...")
 end
+
 function HostNetworkSession:is_host()
 	return true
 end
+
 function HostNetworkSession:is_client()
 	return false
 end
+
 function HostNetworkSession:load_level(...)
 	self._state:on_load_level(self._state_data)
 	managers.network.matchmake:set_server_state("loading")
@@ -50,12 +56,15 @@ function HostNetworkSession:load_level(...)
 	self:send_ok_to_load_level()
 	self:_load_level(...)
 end
+
 function HostNetworkSession:broadcast_server_up()
 	print("[HostNetworkSession:broadcast_server_up]")
 	Network:broadcast(NetworkManager.DEFAULT_PORT):server_up()
 end
+
 function HostNetworkSession:on_server_up_received()
 end
+
 function HostNetworkSession:load(data)
 	self:set_state("loadout")
 	HostNetworkSession.super.load(self, data)
@@ -66,6 +75,7 @@ function HostNetworkSession:load(data)
 		local_peer = self._local_peer
 	}
 end
+
 function HostNetworkSession:on_peer_connection_established(sender_peer, introduced_peer_id)
 	print("[HostNetworkSession:on_peer_connection_established]", sender_peer:id(), introduced_peer_id)
 	if introduced_peer_id == 1 then
@@ -93,6 +103,7 @@ function HostNetworkSession:on_peer_connection_established(sender_peer, introduc
 		self:chk_initiate_dropin_pause(self._peers[introduced_peer_id])
 	end
 end
+
 function HostNetworkSession:set_game_started(state)
 	self._game_started = state
 	self._state_data.game_started = state
@@ -100,6 +111,7 @@ function HostNetworkSession:set_game_started(state)
 		self:set_state("in_game")
 	end
 end
+
 function HostNetworkSession:chk_peer_already_in(rpc, user_id)
 	local old_peer
 	if SystemInfo:platform() == self._ids_WIN32 then
@@ -109,6 +121,7 @@ function HostNetworkSession:chk_peer_already_in(rpc, user_id)
 	end
 	return old_peer
 end
+
 function HostNetworkSession:send_ok_to_load_level()
 	for peer_id, peer in pairs(self._peers) do
 		if not peer:loaded() and not peer:loading() then
@@ -118,6 +131,7 @@ function HostNetworkSession:send_ok_to_load_level()
 		end
 	end
 end
+
 function HostNetworkSession:on_peer_save_received(event, event_data)
 	if managers.network:stopping() then
 		return
@@ -171,6 +185,7 @@ function HostNetworkSession:on_peer_save_received(event, event_data)
 		managers.network:game():on_peer_sync_complete(peer, peer:id())
 	end
 end
+
 function HostNetworkSession:update()
 	if Application:editor() then
 		return
@@ -178,6 +193,7 @@ function HostNetworkSession:update()
 	HostNetworkSession.super.update(self)
 	self:process_dead_con_reports()
 end
+
 function HostNetworkSession:set_peer_loading_state(peer, state)
 	print("[HostNetworkSession:set_peer_loading_state]", peer:id(), state)
 	HostNetworkSession.super.set_peer_loading_state(self, peer, state)
@@ -194,6 +210,7 @@ function HostNetworkSession:set_peer_loading_state(peer, state)
 		end
 	end
 end
+
 function HostNetworkSession:on_drop_in_pause_confirmation_received(dropin_peer_id, sender_peer)
 	print("[HostNetworkSession:on_drop_in_pause_confirmation_received]", sender_peer:id(), " paused for ", dropin_peer_id)
 	local is_expecting = sender_peer:is_expecting_pause_confirmation(dropin_peer_id)
@@ -212,6 +229,7 @@ function HostNetworkSession:on_drop_in_pause_confirmation_received(dropin_peer_i
 		end
 	end
 end
+
 function HostNetworkSession:chk_initiate_dropin_pause(dropin_peer)
 	print("[HostNetworkSession:chk_initiate_dropin_pause]", dropin_peer:id())
 	if not dropin_peer:expecting_pause_sequence() then
@@ -242,6 +260,7 @@ function HostNetworkSession:chk_initiate_dropin_pause(dropin_peer)
 	dropin_peer:set_expecting_dropin(true)
 	return true
 end
+
 function HostNetworkSession:chk_drop_in_peer(dropin_peer)
 	if not dropin_peer:expecting_dropin() then
 		return
@@ -268,6 +287,7 @@ function HostNetworkSession:chk_drop_in_peer(dropin_peer)
 	Network:drop_in(dropin_peer:rpc())
 	return true
 end
+
 function HostNetworkSession:add_peer(name, rpc, in_lobby, loading, synched, id, mask_set, user_id)
 	id = id or self:_get_free_client_id()
 	if not id then
@@ -279,6 +299,7 @@ function HostNetworkSession:add_peer(name, rpc, in_lobby, loading, synched, id, 
 	self:chk_server_joinable_state()
 	return id, peer
 end
+
 function HostNetworkSession:_get_free_client_id()
 	local i = 2
 	repeat
@@ -296,6 +317,7 @@ function HostNetworkSession:_get_free_client_id()
 		i = i + 1
 	until i == 5
 end
+
 function HostNetworkSession:remove_peer(peer, peer_id, reason)
 	print("[HostNetworkSession:remove_peer]", inspect(peer), peer_id, reason)
 	HostNetworkSession.super.remove_peer(self, peer, peer_id, reason)
@@ -345,6 +367,7 @@ function HostNetworkSession:remove_peer(peer, peer_id, reason)
 	end
 	self:chk_server_joinable_state()
 end
+
 function HostNetworkSession:on_remove_peer_confirmation(sender_peer, removed_peer_id)
 	print("[HostNetworkSession:on_remove_peer_confirmation]", sender_peer:id(), removed_peer_id)
 	if sender_peer:handshakes()[removed_peer_id] ~= "removing" then
@@ -355,6 +378,7 @@ function HostNetworkSession:on_remove_peer_confirmation(sender_peer, removed_pee
 	self:chk_server_joinable_state()
 	managers.network:game():check_start_game_intro()
 end
+
 function HostNetworkSession:on_dead_connection_reported(reporter_peer_id, other_peer_id)
 	print("[HostNetworkSession:on_dead_connection_reported]", reporter_peer_id, other_peer_id)
 	if not self._peers[reporter_peer_id] or not self._peers[other_peer_id] then
@@ -368,6 +392,7 @@ function HostNetworkSession:on_dead_connection_reported(reporter_peer_id, other_
 	}
 	table.insert(self._dead_con_reports, entry)
 end
+
 function HostNetworkSession:process_dead_con_reports()
 	if self._dead_con_reports then
 		local t = TimerManager:wall():time()
@@ -392,6 +417,7 @@ function HostNetworkSession:process_dead_con_reports()
 		end
 	end
 end
+
 function HostNetworkSession:chk_spawn_member_unit(peer, peer_id)
 	print("[HostNetworkSession:chk_spawn_member_unit]", peer:name(), peer_id)
 	local member = managers.network:game():member(peer_id)
@@ -414,6 +440,7 @@ function HostNetworkSession:chk_spawn_member_unit(peer, peer_id)
 	end
 	managers.network:game():spawn_dropin_player(peer_id)
 end
+
 function HostNetworkSession:chk_server_joinable_state()
 	for peer_id, peer in pairs(self._peers) do
 		if peer:force_open_lobby_state() then
@@ -453,6 +480,7 @@ function HostNetworkSession:chk_server_joinable_state()
 	end
 	managers.network.matchmake:set_server_joinable(true)
 end
+
 function HostNetworkSession:on_load_complete()
 	HostNetworkSession.super.on_load_complete(self)
 	self:set_state("loadout")
@@ -474,10 +502,12 @@ function HostNetworkSession:on_load_complete()
 		end
 	end
 end
+
 function HostNetworkSession:prepare_to_close()
 	HostNetworkSession.super.prepare_to_close(self)
 	self:set_state("closing")
 end
+
 function HostNetworkSession:chk_peer_handshakes_complete(peer)
 	local peer_id = peer:id()
 	local peer_handshakes = peer:handshakes()
@@ -495,6 +525,7 @@ function HostNetworkSession:chk_peer_handshakes_complete(peer)
 	end
 	return true
 end
+
 function HostNetworkSession:chk_all_handshakes_complete()
 	for peer_id, peer in pairs(self._peers) do
 		local peer_handshakes = peer:handshakes()
@@ -507,6 +538,7 @@ function HostNetworkSession:chk_all_handshakes_complete()
 	end
 	return true
 end
+
 function HostNetworkSession:set_dropin_pause_request(peer, dropin_peer_id, state)
 	if state == "asked" then
 		local dropin_peer = self._peers[dropin_peer_id]
@@ -521,6 +553,7 @@ function HostNetworkSession:set_dropin_pause_request(peer, dropin_peer_id, state
 		debug_pause("[HostNetworkSession:set_dropin_pause_request] unknown state", state)
 	end
 end
+
 function HostNetworkSession:chk_send_ready_to_unpause()
 	for peer_id, peer in pairs(self._peers) do
 		if peer:loaded() and not peer:synched() then
@@ -536,6 +569,7 @@ function HostNetworkSession:chk_send_ready_to_unpause()
 	end
 	return true
 end
+
 function HostNetworkSession:set_state(name, enter_params)
 	local state = self._STATES[name]
 	local state_data = self._state_data
@@ -548,6 +582,7 @@ function HostNetworkSession:set_state(name, enter_params)
 	self._state_name = name
 	state:enter(state_data, enter_params)
 end
+
 function HostNetworkSession:on_re_open_lobby_request(peer, state)
 	if state then
 		peer:send_after_load("re_open_lobby_reply", true)

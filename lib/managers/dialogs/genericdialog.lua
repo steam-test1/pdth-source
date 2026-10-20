@@ -5,6 +5,7 @@ GenericDialog.FADE_IN_DURATION = 0.2
 GenericDialog.FADE_OUT_DURATION = 0.2
 GenericDialog.MOVE_AXIS_LIMIT = 0.5
 GenericDialog.MOVE_AXIS_DELAY = 0.5
+
 function GenericDialog:init(manager, data)
 	Dialog.init(self, manager, data)
 	if not self._data.focus_button then
@@ -31,12 +32,15 @@ function GenericDialog:init(manager, data)
 		self._counter_time = self._counter[1]
 	end
 end
+
 function GenericDialog:set_text(text, no_upper)
 	self._panel_script:set_text(text, no_upper)
 end
+
 function GenericDialog:set_title(text, no_upper)
 	self._panel_script:set_title(text, no_upper)
 end
+
 function GenericDialog:mouse_moved(o, x, y)
 	for i, panel in ipairs(self._panel_script.button_list_panel:children()) do
 		if panel:inside(x, y) then
@@ -44,6 +48,7 @@ function GenericDialog:mouse_moved(o, x, y)
 		end
 	end
 end
+
 function GenericDialog:mouse_pressed(o, button, x, y)
 	if button == Idstring("0") then
 		for i, panel in ipairs(self._panel_script.button_list_panel:children()) do
@@ -54,6 +59,7 @@ function GenericDialog:mouse_pressed(o, button, x, y)
 		end
 	end
 end
+
 function GenericDialog:update(t, dt)
 	if self._fade_in_time then
 		local alpha = math.clamp((t - self._fade_in_time) / self.FADE_IN_DURATION, 0, 1)
@@ -85,6 +91,7 @@ function GenericDialog:update(t, dt)
 		end
 	end
 end
+
 function GenericDialog:update_input(t, dt)
 	if self._data.no_buttons then
 		return
@@ -107,6 +114,7 @@ function GenericDialog:update_input(t, dt)
 	self._move_button_dir = dir
 	self._move_button_time = move_time
 end
+
 function GenericDialog:set_input_enabled(enabled)
 	if not self._input_enabled ~= not enabled then
 		if enabled then
@@ -127,26 +135,32 @@ function GenericDialog:set_input_enabled(enabled)
 		self._input_enabled = enabled
 	end
 end
+
 function GenericDialog:fade_in()
 	self._fade_in_time = TimerManager:main():time()
 end
+
 function GenericDialog:fade_out_close()
 	managers.menu:post_event("prompt_exit")
 	self:fade_out()
 end
+
 function GenericDialog:fade_out()
 	self._fade_out_time = TimerManager:main():time()
 	self:set_input_enabled(false)
 end
+
 function GenericDialog:is_closing()
 	return self._fade_out_time ~= nil
 end
+
 function GenericDialog:show()
 	managers.menu:post_event("prompt_enter")
 	self._panel:show()
 	self._manager:event_dialog_shown(self)
 	return true
 end
+
 function GenericDialog:hide()
 	self:set_input_enabled(false)
 	self._fade_in_time = nil
@@ -154,12 +168,14 @@ function GenericDialog:hide()
 	self._panel_script:set_fade(0)
 	self._manager:event_dialog_hidden(self)
 end
+
 function GenericDialog:close()
 	self:set_input_enabled(false)
 	self._ws:panel():remove(self._panel)
 	managers.viewport:remove_resolution_changed_func(self._resolution_changed_callback)
 	Dialog.close(self)
 end
+
 function GenericDialog:dialog_cancel_callback()
 	if SystemInfo:platform() ~= Idstring("WIN32") then
 		return
@@ -179,6 +195,7 @@ function GenericDialog:dialog_cancel_callback()
 		end
 	end
 end
+
 function GenericDialog:button_pressed_callback()
 	if self._data.no_buttons then
 		return
@@ -186,6 +203,7 @@ function GenericDialog:button_pressed_callback()
 	self:remove_mouse()
 	self:button_pressed(self._panel_script:get_focus_button())
 end
+
 function GenericDialog:remove_mouse()
 	if not self._removed_mouse then
 		self._removed_mouse = true
@@ -193,6 +211,7 @@ function GenericDialog:remove_mouse()
 		self._mouse_id = nil
 	end
 end
+
 function GenericDialog:resolution_changed_callback()
 	self._panel_script:setup_shape()
 end

@@ -2,6 +2,7 @@ core:import("CoreEditorUtils")
 core:import("CoreEws")
 EditUnitLight = EditUnitLight or class(EditUnitBase)
 EditUnitLight.DEFAULT_SHADOW_RESOLUTION = 128
+
 function EditUnitLight:init(editor)
 	EditUnitLight.super.init(self)
 	local panel, sizer = (editor or managers.editor):add_unit_edit_page({name = "Light", class = self})
@@ -213,12 +214,14 @@ function EditUnitLight:init(editor)
 	panel:set_enabled(false)
 	self._panel = panel
 end
+
 function EditUnitLight:change_light()
 	if alive(self._reference_unit) then
 		local light = self._reference_unit:get_object(Idstring(self._lights_params.ctrlr:get_value()))
 		self:update_light_ctrls_from_light(light)
 	end
 end
+
 function EditUnitLight:update_light_ctrls_from_light(light)
 	CoreEws.change_combobox_value(self._lights_params, light:name():s())
 	self._enabled_ctrlr:set_value(light:enable())
@@ -246,16 +249,19 @@ function EditUnitLight:update_light_ctrls_from_light(light)
 	resolution = resolution and resolution[light:name():s()] and resolution[light:name():s()].x or EditUnitLight.DEFAULT_SHADOW_RESOLUTION
 	CoreEws.change_combobox_value(self._shadow_resolution_params, resolution)
 end
+
 function EditUnitLight:update_falloff()
 	for _, light in ipairs(self:_selected_lights()) do
 		light:set_falloff_exponent(self._falloff_params.value)
 	end
 end
+
 function EditUnitLight:update_enabled()
 	for _, light in ipairs(self:_selected_lights()) do
 		light:set_enable(self._enabled_ctrlr:get_value())
 	end
 end
+
 function EditUnitLight:show_color_dialog()
 	local colordlg = EWS:ColourDialog(self._panel, true, self._color_ctrlr:background_colour() / 255)
 	if colordlg:show_modal() then
@@ -265,22 +271,26 @@ function EditUnitLight:show_color_dialog()
 		end
 	end
 end
+
 function EditUnitLight:update_intensity()
 	for _, light in ipairs(self:_selected_lights()) do
 		light:set_multiplier(LightIntensityDB:lookup(Idstring(self._intensity_params.value)))
 		light:set_specular_multiplier(LightIntensityDB:lookup_specular_multiplier(Idstring(self._intensity_params.value)))
 	end
 end
+
 function EditUnitLight:update_near_range(params)
 	for _, light in ipairs(self:_selected_lights()) do
 		light:set_near_range(params.value)
 	end
 end
+
 function EditUnitLight:update_far_range(params)
 	for _, light in ipairs(self:_selected_lights()) do
 		light:set_far_range(params.value)
 	end
 end
+
 function EditUnitLight:update_clipping(value, params)
 	for _, light in ipairs(self:_selected_lights()) do
 		local clipping_values = light:clipping_values()
@@ -293,16 +303,19 @@ function EditUnitLight:update_clipping(value, params)
 		end
 	end
 end
+
 function EditUnitLight:update_start_angle()
 	for _, light in ipairs(self:_selected_lights()) do
 		light:set_spot_angle_start(self._spot_start_angle_params.value)
 	end
 end
+
 function EditUnitLight:update_end_angle()
 	for _, light in ipairs(self:_selected_lights()) do
 		light:set_spot_angle_end(self._spot_end_angle_params.value)
 	end
 end
+
 function EditUnitLight:update_resolution()
 	local value = self._shadow_resolution_params.value
 	for _, unit in ipairs(self._selected_units) do
@@ -315,6 +328,7 @@ function EditUnitLight:update_resolution()
 		end
 	end
 end
+
 function EditUnitLight:_selected_lights()
 	local lights = {}
 	for _, unit in ipairs(self._selected_units) do
@@ -327,14 +341,17 @@ function EditUnitLight:_selected_lights()
 	end
 	return lights
 end
+
 function EditUnitLight:_reference_light()
 	if alive(self._reference_unit) then
 		return self._reference_unit:get_object(Idstring(self._lights_params.ctrlr:get_value()))
 	end
 end
+
 function EditUnitLight:_is_type(type)
 	return string.find(self:_reference_light():properties(), type)
 end
+
 function EditUnitLight:is_editable(unit, units)
 	if alive(unit) then
 		local lights = CoreEditorUtils.get_editable_lights(unit)
@@ -353,9 +370,11 @@ function EditUnitLight:is_editable(unit, units)
 	self._selected_units = {}
 	return false
 end
+
 function EditUnitLight:update(t, dt)
 	self:_draw(t, dt)
 end
+
 function EditUnitLight:_draw(t, dt)
 	if not self._debug then
 		return
@@ -364,6 +383,7 @@ function EditUnitLight:_draw(t, dt)
 		self:_draw_light(light, t, dt)
 	end
 end
+
 function EditUnitLight:_draw_light(light, t, dt)
 	if not light:enable() then
 		return

@@ -1,11 +1,14 @@
 core:import("CoreMissionScriptElement")
 ElementDifficultyLevelCheck = ElementDifficultyLevelCheck or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementDifficultyLevelCheck:init(...)
 	ElementDifficultyLevelCheck.super.init(self, ...)
 end
+
 function ElementDifficultyLevelCheck:client_on_executed(...)
 	self:on_executed(...)
 end
+
 function ElementDifficultyLevelCheck:on_executed(instigator)
 	if not self._values.enabled then
 		return

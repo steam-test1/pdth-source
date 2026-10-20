@@ -1,13 +1,17 @@
 DLCManager = DLCManager or class()
 DLCManager.PLATFORM_CLASS_MAP = {}
+
 function DLCManager:new(...)
 	local platform = SystemInfo:platform()
 	return (self.PLATFORM_CLASS_MAP[platform:key()] or GenericDLCManager):new(...)
 end
+
 GenericDLCManager = GenericDLCManager or class()
+
 function GenericDLCManager:init()
 	self._debug_on = Application:production_build()
 end
+
 function GenericDLCManager:has_dlc(dlc)
 	local dlc_data = Global.dlc_manager.all_dlc_data[dlc]
 	if not dlc_data then
@@ -16,13 +20,16 @@ function GenericDLCManager:has_dlc(dlc)
 	end
 	return dlc_data.verified
 end
+
 function GenericDLCManager:has_full_game()
 	local dlc_data = Global.dlc_manager.all_dlc_data.full_game
 	return dlc_data.verified
 end
+
 function GenericDLCManager:is_trial()
 	return not self:has_full_game()
 end
+
 function GenericDLCManager:dlcs_string()
 	local s = ""
 	s = s .. (self:has_dlc1() and "dlc1 " or "")
@@ -31,12 +38,15 @@ function GenericDLCManager:dlcs_string()
 	s = s .. (self:has_dlc4() and "dlc4 " or "")
 	return s
 end
+
 function GenericDLCManager:has_pre_dlc()
 	return false
 end
+
 PS3DLCManager = PS3DLCManager or class(GenericDLCManager)
 DLCManager.PLATFORM_CLASS_MAP[Idstring("PS3"):key()] = PS3DLCManager
 PS3DLCManager.SERVICE_ID = "EP0017-NPEA00331_00"
+
 function PS3DLCManager:init()
 	PS3DLCManager.super.init(self)
 	if not Global.dlc_manager then
@@ -54,6 +64,7 @@ function PS3DLCManager:init()
 		self:_verify_dlcs()
 	end
 end
+
 function PS3DLCManager:_verify_dlcs()
 	local all_dlc = {}
 	for dlc_name, dlc_data in pairs(Global.dlc_manager.all_dlc_data) do
@@ -71,6 +82,7 @@ function PS3DLCManager:_verify_dlcs()
 		end
 	end
 end
+
 function PS3DLCManager:_init_NPCommerce()
 	PS3:set_service_id(self.SERVICE_ID)
 	local result = NPCommerce:init()
@@ -89,6 +101,7 @@ function PS3DLCManager:_init_NPCommerce()
 	end
 	return true
 end
+
 function PS3DLCManager:buy_full_game()
 	print("[PS3DLCManager:buy_full_game]")
 	if self._activity then
@@ -104,6 +117,7 @@ function PS3DLCManager:buy_full_game()
 	}
 	self._activity = {type = "open"}
 end
+
 function PS3DLCManager:buy_product(product_name)
 	print("[PS3DLCManager:buy_product]", product_name)
 	if self._activity then
@@ -119,6 +133,7 @@ function PS3DLCManager:buy_product(product_name)
 	}
 	self._activity = {type = "open"}
 end
+
 function PS3DLCManager:cb_NPCommerce(result, info)
 	print("[PS3DLCManager:cb_NPCommerce]", result, info)
 	for i, k in pairs(info) do
@@ -174,31 +189,40 @@ function PS3DLCManager:cb_NPCommerce(result, info)
 	end
 	print("/[PS3DLCManager:cb_NPCommerce]")
 end
+
 function PS3DLCManager:_close_NPCommerce()
 	print("[PS3DLCManager:_close_NPCommerce]")
 	NPCommerce:destroy()
 end
+
 function PS3DLCManager:cb_confirm_purchase_yes(sku_data)
 	NPCommerce:checkout(sku_data.skuid)
 end
+
 function PS3DLCManager:cb_confirm_purchase_no()
 	self._activity = nil
 	self:_close_NPCommerce()
 end
+
 function PS3DLCManager:has_dlc1()
 	return Global.dlc_manager.all_dlc_data.dlc1.verified
 end
+
 function PS3DLCManager:has_dlc2()
 	return self:has_dlc1()
 end
+
 function PS3DLCManager:has_dlc3()
 	return self:has_dlc1()
 end
+
 function PS3DLCManager:has_dlc4()
 	return false
 end
+
 WINDLCManager = WINDLCManager or class(GenericDLCManager)
 DLCManager.PLATFORM_CLASS_MAP[Idstring("WIN32"):key()] = WINDLCManager
+
 function WINDLCManager:init()
 	WINDLCManager.super.init(self)
 	if not Global.dlc_manager then
@@ -217,6 +241,7 @@ function WINDLCManager:init()
 		self:_verify_dlcs()
 	end
 end
+
 function WINDLCManager:_verify_dlcs()
 	for dlc_name, dlc_data in pairs(Global.dlc_manager.all_dlc_data) do
 		if not dlc_data.verified then
@@ -230,15 +255,19 @@ function WINDLCManager:_verify_dlcs()
 		end
 	end
 end
+
 function WINDLCManager:has_dlc1()
 	return not self:has_pre_dlc() and (self._debug_on or Global.dlc_manager.all_dlc_data.weapon_pack_1.verified)
 end
+
 function WINDLCManager:has_dlc2()
 	return not self:has_pre_dlc() and (self._debug_on or Global.dlc_manager.all_dlc_data.counterfeit.verified)
 end
+
 function WINDLCManager:has_dlc3()
 	return not self:has_pre_dlc() and (self._debug_on or Global.dlc_manager.all_dlc_data.undercover.verified)
 end
+
 function WINDLCManager:has_dlc4()
 	return self._debug_on or Global.dlc_manager.all_dlc_data.hospital.verified
 end

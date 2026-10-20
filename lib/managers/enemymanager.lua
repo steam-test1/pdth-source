@@ -14,18 +14,21 @@ EnemyManager._nr_i_lod = {
 	{5, 2},
 	{10, 5}
 }
+
 function EnemyManager:init()
 	self._slotmask_criminals = managers.slot:get_mask("criminals")
 	self:_init_enemy_data()
 	self._unit_clbk_key = "EnemyManager"
 	self._corpse_disposal_upd_interval = 5
 end
+
 function EnemyManager:update(t, dt)
 	self._t = t
 	self._queued_task_executed = nil
 	self:_update_gfx_lod()
 	self:_update_queued_tasks(t)
 end
+
 function EnemyManager:_update_gfx_lod()
 	if self._gfx_lod_data.enabled and managers.navigation:is_data_ready() then
 		local camera_rot = managers.viewport:get_current_camera_rotation()
@@ -157,6 +160,7 @@ function EnemyManager:_update_gfx_lod()
 		end
 	end
 end
+
 function EnemyManager:_remove_i_from_lod_prio(i, anim_lod)
 	anim_lod = anim_lod or managers.user:get_setting("video_animation_lod")
 	local nr_i_lod1 = self._nr_i_lod[anim_lod][1]
@@ -173,6 +177,7 @@ function EnemyManager:_remove_i_from_lod_prio(i, anim_lod)
 		end
 	end
 end
+
 function EnemyManager:_create_unit_gfx_lod_data(unit, alerted)
 	local lod_entries = self._gfx_lod_data.entries
 	table.insert(lod_entries.units, unit)
@@ -182,6 +187,7 @@ function EnemyManager:_create_unit_gfx_lod_data(unit, alerted)
 	table.insert(lod_entries.com, unit:movement():m_com())
 	table.insert(lod_entries.alerted, alerted)
 end
+
 function EnemyManager:_destroy_unit_gfx_lod_data(u_key)
 	local lod_entries = self._gfx_lod_data.entries
 	for i, unit in ipairs(lod_entries.units) do
@@ -213,6 +219,7 @@ function EnemyManager:_destroy_unit_gfx_lod_data(u_key)
 		end
 	end
 end
+
 function EnemyManager:set_gfx_lod_enabled(state)
 	if state then
 		self._gfx_lod_data.enabled = state
@@ -227,6 +234,7 @@ function EnemyManager:set_gfx_lod_enabled(state)
 		end
 	end
 end
+
 function EnemyManager:_init_enemy_data()
 	local enemy_data = {}
 	local unit_data = {}
@@ -260,12 +268,15 @@ function EnemyManager:_init_enemy_data()
 	lod_entries.com = {}
 	lod_entries.alerted = {}
 end
+
 function EnemyManager:all_enemies()
 	return self._enemy_data.unit_data
 end
+
 function EnemyManager:all_civilians()
 	return self._civilian_data.unit_data
 end
+
 function EnemyManager:queue_task(id, task_clbk, data, execute_t, verification_clbk, asap)
 	local task_data = {
 		clbk = task_clbk,
@@ -280,6 +291,7 @@ function EnemyManager:queue_task(id, task_clbk, data, execute_t, verification_cl
 		self:_execute_queued_task(1)
 	end
 end
+
 function EnemyManager:unqueue_task(id)
 	local tasks = self._queued_tasks
 	local i = #tasks
@@ -292,6 +304,7 @@ function EnemyManager:unqueue_task(id)
 	end
 	debug_pause("[EnemyManager:unqueue_task] task", id, "was not queued!!!")
 end
+
 function EnemyManager:unqueue_task_debug(id)
 	if not id then
 		Application:stack_dump()
@@ -314,6 +327,7 @@ function EnemyManager:unqueue_task_debug(id)
 		debug_pause("[EnemyManager:unqueue_task] task", id, "was not queued!!!")
 	end
 end
+
 function EnemyManager:has_task(id)
 	local tasks = self._queued_tasks
 	local i = #tasks
@@ -326,6 +340,7 @@ function EnemyManager:has_task(id)
 	end
 	return 0 < count and count
 end
+
 function EnemyManager:_execute_queued_task(i)
 	local task = table.remove(self._queued_tasks, i)
 	self._queued_task_executed = true
@@ -338,6 +353,7 @@ function EnemyManager:_execute_queued_task(i)
 	end
 	task.clbk(task.data)
 end
+
 function EnemyManager:_update_queued_tasks(t)
 	local i_asap_task, asp_task_t
 	for i_task, task_data in ipairs(self._queued_tasks) do
@@ -358,6 +374,7 @@ function EnemyManager:_update_queued_tasks(t)
 		clbk()
 	end
 end
+
 function EnemyManager:add_delayed_clbk(id, clbk, execute_t)
 	if not clbk then
 		debug_pause("[EnemyManager:add_delayed_clbk] Empty callback object!!!")
@@ -374,6 +391,7 @@ function EnemyManager:add_delayed_clbk(id, clbk, execute_t)
 	end
 	table.insert(all_clbks, i + 1, clbk_data)
 end
+
 function EnemyManager:remove_delayed_clbk(id)
 	local all_clbks = self._delayed_clbks
 	for i, clbk_data in ipairs(all_clbks) do
@@ -384,6 +402,7 @@ function EnemyManager:remove_delayed_clbk(id)
 	end
 	debug_pause("[EnemyManager:remove_delayed_clbk] id", id, "was not scheduled!!!")
 end
+
 function EnemyManager:reschedule_delayed_clbk(id, execute_t)
 	local all_clbks = self._delayed_clbks
 	local clbk_data
@@ -404,6 +423,7 @@ function EnemyManager:reschedule_delayed_clbk(id, execute_t)
 	end
 	debug_pause("[EnemyManager:reschedule_delayed_clbk] id", id, "was not scheduled!!!")
 end
+
 function EnemyManager:queued_tasks_by_callback()
 	local t = TimerManager:game():time()
 	local categorised_queued_tasks = {}
@@ -426,6 +446,7 @@ function EnemyManager:queued_tasks_by_callback()
 		print(data.key, data.amount)
 	end
 end
+
 function EnemyManager:register_enemy(enemy)
 	local char_tweak = tweak_data.character[enemy:base()._tweak_table]
 	local u_data = {
@@ -440,6 +461,7 @@ function EnemyManager:register_enemy(enemy)
 	enemy:base():add_destroy_listener(self._unit_clbk_key, callback(self, self, "on_enemy_destroyed"))
 	self:on_enemy_registered(enemy)
 end
+
 function EnemyManager:on_enemy_died(dead_unit, damage_info)
 	local u_key = dead_unit:key()
 	local enemy_data = self._enemy_data
@@ -455,6 +477,7 @@ function EnemyManager:on_enemy_died(dead_unit, damage_info)
 	self:_destroy_unit_gfx_lod_data(u_key)
 	Network:detach_unit(dead_unit)
 end
+
 function EnemyManager:on_enemy_destroyed(enemy)
 	local u_key = enemy:key()
 	local enemy_data = self._enemy_data
@@ -470,15 +493,18 @@ function EnemyManager:on_enemy_destroyed(enemy)
 		end
 	end
 end
+
 function EnemyManager:on_enemy_registered(unit)
 	self._enemy_data.nr_units = self._enemy_data.nr_units + 1
 	self:_create_unit_gfx_lod_data(unit, true)
 	managers.groupai:state():on_enemy_registered(unit)
 end
+
 function EnemyManager:on_enemy_unregistered(unit)
 	self._enemy_data.nr_units = self._enemy_data.nr_units - 1
 	managers.groupai:state():on_enemy_unregistered(unit)
 end
+
 function EnemyManager:register_civilian(unit)
 	unit:base():add_destroy_listener(self._unit_clbk_key, callback(self, self, "on_civilian_destroyed"))
 	self:_create_unit_gfx_lod_data(unit, true)
@@ -491,6 +517,7 @@ function EnemyManager:register_civilian(unit)
 		so_access = managers.navigation:convert_access_flag(char_tweak.access)
 	}
 end
+
 function EnemyManager:on_civilian_died(dead_unit, damage_info)
 	local u_key = dead_unit:key()
 	if Network:is_server() and damage_info.attacker_unit and not dead_unit:base().enemy then
@@ -508,6 +535,7 @@ function EnemyManager:on_civilian_died(dead_unit, damage_info)
 	self:_destroy_unit_gfx_lod_data(u_key)
 	Network:detach_unit(dead_unit)
 end
+
 function EnemyManager:on_civilian_destroyed(enemy)
 	local u_key = enemy:key()
 	local enemy_data = self._enemy_data
@@ -522,12 +550,15 @@ function EnemyManager:on_civilian_destroyed(enemy)
 		self:_destroy_unit_gfx_lod_data(u_key)
 	end
 end
+
 function EnemyManager:on_criminal_registered(unit)
 	self:_create_unit_gfx_lod_data(unit, false)
 end
+
 function EnemyManager:on_criminal_unregistered(u_key)
 	self:_destroy_unit_gfx_lod_data(u_key)
 end
+
 function EnemyManager:_upd_corpse_disposal()
 	local t = TimerManager:game():time()
 	local enemy_data = self._enemy_data
@@ -594,8 +625,10 @@ function EnemyManager:_upd_corpse_disposal()
 		self:queue_task("EnemyManager._upd_corpse_disposal", EnemyManager._upd_corpse_disposal, self, t + delay)
 	end
 end
+
 function EnemyManager:on_simulation_ended()
 end
+
 function EnemyManager:dispose_all_corpses()
 	for u_key, corpse_data in pairs(self._enemy_data.corpses) do
 		corpse_data.unit:base():set_slot(corpse_data.unit, 0)

@@ -2,6 +2,7 @@ require("lib/units/enemies/cop/logics/CopLogicBase")
 require("lib/units/enemies/cop/logics/CopLogicTravel")
 require("lib/units/enemies/cop/logics/CopLogicAttack")
 TeamAILogicTravel = class(TeamAILogicBase)
+
 function TeamAILogicTravel.enter(data, new_logic_name, enter_params)
 	CopLogicBase.enter(data, new_logic_name, enter_params)
 	data.unit:brain():cancel_all_pathing_searches()
@@ -56,6 +57,7 @@ function TeamAILogicTravel.enter(data, new_logic_name, enter_params)
 		data.unit:brain():action_request(new_action)
 	end
 end
+
 function TeamAILogicTravel.exit(data, new_logic_name, enter_params)
 	TeamAILogicBase.exit(data, new_logic_name, enter_params)
 	local my_data = data.internal_data
@@ -81,6 +83,7 @@ function TeamAILogicTravel.exit(data, new_logic_name, enter_params)
 		rsrv_pos.move_dest = nil
 	end
 end
+
 function TeamAILogicTravel.update(data)
 	local unit = data.unit
 	local objective = data.objective
@@ -163,6 +166,7 @@ function TeamAILogicTravel.update(data)
 		CopLogicBase._exit(data.unit, "idle", {scan = true})
 	end
 end
+
 function TeamAILogicTravel._upd_pathing(data, my_data)
 	local pathing_results = data.pathing_results
 	if pathing_results then
@@ -198,6 +202,7 @@ function TeamAILogicTravel._upd_pathing(data, my_data)
 		end
 	end
 end
+
 function TeamAILogicTravel.action_complete_clbk(data, action)
 	CopLogicTravel.action_complete_clbk(data, action)
 	local my_data = data.internal_data
@@ -215,29 +220,37 @@ function TeamAILogicTravel.action_complete_clbk(data, action)
 		end
 	end
 end
+
 function TeamAILogicTravel.damage_clbk(data, damage_info)
 	TeamAILogicIdle.damage_clbk(data, damage_info)
 end
+
 function TeamAILogicTravel.death_clbk(data, damage_info)
 end
+
 function TeamAILogicTravel.on_detected_enemy_destroyed(data, enemy_unit)
 	TeamAILogicIdle.on_cop_neutralized(data, enemy_unit:key())
 end
+
 function TeamAILogicTravel.on_cop_neutralized(data, cop_key)
 	TeamAILogicIdle.on_cop_neutralized(data, cop_key)
 end
+
 function TeamAILogicTravel.on_objective_unit_damaged(...)
 	TeamAILogicIdle.on_objective_unit_damaged(...)
 end
+
 function TeamAILogicTravel.on_alert(...)
 	TeamAILogicIdle.on_alert(...)
 end
+
 function TeamAILogicTravel.on_intimidated(data, amount, aggressor_unit)
 	local surrender = TeamAILogicIdle.on_intimidated(data, amount, aggressor_unit)
 	if surrender and data.objective then
 		managers.groupai:state():on_criminal_objective_failed(data.unit, data.objective)
 	end
 end
+
 function TeamAILogicTravel._determine_destination_occupation(data, objective)
 	local occupation
 	if objective.type == "investigate_area" then
@@ -365,6 +378,7 @@ function TeamAILogicTravel._determine_destination_occupation(data, objective)
 	end
 	return occupation
 end
+
 function TeamAILogicTravel.is_available_for_assignment(data, new_objective)
 	local objective = data.objective
 	if objective and objective.type == "revive" and new_objective.type == "revive" then
@@ -372,9 +386,11 @@ function TeamAILogicTravel.is_available_for_assignment(data, new_objective)
 	end
 	return true
 end
+
 function TeamAILogicTravel.on_long_dis_interacted(data, other_unit)
 	TeamAILogicIdle.on_long_dis_interacted(data, other_unit)
 end
+
 function TeamAILogicTravel.on_new_objective(data, old_objective)
 	local my_data = data.internal_data
 	TeamAILogicIdle.on_new_objective(data, old_objective)
@@ -382,6 +398,7 @@ function TeamAILogicTravel.on_new_objective(data, old_objective)
 		TeamAILogicTravel.trap_error(data)
 	end
 end
+
 function TeamAILogicTravel.trap_error(data)
 	if not data.objective then
 		return
@@ -396,6 +413,7 @@ function TeamAILogicTravel.trap_error(data)
 		debug_pause(true)
 	end
 end
+
 function TeamAILogicTravel._update_enemy_detection(data)
 	data.t = TimerManager:game():time()
 	local my_data = data.internal_data
@@ -471,15 +489,19 @@ function TeamAILogicTravel._update_enemy_detection(data)
 	TeamAILogicAssault._chk_request_combat_chatter(data, my_data)
 	CopLogicBase.queue_task(my_data, my_data.detection_task_key, TeamAILogicTravel._update_enemy_detection, data, data.t + delay)
 end
+
 function TeamAILogicTravel._remove_enemy_attention(data)
 	CopLogicBase._reset_attention(data)
 end
+
 function TeamAILogicTravel.clbk_heat(data)
 	TeamAILogicIdle.clbk_heat(data)
 end
+
 function TeamAILogicTravel.chk_should_turn(data, my_data)
 	CopLogicAttack.chk_should_turn(data, my_data)
 end
+
 function TeamAILogicTravel._get_exact_move_pos(data, cur_index)
 	local my_data = data.internal_data
 	local objective = data.objective
@@ -560,6 +582,7 @@ function TeamAILogicTravel._get_exact_move_pos(data, cur_index)
 	my_data.rsrv_pos.path = reservation
 	return to_pos
 end
+
 function TeamAILogicTravel._check_start_path_ahead(data)
 	local my_data = data.internal_data
 	if my_data.processing_advance_path then
@@ -582,11 +605,13 @@ function TeamAILogicTravel._check_start_path_ahead(data)
 	local from_pos = my_data.rsrv_pos.move_dest.position
 	data.unit:brain():search_for_path_from_pos(my_data.advance_path_search_id, from_pos, to_pos, prio)
 end
+
 function TeamAILogicTravel._get_all_paths(data)
 	return {
 		advance_path = data.internal_data.advance_path
 	}
 end
+
 function TeamAILogicTravel._set_verified_paths(data, verified_paths)
 	data.internal_data.advance_path = verified_paths.advance_path
 end

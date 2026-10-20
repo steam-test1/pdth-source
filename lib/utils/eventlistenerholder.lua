@@ -1,4 +1,5 @@
 EventListenerHolder = EventListenerHolder or class()
+
 function EventListenerHolder:add(key, event_types, clbk)
 	if self._calling then
 		self:_set_new(key, event_types, clbk)
@@ -6,6 +7,7 @@ function EventListenerHolder:add(key, event_types, clbk)
 		self:_add(key, event_types, clbk)
 	end
 end
+
 function EventListenerHolder:remove(key)
 	if self._calling then
 		self:_set_trash(key)
@@ -13,6 +15,7 @@ function EventListenerHolder:remove(key)
 		self:_remove(key)
 	end
 end
+
 function EventListenerHolder:call(event, ...)
 	if self._listeners then
 		local event_listeners = self._listeners[event]
@@ -29,6 +32,7 @@ function EventListenerHolder:call(event, ...)
 		end
 	end
 end
+
 function EventListenerHolder:_remove(key)
 	local listeners = self._listeners
 	for _, event in pairs(self._listener_keys[key]) do
@@ -44,6 +48,7 @@ function EventListenerHolder:_remove(key)
 		self._listener_keys = nil
 	end
 end
+
 function EventListenerHolder:_add(key, event_types, clbk)
 	local listeners = self._listeners
 	if not listeners then
@@ -57,6 +62,7 @@ function EventListenerHolder:_add(key, event_types, clbk)
 	end
 	self._listener_keys[key] = event_types
 end
+
 function EventListenerHolder:_set_trash(key)
 	self._trash = self._trash or {}
 	self._trash[key] = true
@@ -64,6 +70,7 @@ function EventListenerHolder:_set_trash(key)
 		self._additions[key] = nil
 	end
 end
+
 function EventListenerHolder:_set_new(key, event_types, clbk)
 	self._additions = self._additions or {}
 	self._additions[key] = {clbk, event_types}
@@ -71,6 +78,7 @@ function EventListenerHolder:_set_new(key, event_types, clbk)
 		self._trash[key] = nil
 	end
 end
+
 function EventListenerHolder:_append_new_additions()
 	if self._additions then
 		local listeners = self._listeners
@@ -89,6 +97,7 @@ function EventListenerHolder:_append_new_additions()
 		self._additions = nil
 	end
 end
+
 function EventListenerHolder:_dispose_trash()
 	if self._trash then
 		for key, _ in pairs(self._trash) do
@@ -97,6 +106,7 @@ function EventListenerHolder:_dispose_trash()
 		self._trash = nil
 	end
 end
+
 function EventListenerHolder:_not_trash(key)
 	return not self._trash or not self._trash[key]
 end

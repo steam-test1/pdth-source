@@ -1,4 +1,5 @@
 CoreMusicManager = CoreMusicManager or class()
+
 function CoreMusicManager:init()
 	if not Global.music_manager then
 		Global.music_manager = {}
@@ -27,31 +28,38 @@ function CoreMusicManager:init()
 		table.sort(v)
 	end
 end
+
 function CoreMusicManager:post_event(name)
 	if Global.music_manager.current_event ~= name then
 		Global.music_manager.source:post_event(name)
 		Global.music_manager.current_event = name
 	end
 end
+
 function CoreMusicManager:stop()
 	Global.music_manager.source:stop()
 	Global.music_manager.current_event = nil
 end
+
 function CoreMusicManager:music_paths()
 	return self._path_list
 end
+
 function CoreMusicManager:music_events(path)
 	return self._event_map[path]
 end
+
 function CoreMusicManager:music_path(event)
 	return self._path_map[event]
 end
+
 function CoreMusicManager:save(data)
 	local state = {
 		event = Global.music_manager.current_event
 	}
 	data.CoreMusicManager = state
 end
+
 function CoreMusicManager:load(data)
 	local state = data.CoreMusicManager
 	if state.event then

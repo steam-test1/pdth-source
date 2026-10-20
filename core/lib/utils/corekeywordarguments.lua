@@ -1,5 +1,6 @@
 core:module("CoreKeywordArguments")
 core:import("CoreClass")
+
 function parse_kwargs(args, ...)
 	assert(#args == 1)
 	assert(type(args[1]) == "table")
@@ -21,7 +22,9 @@ function parse_kwargs(args, ...)
 	end
 	return unpack(result)
 end
+
 KeywordArguments = KeywordArguments or CoreClass.class()
+
 function KeywordArguments:init(...)
 	local args = {
 		...
@@ -34,9 +37,11 @@ function KeywordArguments:init(...)
 		self._unconsumed_kwargs[k] = k
 	end
 end
+
 function KeywordArguments:assert_all_consumed()
 	assert(table.size(self._unconsumed_kwargs) == 0, "unknown keyword argument(s): " .. string.join(", ", self._unconsumed_kwargs))
 end
+
 function KeywordArguments:mandatory(...)
 	local ret_list = {}
 	for _, n in ipairs({
@@ -49,6 +54,7 @@ function KeywordArguments:mandatory(...)
 	end
 	return unpack(ret_list)
 end
+
 function KeywordArguments:mandatory_string(...)
 	local ret_list = {}
 	for _, n in ipairs({
@@ -62,6 +68,7 @@ function KeywordArguments:mandatory_string(...)
 	end
 	return unpack(ret_list)
 end
+
 function KeywordArguments:mandatory_number(...)
 	local ret_list = {}
 	for _, n in ipairs({
@@ -75,6 +82,7 @@ function KeywordArguments:mandatory_number(...)
 	end
 	return unpack(ret_list)
 end
+
 function KeywordArguments:mandatory_table(...)
 	local ret_list = {}
 	for _, n in ipairs({
@@ -88,6 +96,7 @@ function KeywordArguments:mandatory_table(...)
 	end
 	return unpack(ret_list)
 end
+
 function KeywordArguments:mandatory_function(...)
 	local ret_list = {}
 	for _, n in ipairs({
@@ -101,6 +110,7 @@ function KeywordArguments:mandatory_function(...)
 	end
 	return unpack(ret_list)
 end
+
 function KeywordArguments:mandatory_object(...)
 	local ret_list = {}
 	for _, n in ipairs({
@@ -114,6 +124,7 @@ function KeywordArguments:mandatory_object(...)
 	end
 	return unpack(ret_list)
 end
+
 function KeywordArguments:optional(...)
 	local ret_list = {}
 	for _, n in ipairs({
@@ -124,6 +135,7 @@ function KeywordArguments:optional(...)
 	end
 	return unpack(ret_list)
 end
+
 function KeywordArguments:optional_string(...)
 	local ret_list = {}
 	for _, n in ipairs({
@@ -136,6 +148,7 @@ function KeywordArguments:optional_string(...)
 	end
 	return unpack(ret_list)
 end
+
 function KeywordArguments:optional_number(...)
 	local ret_list = {}
 	for _, n in ipairs({
@@ -148,6 +161,7 @@ function KeywordArguments:optional_number(...)
 	end
 	return unpack(ret_list)
 end
+
 function KeywordArguments:optional_table(...)
 	local ret_list = {}
 	for _, n in ipairs({
@@ -160,6 +174,7 @@ function KeywordArguments:optional_table(...)
 	end
 	return unpack(ret_list)
 end
+
 function KeywordArguments:optional_function(...)
 	local ret_list = {}
 	for _, n in ipairs({
@@ -172,6 +187,7 @@ function KeywordArguments:optional_function(...)
 	end
 	return unpack(ret_list)
 end
+
 function KeywordArguments:optional_object(...)
 	local ret_list = {}
 	for _, n in ipairs({

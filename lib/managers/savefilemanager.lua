@@ -25,6 +25,7 @@ else
 	SavefileManager.LOWEST_COMPATIBLE_VERSION = "1.7"
 end
 SavefileManager.SAVE_SYSTEM = "steam_cloud"
+
 function SavefileManager:init()
 	self._active_changed_callback_handler = CoreEvent.CallbackEventHandler:new()
 	self._save_begin_callback_handler = CoreEvent.CallbackEventHandler:new()
@@ -48,6 +49,7 @@ function SavefileManager:init()
 	self._gui:set_shape(safe_rect.x, safe_rect.y, safe_rect.width, safe_rect.height)
 	self._savegame_hdd_space_required = false
 end
+
 function SavefileManager:destroy()
 	if self._workspace then
 		Overlay:gui():destroy_workspace(self._workspace)
@@ -56,6 +58,7 @@ function SavefileManager:destroy()
 		self._gui_script = nil
 	end
 end
+
 function SavefileManager:active_user_changed()
 	if managers.user.STORE_SETTINGS_ON_PROFILE then
 		self:_clean_meta_data_list(true)
@@ -65,6 +68,7 @@ function SavefileManager:active_user_changed()
 		end
 	end
 end
+
 function SavefileManager:storage_changed()
 	local storage_device_selected = managers.user:is_storage_selected(nil)
 	if not managers.user.STORE_SETTINGS_ON_PROFILE then
@@ -89,40 +93,51 @@ function SavefileManager:storage_changed()
 		cat_print("savefile_manager", "[SavefileManager] Unable to load meta data. Signed in: " .. tostring(managers.user:is_signed_in(nil)) .. ", Storage device selected: " .. tostring(storage_device_selected))
 	end
 end
+
 function SavefileManager:setting_changed()
 	self:_set_setting_changed(true)
 end
+
 function SavefileManager:save_game(slot, cache_only)
 	self:_save(slot, cache_only)
 end
+
 function SavefileManager:save_setting(is_user_initiated_action)
 	if self:_is_saving_setting_allowed(is_user_initiated_action) then
 		self:_save(self.SETTING_SLOT, false)
 	end
 end
+
 function SavefileManager:save_progress(save_system)
 	self:_save(self.PROGRESS_SLOT, nil, save_system)
 end
+
 function SavefileManager:load_progress(save_system)
 	self:_load(self.PROGRESS_SLOT, nil, save_system)
 end
+
 function SavefileManager:load_game(slot, cache_only)
 	self:_load(slot, cache_only)
 end
+
 function SavefileManager:load_setting()
 	self:_load(self.SETTING_SLOT)
 end
+
 function SavefileManager:current_game_cache_slot()
 	return Global.savefile_manager.current_game_cache_slot
 end
+
 function SavefileManager:update(t, dt)
 	self:update_task_handler_list()
 	self:update_gui_visibility()
 end
+
 function SavefileManager:paused_update(t, dt)
 	self:update_task_handler_list()
 	self:update_gui_visibility()
 end
+
 function SavefileManager:update_task_handler_list()
 	if self._task_handler_list then
 		local next_task_handler
@@ -140,10 +155,12 @@ function SavefileManager:update_task_handler_list()
 		self:update_current_task_type()
 	end
 end
+
 function SavefileManager:update_current_task_type()
 	local current_task_handler = self._task_handler_list and self._task_handler_list[1]
 	self:_set_current_task_type(current_task_handler and current_task_handler:task_type() or self.IDLE_TASK_TYPE)
 end
+
 function SavefileManager:update_gui_visibility()
 	if self._hide_gui_time and TimerManager:main():time() >= self._hide_gui_time then
 		self._workspace:hide()
@@ -151,12 +168,15 @@ function SavefileManager:update_gui_visibility()
 		self._hide_gui_time = nil
 	end
 end
+
 function SavefileManager:debug_get_task_name(task_type)
 	return self.DEBUG_TASK_TYPE_NAME_LIST[task_type] or "Invalid"
 end
+
 function SavefileManager:is_active()
 	return not not self._task_handler_list
 end
+
 function SavefileManager:get_save_info_list(include_empty_slot)
 	local data_list = {}
 	local save_info_list = {}
@@ -169,9 +189,11 @@ function SavefileManager:get_save_info_list(include_empty_slot)
 			})
 		end
 	end
+	
 	local function sort_func(data1, data2)
 		return self:_compare_sort_list(data1.sort_list, data2.sort_list) < 0
 	end
+	
 	table.sort(data_list, sort_func)
 	for _, data in ipairs(data_list) do
 		table.insert(save_info_list, SavefileInfo:new(data.slot, data.text))
@@ -188,36 +210,47 @@ function SavefileManager:get_save_info_list(include_empty_slot)
 	end
 	return save_info_list
 end
+
 function SavefileManager:add_active_changed_callback(callback_func)
 	self._active_changed_callback_handler:add(callback_func)
 end
+
 function SavefileManager:remove_active_changed_callback(callback_func)
 	self._active_changed_callback_handler:remove(callback_func)
 end
+
 function SavefileManager:add_save_begin_callback(callback_func)
 	self._save_begin_callback_handler:add(callback_func)
 end
+
 function SavefileManager:remove_save_begin_callback(callback_func)
 	self._save_begin_callback_handler:remove(callback_func)
 end
+
 function SavefileManager:add_save_done_callback(callback_func)
 	self._save_done_callback_handler:add(callback_func)
 end
+
 function SavefileManager:remove_save_done_callback(callback_func)
 	self._save_done_callback_handler:remove(callback_func)
 end
+
 function SavefileManager:add_load_begin_callback(callback_func)
 	self._load_begin_callback_handler:add(callback_func)
 end
+
 function SavefileManager:remove_load_begin_callback(callback_func)
 	self._load_begin_callback_handler:remove(callback_func)
 end
+
 function SavefileManager:add_load_done_callback(callback_func)
 	self._load_done_callback_handler:add(callback_func)
 end
+
 function SavefileManager:remove_load_done_callback(callback_func)
 	self._load_done_callback_handler:remove(callback_func)
 end
+
 function SavefileManager:_clean_meta_data_list(is_setting_slot)
 	if is_setting_slot then
 		Global.savefile_manager.meta_data_list[self.SETTING_SLOT] = nil
@@ -236,6 +269,7 @@ function SavefileManager:_clean_meta_data_list(is_setting_slot)
 		end
 	end
 end
+
 function SavefileManager:_meta_data_slot_detected_done_callback()
 	print("SavefileManager:_meta_data_slot_detected_done_callbac", self._has_meta_list)
 	if not self._has_meta_list then
@@ -253,6 +287,7 @@ function SavefileManager:_meta_data_slot_detected_done_callback()
 		self:_ask_load_backup("no_progress", true)
 	end
 end
+
 function SavefileManager:_meta_data_slot_detected_callback(slot)
 	self._has_meta_list = self._has_meta_list or {}
 	table.insert(self._has_meta_list, slot)
@@ -287,6 +322,7 @@ function SavefileManager:_meta_data_slot_detected_callback(slot)
 		self:_add_task_handler(task_handler)
 	end
 end
+
 function SavefileManager:_meta_data_loaded_callback(save_data)
 	local slot = save_data:slot()
 	local status = save_data:status()
@@ -297,6 +333,7 @@ function SavefileManager:_meta_data_loaded_callback(save_data)
 	end
 	self:_set_text(slot, save_data, success)
 end
+
 function SavefileManager:_parse_text(save_data)
 	if not save_data then
 		return ""
@@ -319,6 +356,7 @@ function SavefileManager:_parse_text(save_data)
 		return text
 	end
 end
+
 function SavefileManager:_parse_sort_list(save_data)
 	local date_instance = save_data or Application
 	local format_order = {
@@ -334,6 +372,7 @@ function SavefileManager:_parse_sort_list(save_data)
 	end
 	return sort_list
 end
+
 function SavefileManager:_save(slot, cache_only, save_system)
 	cat_print("savefile_manager", "[SavefileManager] Saving to slot \"" .. tostring(slot) .. "\". Cache only: " .. tostring(cache_only))
 	local is_setting_slot = slot == self.SETTING_SLOT
@@ -391,9 +430,11 @@ function SavefileManager:_save(slot, cache_only, save_system)
 		end
 	end
 end
+
 function SavefileManager:_save_platform_setting_map_callback(success)
 	self:_save_done(self.SETTING_SLOT, false, nil, success)
 end
+
 function SavefileManager:_save_callback(save_data)
 	local status = save_data:status()
 	local slot = save_data:slot()
@@ -402,6 +443,7 @@ function SavefileManager:_save_callback(save_data)
 	local success = status == SaveData.OK
 	self:_save_done(slot, false, save_data, success)
 end
+
 function SavefileManager:_save_cache(slot)
 	cat_print("savefile_manager", "[SavefileManager] Saves slot \"" .. tostring(slot) .. "\" to cache.")
 	local is_setting_slot = slot == self.SETTING_SLOT
@@ -432,6 +474,7 @@ function SavefileManager:_save_cache(slot)
 	self:_set_cache(slot, cache)
 	self:_set_synched_cache(slot, false)
 end
+
 function SavefileManager:_save_done(slot, cache_only, save_data, success)
 	cat_print("savefile_manager", "[SavefileManager] Done saving to slot \"" .. tostring(slot) .. "\". Cache only: " .. tostring(cache_only) .. ", Success: " .. tostring(success))
 	if not success then
@@ -448,6 +491,7 @@ function SavefileManager:_save_done(slot, cache_only, save_data, success)
 	end
 	self._save_done_callback_handler:dispatch(slot, success, is_setting_slot, cache_only)
 end
+
 function SavefileManager:_load(slot, cache_only, save_system)
 	cat_print("savefile_manager", "[SavefileManager] Loading slot \"" .. tostring(slot) .. "\". Cache only: " .. tostring(cache_only))
 	local is_setting_slot = slot == self.SETTING_SLOT
@@ -491,8 +535,10 @@ function SavefileManager:_load(slot, cache_only, save_system)
 		end
 	end
 end
+
 function SavefileManager:_load_callback_done()
 end
+
 function SavefileManager:_load_backup_callback(save_data)
 	local status = save_data:status()
 	print("[SavefileManager:_load_backup_callback] status", status)
@@ -511,6 +557,7 @@ function SavefileManager:_load_backup_callback(save_data)
 		self._backup_data = false
 	end
 end
+
 function SavefileManager:_load_callback(save_data)
 	print("[SavefileManager:_load_callback] slot", save_data:slot(), "status", save_data:status())
 	local slot = save_data:slot()
@@ -527,6 +574,7 @@ function SavefileManager:_load_callback(save_data)
 	self:_set_cache(slot, cache)
 	self:_load_done(slot, false, wrong_user)
 end
+
 function SavefileManager:_load_platform_setting_map_callback(platform_setting_map)
 	local cache
 	if platform_setting_map then
@@ -535,6 +583,7 @@ function SavefileManager:_load_platform_setting_map_callback(platform_setting_ma
 	self:_set_cache(self.SETTING_SLOT, cache)
 	self:_load_done(self.SETTING_SLOT, false)
 end
+
 function SavefileManager:_load_done(slot, cache_only, wrong_user)
 	local is_setting_slot = slot == self.SETTING_SLOT
 	local is_progress_slot = slot == self.PROGRESS_SLOT
@@ -584,6 +633,7 @@ function SavefileManager:_load_done(slot, cache_only, wrong_user)
 						self:load_progress()
 					end
 				end
+				
 				function no_button.callback_func()
 					if is_progress_slot and self._backup_data then
 						self:_ask_load_backup("progress_" .. (req_version == nil and "corrupt" or "wrong_version"), false)
@@ -594,13 +644,16 @@ function SavefileManager:_load_done(slot, cache_only, wrong_user)
 						rem_dialog_data.text = managers.localization:text(error_msg, {VERSION = req_version})
 						local ok_button = {}
 						ok_button.text = managers.localization:text("dialog_ok")
+						
 						function ok_button.callback_func()
 							self:_remove(slot)
 						end
+						
 						rem_dialog_data.button_list = {ok_button}
 						managers.system_menu:show(rem_dialog_data)
 					end
 				end
+				
 				self._try_again[slot] = true
 			else
 				at_init = false
@@ -609,6 +662,7 @@ function SavefileManager:_load_done(slot, cache_only, wrong_user)
 					return
 				else
 					dialog_data.text = managers.localization:text(error_msg, {VERSION = req_version})
+					
 					function ok_button.callback_func()
 						self:_remove(slot)
 					end
@@ -635,6 +689,7 @@ function SavefileManager:_load_done(slot, cache_only, wrong_user)
 		managers.system_menu:add_init_show(dialog_data)
 	end
 end
+
 function SavefileManager:_remove(slot, save_system)
 	local param_map = {
 		save_slots = slot,
@@ -647,8 +702,10 @@ function SavefileManager:_remove(slot, save_system)
 	local task_handler = SavefileTaskHandler:new(task, self.REMOVE_TASK_TYPE, callback(self, self, "_remove_callback"))
 	self:_add_task_handler(task_handler)
 end
+
 function SavefileManager:_remove_callback(...)
 end
+
 function SavefileManager:_load_cache(slot)
 	cat_print("savefile_manager", "[SavefileManager] Loads cached slot \"" .. tostring(slot) .. "\".")
 	local meta_data = self:_meta_data(slot)
@@ -679,6 +736,7 @@ function SavefileManager:_load_cache(slot)
 		Application:error("[SavefileManager] Unable to load savefile from slot \"" .. tostring(slot) .. "\".")
 	end
 end
+
 function SavefileManager:_meta_data(slot)
 	local meta_data = Global.savefile_manager.meta_data_list[slot]
 	if not meta_data then
@@ -697,11 +755,13 @@ function SavefileManager:_meta_data(slot)
 	end
 	return meta_data
 end
+
 function SavefileManager:_add_task_handler(task_handler)
 	self._task_handler_list = self._task_handler_list or {}
 	table.insert(self._task_handler_list, task_handler)
 	self:update_current_task_type()
 end
+
 function SavefileManager:_set_current_task_type(task_type)
 	local old_task_type = self._current_task_type
 	if old_task_type ~= task_type then
@@ -737,6 +797,7 @@ function SavefileManager:_set_current_task_type(task_type)
 		end
 	end
 end
+
 function SavefileManager:_set_current_game_cache_slot(current_game_cache_slot)
 	local old_slot = Global.savefile_manager.current_game_cache_slot
 	if old_slot ~= current_game_cache_slot then
@@ -747,6 +808,7 @@ function SavefileManager:_set_current_game_cache_slot(current_game_cache_slot)
 		Global.savefile_manager.current_game_cache_slot = current_game_cache_slot
 	end
 end
+
 function SavefileManager:_set_corrupt(slot, is_corrupt)
 	local meta_data = self:_meta_data(slot)
 	if not meta_data.is_corrupt ~= not is_corrupt then
@@ -754,6 +816,7 @@ function SavefileManager:_set_corrupt(slot, is_corrupt)
 		meta_data.is_corrupt = is_corrupt
 	end
 end
+
 function SavefileManager:_set_synched_text(slot, is_synched_text)
 	local meta_data = self:_meta_data(slot)
 	if not meta_data.is_synched_text ~= not is_synched_text then
@@ -761,6 +824,7 @@ function SavefileManager:_set_synched_text(slot, is_synched_text)
 		meta_data.is_synched_text = is_synched_text
 	end
 end
+
 function SavefileManager:_set_text(slot, save_data, is_synched_text)
 	local meta_data = self:_meta_data(slot)
 	local text = self:_parse_text(save_data)
@@ -772,6 +836,7 @@ function SavefileManager:_set_text(slot, save_data, is_synched_text)
 	meta_data.sort_list = sort_list
 	self:_set_synched_text(slot, is_synched_text)
 end
+
 function SavefileManager:_compare_sort_list(sort_list1, sort_list2)
 	if not sort_list1 then
 		return 1
@@ -787,6 +852,7 @@ function SavefileManager:_compare_sort_list(sort_list1, sort_list2)
 		return 0
 	end
 end
+
 function SavefileManager:_set_synched_cache(slot, is_synched_cache)
 	local meta_data = self:_meta_data(slot)
 	if not meta_data.is_synched_cache ~= not is_synched_cache then
@@ -794,6 +860,7 @@ function SavefileManager:_set_synched_cache(slot, is_synched_cache)
 		meta_data.is_synched_cache = is_synched_cache
 	end
 end
+
 function SavefileManager:_set_cache(slot, cache)
 	local meta_data = self:_meta_data(slot)
 	if meta_data.cache ~= cache then
@@ -801,12 +868,14 @@ function SavefileManager:_set_cache(slot, cache)
 		meta_data.cache = cache
 	end
 end
+
 function SavefileManager:_set_setting_changed(setting_changed)
 	if not Global.savefile_manager.setting_changed ~= not setting_changed then
 		cat_print("savefile_manager", "[SavefileManager] Setting changed: \"" .. tostring(setting_changed) .. "\".")
 		Global.savefile_manager.setting_changed = setting_changed
 	end
 end
+
 function SavefileManager:_is_saving_setting_allowed(is_user_initiated_action)
 	if not Global.savefile_manager.setting_changed then
 		cat_print("savefile_manager", "[SavefileManager] Skips saving setting. Setting is already saved.")
@@ -825,9 +894,11 @@ function SavefileManager:_is_saving_setting_allowed(is_user_initiated_action)
 	end
 	return true
 end
+
 function SavefileManager:fetch_savegame_hdd_space_required()
 	return self._savegame_hdd_space_required
 end
+
 function SavefileManager:_ask_load_backup(reason, dialog_at_init, load_params)
 	local dialog_data = {}
 	dialog_data.title = managers.localization:text("dialog_error_title")
@@ -836,24 +907,29 @@ function SavefileManager:_ask_load_backup(reason, dialog_at_init, load_params)
 	local no_button = {}
 	no_button.text = managers.localization:text("dialog_no")
 	dialog_data.button_list = {yes_button, no_button}
+	
 	function yes_button.callback_func()
 		self:_set_cache(self.PROGRESS_SLOT, self._backup_data.save_data:information())
 		self._backup_data = nil
 		self:_load_cache(self.PROGRESS_SLOT)
 	end
+	
 	function no_button.callback_func()
 		self._backup_data = nil
 	end
+	
 	if reason == "no_progress" or reason == "low_progress" then
 		dialog_data.text = managers.localization:text("dialog_ask_load_progress_backup_low_lvl")
 		if reason == "low_progress" then
 			function no_button.callback_func()
 				self._backup_data = nil
+				
 				self:_load_done(self.PROGRESS_SLOT, unpack(load_params))
 			end
 		end
 	elseif reason == "progress_corrupt" or reason == "progress_wrong_version" then
 		dialog_data.text = managers.localization:text("dialog_ask_load_progress_backup_" .. (reason == "progress_corrupt" and "corrupt" or "wrong_version"))
+		
 		function no_button.callback_func()
 			self._backup_data = nil
 			self:_remove(self.PROGRESS_SLOT)
@@ -865,7 +941,9 @@ function SavefileManager:_ask_load_backup(reason, dialog_at_init, load_params)
 		managers.system_menu:show(dialog_data)
 	end
 end
+
 SavefileTaskHandler = SavefileTaskHandler or class()
+
 function SavefileTaskHandler:init(task, task_type, callback_func, done_callback_func)
 	self._task = task
 	self._task_type = task_type
@@ -880,12 +958,15 @@ function SavefileTaskHandler:init(task, task_type, callback_func, done_callback_
 		})
 	end
 end
+
 function SavefileTaskHandler:destroy()
 	self._task = nil
 end
+
 function SavefileTaskHandler:task_type()
 	return self._task_type
 end
+
 function SavefileTaskHandler:update()
 	while self._task:has_next() do
 		self._callback_func(self._task:next())
@@ -900,52 +981,68 @@ function SavefileTaskHandler:update()
 	end
 	return self._task:done()
 end
+
 LoadPlatformSettingMapTask = LoadPlatformSettingMapTask or class()
+
 function LoadPlatformSettingMapTask:init()
 	managers.user:load_platform_setting_map(callback(self, self, "load_platform_setting_map_callback"))
 end
+
 function LoadPlatformSettingMapTask:load_platform_setting_map_callback(platform_setting_map)
 	self._platform_setting_map = platform_setting_map
 	self._has_next = true
 end
+
 function LoadPlatformSettingMapTask:has_next()
 	return not self._done and self._has_next
 end
+
 function LoadPlatformSettingMapTask:next()
 	self._has_next = nil
 	self._done = true
 	return self._platform_setting_map
 end
+
 function LoadPlatformSettingMapTask:done()
 	return self._done
 end
+
 SavePlatformSettingMapTask = SavePlatformSettingMapTask or class()
+
 function SavePlatformSettingMapTask:init()
 	managers.user:save_setting_map(callback(self, self, "save_platform_setting_map_callback"))
 end
+
 function SavePlatformSettingMapTask:save_platform_setting_map_callback(result)
 	self._result = result
 	self._has_next = true
 end
+
 function SavePlatformSettingMapTask:has_next()
 	return not self._done and self._has_next
 end
+
 function SavePlatformSettingMapTask:next()
 	self._has_next = nil
 	self._done = true
 	return self._result
 end
+
 function SavePlatformSettingMapTask:done()
 	return self._done
 end
+
 SavefileInfo = SavefileInfo or class()
+
 function SavefileInfo:init(slot, text)
 	self._slot = slot
 	self._text = text
 end
+
 function SavefileInfo:slot()
 	return self._slot
 end
+
 function SavefileInfo:text()
 	return self._text
 end

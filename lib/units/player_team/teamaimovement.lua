@@ -1,6 +1,7 @@
 TeamAIMovement = TeamAIMovement or class(CopMovement)
 TeamAIMovement._char_name_to_index = HuskPlayerMovement._char_name_to_index
 TeamAIMovement._char_model_names = HuskPlayerMovement._char_model_names
+
 function TeamAIMovement:_post_init()
 	if not managers.groupai:state():player_weapons_hot() then
 		self:set_cool()
@@ -8,20 +9,25 @@ function TeamAIMovement:_post_init()
 	self._standing_nav_seg_id = self._nav_tracker:nav_segment()
 	self:play_redirect("idle")
 end
+
 function TeamAIMovement:set_character_anim_variables()
 	HuskPlayerMovement.set_character_anim_variables(self)
 end
+
 function TeamAIMovement:m_detect_pos()
 	return self._m_head_pos
 end
+
 function TeamAIMovement:set_position(pos)
 	CopMovement.set_position(self, pos)
 	self:_upd_location()
 end
+
 function TeamAIMovement:set_m_pos(pos)
 	CopMovement.set_m_pos(self, pos)
 	self:_upd_location()
 end
+
 function TeamAIMovement:_upd_location()
 	local nav_seg_id = self._nav_tracker:nav_segment()
 	if self._standing_nav_seg_id ~= nav_seg_id then
@@ -30,36 +36,45 @@ function TeamAIMovement:_upd_location()
 		managers.hud:set_mugshot_location(self._unit:unit_data().mugshot_id, location_id)
 	end
 end
+
 function TeamAIMovement:get_location_id()
 	return managers.navigation:location_id(self._standing_nav_seg_id)
 end
+
 function TeamAIMovement:on_disarmed()
 	self._unit:brain():set_logic("surrender")
 	self._unit:network():send("arrested")
 	self._unit:character_damage():on_arrested()
 end
+
 function TeamAIMovement:on_SPOOCed()
 	self._unit:brain():set_logic("surrender")
 	self._unit:network():send("arrested")
 	self._unit:character_damage():on_arrested()
 end
+
 function TeamAIMovement:on_discovered()
 	if self._cool then
 		self:_switch_to_not_cool()
 	end
 end
+
 function TeamAIMovement:on_tase_ended()
 	self._unit:character_damage():on_tase_ended()
 end
+
 function TeamAIMovement:tased()
 	return self._unit:anim_data().tased
 end
+
 function TeamAIMovement:cool()
 	return self._cool
 end
+
 function TeamAIMovement:downed()
 	return self._unit:interaction()._active
 end
+
 function TeamAIMovement:set_cool()
 	if self._cool then
 		return
@@ -73,11 +88,13 @@ function TeamAIMovement:set_cool()
 		}, callback(self, self, "heat_clbk"))
 	end
 end
+
 function TeamAIMovement:heat_clbk()
 	if self._cool then
 		self:_switch_to_not_cool()
 	end
 end
+
 function TeamAIMovement:_switch_to_not_cool()
 	managers.groupai:state():remove_listener(self._heat_listener_clbk)
 	self._heat_listener_clbk = nil
@@ -86,6 +103,7 @@ function TeamAIMovement:_switch_to_not_cool()
 		managers.enemy:add_delayed_clbk(self._switch_to_not_cool_clbk_id, callback(self, self, "_switch_to_not_cool_clbk_func"), Application:time() + math.random() * 1 + 0.5)
 	end
 end
+
 function TeamAIMovement:_switch_to_not_cool_clbk_func()
 	if self._switch_to_not_cool_clbk_id then
 		self._switch_to_not_cool_clbk_id = nil
@@ -102,6 +120,7 @@ function TeamAIMovement:_switch_to_not_cool_clbk_func()
 		self:set_stance_by_code(2)
 	end
 end
+
 function TeamAIMovement:pre_destroy()
 	if self._heat_listener_clbk then
 		managers.groupai:state():remove_listener(self._heat_listener_clbk)

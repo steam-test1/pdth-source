@@ -3,22 +3,29 @@ core:import("CoreClass")
 core:import("CoreCode")
 core:import("CoreInteractionEditorOpStack")
 InteractionEditorSystemEvents = InteractionEditorSystemEvents or CoreClass.class()
+
 function InteractionEditorSystemEvents:setup_stack()
 	local stack = CoreInteractionEditorOpStack.InteractionEditorOpStack:new()
 	return stack
 end
+
 function InteractionEditorSystemEvents:undo_add_node(node_id, node_type)
 end
+
 function InteractionEditorSystemEvents:redo_add_node(node_id, node_type)
 end
+
 function InteractionEditorSystemEvents:undo_remove_node(node_id)
 end
+
 function InteractionEditorSystemEvents:redo_remove_node(node_id)
 end
+
 function InteractionEditorSystemEvents:on_delete_node(data, event)
 	self:remove_node(event:node())
 	event:skip()
 end
+
 function InteractionEditorSystemEvents:on_select_node(data, event)
 	self:ui():clean_prop_panel()
 	local nodes = event:selected_nodes()
@@ -27,6 +34,7 @@ function InteractionEditorSystemEvents:on_select_node(data, event)
 	end
 	event:skip()
 end
+
 function InteractionEditorSystemEvents:on_connect_node(data, event)
 	local md_src, output, md_dest, input = event:source():metadata(), event:outslot(), event:dest():metadata(), event:inslot()
 	assert(md_src ~= "" and output ~= "" and md_dest ~= "", input ~= "")
@@ -36,6 +44,7 @@ function InteractionEditorSystemEvents:on_connect_node(data, event)
 		event:skip()
 	end
 end
+
 function InteractionEditorSystemEvents:on_disconnect_node(data, event)
 	local md_src, output, md_dest, input = event:source():metadata(), event:outslot(), event:dest():metadata(), event:inslot()
 	assert(md_src ~= "" and output ~= "" and md_dest ~= "", input ~= "")

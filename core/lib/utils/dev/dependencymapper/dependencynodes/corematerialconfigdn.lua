@@ -5,9 +5,11 @@ MATERIAL_CONFIG = CoreDependencyNode.MATERIAL_CONFIG
 MATERIALS_FILE = CoreDependencyNode.MATERIALS_FILE
 TEXTURE = CoreDependencyNode.TEXTURE
 Material_configDependencyNode = Material_configDependencyNode or CoreClass.class(CoreDependencyNode.DependencyNodeBase)
+
 function Material_configDependencyNode:init(name, get_dn_cb, database)
 	self.super.init(self, MATERIAL_CONFIG, "material_config", name, get_dn_cb, database)
 end
+
 function Material_configDependencyNode:_walkxml2dependencies(xmlnode, deps)
 	local mf = self._get_dn({
 		name = "Materialsfile",

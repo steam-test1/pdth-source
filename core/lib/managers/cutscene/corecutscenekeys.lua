@@ -1,9 +1,11 @@
 CoreCutsceneKey = CoreCutsceneKey or {
 	_classes = {}
 }
+
 function CoreCutsceneKey:create(element_name, key_collection)
 	return assert(self._classes[element_name], "Element name \"" .. tostring(element_name) .. "\" does not match any registered cutscene key type."):new(key_collection)
 end
+
 function CoreCutsceneKey:register_class(path)
 	require(path)
 	local class_name = assert(string.match(path, ".*[\\/](.*)"), "Malformed class path supplied for cutscene key type.")
@@ -14,6 +16,7 @@ function CoreCutsceneKey:register_class(path)
 	end
 	CoreCutsceneKey._classes[element_name] = class
 end
+
 function CoreCutsceneKey:types()
 	local sorted_types = {}
 	for _, class in pairs(self._classes) do
@@ -24,6 +27,7 @@ function CoreCutsceneKey:types()
 	end)
 	return sorted_types
 end
+
 function CoreCutsceneKey:next_available_colour()
 	self._colour_index = (self._colour_index or 0) + 1
 	if self._colour_index > #self:colour_palette() then
@@ -31,6 +35,7 @@ function CoreCutsceneKey:next_available_colour()
 	end
 	return self:colour_palette()[self._colour_index]
 end
+
 function CoreCutsceneKey:colour_palette()
 	if self._colour_palette == nil then
 		local hex_values = {
@@ -77,6 +82,7 @@ function CoreCutsceneKey:colour_palette()
 	end
 	return self._colour_palette
 end
+
 CoreCutsceneKey:register_class("core/lib/managers/cutscene/keys/CoreChangeCameraAttributeCutsceneKey")
 CoreCutsceneKey:register_class("core/lib/managers/cutscene/keys/CoreChangeCameraCutsceneKey")
 CoreCutsceneKey:register_class("core/lib/managers/cutscene/keys/CoreChangeEnvCutsceneKey")

@@ -1,4 +1,5 @@
 CopActionDodge = CopActionDodge or class()
+
 function CopActionDodge:init(action_desc, common_data)
 	self._common_data = common_data
 	self._ext_base = common_data.ext_base
@@ -39,6 +40,7 @@ function CopActionDodge:init(action_desc, common_data)
 		return
 	end
 end
+
 local prios = {
 	{
 		2,
@@ -66,6 +68,7 @@ local prios = {
 	}
 }
 local tmp_v = Vector3()
+
 function CopActionDodge.try_dodge(unit, var)
 	local pos = unit:position()
 	local ray_params = {
@@ -98,6 +101,7 @@ function CopActionDodge.try_dodge(unit, var)
 	end
 	return nil
 end
+
 function CopActionDodge:on_exit()
 	if Network:is_client() then
 		self._ext_movement:set_m_host_stop_pos(self._ext_movement:m_pos())
@@ -105,6 +109,7 @@ function CopActionDodge:on_exit()
 		self._common_data.ext_network:send("action_dodge_end")
 	end
 end
+
 function CopActionDodge:update(t)
 	if self._ext_anim.dodge then
 		local dt = TimerManager:game():delta_time()
@@ -118,21 +123,27 @@ function CopActionDodge:update(t)
 		self._expired = true
 	end
 end
+
 function CopActionDodge:type()
 	return "dodge"
 end
+
 function CopActionDodge:expired()
 	return self._expired
 end
+
 function CopActionDodge:save(save_data)
 end
+
 function CopActionDodge:need_upd()
 	return true
 end
+
 function CopActionDodge:chk_block(action_type, t)
 	if action_type == "death" or action_type == "bleedout" or action_type == "fatal" then
 		return false
 	end
 	return true
 end
+
 CopActionDodge._apply_freefall = CopActionWalk._apply_freefall

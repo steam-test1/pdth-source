@@ -1,9 +1,11 @@
 PlayerStyleElement = PlayerStyleElement or class(MissionElement)
+
 function PlayerStyleElement:init(unit)
 	PlayerStyleElement.super.init(self, unit)
 	self._hed.style = ""
 	table.insert(self._save_values, "style")
 end
+
 function PlayerStyleElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

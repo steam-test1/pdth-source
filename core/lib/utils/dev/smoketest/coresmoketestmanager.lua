@@ -5,6 +5,7 @@ core:import("CoreSmoketestReporter")
 core:import("CoreSmoketestLoadLevelSuite")
 core:import("CoreSmoketestEditorSuite")
 Manager = Manager or CoreClass.class()
+
 function Manager:init(session_state)
 	self._session_state = session_state
 	self._smoketestsuites = {}
@@ -12,14 +13,18 @@ function Manager:init(session_state)
 	self:register("editor", CoreSmoketestEditorSuite.EditorSuite:new())
 	self:register("load_level", CoreSmoketestLoadLevelSuite.LoadLevelSuite:new())
 end
+
 function Manager:destroy()
 end
+
 function Manager:register(name, smoketestsuite)
 	self._smoketestsuites[name] = smoketestsuite
 end
+
 function Manager:post_init()
 	self:_parse_arguments(Application:argv())
 end
+
 function Manager:_parse_arguments(args)
 	local suite_arguments = {}
 	for i, arg in ipairs(args) do
@@ -41,6 +46,7 @@ function Manager:_parse_arguments(args)
 		self._suite:start(self._session_state, self._reporter, suite_arguments)
 	end
 end
+
 function Manager:update(t, dt)
 	if self._suite then
 		self._suite:update(t, dt)

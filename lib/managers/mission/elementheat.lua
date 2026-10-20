@@ -1,11 +1,14 @@
 core:import("CoreMissionScriptElement")
 ElementHeat = ElementHeat or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementHeat:init(...)
 	ElementHeat.super.init(self, ...)
 end
+
 function ElementHeat:client_on_executed(...)
 	self:on_executed(...)
 end
+
 function ElementHeat:on_executed(instigator)
 	if not self._values.enabled then
 		return
@@ -18,22 +21,28 @@ function ElementHeat:on_executed(instigator)
 	end
 	ElementHeat.super.on_executed(self, instigator)
 end
+
 ElementHeatTrigger = ElementHeatTrigger or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementHeatTrigger:init(...)
 	ElementHeatTrigger.super.init(self, ...)
 	if Network:is_server() then
 		self:add_callback()
 	end
 end
+
 function ElementHeatTrigger:add_callback()
 end
+
 function ElementHeatTrigger:remove_callback()
 end
+
 function ElementHeatTrigger:heat_changed()
 	if Network:is_client() then
 		return
 	end
 end
+
 function ElementHeatTrigger:on_executed(instigator)
 	if not self._values.enabled then
 		return

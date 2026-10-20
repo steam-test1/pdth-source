@@ -1,4 +1,5 @@
 TimerGui = TimerGui or class()
+
 function TimerGui:init(unit)
 	self._unit = unit
 	self._visible = true
@@ -19,11 +20,13 @@ function TimerGui:init(unit)
 	self._unit:set_extension_update_enabled(Idstring("timer_gui"), false)
 	self._update_enabled = false
 end
+
 function TimerGui:add_workspace(gui_object)
 	self._ws = self._new_gui:create_object_workspace(0, 0, gui_object, Vector3(0, 0, 0))
 	self._gui = self._ws:panel():gui(Idstring("guis/timer_gui"))
 	self._gui_script = self._gui:script()
 end
+
 function TimerGui:setup()
 	self._gui_script.working_text:set_render_template(Idstring("VertexColorTextured"))
 	self._gui_script.time_header_text:set_render_template(Idstring("VertexColorTextured"))
@@ -56,6 +59,7 @@ function TimerGui:setup()
 		self._original_colors[child:key()] = child:color()
 	end
 end
+
 function TimerGui:_start(timer, current_timer)
 	self._started = true
 	self._done = false
@@ -75,6 +79,7 @@ function TimerGui:_start(timer, current_timer)
 	end
 	self:_set_jamming_values()
 end
+
 function TimerGui:_set_jamming_values()
 	if not self._can_jam then
 		return
@@ -88,6 +93,7 @@ function TimerGui:_set_jamming_values()
 	end
 	self._current_jam_timer = table.remove(self._jamming_intervals, 1)
 end
+
 function TimerGui:start(timer)
 	if self._jammed then
 		self:_set_jammed(false)
@@ -101,9 +107,11 @@ function TimerGui:start(timer)
 		managers.network:session():send_to_peers_synched("start_timer_gui", self._unit, timer)
 	end
 end
+
 function TimerGui:sync_start(timer)
 	self:_start(timer)
 end
+
 function TimerGui:update(unit, t, dt)
 	if self._jammed then
 		self._gui_script.drill_screen_background:set_color(self._gui_script.drill_screen_background:color():with_alpha(0.5 + (math.sin(t * 750) + 1) / 4))
@@ -131,13 +139,16 @@ function TimerGui:update(unit, t, dt)
 		self._gui_script.working_text:set_color(self._gui_script.working_text:color():with_alpha(0.5 + (math.sin(t * 750) + 1) / 4))
 	end
 end
+
 function TimerGui:set_visible(visible)
 	self._visible = visible
 	self._gui:set_visible(visible)
 end
+
 function TimerGui:sync_set_jammed(jammed)
 	self:_set_jammed(jammed)
 end
+
 function TimerGui:set_jammed(jammed)
 	if jammed and self._unit:damage() and self._unit:damage():has_sequence("jammed_trigger") then
 		self._unit:damage():run_sequence_simple("jammed_trigger")
@@ -147,6 +158,7 @@ function TimerGui:set_jammed(jammed)
 	end
 	self:_set_jammed(jammed)
 end
+
 function TimerGui:_set_jammed(jammed)
 	self._jammed = jammed
 	if self._jammed then
@@ -178,9 +190,11 @@ function TimerGui:_set_jammed(jammed)
 	end
 	self._unit:base():set_jammed(jammed)
 end
+
 function TimerGui:set_powered(powered)
 	self:_set_powered(powered)
 end
+
 function TimerGui:_set_powered(powered)
 	self._powered = powered
 	if not self._powered then
@@ -198,6 +212,7 @@ function TimerGui:_set_powered(powered)
 	end
 	self._unit:base():set_powered(powered)
 end
+
 function TimerGui:done()
 	self:_set_done()
 	if self._unit:damage() then
@@ -205,6 +220,7 @@ function TimerGui:done()
 	end
 	self:post_event(self._done_event)
 end
+
 function TimerGui:_set_done()
 	self._done = true
 	self._gui_script.timer:set_w(self._timer_lenght)
@@ -214,16 +230,19 @@ function TimerGui:_set_done()
 	self._gui_script.time_text:set_visible(false)
 	self._unit:base():done()
 end
+
 function TimerGui:post_event(event)
 	if not event then
 		return
 	end
 	self._unit:sound_source():post_event(event)
 end
+
 function TimerGui:lock_gui()
 	self._ws:set_cull_distance(self._cull_distance)
 	self._ws:set_frozen(true)
 end
+
 function TimerGui:destroy()
 	if alive(self._new_gui) and alive(self._ws) then
 		self._new_gui:destroy_workspace(self._ws)
@@ -231,6 +250,7 @@ function TimerGui:destroy()
 		self._new_gui = nil
 	end
 end
+
 function TimerGui:save(data)
 	local state = {}
 	state.update_enabled = self._update_enabled
@@ -242,6 +262,7 @@ function TimerGui:save(data)
 	state.visible = self._visible
 	data.TimerGui = state
 end
+
 function TimerGui:load(data)
 	local state = data.TimerGui
 	if state.done then

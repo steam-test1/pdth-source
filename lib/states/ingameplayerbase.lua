@@ -1,8 +1,10 @@
 require("lib/states/GameState")
 IngamePlayerBaseState = IngamePlayerBaseState or class(GameState)
+
 function IngamePlayerBaseState:init(...)
 	GameState.init(self, ...)
 end
+
 function IngamePlayerBaseState:set_controller_enabled(enabled)
 	local players = managers.player:players()
 	for _, player in ipairs(players) do

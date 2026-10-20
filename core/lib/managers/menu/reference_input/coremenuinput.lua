@@ -4,6 +4,7 @@ core:import("CoreMenuItem")
 core:import("CoreMenuItemSlider")
 core:import("CoreMenuItemToggle")
 MenuInput = MenuInput or class()
+
 function MenuInput:init(logic, menu_name)
 	self._logic = logic
 	self._menu_name = menu_name
@@ -17,25 +18,32 @@ function MenuInput:init(logic, menu_name)
 	self._item_input_action_map[CoreMenuItemSlider.ItemSlider.TYPE] = callback(self, self, "input_slider")
 	self._item_input_action_map[CoreMenuItemToggle.ItemToggle.TYPE] = callback(self, self, "input_toggle")
 end
+
 function MenuInput:open(...)
 	self:create_controller()
 end
+
 function MenuInput:close()
 	self:destroy_controller()
 end
+
 function MenuInput:axis_timer()
 	return self._axis_delay_timer
 end
+
 function MenuInput:set_axis_x_timer(time)
 	self._axis_delay_timer.x = time
 end
+
 function MenuInput:set_axis_y_timer(time)
 	self._axis_delay_timer.y = time
 end
+
 function MenuInput:input_item(item, controller, mouse_click)
 	if controller:get_input_pressed("confirm") or mouse_click then
 		if item:parameters().sign_in then
 			print("requires sign in")
+			
 			local function f(success)
 				print(success)
 				if success then
@@ -43,6 +51,7 @@ function MenuInput:input_item(item, controller, mouse_click)
 					self:select_node()
 				end
 			end
+			
 			managers.menu:open_sign_in_menu(f)
 		else
 			local node_gui = managers.menu:active_menu().renderer:active_node_gui()
@@ -54,6 +63,7 @@ function MenuInput:input_item(item, controller, mouse_click)
 		end
 	end
 end
+
 function MenuInput:input_slider(item, controller)
 	local slider_delay_down = 0.1
 	local slider_delay_pressed = 0.2
@@ -81,6 +91,7 @@ function MenuInput:input_slider(item, controller)
 		end
 	end
 end
+
 function MenuInput:input_toggle(item, controller, mouse_click)
 	local toggle_delay_down = 0.3
 	local toggle_delay_pressed = 0.6
@@ -89,6 +100,7 @@ function MenuInput:input_toggle(item, controller, mouse_click)
 		self._logic:trigger_item(true, item)
 	end
 end
+
 function MenuInput:update(t, dt)
 	self:_check_releases()
 	self:any_keyboard_used()
@@ -127,78 +139,91 @@ function MenuInput:update(t, dt)
 		end
 	end
 end
+
 function MenuInput:menu_up_input_bool()
 	if self._controller then
 		return self._controller:get_input_bool("menu_up")
 	end
 	return false
 end
+
 function MenuInput:menu_up_pressed()
 	if self._controller then
 		return self._controller:get_input_pressed("menu_up")
 	end
 	return false
 end
+
 function MenuInput:menu_up_released()
 	if self._controller then
 		return self._controller:get_input_released("menu_up")
 	end
 	return false
 end
+
 function MenuInput:menu_down_input_bool()
 	if self._controller then
 		return self._controller:get_input_bool("menu_down")
 	end
 	return false
 end
+
 function MenuInput:menu_down_pressed()
 	if self._controller then
 		return self._controller:get_input_pressed("menu_down")
 	end
 	return false
 end
+
 function MenuInput:menu_down_released()
 	if self._controller then
 		return self._controller:get_input_released("menu_down")
 	end
 	return false
 end
+
 function MenuInput:menu_left_input_bool()
 	if self._controller then
 		return self._controller:get_input_bool("menu_left")
 	end
 	return false
 end
+
 function MenuInput:menu_left_pressed()
 	if self._controller then
 		return self._controller:get_input_pressed("menu_left")
 	end
 	return false
 end
+
 function MenuInput:menu_left_released()
 	if self._controller then
 		return self._controller:get_input_released("menu_left")
 	end
 	return false
 end
+
 function MenuInput:menu_right_input_bool()
 	if self._controller then
 		return self._controller:get_input_bool("menu_right")
 	end
 	return false
 end
+
 function MenuInput:menu_right_pressed()
 	if self._controller then
 		return self._controller:get_input_pressed("menu_right")
 	end
 	return false
 end
+
 function MenuInput:menu_right_released()
 	if self._controller then
 		return self._controller:get_input_released("menu_right")
 	end
 	return false
 end
+
 function MenuInput:_check_releases()
 	if self:menu_left_released() or self:menu_right_released() then
 		self:set_axis_x_timer(0.01)
@@ -207,9 +232,11 @@ function MenuInput:_check_releases()
 		self:set_axis_y_timer(0.01)
 	end
 end
+
 function MenuInput:accept_input(accept)
 	self._accept_input = accept
 end
+
 function MenuInput:focus(focus)
 	if focus then
 		self:create_controller()
@@ -217,6 +244,7 @@ function MenuInput:focus(focus)
 		self:destroy_controller()
 	end
 end
+
 function MenuInput:create_controller()
 	if not self._controller then
 		local controller = managers.controller:create_controller("" .. tostring(TimerManager:wall():time()), nil, false)
@@ -225,14 +253,17 @@ function MenuInput:create_controller()
 		self._controller = controller
 	end
 end
+
 function MenuInput:destroy_controller()
 	if self._controller then
 		self._controller:destroy()
 		self._controller = nil
 	end
 end
+
 function MenuInput:logic_changed()
 end
+
 function MenuInput:next_item()
 	if not self._accept_input then
 		return
@@ -259,6 +290,7 @@ function MenuInput:next_item()
 		end
 	end
 end
+
 function MenuInput:prev_item()
 	local current_item = self._logic:selected_item()
 	if current_item then
@@ -282,9 +314,11 @@ function MenuInput:prev_item()
 		end
 	end
 end
+
 function MenuInput:back(queue)
 	self._logic:navigate_back(queue == true or false)
 end
+
 function MenuInput:select_node()
 	local item = self._logic:selected_item()
 	if item and item:visible() then
@@ -297,6 +331,7 @@ function MenuInput:select_node()
 		end
 	end
 end
+
 function MenuInput:any_keyboard_used()
 	if self._keyboard_used or not self._controller then
 		return

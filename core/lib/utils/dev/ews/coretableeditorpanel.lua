@@ -1,4 +1,5 @@
 CoreTableEditorPanel = CoreTableEditorPanel or class()
+
 function CoreTableEditorPanel:init(parent)
 	self.__column_names = {}
 	self.__panel = EWS:Panel(parent)
@@ -8,26 +9,32 @@ function CoreTableEditorPanel:init(parent)
 	panel_sizer:add(self:_create_buttons_panel(self.__panel), 0, 4, "ALL,EXPAND")
 	panel_sizer:add(self:_create_fields_panel(self.__panel), 0, 0, "EXPAND")
 end
+
 function CoreTableEditorPanel:destroy()
 	self.__panel:destroy()
 	self.__panel = nil
 end
+
 function CoreTableEditorPanel:clear()
 	self:freeze()
 	self.__list_ctrl:delete_all_items()
 	self:set_selected_item(nil)
 	self:thaw()
 end
+
 function CoreTableEditorPanel:add_to_sizer(sizer, proportion, border, flags)
 	sizer:add(self.__panel, proportion, border, flags)
 end
+
 function CoreTableEditorPanel:detach_from_sizer(sizer)
 	sizer:detach(self.__panel)
 end
+
 function CoreTableEditorPanel:freeze()
 	self.__frozen = true
 	self.__panel:freeze()
 end
+
 function CoreTableEditorPanel:thaw()
 	self.__frozen = nil
 	self.__panel:thaw()
@@ -37,11 +44,13 @@ function CoreTableEditorPanel:thaw()
 		self:_refresh_buttons_panel()
 	end
 end
+
 function CoreTableEditorPanel:add_column(heading, format_style)
 	table.insert(self.__column_names, heading)
 	self.__list_ctrl:append_column(heading, format_style or "LIST_FORMAT_LEFT")
 	self:_refresh_fields_panel()
 end
+
 function CoreTableEditorPanel:add_item(...)
 	local values = {
 		...
@@ -53,41 +62,50 @@ function CoreTableEditorPanel:add_item(...)
 	self:set_selected_item(item_index)
 	return item_index
 end
+
 function CoreTableEditorPanel:remove_item(item_index)
 	self.__list_ctrl:delete_item(item_index)
 	self:set_selected_item(nil)
 end
+
 function CoreTableEditorPanel:item_value(item_index, column_name)
 	return self:_string_to_value(self.__list_ctrl:get_item(item_index, self:_column_index(column_name)), column_name)
 end
+
 function CoreTableEditorPanel:set_item_value(item_index, column_name, value)
 	self.__list_ctrl:set_item(item_index, self:_column_index(column_name), self:_value_to_string(value, column_name))
 end
+
 function CoreTableEditorPanel:selected_item()
 	local item_index = self.__list_ctrl:selected_item()
 	return 0 <= item_index and item_index or nil
 end
+
 function CoreTableEditorPanel:set_selected_item(item_index)
 	self.__list_ctrl:set_item_selected(item_index or -1, true)
 	self:_refresh_fields_panel()
 	self:_refresh_buttons_panel()
 end
+
 function CoreTableEditorPanel:selected_item_value(column_name)
 	local selected_item_index = self:selected_item()
 	return selected_item_index and self:item_value(selected_item_index, column_name)
 end
+
 function CoreTableEditorPanel:set_selected_item_value(column_name, value)
 	local selected_item_index = self:selected_item()
 	if selected_item_index then
 		self:set_item_value(selected_item_index, column_name, value)
 	end
 end
+
 function CoreTableEditorPanel:_create_list_ctrl(parent)
 	self.__list_ctrl = EWS:ListCtrl(parent, "", "LC_REPORT,LC_SINGLE_SEL")
 	self.__list_ctrl:connect("EVT_COMMAND_LIST_ITEM_SELECTED", callback(self, self, "_on_selection_changed"), self.__list_ctrl)
 	self.__list_ctrl:connect("EVT_COMMAND_LIST_ITEM_DESELECTED", callback(self, self, "_on_selection_changed"), self.__list_ctrl)
 	return self.__list_ctrl
 end
+
 function CoreTableEditorPanel:_create_buttons_panel(parent)
 	self.__buttons_panel = EWS:Panel(parent)
 	local panel_sizer = EWS:BoxSizer("HORIZONTAL")
@@ -100,14 +118,17 @@ function CoreTableEditorPanel:_create_buttons_panel(parent)
 	panel_sizer:add(self.__remove_button, 1, 2, "LEFT,EXPAND")
 	return self.__buttons_panel
 end
+
 function CoreTableEditorPanel:_create_fields_panel(parent)
 	self.__fields_panel = EWS:Panel(parent)
 	self:_refresh_fields_panel()
 	return self.__fields_panel
 end
+
 function CoreTableEditorPanel:_refresh_buttons_panel()
 	self.__remove_button:set_enabled(self:selected_item() ~= nil)
 end
+
 function CoreTableEditorPanel:_refresh_fields_panel()
 	if self.__frozen then
 		self.__needs_refresh = true
@@ -122,6 +143,7 @@ function CoreTableEditorPanel:_refresh_fields_panel()
 		self.__fields_panel:thaw()
 	end
 end
+
 function CoreTableEditorPanel:_sizer_with_editable_fields(parent)
 	local sizer = EWS:BoxSizer("VERTICAL")
 	local first_control
@@ -135,6 +157,7 @@ function CoreTableEditorPanel:_sizer_with_editable_fields(parent)
 	end
 	return sizer
 end
+
 function CoreTableEditorPanel:_create_labeled_text_field(column_name, parent, sizer)
 	local enabled = self:selected_item() ~= nil
 	local label = EWS:StaticText(parent, string.pretty(column_name, true) .. ":")
@@ -148,35 +171,44 @@ function CoreTableEditorPanel:_create_labeled_text_field(column_name, parent, si
 	sizer:add(control, 0, 5, "ALL,EXPAND")
 	return control
 end
+
 function CoreTableEditorPanel:_column_index(column_name)
 	local column_index = column_name and table.get_vector_index(self.__column_names, column_name) or assert(nil, string.format("Column \"%s\" does not exist.", tostring(column_name)))
 	return column_index - 1
 end
+
 function CoreTableEditorPanel:_string_to_value(str, column_name)
 	return str or ""
 end
+
 function CoreTableEditorPanel:_value_to_string(value, column_name)
 	return value == nil and "" or tostring(value)
 end
+
 function CoreTableEditorPanel:_make_control_edited_callback(control, column_name, value_method_name)
 	return function()
 		self:_on_control_edited(control, column_name, value_method_name)
 	end
 end
+
 function CoreTableEditorPanel:_top_level_window(window)
 	window = window or self.__panel
 	return (type_name(window) == "EWSFrame" or type_name(window) == "EWSDialog") and window or self:_top_level_window(assert(window:parent()))
 end
+
 function CoreTableEditorPanel:_on_selection_changed(sender)
 	self:_refresh_fields_panel()
 	self:_refresh_buttons_panel()
 end
+
 function CoreTableEditorPanel:_on_add_button_clicked(sender)
 	self:add_item("<New Entry>")
 end
+
 function CoreTableEditorPanel:_on_remove_button_clicked(sender)
 	self:remove_item(self:selected_item())
 end
+
 function CoreTableEditorPanel:_on_control_edited(control, column_name, value_method_name)
 	value_method_name = value_method_name or "get_value"
 	local value = control[value_method_name](control)

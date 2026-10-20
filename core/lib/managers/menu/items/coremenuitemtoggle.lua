@@ -3,6 +3,7 @@ core:import("CoreMenuItem")
 core:import("CoreMenuItemOption")
 ItemToggle = ItemToggle or class(CoreMenuItem.Item)
 ItemToggle.TYPE = "toggle"
+
 function ItemToggle:init(data_node, parameters)
 	CoreMenuItem.Item.init(self, data_node, parameters)
 	self._type = "toggle"
@@ -19,9 +20,11 @@ function ItemToggle:init(data_node, parameters)
 		end
 	end
 end
+
 function ItemToggle:add_option(option)
 	table.insert(self.options, option)
 end
+
 function ItemToggle:toggle()
 	if not self._enabled then
 		return
@@ -32,6 +35,7 @@ function ItemToggle:toggle()
 	end
 	self:dirty()
 end
+
 function ItemToggle:toggle_back()
 	if not self._enabled then
 		return
@@ -42,9 +46,11 @@ function ItemToggle:toggle_back()
 	end
 	self:dirty()
 end
+
 function ItemToggle:selected_option()
 	return self.options[self.selected]
 end
+
 function ItemToggle:value()
 	local value = ""
 	local selected_option = self:selected_option()
@@ -53,6 +59,7 @@ function ItemToggle:value()
 	end
 	return value
 end
+
 function ItemToggle:set_value(value)
 	for i, option in ipairs(self.options) do
 		if option:parameters().value == value then

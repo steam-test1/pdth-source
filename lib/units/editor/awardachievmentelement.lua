@@ -1,9 +1,11 @@
 AwardAchievmentElement = AwardAchievmentElement or class(MissionElement)
+
 function AwardAchievmentElement:init(unit)
 	AwardAchievmentElement.super.init(self, unit)
 	self._hed.achievment = nil
 	table.insert(self._save_values, "achievment")
 end
+
 function AwardAchievmentElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

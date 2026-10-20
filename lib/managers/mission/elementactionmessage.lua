@@ -1,11 +1,14 @@
 core:import("CoreMissionScriptElement")
 ElementActionMessage = ElementActionMessage or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementActionMessage:init(...)
 	ElementActionMessage.super.init(self, ...)
 end
+
 function ElementActionMessage:client_on_executed(...)
 	self:on_executed(...)
 end
+
 function ElementActionMessage:on_executed(instigator)
 	if not self._values.enabled then
 		return

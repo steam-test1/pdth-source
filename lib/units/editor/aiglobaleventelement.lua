@@ -1,4 +1,5 @@
 AiGlobalEventUnitElement = AiGlobalEventUnitElement or class(MissionElement)
+
 function AiGlobalEventUnitElement:init(unit)
 	AiGlobalEventUnitElement.super.init(self, unit)
 	self._options = {
@@ -13,6 +14,7 @@ function AiGlobalEventUnitElement:init(unit)
 	self._hed.event = "none"
 	table.insert(self._save_values, "event")
 end
+
 function AiGlobalEventUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

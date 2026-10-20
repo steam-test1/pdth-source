@@ -1,5 +1,6 @@
 NetworkPeer = NetworkPeer or class()
 NetworkPeer.PRE_HANDSHAKE_CHK_TIME = 20
+
 function NetworkPeer:init(name, rpc, id, loading, synced, in_lobby, mask_set, user_id)
 	self._name = name or "NAMELESS PEER ID:" .. tostring(id)
 	self._rpc = rpc
@@ -40,6 +41,7 @@ function NetworkPeer:init(name, rpc, id, loading, synced, in_lobby, mask_set, us
 	end
 	self._handshakes = {}
 end
+
 function NetworkPeer:set_rpc(rpc)
 	self._rpc = rpc
 	if self._rpc then
@@ -52,6 +54,7 @@ function NetworkPeer:set_rpc(rpc)
 		end
 	end
 end
+
 function NetworkPeer:set_steam_rpc(rpc)
 	self._steam_rpc = rpc
 	if self._steam_rpc then
@@ -59,6 +62,7 @@ function NetworkPeer:set_steam_rpc(rpc)
 		Network:set_throttling_disabled(self._steam_rpc, true)
 	end
 end
+
 function NetworkPeer:set_tmp_udp_rpc(rpc)
 	self._tmp_udp_rpc = rpc
 	if self._tmp_udp_rpc then
@@ -66,18 +70,22 @@ function NetworkPeer:set_tmp_udp_rpc(rpc)
 		Network:set_throttling_disabled(self._tmp_udp_rpc, true)
 	end
 end
+
 function NetworkPeer:tmp_udp_rpc()
 	return self._tmp_udp_rpc
 end
+
 function NetworkPeer:set_dlcs(dlcs)
 	local i_dlcs = string.split(dlcs, " ")
 	for _, dlc in ipairs(i_dlcs) do
 		self._dlcs[dlc] = true
 	end
 end
+
 function NetworkPeer:has_dlc(dlc)
 	return self._dlcs[dlc]
 end
+
 function NetworkPeer:load(data)
 	print("[NetworkPeer:load] data:", inspect(data))
 	self._name = data.name
@@ -108,6 +116,7 @@ function NetworkPeer:load(data)
 	self._expected_dropin_pause_confirmations = data.expected_dropin_pause_confirmations
 	self._activate_timeout_t = TimerManager:wall_running():time() + self.PRE_HANDSHAKE_CHK_TIME
 end
+
 function NetworkPeer:save(data)
 	data.name = self._name
 	data.rpc = self._rpc
@@ -129,63 +138,82 @@ function NetworkPeer:save(data)
 	data.force_open_lobby = self._force_open_lobby
 	print("[NetworkPeer:save]", inspect(data))
 end
+
 function NetworkPeer:name()
 	return self._name
 end
+
 function NetworkPeer:ip()
 	return self._ip
 end
+
 function NetworkPeer:id()
 	return self._id
 end
+
 function NetworkPeer:rpc()
 	return self._rpc
 end
+
 function NetworkPeer:steam_rpc()
 	return self._steam_rpc
 end
+
 function NetworkPeer:connection_info()
 	local ip = self._rpc:protocol_at_index(0) == "TCP_IP" and self._ip or ""
 	return self._name, self._id, self._user_id or "", self._in_lobby, self._loading, self._synced, self._character, self._mask_set, ip
 end
+
 function NetworkPeer:synched()
 	return self._synced
 end
+
 function NetworkPeer:loading()
 	return self._loading
 end
+
 function NetworkPeer:loaded()
 	return self._loaded
 end
+
 function NetworkPeer:in_lobby()
 	return self._in_lobby
 end
+
 function NetworkPeer:character()
 	return self._character
 end
+
 function NetworkPeer:set_mask_set(mask_set)
 	self._mask_set = mask_set
 end
+
 function NetworkPeer:mask_set()
 	return self._mask_set
 end
+
 function NetworkPeer:used_deployable()
 	return self._used_deployable
 end
+
 function NetworkPeer:set_used_deployable(used)
 	self._used_deployable = used
 end
+
 function NetworkPeer:waiting_for_player_ready()
 	return self._waiting_for_player_ready
 end
+
 function NetworkPeer:ip_verified()
 	return self._ip_verified
 end
+
 function NetworkPeer:set_ip_verified(state)
 	cat_print("multiplayer_base", "NetworkPeer:set_ip_verified", state, self._name, self._id)
 	self._ip_verified = state
 	self:_chk_flush_msg_queues()
 end
+
 function NetworkPeer:set_loading(state)
 	cat_print("multiplayer_base", "[NetworkPeer:set_loading]", state, "was loading", self._loading, "id", self._id)
 	if self._loading and not state then
@@ -210,9 +238,11 @@ function NetworkPeer:set_loading(state)
 		managers.network.voice_chat:on_member_added(self)
 	end
 end
+
 function NetworkPeer:set_loaded(state)
 	self._loaded = state
 end
+
 function NetworkPeer:set_synched(state)
 	cat_print("multiplayer_base", "[NetworkPeer:set_synched]", self._id, state)
 	self._synced = state
@@ -221,15 +251,19 @@ function NetworkPeer:set_synched(state)
 	end
 	self:_chk_flush_msg_queues()
 end
+
 function NetworkPeer:on_sync_start()
 	self._syncing = true
 end
+
 function NetworkPeer:set_entering_lobby(state)
 	self._entering_lobby = state
 end
+
 function NetworkPeer:entering_lobby()
 	return self._entering_lobby
 end
+
 function NetworkPeer:set_in_lobby(state)
 	cat_print("multiplayer_base", "NetworkPeer:set_in_lobby", state, self._id)
 	self._in_lobby = state
@@ -238,20 +272,25 @@ function NetworkPeer:set_in_lobby(state)
 	end
 	self:_chk_flush_msg_queues()
 end
+
 function NetworkPeer:set_in_lobby_soft(state)
 	self._in_lobby = state
 end
+
 function NetworkPeer:set_synched_soft(state)
 	self._synced = state
 	self:_chk_flush_msg_queues()
 end
+
 function NetworkPeer:set_character(character)
 	self._character = character
 end
+
 function NetworkPeer:set_waiting_for_player_ready(state)
 	cat_print("multiplayer_base", "NetworkPeer:waiting_for_player_ready", state, self._id)
 	self._waiting_for_player_ready = state
 end
+
 function NetworkPeer:set_statistics(total_kills, total_specials_kills, total_head_shots, accuracy, downs)
 	self._statistics = {
 		total_kills = total_kills,
@@ -261,12 +300,15 @@ function NetworkPeer:set_statistics(total_kills, total_specials_kills, total_hea
 		downs = downs
 	}
 end
+
 function NetworkPeer:statistics()
 	return self._statistics
 end
+
 function NetworkPeer:has_statistics()
 	return self._statistics and true or false
 end
+
 function NetworkPeer:send(func_name, ...)
 	if not self._ip_verified then
 		debug_pause("[NetworkPeer:send] ip unverified:", func_name, ...)
@@ -275,6 +317,7 @@ function NetworkPeer:send(func_name, ...)
 	local rpc = self._rpc
 	rpc[func_name](rpc, ...)
 end
+
 function NetworkPeer:_send_queued(queue_name, func_name, ...)
 	if self._msg_queues and self._msg_queues[queue_name] then
 		self:_push_to_queue(queue_name, func_name, ...)
@@ -287,6 +330,7 @@ function NetworkPeer:_send_queued(queue_name, func_name, ...)
 		self:send(func_name, ...)
 	end
 end
+
 function NetworkPeer:send_after_load(...)
 	if not self._ip_verified then
 		Application:error("[NetworkPeer:send_after_load] ip unverified:", ...)
@@ -294,6 +338,7 @@ function NetworkPeer:send_after_load(...)
 	end
 	self:_send_queued("load", ...)
 end
+
 function NetworkPeer:send_queued_sync(...)
 	if not self._ip_verified then
 		Application:error("[NetworkPeer:send_queued_sync] ip unverified:", ...)
@@ -303,6 +348,7 @@ function NetworkPeer:send_queued_sync(...)
 		self:_send_queued("sync", ...)
 	end
 end
+
 function NetworkPeer:_chk_flush_msg_queues()
 	if not self._msg_queues or not self._ip_verified then
 		return
@@ -317,6 +363,7 @@ function NetworkPeer:_chk_flush_msg_queues()
 		self._msg_queues = nil
 	end
 end
+
 function NetworkPeer:chk_enable_queue()
 	if self._loading then
 		self._msg_queues = self._msg_queues or {}
@@ -327,11 +374,13 @@ function NetworkPeer:chk_enable_queue()
 		self._msg_queues.sync = self._msg_queues.sync or {}
 	end
 end
+
 function NetworkPeer:_push_to_queue(queue_name, ...)
 	table.insert(self._msg_queues[queue_name], {
 		...
 	})
 end
+
 function NetworkPeer:_flush_queue(queue_name)
 	local msg_queue = self._msg_queues[queue_name]
 	if not msg_queue then
@@ -358,6 +407,7 @@ function NetworkPeer:_flush_queue(queue_name)
 		end
 	end
 end
+
 function NetworkPeer:chk_timeout(timeout, wall_run_t)
 	if wall_run_t < self._activate_timeout_t then
 		return
@@ -379,6 +429,7 @@ function NetworkPeer:chk_timeout(timeout, wall_run_t)
 		self:_ping_timedout()
 	end
 end
+
 function NetworkPeer:on_lost()
 	self._in_lobby = false
 	self._loading = false
@@ -386,18 +437,23 @@ function NetworkPeer:on_lost()
 	self._waiting_for_player_ready = false
 	self._msg_queue = nil
 end
+
 function NetworkPeer:_ping_timedout()
 	managers.network:session():on_peer_lost(self, self._id)
 end
+
 function NetworkPeer:set_ip(my_ip)
 	self._ip = my_ip
 end
+
 function NetworkPeer:set_id(my_id)
 	self._id = my_id
 end
+
 function NetworkPeer:set_name(name)
 	self._name = name
 end
+
 function NetworkPeer:destroy()
 	print("!! NetworkPeer:destroy()", self:id())
 	if self._rpc then
@@ -410,9 +466,11 @@ function NetworkPeer:destroy()
 		Network:reset_connection(self._steam_rpc)
 	end
 end
+
 function NetworkPeer:on_send()
 	self:flush_overwriteable_msgs()
 end
+
 function NetworkPeer:flush_overwriteable_msgs()
 	local overwriteable_queue = self._overwriteable_queue
 	if self._loading or not next(overwriteable_queue) then
@@ -426,6 +484,7 @@ function NetworkPeer:flush_overwriteable_msgs()
 		overwriteable_queue[msg_name] = nil
 	end
 end
+
 function NetworkPeer:set_expecting_drop_in_pause_confirmation(dropin_peer_id, state)
 	print(" [NetworkPeer:set_expecting_drop_in_pause_confirmation] peer", self._id, "dropin_peer", dropin_peer_id, "state", state)
 	if state then
@@ -438,54 +497,69 @@ function NetworkPeer:set_expecting_drop_in_pause_confirmation(dropin_peer_id, st
 		end
 	end
 end
+
 function NetworkPeer:is_expecting_pause_confirmation(dropin_peer_id)
 	return self._expected_dropin_pause_confirmations and self._expected_dropin_pause_confirmations[dropin_peer_id]
 end
+
 function NetworkPeer:expected_dropin_pause_confirmations()
 	return self._expected_dropin_pause_confirmations
 end
+
 function NetworkPeer:set_expecting_pause_sequence(state)
 	self._expecting_pause_sequence = state
 end
+
 function NetworkPeer:expecting_pause_sequence()
 	return self._expecting_pause_sequence
 end
+
 function NetworkPeer:set_expecting_dropin(state)
 	self._expecting_dropin = state
 end
+
 function NetworkPeer:expecting_dropin()
 	return self._expecting_dropin
 end
+
 function NetworkPeer:on_ok_load_level_sent()
 	print("[NetworkPeer:on_ok_load_level_sent]", self._id)
 	self._waiting_to_start_loading = true
 end
+
 function NetworkPeer:is_waiting_to_start_loading()
 	return self._waiting_to_start_loading
 end
+
 function NetworkPeer:creation_t()
 	return self._creation_t
 end
+
 function NetworkPeer:creation_age()
 	return TimerManager:wall_running():time() - self._creation_t
 end
+
 function NetworkPeer:set_level(level)
 	self._level = level
 	if managers.hud then
 		managers.hud:update_name_label_by_peer(self)
 	end
 end
+
 function NetworkPeer:level()
 	return self._level
 end
+
 function NetworkPeer:set_handshake_status(introduced_peer_id, status)
 	print("[NetworkPeer:set_handshake_status]", self._id, introduced_peer_id, status)
 	Application:stack_dump()
 	self._handshakes[introduced_peer_id] = status
 end
+
 function NetworkPeer:handshakes()
 	return self._handshakes
 end
+
 function NetworkPeer:has_queued_rpcs()
 	if not self._msg_queues then
 		return
@@ -496,18 +570,23 @@ function NetworkPeer:has_queued_rpcs()
 		end
 	end
 end
+
 function NetworkPeer:user_id()
 	return self._user_id
 end
+
 function NetworkPeer:next_p2p_ping_send_t()
 	return self._next_p2p_ping_send_t
 end
+
 function NetworkPeer:set_next_p2p_ping_send_t(t)
 	self._next_p2p_ping_send_t = t
 end
+
 function NetworkPeer:set_force_open_lobby_state(state)
 	self._force_open_lobby = state or nil
 end
+
 function NetworkPeer:force_open_lobby_state()
 	return self._force_open_lobby
 end

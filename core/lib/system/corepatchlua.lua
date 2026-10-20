@@ -4,6 +4,7 @@ if mt == nil then
 	setmetatable(_G, mt)
 end
 mt.__declared = {}
+
 function mt.__newindex(t, n, v)
 	if not mt.__declared[n] then
 		local info = debug.getinfo(2, "S")
@@ -14,6 +15,7 @@ function mt.__newindex(t, n, v)
 	end
 	rawset(t, n, v)
 end
+
 function mt.__index(t, n)
 	if not mt.__declared[n] then
 		local info = debug.getinfo(2, "S")

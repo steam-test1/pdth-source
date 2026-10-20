@@ -1,4 +1,5 @@
 BaseInteractionExt = BaseInteractionExt or class()
+
 function BaseInteractionExt:init(unit)
 	self._unit = unit
 	self._unit:set_extension_update_enabled(Idstring("interaction"), false)
@@ -11,39 +12,50 @@ function BaseInteractionExt:init(unit)
 	self._interact_axis = self._tweak_data.axis and rotation[self._tweak_data.axis](rotation) or nil
 	self:_update_interact_position()
 end
+
 local ids_material = Idstring("material")
+
 function BaseInteractionExt:refresh_material()
 	self._materials = self._unit:get_objects_by_type(ids_material)
 end
+
 function BaseInteractionExt:set_tweak_data(id)
 	self.tweak_data = id
 	self._tweak_data = tweak_data.interaction[id]
 end
+
 function BaseInteractionExt:interact_position()
 	self:_update_interact_position()
 	return self._interact_position
 end
+
 function BaseInteractionExt:interact_axis()
 	self:_update_interact_axis()
 	return self._interact_axis
 end
+
 function BaseInteractionExt:_update_interact_position()
 	if self._unit:moving() then
 		self._interact_position = self._interact_obj and self._interact_obj:position() or self._unit:position()
 	end
 end
+
 function BaseInteractionExt:_update_interact_axis()
 	if self._tweak_data.axis and self._unit:moving() then
 		local rotation = self._interact_obj and self._interact_obj:rotation() or self._unit:rotation()
 		self._interact_axis = self._tweak_data.axis and rotation[self._tweak_data.axis](rotation) or nil
 	end
 end
+
 function BaseInteractionExt:interact_distance()
 	return self._tweak_data.interact_distance or tweak_data.interaction.INTERACT_DISTANCE
 end
+
 function BaseInteractionExt:update(distance_to_player)
 end
+
 local is_PS3 = SystemInfo:platform() == Idstring("PS3")
+
 function BaseInteractionExt:_btn_interact()
 	if is_PS3 then
 		return nil
@@ -51,6 +63,7 @@ function BaseInteractionExt:_btn_interact()
 	local type = managers.controller:get_default_wrapper_type()
 	return "[" .. managers.controller:get_settings(type):get_connection("interact"):get_input_name_list()[1] .. "]"
 end
+
 function BaseInteractionExt:selected(player)
 	if self._tweak_data.special_equipment_block and managers.player:has_special_equipment(self._tweak_data.special_equipment_block) then
 		return
@@ -68,15 +81,18 @@ function BaseInteractionExt:selected(player)
 	self:_set_contour("selected_color", 1)
 	managers.hud:show_interact({text = text, icon = icon})
 end
+
 function BaseInteractionExt:unselect()
 	self:_set_contour("standard_color", 1)
 end
+
 function BaseInteractionExt:_interact_say(data)
 	local player = data[1]
 	local say_line = data[2]
 	self._interact_say_clbk = nil
 	player:sound():say(say_line, true)
 end
+
 function BaseInteractionExt:interact_start(player)
 	if self:_interact_blocked(player) then
 		if self._tweak_data.blocked_hint then
@@ -106,6 +122,7 @@ function BaseInteractionExt:interact_start(player)
 	end
 	return self:interact(player)
 end
+
 function BaseInteractionExt:interact_interupt(player)
 	self:_post_event(player, "sound_interupt")
 	if self._interact_say_clbk then
@@ -114,6 +131,7 @@ function BaseInteractionExt:interact_interupt(player)
 	end
 	self:_at_interact_interupt(player)
 end
+
 function BaseInteractionExt:_post_event(player, sound_type)
 	if not alive(player) then
 		return
@@ -125,13 +143,17 @@ function BaseInteractionExt:_post_event(player, sound_type)
 		player:sound():play(self._tweak_data[sound_type])
 	end
 end
+
 function BaseInteractionExt:_at_interact_start()
 end
+
 function BaseInteractionExt:_at_interact_interupt()
 end
+
 function BaseInteractionExt:interact(player)
 	self:_post_event(player, "sound_done")
 end
+
 function BaseInteractionExt:can_interact(player)
 	if self._tweak_data.special_equipment_block and managers.player:has_special_equipment(self._tweak_data.special_equipment_block) then
 		return false
@@ -141,12 +163,15 @@ function BaseInteractionExt:can_interact(player)
 	end
 	return managers.player:has_special_equipment(self._tweak_data.special_equipment)
 end
+
 function BaseInteractionExt:_interact_blocked(player)
 	return false
 end
+
 function BaseInteractionExt:active()
 	return self._active
 end
+
 function BaseInteractionExt:set_active(active, sync)
 	if not active and self._active then
 		managers.interaction:remove_object(self._unit)
@@ -165,11 +190,14 @@ function BaseInteractionExt:set_active(active, sync)
 		managers.network:session():send_to_peers_synched("sync_interaction_set_active", self._unit, active)
 	end
 end
+
 function BaseInteractionExt:set_assignment(name)
 	self._assignment = name
 end
+
 local ids_contour_color = Idstring("contour_color")
 local ids_contour_opacity = Idstring("contour_opacity")
+
 function BaseInteractionExt:_set_contour(color, opacity)
 	if self._tweak_data.no_contour then
 		return
@@ -179,22 +207,26 @@ function BaseInteractionExt:_set_contour(color, opacity)
 		m:set_variable(ids_contour_opacity, self._active and opacity or 0)
 	end
 end
+
 function BaseInteractionExt:save(data)
 	local state = {}
 	state.active = self._active
 	data.InteractionExt = state
 end
+
 function BaseInteractionExt:load(data)
 	local state = data.InteractionExt
 	if state then
 		self:set_active(state.active)
 	end
 end
+
 function BaseInteractionExt:remove_interact()
 	if not managers.interaction:active_object() or self._unit == managers.interaction:active_object() then
 		managers.hud:remove_interact()
 	end
 end
+
 function BaseInteractionExt:destroy()
 	self:remove_interact()
 	self:set_active(false, false)
@@ -205,11 +237,14 @@ function BaseInteractionExt:destroy()
 		managers.occlusion:add_occlusion(self._unit)
 	end
 end
+
 UseInteractionExt = UseInteractionExt or class(BaseInteractionExt)
+
 function UseInteractionExt:unselect()
 	UseInteractionExt.super.unselect(self)
 	managers.hud:remove_interact()
 end
+
 function UseInteractionExt:interact(player)
 	if not self:can_interact(player) then
 		return
@@ -237,6 +272,7 @@ function UseInteractionExt:interact(player)
 	end
 	self:set_active(false)
 end
+
 function UseInteractionExt:sync_interacted()
 	self:remove_interact()
 	self:set_active(false)
@@ -244,20 +280,26 @@ function UseInteractionExt:sync_interacted()
 		self._unit:damage():run_sequence_simple("interact")
 	end
 end
+
 function UseInteractionExt:destroy()
 	UseInteractionExt.super.destroy(self)
 end
+
 TripMineInteractionExt = TripMineInteractionExt or class(UseInteractionExt)
+
 function TripMineInteractionExt:interact(player)
 	TripMineInteractionExt.super.super.interact(self, player)
 	local armed = not self._unit:base():armed()
 	self._unit:base():set_armed(armed)
 end
+
 ReviveInteractionExt = ReviveInteractionExt or class(BaseInteractionExt)
+
 function ReviveInteractionExt:init(unit, ...)
 	self._wp_id = "ReviveInteractionExt" .. unit:id()
 	ReviveInteractionExt.super.init(self, unit, ...)
 end
+
 function ReviveInteractionExt:_at_interact_start(player)
 	if self.tweak_data == "revive" then
 		self:_at_interact_start_revive(player)
@@ -267,6 +309,7 @@ function ReviveInteractionExt:_at_interact_start(player)
 	self:set_waypoint_paused(true)
 	managers.network:session():send_to_peers_synched("interaction_set_waypoint_paused", self._unit, true)
 end
+
 function ReviveInteractionExt:_at_interact_start_revive(player)
 	if self._unit:base().is_husk_player then
 		local revive_rpc_params = {
@@ -280,6 +323,7 @@ function ReviveInteractionExt:_at_interact_start_revive(player)
 		managers.achievment:set_script_data("player_reviving", true)
 	end
 end
+
 function ReviveInteractionExt:_at_interact_start_free(player)
 	if self._unit:base().is_husk_player then
 		local revive_rpc_params = {
@@ -290,6 +334,7 @@ function ReviveInteractionExt:_at_interact_start_free(player)
 		self._unit:character_damage():pause_arrested_timer()
 	end
 end
+
 function ReviveInteractionExt:_at_interact_interupt(player)
 	if self.tweak_data == "revive" then
 		self:_at_interact_interupt_revive(player)
@@ -301,6 +346,7 @@ function ReviveInteractionExt:_at_interact_interupt(player)
 		managers.network:session():send_to_peers_synched("interaction_set_waypoint_paused", self._unit, false)
 	end
 end
+
 function ReviveInteractionExt:_at_interact_interupt_revive(player)
 	if self._unit:base().is_husk_player then
 		local revive_rpc_params = {
@@ -314,6 +360,7 @@ function ReviveInteractionExt:_at_interact_interupt_revive(player)
 		managers.achievment:set_script_data("player_reviving", false)
 	end
 end
+
 function ReviveInteractionExt:_at_interact_interupt_free(player)
 	if self._unit:base().is_husk_player then
 		local revive_rpc_params = {
@@ -324,11 +371,13 @@ function ReviveInteractionExt:_at_interact_interupt_free(player)
 		self._unit:character_damage():unpause_arrested_timer()
 	end
 end
+
 function ReviveInteractionExt:set_waypoint_paused(paused)
 	if self._active_wp then
 		managers.hud:set_waypoint_timer_pause(self._wp_id, paused)
 	end
 end
+
 function ReviveInteractionExt:get_waypoint_time()
 	if self._active_wp then
 		local data = managers.hud:get_waypoint_data(self._wp_id)
@@ -338,7 +387,9 @@ function ReviveInteractionExt:get_waypoint_time()
 	end
 	return nil
 end
+
 local is_win32 = SystemInfo:platform() == Idstring("WIN32")
+
 function ReviveInteractionExt:set_active(active, sync, down_time)
 	ReviveInteractionExt.super.set_active(self, active)
 	if not managers.hud:exists("guis/player_hud") then
@@ -377,9 +428,11 @@ function ReviveInteractionExt:set_active(active, sync, down_time)
 		self._active_wp = false
 	end
 end
+
 function ReviveInteractionExt:unselect()
 	managers.hud:remove_interact()
 end
+
 function ReviveInteractionExt:interact(reviving_unit)
 	if reviving_unit and reviving_unit == managers.player:player_unit() then
 		if not self:can_interact(reviving_unit) then
@@ -414,6 +467,7 @@ function ReviveInteractionExt:interact(reviving_unit)
 		managers.trade:sync_teammate_helped_hint(self._unit, reviving_unit, hint)
 	end
 end
+
 function ReviveInteractionExt:save(data)
 	ReviveInteractionExt.super.save(self, data)
 	local state = {}
@@ -421,6 +475,7 @@ function ReviveInteractionExt:save(data)
 	state.wp_id = self._wp_id
 	data.ReviveInteractionExt = state
 end
+
 function ReviveInteractionExt:load(data)
 	local state = data.ReviveInteractionExt
 	if state then
@@ -429,10 +484,13 @@ function ReviveInteractionExt:load(data)
 	end
 	ReviveInteractionExt.super.load(self, data)
 end
+
 AmmoBagInteractionExt = AmmoBagInteractionExt or class(UseInteractionExt)
+
 function AmmoBagInteractionExt:_interact_blocked(player)
 	return not player:inventory():need_ammo()
 end
+
 function AmmoBagInteractionExt:interact(player)
 	AmmoBagInteractionExt.super.super.interact(self, player)
 	local interacted = self._unit:base():take_ammo(player)
@@ -442,28 +500,37 @@ function AmmoBagInteractionExt:interact(player)
 	end
 	return interacted
 end
+
 DoctorBagBaseInteractionExt = DoctorBagBaseInteractionExt or class(UseInteractionExt)
+
 function DoctorBagBaseInteractionExt:_interact_blocked(player)
 	return player:character_damage():full_health()
 end
+
 function DoctorBagBaseInteractionExt:interact(player)
 	DoctorBagBaseInteractionExt.super.super.interact(self, player)
 	local interacted = self._unit:base():take(player)
 	return interacted
 end
+
 C4BagInteractionExt = C4BagInteractionExt or class(UseInteractionExt)
+
 function C4BagInteractionExt:_interact_blocked(player)
 	return not managers.player:can_pickup_equipment("c4")
 end
+
 function C4BagInteractionExt:interact(player)
 	C4BagInteractionExt.super.super.interact(self, player)
 	managers.player:add_special({name = "c4"})
 	return true
 end
+
 VeilInteractionExt = VeilInteractionExt or class(UseInteractionExt)
+
 function VeilInteractionExt:_interact_blocked(player)
 	return not managers.player:can_pickup_equipment("blood_sample")
 end
+
 function VeilInteractionExt:interact(player)
 	VeilInteractionExt.super.super.interact(self, player)
 	managers.player:add_special({
@@ -471,10 +538,13 @@ function VeilInteractionExt:interact(player)
 	})
 	return true
 end
+
 VeilTakeInteractionExt = VeilTakeInteractionExt or class(UseInteractionExt)
+
 function VeilTakeInteractionExt:_interact_blocked(player)
 	return not managers.player:can_pickup_equipment("blood_sample_verified")
 end
+
 function VeilTakeInteractionExt:interact(player)
 	VeilTakeInteractionExt.super.interact(self, player)
 	managers.player:add_special({
@@ -485,30 +555,39 @@ function VeilTakeInteractionExt:interact(player)
 	end
 	return true
 end
+
 function VeilTakeInteractionExt:sync_interacted()
 	if self._unit:damage():has_sequence("got_blood_sample") then
 		self._unit:damage():run_sequence_simple("got_blood_sample")
 	end
 	VeilTakeInteractionExt.super.sync_interacted(self)
 end
+
 MoneyWrapInteractionExt = MoneyWrapInteractionExt or class(UseInteractionExt)
+
 function MoneyWrapInteractionExt:interact(player)
 	MoneyWrapInteractionExt.super.super.interact(self, player)
 	self._unit:base():take_money(player)
 end
+
 DiamondInteractionExt = DiamondInteractionExt or class(UseInteractionExt)
+
 function DiamondInteractionExt:interact(player)
 	DiamondInteractionExt.super.interact(self, player)
 	self._unit:base():take_money(player)
 end
+
 IntimitateInteractionExt = IntimitateInteractionExt or class(BaseInteractionExt)
+
 function IntimitateInteractionExt:init(unit, ...)
 	IntimitateInteractionExt.super.init(self, unit, ...)
 end
+
 function IntimitateInteractionExt:unselect()
 	UseInteractionExt.super.unselect(self)
 	managers.hud:remove_interact()
 end
+
 function IntimitateInteractionExt:interact(player)
 	if not self:can_interact(player) then
 		return
@@ -538,7 +617,9 @@ function IntimitateInteractionExt:interact(player)
 		self._unit:brain():on_tied(player)
 	end
 end
+
 NPCInteractionExt = NPCInteractionExt or class(BaseInteractionExt)
+
 function NPCInteractionExt:init(unit)
 	BaseInteractionExt.init(self, unit)
 	self._ws = World:newgui():create_world_workspace(150, 100, unit:position() + Vector3(-25, 0, 250), Vector3(50, 0, 0), Vector3(0, 0, -50))
@@ -565,11 +646,13 @@ function NPCInteractionExt:init(unit)
 	self._toggle = false
 	self._panel:hide()
 end
+
 function NPCInteractionExt:destroy()
 	if alive(self._ws) then
 		World:newgui():destroy_workspace(self._ws)
 	end
 end
+
 function NPCInteractionExt:update(distance_to_player)
 	local t = 1 - math.clamp((distance_to_player - tweak_data.interaction.INTERACT_DISTANCE) / (tweak_data.interaction.CULLING_DISTANCE - tweak_data.interaction.INTERACT_DISTANCE), 0, 1)
 	if t <= 0 and self._panel:visible() then
@@ -581,21 +664,25 @@ function NPCInteractionExt:update(distance_to_player)
 	self._bg:set_color(self._bg:color():with_alpha(t))
 	self._text:set_color(self._text:color():with_alpha(t))
 end
+
 function NPCInteractionExt:selected(player)
 	self:_set_color(true)
 	if managers.player:current_state() ~= "dialog" and managers.player:current_state() ~= "minigame" then
 		managers.player:set_player_state("adventure")
 	end
 end
+
 function NPCInteractionExt:unselect()
 	self:_set_color(false)
 	managers.player:set_player_state(managers.player:default_player_state())
 end
+
 function NPCInteractionExt:interact(player)
 	self._unit:set_rotation(Rotation((self._unit:position() - player:position()):with_z(0):normalized(), Vector3(0, 0, 1)))
 	self._text:set_text(":)")
 	self:_do_interact()
 end
+
 function NPCInteractionExt:_set_color(set)
 	if set == self._toggle then
 		return
@@ -604,44 +691,59 @@ function NPCInteractionExt:_set_color(set)
 	self._bg:set_color(self._toggle and Color.green or Color.yellow)
 	self._text:set_text(self._toggle and "!" or self:_default_text())
 end
+
 NPCDialogInteractionExt = NPCDialogInteractionExt or class(NPCInteractionExt)
+
 function NPCDialogInteractionExt:_default_text()
 	return "Talk"
 end
+
 function NPCDialogInteractionExt:_do_interact()
 	managers.player:set_player_state("dialog")
 end
+
 NPCMinigameInteractionExt = NPCMinigameInteractionExt or class(NPCInteractionExt)
+
 function NPCMinigameInteractionExt:_default_text()
 	return "Game"
 end
+
 function NPCMinigameInteractionExt:_do_interact()
 	managers.player:set_player_state("minigame")
 end
+
 BoxInteractionExt = BoxInteractionExt or class(BaseInteractionExt)
+
 function BoxInteractionExt:init(unit)
 	BaseInteractionExt.init(self, unit)
 end
+
 function BoxInteractionExt:interact(player)
 	self._unit:push(10, Vector3(0, 0, 1) * 1000)
 end
+
 MimicInteractionExt = MimicInteractionExt or class(BaseInteractionExt)
+
 function MimicInteractionExt:init(unit)
 	BaseInteractionExt.init(self, unit)
 end
+
 function MimicInteractionExt:destroy()
 end
+
 function MimicInteractionExt:selected(player)
 	if managers.player:current_state() ~= "mimic" and managers.player:current_state() ~= "mimic_interaction" then
 		managers.player:set_player_state("mimic_interaction")
 		self._unit:mimic():set_mimic("interaction")
 	end
 end
+
 function MimicInteractionExt:unselect()
 	if managers.player:current_state() ~= "mimic" then
 		managers.player:set_player_state(managers.player:default_player_state())
 	end
 end
+
 function MimicInteractionExt:interact(player)
 	self._unit:mimic():activate_mimic("interaction")
 	self._unit:mimic():add_player_to_mimic(managers.player:player_unit())

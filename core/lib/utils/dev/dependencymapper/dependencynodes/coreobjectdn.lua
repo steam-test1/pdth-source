@@ -5,9 +5,11 @@ OBJECT = CoreDependencyNode.OBJECT
 MODEL = CoreDependencyNode.MODEL
 MATERIAL_CONFIG = CoreDependencyNode.MATERIAL_CONFIG
 ObjectDependencyNode = ObjectDependencyNode or CoreClass.class(CoreDependencyNode.DependencyNodeBase)
+
 function ObjectDependencyNode:init(name, get_dn_cb, database)
 	self.super.init(self, OBJECT, "object", name, get_dn_cb, database)
 end
+
 function ObjectDependencyNode:_walkxml2dependencies(xmlnode, deps)
 	local node_name = xmlnode:name()
 	if node_name == "diesel" then

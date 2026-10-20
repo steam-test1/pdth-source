@@ -1,6 +1,7 @@
 core:module("CoreOverlayEffectManager")
 core:import("CoreCode")
 OverlayEffectManager = OverlayEffectManager or class()
+
 function OverlayEffectManager:init()
 	local gui = Overlay:newgui()
 	self._vp_overlay = Application:create_scene_viewport(0, 0, 1, 1)
@@ -21,23 +22,29 @@ function OverlayEffectManager:init()
 	self:set_default_layer(30)
 	managers.viewport:add_resolution_changed_func(callback(self, self, "change_resolution"))
 end
+
 function OverlayEffectManager:set_visible(visible)
 	self._ws:panel():set_visible(visible)
 end
+
 function OverlayEffectManager:add_preset(name, settings)
 	self._presets[name] = settings
 end
+
 function OverlayEffectManager:presets()
 	return self._presets
 end
+
 function OverlayEffectManager:set_default_layer(layer)
 	self._default_layer = layer
 end
+
 function OverlayEffectManager:update(t, dt)
 	self._vp_overlay:update()
 	self:check_pause_state()
 	self:progress_effects(t, dt)
 end
+
 function OverlayEffectManager:destroy()
 	if CoreCode.alive(self._overlay_camera) then
 		Overlay:delete_camera(self._overlay_camera)
@@ -52,11 +59,13 @@ function OverlayEffectManager:destroy()
 		self._ws = nil
 	end
 end
+
 function OverlayEffectManager:render()
 	if Global.render_debug.render_overlay then
 		Application:render("Overlay", self._vp_overlay)
 	end
 end
+
 function OverlayEffectManager:progress_effects(t, dt, paused)
 	for key, effect in pairs(self._playing_effects) do
 		local data = effect.data
@@ -91,10 +100,12 @@ function OverlayEffectManager:progress_effects(t, dt, paused)
 		end
 	end
 end
+
 function OverlayEffectManager:paused_update(t, dt)
 	self:check_pause_state(true)
 	self:progress_effects(t, dt, true)
 end
+
 function OverlayEffectManager:check_pause_state(paused)
 	if self._paused then
 		if not paused then
@@ -112,6 +123,7 @@ function OverlayEffectManager:check_pause_state(paused)
 		self._paused = true
 	end
 end
+
 function OverlayEffectManager:play_effect(data)
 	if data then
 		local spawn_alpha = data.color.alpha * (data.fade_in > 0 and 0 or 1)
@@ -158,6 +170,7 @@ function OverlayEffectManager:play_effect(data)
 		cat_error("georgios", "OverlayEffectManager, no effect_data sent to play_effect")
 	end
 end
+
 function OverlayEffectManager:stop_effect(id)
 	if id then
 		if self._playing_effects[id] then
@@ -171,6 +184,7 @@ function OverlayEffectManager:stop_effect(id)
 		end
 	end
 end
+
 function OverlayEffectManager:fade_out_effect(id)
 	if id then
 		local effect = self._playing_effects[id]
@@ -189,6 +203,7 @@ function OverlayEffectManager:fade_out_effect(id)
 		end
 	end
 end
+
 function OverlayEffectManager:change_resolution()
 	local res = RenderSettings.resolution
 	for _, effect in pairs(self._playing_effects) do

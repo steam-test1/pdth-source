@@ -1,10 +1,13 @@
 core:import("CoreMissionScriptElement")
 ElementMissionEnd = ElementMissionEnd or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementMissionEnd:init(...)
 	ElementMissionEnd.super.init(self, ...)
 end
+
 function ElementMissionEnd:client_on_executed(...)
 end
+
 function ElementMissionEnd:on_executed(instigator)
 	if not self._values.enabled then
 		return

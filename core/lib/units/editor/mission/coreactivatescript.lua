@@ -1,13 +1,16 @@
 CoreActivateScriptUnitElement = CoreActivateScriptUnitElement or class(MissionElement)
 ActivateScriptUnitElement = ActivateScriptUnitElement or class(CoreActivateScriptUnitElement)
+
 function ActivateScriptUnitElement:init(...)
 	CoreActivateScriptUnitElement.init(self, ...)
 end
+
 function CoreActivateScriptUnitElement:init(unit)
 	MissionElement.init(self, unit)
 	self._hed.activate_script = "none"
 	table.insert(self._save_values, "activate_script")
 end
+
 function CoreActivateScriptUnitElement:selected()
 	MissionElement.selected(self)
 	CoreEWS.update_combobox_options(self._script_params, self:_scripts())
@@ -16,9 +19,11 @@ function CoreActivateScriptUnitElement:selected()
 	end
 	CoreEWS.change_combobox_value(self._script_params, self._hed.activate_script)
 end
+
 function CoreActivateScriptUnitElement:_scripts()
 	return managers.editor:layer("Mission"):script_names()
 end
+
 function CoreActivateScriptUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

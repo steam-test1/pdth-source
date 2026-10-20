@@ -1,11 +1,13 @@
 core:import("CoreLocalizationManager")
 core:import("CoreClass")
 LocalizationManager = LocalizationManager or class(CoreLocalizationManager.LocalizationManager)
+
 function LocalizationManager:init()
 	LocalizationManager.super.init(self)
 	self:_setup_macros()
 	Application:set_default_letter(95)
 end
+
 function LocalizationManager:_setup_macros()
 	local btn_a = utf8.char(57344)
 	local btn_b = utf8.char(57345)
@@ -66,7 +68,9 @@ function LocalizationManager:_setup_macros()
 	self:set_default_macro("BTN_ATTACK", btn_attack)
 	self:set_default_macro("BTN_BLOCK", btn_block)
 end
+
 local is_PS3 = SystemInfo:platform() == Idstring("PS3")
+
 function LocalizationManager:btn_macro(button)
 	if is_PS3 then
 		return
@@ -75,7 +79,9 @@ function LocalizationManager:btn_macro(button)
 	local text = "[" .. managers.controller:get_settings(type):get_connection(button):get_input_name_list()[1] .. "]"
 	return text
 end
+
 function LocalizationManager:ids(file)
 	return Localizer:ids(Idstring(file))
 end
+
 CoreClass.override_class(CoreLocalizationManager.LocalizationManager, LocalizationManager)

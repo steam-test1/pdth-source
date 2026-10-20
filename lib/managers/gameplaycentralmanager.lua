@@ -12,6 +12,7 @@ local idstr_fallback = Idstring("effects/particles/bullet_hit/fallback/fallback"
 local idstr_no_material = Idstring("no_material")
 local idstr_bullet_hit = Idstring("bullet_hit")
 GamePlayCentralManager = GamePlayCentralManager or class()
+
 function GamePlayCentralManager:init()
 	self._bullet_hits = {}
 	self._play_effects = {}
@@ -43,6 +44,7 @@ function GamePlayCentralManager:init()
 	end
 	self._mission_disabled_units = {}
 end
+
 function GamePlayCentralManager:restart_portal_effects()
 	if not self._portal_effects_restarted then
 		self._portal_effects_restarted = true
@@ -51,6 +53,7 @@ function GamePlayCentralManager:restart_portal_effects()
 		end
 	end
 end
+
 function GamePlayCentralManager:_init_impact_sources()
 	self._impact_sounds = {
 		index = 1,
@@ -61,11 +64,13 @@ function GamePlayCentralManager:_init_impact_sources()
 	end
 	self._impact_sounds.max_index = #self._impact_sounds.sources
 end
+
 function GamePlayCentralManager:_get_impact_source()
 	local source = self._impact_sounds.sources[self._impact_sounds.index]
 	self._impact_sounds.index = self._impact_sounds.index < self._impact_sounds.max_index and self._impact_sounds.index + 1 or 1
 	return source
 end
+
 function GamePlayCentralManager:update(t, dt)
 	if #self._contour.units > 0 then
 		local cam_pos = managers.viewport:get_current_camera_position()
@@ -167,6 +172,7 @@ function GamePlayCentralManager:update(t, dt)
 		self._dropped_weapons.index = self._dropped_weapons.index <= #self._dropped_weapons.units and self._dropped_weapons.index or 1
 	end
 end
+
 function GamePlayCentralManager:add_enemy_contour(unit)
 	if not self._enemy_contour_units[unit:key()] then
 		unit:base():swap_material_config()
@@ -189,6 +195,7 @@ function GamePlayCentralManager:add_enemy_contour(unit)
 		target_opacity = 0
 	}
 end
+
 function GamePlayCentralManager:add_contour_unit(unit, type)
 	local standard_color = tweak_data.contour[type].standard_color
 	local downed_color = tweak_data.contour[type].downed_color
@@ -215,6 +222,7 @@ function GamePlayCentralManager:add_contour_unit(unit, type)
 	})
 	self._contour.index = 1
 end
+
 function GamePlayCentralManager:remove_contour_unit(unit)
 	for i, data in pairs(self._contour.units) do
 		if data.unit == unit then
@@ -224,6 +232,7 @@ function GamePlayCentralManager:remove_contour_unit(unit)
 	end
 	self._contour.index = 1
 end
+
 function GamePlayCentralManager:flash_contour(unit)
 	for i, data in pairs(self._contour.units) do
 		if data.unit == unit then
@@ -232,6 +241,7 @@ function GamePlayCentralManager:flash_contour(unit)
 		end
 	end
 end
+
 function GamePlayCentralManager:end_update(t, dt)
 	self._camera_pos = managers.viewport:get_current_camera_position()
 	self:_flush_bullet_hits()
@@ -239,9 +249,11 @@ function GamePlayCentralManager:end_update(t, dt)
 	self:_flush_play_sounds()
 	self:_flush_footsteps()
 end
+
 function GamePlayCentralManager:play_impact_sound_and_effects(params)
 	table.insert(self._bullet_hits, params)
 end
+
 function GamePlayCentralManager:request_play_footstep(unit, m_pos)
 	if self._camera_pos then
 		local dis = mvector3.distance(self._camera_pos, m_pos)
@@ -263,6 +275,7 @@ function GamePlayCentralManager:request_play_footstep(unit, m_pos)
 		end
 	end
 end
+
 function GamePlayCentralManager:physics_push(col_ray)
 	local unit = col_ray.unit
 	if unit:in_slot(self._slotmask_physics_push) then
@@ -298,6 +311,7 @@ function GamePlayCentralManager:physics_push(col_ray)
 		end
 	end
 end
+
 function GamePlayCentralManager:play_impact_flesh(params)
 	local col_ray = params.col_ray
 	if alive(col_ray.unit) and col_ray.unit:in_slot(self._slotmask_flesh) then
@@ -316,6 +330,7 @@ function GamePlayCentralManager:play_impact_flesh(params)
 		end
 	end
 end
+
 function GamePlayCentralManager:sync_play_impact_flesh(from, dir)
 	local splatter_from = from
 	local splatter_to = from + dir * 1000
@@ -341,6 +356,7 @@ function GamePlayCentralManager:sync_play_impact_flesh(from, dir)
 	sound_source:set_switch("materials", "flesh")
 	sound_source:post_event("bullet_hit")
 end
+
 function GamePlayCentralManager:material_name(idstring)
 	local material = tweak_data.materials[idstring:key()]
 	if not material then
@@ -349,6 +365,7 @@ function GamePlayCentralManager:material_name(idstring)
 	end
 	return material
 end
+
 function GamePlayCentralManager:spawn_pickup(params)
 	if not tweak_data.pickups[params.name] then
 		Application:error("No pickup definition for " .. tostring(params.name))
@@ -357,22 +374,27 @@ function GamePlayCentralManager:spawn_pickup(params)
 	local unit_name = tweak_data.pickups[params.name].unit
 	World:spawn_unit(unit_name, params.position, params.rotation)
 end
+
 function GamePlayCentralManager:_flush_bullet_hits()
 	if #self._bullet_hits > 0 then
 		self:_play_bullet_hit(table.remove(self._bullet_hits, 1))
 	end
 end
+
 function GamePlayCentralManager:_flush_play_effects()
 	while #self._play_effects > 0 do
 		self._effect_manager:spawn(table.remove(self._play_effects, 1))
 	end
 end
+
 function GamePlayCentralManager:_flush_play_sounds()
 	while #self._play_sounds > 0 do
 		self:_play_sound(table.remove(self._play_sounds, 1))
 	end
 end
+
 local zero_vector = Vector3()
+
 function GamePlayCentralManager:_play_bullet_hit(params)
 	local hit_pos = params.col_ray.position
 	local need_sound = World:in_view_with_options(hit_pos, 2000, 0, 0)
@@ -439,6 +461,7 @@ function GamePlayCentralManager:_play_bullet_hit(params)
 		})
 	end
 end
+
 function GamePlayCentralManager:_play_sound(params)
 	local sound_source = self:_get_impact_source()
 	sound_source:stop()
@@ -446,6 +469,7 @@ function GamePlayCentralManager:_play_sound(params)
 	sound_source:set_switch("materials", self:material_name(params.sound_switch_name))
 	sound_source:post_event(params.event)
 end
+
 function GamePlayCentralManager:_flush_footsteps()
 	local footstep = table.remove(self._footsteps, 1)
 	if footstep and alive(footstep.unit) then
@@ -480,6 +504,7 @@ function GamePlayCentralManager:_flush_footsteps()
 		sound_source:post_event(event)
 	end
 end
+
 function GamePlayCentralManager:weapon_dropped(weapon)
 	local flashlight_data = weapon:base():flashlight_data()
 	if not flashlight_data then
@@ -498,6 +523,7 @@ function GamePlayCentralManager:weapon_dropped(weapon)
 		state = "wait"
 	})
 end
+
 function GamePlayCentralManager:set_flashlights_on(flashlights_on)
 	if self._flashlights_on == flashlights_on then
 		return
@@ -508,13 +534,16 @@ function GamePlayCentralManager:set_flashlights_on(flashlights_on)
 		weapon:base():flashlight_state_changed()
 	end
 end
+
 function GamePlayCentralManager:flashlights_on()
 	return self._flashlights_on
 end
+
 function GamePlayCentralManager:on_simulation_ended()
 	self:set_flashlights_on(false)
 	self:set_flashlights_on_player_on(false)
 end
+
 function GamePlayCentralManager:set_flashlights_on_player_on(flashlights_on_player_on)
 	if self._flashlights_on_player_on == flashlights_on_player_on then
 		return
@@ -525,15 +554,18 @@ function GamePlayCentralManager:set_flashlights_on_player_on(flashlights_on_play
 		player_unit:camera():camera_unit():base():check_flashlight_enabled()
 	end
 end
+
 function GamePlayCentralManager:flashlights_on_player_on()
 	return self._flashlights_on_player_on
 end
+
 function GamePlayCentralManager:mission_disable_unit(unit)
 	if alive(unit) then
 		self._mission_disabled_units[unit:unit_data().unit_id] = true
 		unit:set_enabled(false)
 	end
 end
+
 function GamePlayCentralManager:save(data)
 	local state = {
 		flashlights_on = self._flashlights_on,
@@ -542,6 +574,7 @@ function GamePlayCentralManager:save(data)
 	}
 	data.GamePlayCentralManager = state
 end
+
 function GamePlayCentralManager:load(data)
 	local state = data.GamePlayCentralManager
 	self:set_flashlights_on(state.flashlights_on)

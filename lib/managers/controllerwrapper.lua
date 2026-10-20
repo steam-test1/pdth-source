@@ -1,9 +1,11 @@
 core:import("CoreControllerWrapper")
 ControllerWrapper = ControllerWrapper or class(CoreControllerWrapper.ControllerWrapper)
+
 function ControllerWrapper:init(...)
 	self._input_released_cache = {}
 	ControllerWrapper.super.init(self, ...)
 end
+
 function ControllerWrapper:reset_cache(check_time)
 	local reset_cache_time = TimerManager:wall():time()
 	if (not check_time or reset_cache_time > self._reset_cache_time) and next(self._input_released_cache) then
@@ -11,6 +13,7 @@ function ControllerWrapper:reset_cache(check_time)
 	end
 	ControllerWrapper.super.reset_cache(self, check_time)
 end
+
 function ControllerWrapper:get_input_released(connection_name)
 	local cache = self._input_released_cache[connection_name]
 	if cache == nil then
@@ -25,4 +28,5 @@ function ControllerWrapper:get_input_released(connection_name)
 	end
 	return cache
 end
+
 CoreClass.override_class(CoreControllerWrapper.ControllerWrapper, ControllerWrapper)

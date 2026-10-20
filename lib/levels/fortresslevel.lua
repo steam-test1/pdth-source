@@ -1,4 +1,5 @@
 FortressLevel = FortressLevel or class()
+
 function FortressLevel:init()
 	self._spawn_index = 1
 	self._spawn_map = {}
@@ -8,6 +9,7 @@ function FortressLevel:init()
 	})
 	Global.god_mode = true
 end
+
 function FortressLevel:post_init()
 	self._ctrlr_debug = Input:create_virtual_controller()
 	local keyboard = Input:keyboard()
@@ -26,37 +28,45 @@ function FortressLevel:post_init()
 	end
 	self._dummy_unit = nil
 end
+
 function FortressLevel:update(t, dt)
 	if self._spawn_btn_presses then
 		self:spawn_dummy()
 		self._spawn_btn_presses = false
 	end
 end
+
 function FortressLevel:spawn_pos()
 	return Application:last_camera_position() + Application:last_camera_rotation():y() * 700
 end
+
 function FortressLevel:step_right()
 	self._spawn_index = self._spawn_index + 1
 	if self._spawn_index > #self._spawn_map then
 		self._spawn_index = 1
 	end
 end
+
 function FortressLevel:step_left()
 	self._spawn_index = self._spawn_index - 1
 	if self._spawn_index < 1 then
 		self._spawn_index = #self._spawn_map
 	end
 end
+
 function FortressLevel:_spawn_enemy_group()
 	self:spawn_dummy()
 end
+
 function FortressLevel:spawn()
 	self._spawn_btn_press_t = TimerManager:game():time()
 	self._spawn_btn_presses = (self._spawn_btn_presses or 0) + 1
 end
+
 function FortressLevel:spawn_generic(name)
 	World:spawn_unit(name, self:spawn_pos())
 end
+
 function FortressLevel:spawn_dummy()
 	self._debug_unit_name = Idstring("units/characters/drone/drone")
 	local dummy_unit = World:spawn_unit(self._debug_unit_name, self:spawn_pos())

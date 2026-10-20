@@ -1,12 +1,15 @@
 PlayerClean = PlayerClean or class(PlayerStandard)
+
 function PlayerClean:init(unit)
 	PlayerClean.super.init(self, unit)
 	self._ids_unequip = Idstring("unequip")
 end
+
 function PlayerClean:enter(enter_data)
 	self._ducking = enter_data and enter_data.ducking
 	PlayerClean.super.enter(self, enter_data)
 end
+
 function PlayerClean:_enter(enter_data)
 	local equipped_selection = self._unit:inventory():equipped_selection()
 	if equipped_selection ~= 1 then
@@ -19,6 +22,7 @@ function PlayerClean:_enter(enter_data)
 	end
 	self._unit:base():set_slot(self._unit, 4)
 end
+
 function PlayerClean:exit(new_state_name)
 	PlayerClean.super.exit(self)
 	if self._previous_equipped_selection then
@@ -28,9 +32,11 @@ function PlayerClean:exit(new_state_name)
 	self._unit:base():set_slot(self._unit, 2)
 	return
 end
+
 function PlayerClean:update(t, dt)
 	PlayerClean.super.update(self, t, dt)
 end
+
 function PlayerClean:_update_check_actions(t, dt)
 	local input = self:_get_input()
 	self._stick_move = self._controller:get_input_axis("move")
@@ -55,9 +61,11 @@ function PlayerClean:_update_check_actions(t, dt)
 		self:_end_action_ducking(t)
 	end
 end
+
 function PlayerClean:_get_walk_headbob()
 	return 0.0125
 end
+
 function PlayerClean:_check_action_interact(t, input)
 	local new_action
 	local interaction_wanted = input.btn_interact_press
@@ -69,6 +77,7 @@ function PlayerClean:_check_action_interact(t, input)
 	end
 	return new_action
 end
+
 function PlayerClean:_start_action_state_standard(t)
 	managers.player:set_player_state("standard")
 end

@@ -1,8 +1,10 @@
 StatisticsManager = StatisticsManager or class()
+
 function StatisticsManager:init()
 	self:_setup()
 	self:_reset_session()
 end
+
 function StatisticsManager:_setup(reset)
 	self._defaults = {}
 	self._defaults.killed = {
@@ -167,19 +169,23 @@ function StatisticsManager:_setup(reset)
 	self._fbi_kills = 0
 	self._patrol_bombed = 0
 end
+
 function StatisticsManager:reset()
 	self:_setup(true)
 end
+
 function StatisticsManager:_reset_session()
 	if self._global then
 		self._global.session = deep_clone(self._defaults)
 	end
 end
+
 function StatisticsManager:_write_log_header()
 	local file_handle = SystemFS:open(self._data_log_name, "w")
 	file_handle:puts(managers.network.account:username())
 	file_handle:puts(Network:is_server() and "true" or "false")
 end
+
 function StatisticsManager:_flush_log()
 	if not self._data_log or #self._data_log == 0 then
 		return
@@ -199,6 +205,7 @@ function StatisticsManager:_flush_log()
 	end
 	self._data_log = {}
 end
+
 function StatisticsManager:update(t, dt)
 	if self._data_log then
 		self._log_timer = self._log_timer - dt
@@ -245,6 +252,7 @@ function StatisticsManager:update(t, dt)
 		end
 	end
 end
+
 function StatisticsManager:start_session(data)
 	if self._session_started then
 		return
@@ -261,6 +269,7 @@ function StatisticsManager:start_session(data)
 	self._start_session_drop_in = data.drop_in
 	self._session_started = true
 end
+
 function StatisticsManager:stop_session(data)
 	if not self._session_started then
 		return
@@ -293,9 +302,11 @@ function StatisticsManager:stop_session(data)
 		self:publish_to_steam(self._global.session, success)
 	end
 end
+
 function StatisticsManager:started_session_from_beginning()
 	return self._start_session_from_beginning
 end
+
 function StatisticsManager:_increment_misc(name, amount)
 	if not self._global.misc then
 		self._global.misc = {}
@@ -312,24 +323,31 @@ function StatisticsManager:_increment_misc(name, amount)
 		})
 	end
 end
+
 function StatisticsManager:use_trip_mine()
 	self:_increment_misc("deploy_trip", 1)
 end
+
 function StatisticsManager:use_ammo_bag()
 	self:_increment_misc("deploy_ammo", 1)
 end
+
 function StatisticsManager:use_doctor_bag()
 	self:_increment_misc("deploy_medic", 1)
 end
+
 function StatisticsManager:in_custody()
 	self:_increment_misc("in_custody", 1)
 end
+
 function StatisticsManager:trade(data)
 	self:_increment_misc("trade", 1)
 end
+
 function StatisticsManager:aquired_money(amount)
 	self:_increment_misc("cash", amount * 1000)
 end
+
 function StatisticsManager:publish_to_steam(session, success)
 	if Application:editor() or not managers.criminals:local_character_name() then
 		return
@@ -497,6 +515,7 @@ function StatisticsManager:publish_to_steam(session, success)
 	}
 	managers.network.account:publish_statistics(stats, success)
 end
+
 function StatisticsManager:_calculate_average()
 	local t = self._global.sessions.count ~= 0 and self._global.sessions.count or 1
 	self._global.average = {}
@@ -536,6 +555,7 @@ function StatisticsManager:_calculate_average()
 		end
 	end
 end
+
 function StatisticsManager:killed_by_anyone(data)
 	local by_explosion = data.variant == "explosion"
 	local name_id = data.weapon_unit and data.weapon_unit:base():get_name_id()
@@ -550,6 +570,7 @@ function StatisticsManager:killed_by_anyone(data)
 		end
 	end
 end
+
 function StatisticsManager:killed(data)
 	data.type = tweak_data.character[data.name] and tweak_data.character[data.name].challenges.type
 	if not self._global.killed[data.name] then
@@ -641,6 +662,7 @@ function StatisticsManager:killed(data)
 		self._fbi_kills = 0
 	end
 end
+
 function StatisticsManager:_bullet_challenges(data)
 	managers.challenges:count_up(data.type .. "_kill")
 	managers.challenges:count_up(data.name .. "_kill")
@@ -679,11 +701,13 @@ function StatisticsManager:_bullet_challenges(data)
 		end
 	end
 end
+
 function StatisticsManager:_melee_challenges(data)
 	if data.type == "law" then
 		managers.challenges:count_up("melee_law_kill")
 	end
 end
+
 function StatisticsManager:_explosion_challenges(data)
 	if game_state_machine:last_queued_state_name() == "ingame_waiting_for_respawn" then
 		managers.challenges:count_up("grim_reaper")
@@ -698,6 +722,7 @@ function StatisticsManager:_explosion_challenges(data)
 		managers.challenges:count_up("trip_mine_law_kill")
 	end
 end
+
 function StatisticsManager:tied(data)
 	data.type = tweak_data.character[data.name] and tweak_data.character[data.name].challenges.type
 	if not self._global.killed[data.name] then
@@ -724,6 +749,7 @@ function StatisticsManager:tied(data)
 		})
 	end
 end
+
 function StatisticsManager:revived(data)
 	if not data.reviving_unit or data.reviving_unit ~= managers.player:player_unit() then
 		return
@@ -742,10 +768,12 @@ function StatisticsManager:revived(data)
 		})
 	end
 end
+
 function StatisticsManager:camera_destroyed(data)
 	self._global.cameras.count = self._global.cameras.count + 1
 	self._global.session.cameras.count = self._global.session.cameras.count + 1
 end
+
 function StatisticsManager:objective_completed(data)
 	if managers.platform:presence() ~= "Playing" and managers.platform:presence() ~= "Mission_end" then
 		return
@@ -753,10 +781,12 @@ function StatisticsManager:objective_completed(data)
 	self._global.objectives.count = self._global.objectives.count + 1
 	self._global.session.objectives.count = self._global.session.objectives.count + 1
 end
+
 function StatisticsManager:health_subtracted(amount)
 	self._global.health.amount_lost = self._global.health.amount_lost + amount
 	self._global.session.health.amount_lost = self._global.session.health.amount_lost + amount
 end
+
 function StatisticsManager:shot_fired(data)
 	self._global.shots_fired.total = self._global.shots_fired.total + 1
 	self._global.session.shots_fired.total = self._global.session.shots_fired.total + 1
@@ -775,6 +805,7 @@ function StatisticsManager:shot_fired(data)
 		self._m14_shots = self._m14_shots + 1
 	end
 end
+
 function StatisticsManager:downed(data)
 	managers.achievment:set_script_data("stand_together_fail", true)
 	local counter = data.bleed_out and "bleed_out" or data.fatal and "fatal" or data.incapacitated and "incapacitated" or "death"
@@ -793,6 +824,7 @@ function StatisticsManager:downed(data)
 		})
 	end
 end
+
 function StatisticsManager:reloaded(data)
 	self._global.reloads.count = self._global.reloads.count + 1
 	self._global.session.reloads.count = self._global.session.reloads.count + 1
@@ -806,6 +838,7 @@ function StatisticsManager:reloaded(data)
 		})
 	end
 end
+
 function StatisticsManager:recieved_experience(data)
 	self._global.experience[data.size] = self._global.experience[data.size] or {
 		count = 0,
@@ -822,9 +855,11 @@ function StatisticsManager:recieved_experience(data)
 	self._global.session.experience[data.size].actions[data.action] = self._global.session.experience[data.size].actions[data.action] or 0
 	self._global.session.experience[data.size].actions[data.action] = self._global.session.experience[data.size].actions[data.action] + 1
 end
+
 function StatisticsManager:get_killed()
 	return self._global.killed
 end
+
 function StatisticsManager:count_up(id)
 	if not self._statistics[id] then
 		Application:stack_dump_error("Bad id to count up, " .. tostring(id) .. ".")
@@ -832,6 +867,7 @@ function StatisticsManager:count_up(id)
 	end
 	self._statistics[id].count = self._statistics[id].count + 1
 end
+
 function StatisticsManager:print_stats()
 	local time_text = self:_time_text(math.round(self._global.sessions.time))
 	local time_average_text = self:_time_text(math.round(self._global.average.sessions.time))
@@ -885,9 +921,11 @@ function StatisticsManager:print_stats()
 	print("Count: " .. self._global.reloads.count .. "/" .. self._global.average.reloads.count)
 	self:_print_experience_stats()
 end
+
 function StatisticsManager:is_dropin()
 	return self._start_session_drop_in
 end
+
 function StatisticsManager:_print_experience_stats()
 	local t = self._global.sessions.count ~= 0 and self._global.sessions.count or 1
 	local average = self._global.average.experience
@@ -914,6 +952,7 @@ Size: ]] .. size .. " " .. self:_amount_format(exp, true) .. "" .. self:_amount_
 
 Total:]] .. self:_amount_format(total) .. "/" .. self:_amount_format(total / t, true))
 end
+
 function StatisticsManager:_amount_format(amount, left)
 	amount = math.round(amount)
 	local s = ""
@@ -922,6 +961,7 @@ function StatisticsManager:_amount_format(amount, left)
 	end
 	return left and amount .. s or s .. amount
 end
+
 function StatisticsManager:_time_text(time, params)
 	local no_days = params and params.no_days
 	local days = no_days and 0 or math.floor(time / 86400)
@@ -933,6 +973,7 @@ function StatisticsManager:_time_text(time, params)
 	local seconds = math.round(time)
 	return (no_days and "" or (days < 10 and "0" .. days or days) .. ":") .. (hours < 10 and "0" .. hours or hours) .. ":" .. (minutes < 10 and "0" .. minutes or minutes) .. ":" .. (seconds < 10 and "0" .. seconds or seconds)
 end
+
 function StatisticsManager:_check_loaded_data()
 	if not self._global.downed.incapacitated then
 		self._global.downed.incapacitated = 0
@@ -953,11 +994,13 @@ function StatisticsManager:_check_loaded_data()
 	end
 	self._global.experience = self._global.experience or deep_clone(self._defaults.experience)
 end
+
 function StatisticsManager:time_played()
 	local time = math.round(self._global.sessions.time)
 	local time_text = self:_time_text(time)
 	return time_text, time
 end
+
 function StatisticsManager:favourite_level()
 	local started = 0
 	local c_name
@@ -967,6 +1010,7 @@ function StatisticsManager:favourite_level()
 	end
 	return c_name and tweak_data.levels:get_localized_level_name_from_level_id(c_name) or managers.localization:text("debug_undecided")
 end
+
 function StatisticsManager:total_completed_campaigns()
 	local i = 0
 	for name, data in pairs(self._global.sessions.levels) do
@@ -974,6 +1018,7 @@ function StatisticsManager:total_completed_campaigns()
 	end
 	return i
 end
+
 function StatisticsManager:favourite_weapon()
 	local weapon_id
 	local count = 0
@@ -985,32 +1030,40 @@ function StatisticsManager:favourite_weapon()
 	end
 	return weapon_id and managers.localization:text(tweak_data.weapon[weapon_id].name_id) or managers.localization:text("debug_undecided")
 end
+
 function StatisticsManager:total_kills()
 	return self._global.killed.total.count
 end
+
 function StatisticsManager:total_head_shots()
 	return self._global.killed.total.head_shots
 end
+
 function StatisticsManager:hit_accuracy()
 	if self._global.shots_fired.total == 0 then
 		return 0
 	end
 	return math.floor(self._global.shots_fired.hits / self._global.shots_fired.total * 100)
 end
+
 function StatisticsManager:total_completed_objectives()
 	return self._global.objectives.count
 end
+
 function StatisticsManager:total_downed()
 	return self._global.session.downed.bleed_out + self._global.session.downed.incapacitated
 end
+
 function StatisticsManager:session_time_played()
 	local time = math.round(self._global.session.sessions.time)
 	local time_text = self:_time_text(time, {no_days = true})
 	return time_text, time
 end
+
 function StatisticsManager:completed_objectives()
 	return self._global.session.objectives.count
 end
+
 function StatisticsManager:session_favourite_weapon()
 	local weapon_id
 	local count = 0
@@ -1022,27 +1075,34 @@ function StatisticsManager:session_favourite_weapon()
 	end
 	return weapon_id and managers.localization:text(tweak_data.weapon[weapon_id].name_id) or managers.localization:text("debug_undecided")
 end
+
 function StatisticsManager:session_total_kills()
 	return self._global.session.killed.total.count
 end
+
 function StatisticsManager:session_total_specials_kills()
 	return self._global.session.killed.shield.count + self._global.session.killed.spooc.count + self._global.session.killed.tank.count + self._global.session.killed.taser.count
 end
+
 function StatisticsManager:session_total_head_shots()
 	return self._global.session.killed.total.head_shots
 end
+
 function StatisticsManager:session_hit_accuracy()
 	if self._global.session.shots_fired.total == 0 then
 		return 0
 	end
 	return math.floor(self._global.session.shots_fired.hits / self._global.session.shots_fired.total * 100)
 end
+
 function StatisticsManager:session_total_civilian_kills()
 	return self._global.session.killed.civilian.count + self._global.session.killed.civilian_female.count
 end
+
 function StatisticsManager:session_total_law_enforcer_kills()
 	return self._global.session.killed.total.count - self._global.session.killed.civilian.count - self._global.session.killed.civilian_female.count - self._global.session.killed.gangster.count - self._global.session.killed.other.count
 end
+
 function StatisticsManager:send_statistics()
 	if not managers.network:session() then
 		return
@@ -1059,6 +1119,7 @@ function StatisticsManager:send_statistics()
 		managers.network:session():send_to_host("send_statistics", peer_id, total_kills, total_specials_kills, total_head_shots, accuracy, downs)
 	end
 end
+
 function StatisticsManager:save(data)
 	local state = {
 		camera = self._global.cameras,
@@ -1077,6 +1138,7 @@ function StatisticsManager:save(data)
 	}
 	data.StatisticsManager = state
 end
+
 function StatisticsManager:load(data)
 	local state = data.StatisticsManager
 	if state then

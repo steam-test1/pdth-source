@@ -1,7 +1,9 @@
 PlayerEquipment = PlayerEquipment or class()
+
 function PlayerEquipment:init(unit)
 	self._unit = unit
 end
+
 function PlayerEquipment:use_trip_mine()
 	local from = self._unit:movement():m_head_pos()
 	local to = from + self._unit:movement():m_head_rot():y() * 200
@@ -20,6 +22,7 @@ function PlayerEquipment:use_trip_mine()
 	end
 	return false
 end
+
 function PlayerEquipment:use_ammo_bag()
 	if not self._unit:movement():current_state():in_air() then
 		local pos = self._unit:movement():m_pos()
@@ -38,6 +41,7 @@ function PlayerEquipment:use_ammo_bag()
 	end
 	return false
 end
+
 function PlayerEquipment:use_doctor_bag()
 	if not self._unit:movement():current_state():in_air() then
 		local pos = self._unit:movement():m_pos()
@@ -55,6 +59,7 @@ function PlayerEquipment:use_doctor_bag()
 	end
 	return false
 end
+
 function PlayerEquipment:use_sentry_gun(selected_index)
 	if self._sentrygun_placement_requested then
 		return
@@ -76,18 +81,22 @@ function PlayerEquipment:use_sentry_gun(selected_index)
 	end
 	return false
 end
+
 function PlayerEquipment:use_flash_grenade()
 	self._grenade_name = "units/weapons/flash_grenade/flash_grenade"
 	return true, "throw_grenade"
 end
+
 function PlayerEquipment:use_smoke_grenade()
 	self._grenade_name = "units/weapons/smoke_grenade/smoke_grenade"
 	return true, "throw_grenade"
 end
+
 function PlayerEquipment:use_frag_grenade()
 	self._grenade_name = "units/weapons/frag_grenade/frag_grenade"
 	return true, "throw_grenade"
 end
+
 function PlayerEquipment:throw_flash_grenade()
 	if not self._grenade_name then
 		Application:error("Tried to throw a grenade with no name")
@@ -101,11 +110,13 @@ function PlayerEquipment:throw_flash_grenade()
 	})
 	self._grenade_name = nil
 end
+
 function PlayerEquipment:use_duck()
 	local soundsource = SoundDevice:create_source("duck")
 	soundsource:post_event("footstep_walk")
 	return true
 end
+
 function PlayerEquipment:from_server_sentry_gun_place_result()
 	self._sentrygun_placement_requested = nil
 end

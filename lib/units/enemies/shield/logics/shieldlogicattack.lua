@@ -1,4 +1,5 @@
 ShieldLogicAttack = class(TankCopLogicAttack)
+
 function ShieldLogicAttack.enter(data, new_logic_name, enter_params)
 	local old_internal_data = data.internal_data
 	local my_data = {
@@ -30,6 +31,7 @@ function ShieldLogicAttack.enter(data, new_logic_name, enter_params)
 	my_data.update_queue_id = "ShieldLogicAttack.queued_update" .. key_str
 	ShieldLogicAttack.queue_update(data, my_data)
 end
+
 function ShieldLogicAttack.exit(data, new_logic_name, enter_params)
 	CopLogicBase.exit(data, new_logic_name, enter_params)
 	local my_data = data.internal_data
@@ -46,6 +48,7 @@ function ShieldLogicAttack.exit(data, new_logic_name, enter_params)
 	end
 	data.unit:brain():set_update_enabled_state(true)
 end
+
 function ShieldLogicAttack.queued_update(data)
 	local t = TimerManager:game():time()
 	data.t = t
@@ -136,6 +139,7 @@ function ShieldLogicAttack.queued_update(data)
 	ShieldLogicAttack.queue_update(data, my_data)
 	CopLogicBase._report_detections(my_data.detected_enemies)
 end
+
 function ShieldLogicAttack:_reserve_pos_step_clbk(data, test_pos)
 	if not data.step_vector then
 		data.step_vector = mvector3.copy(data.unit_pos)
@@ -154,6 +158,7 @@ function ShieldLogicAttack:_reserve_pos_step_clbk(data, test_pos)
 	data.num_steps = data.num_steps + 1
 	return true
 end
+
 function ShieldLogicAttack._process_pathing_results(data, my_data)
 	if data.pathing_results then
 		local pathing_results = data.pathing_results
@@ -170,6 +175,7 @@ function ShieldLogicAttack._process_pathing_results(data, my_data)
 		end
 	end
 end
+
 function ShieldLogicAttack._chk_request_action_walk_to_optimal_pos(data, my_data, end_rot)
 	if not data.unit:movement():chk_action_forbidden("walk") then
 		local new_action_data = {
@@ -197,6 +203,7 @@ function ShieldLogicAttack._chk_request_action_walk_to_optimal_pos(data, my_data
 		end
 	end
 end
+
 function ShieldLogicAttack._cancel_optimal_attempt(data, my_data)
 	if my_data.optimal_path then
 		my_data.optimal_path = nil
@@ -219,9 +226,11 @@ function ShieldLogicAttack._cancel_optimal_attempt(data, my_data)
 		data.unit:brain():cancel_all_pathing_searches()
 	end
 end
+
 function ShieldLogicAttack.queue_update(data, my_data)
 	CopLogicBase.queue_task(my_data, my_data.update_queue_id, ShieldLogicAttack.queued_update, data, data.t + (data.important and 0.5 or 1.5), data.important and true)
 end
+
 function ShieldLogicAttack._upd_enemy_detection(data)
 	managers.groupai:state():on_unit_detection_updated(data.unit)
 	local my_data = data.internal_data
@@ -422,6 +431,7 @@ function ShieldLogicAttack._upd_enemy_detection(data)
 	my_data.focus_enemy = focus_enemy
 	my_data.focus_type = focus_type
 end
+
 function ShieldLogicAttack._chk_reaction_to_criminal(data, my_data, key_criminal, criminal_data)
 	local record = managers.groupai:state():criminal_record(key_criminal)
 	if record.being_arrested then
@@ -434,6 +444,7 @@ function ShieldLogicAttack._chk_reaction_to_criminal(data, my_data, key_criminal
 		return "assault"
 	end
 end
+
 function ShieldLogicAttack.action_complete_clbk(data, action)
 	local my_data = data.internal_data
 	local action_type = action:type()
@@ -469,16 +480,19 @@ function ShieldLogicAttack.action_complete_clbk(data, action)
 		ShieldLogicAttack._upd_aim(data, my_data)
 	end
 end
+
 function ShieldLogicAttack.is_advancing(data)
 	if data.internal_data.walking_to_optimal_pos then
 		return data.internal_data.rsrv_pos.move_dest.position
 	end
 end
+
 function ShieldLogicAttack._get_all_paths(data)
 	return {
 		optimal_path = data.internal_data.optimal_path
 	}
 end
+
 function ShieldLogicAttack._set_verified_paths(data, verified_paths)
 	data.internal_data.optimal_path = verified_paths.optimal_path
 end

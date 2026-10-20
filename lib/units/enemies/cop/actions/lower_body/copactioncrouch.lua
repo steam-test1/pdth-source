@@ -1,4 +1,5 @@
 CopActionCrouch = CopActionCrouch or class()
+
 function CopActionCrouch:init(action_desc, common_data)
 	self._ext_movement = common_data.ext_movement
 	local enter_t
@@ -47,6 +48,7 @@ function CopActionCrouch:init(action_desc, common_data)
 		cat_print("george", "[CopActionCrouch:init] failed in", common_data.machine:segment_state(Idstring("base")), common_data.unit)
 	end
 end
+
 function CopActionCrouch:update(t)
 	if self._ext_anim.base_need_upd then
 		self._ext_movement:upd_m_head_pos()
@@ -54,9 +56,11 @@ function CopActionCrouch:update(t)
 		self._expired = true
 	end
 end
+
 function CopActionCrouch:expired()
 	return self._expired
 end
+
 function CopActionCrouch:type()
 	return "crouch"
 end

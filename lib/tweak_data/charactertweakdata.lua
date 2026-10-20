@@ -1,4 +1,5 @@
 CharacterTweakData = CharacterTweakData or class()
+
 function CharacterTweakData:_set_easy()
 	self:_multiply_all_hp(0.7, 1.5)
 	self:_multiply_weapon_delay(self.presets.weapon.normal, 3)
@@ -9,6 +10,7 @@ function CharacterTweakData:_set_easy()
 	self.presets.gang_member_damage.REGENERATE_TIME = 1.8
 	self.presets.gang_member_damage.REGENERATE_TIME_AWAY = 0.2
 end
+
 function CharacterTweakData:_set_normal()
 	self:_multiply_all_hp(0.8, 1)
 	self:_multiply_weapon_delay(self.presets.weapon.normal, 1)
@@ -19,6 +21,7 @@ function CharacterTweakData:_set_normal()
 	self.presets.gang_member_damage.REGENERATE_TIME = 2
 	self.presets.gang_member_damage.REGENERATE_TIME_AWAY = 0.2
 end
+
 function CharacterTweakData:_set_hard()
 	self:_multiply_all_hp(1, 1)
 	self:_multiply_weapon_delay(self.presets.weapon.normal, 0.6)
@@ -29,6 +32,7 @@ function CharacterTweakData:_set_hard()
 	self.presets.gang_member_damage.REGENERATE_TIME = 2
 	self.presets.gang_member_damage.REGENERATE_TIME_AWAY = 1
 end
+
 function CharacterTweakData:_set_overkill()
 	self:_multiply_all_hp(1.5, 1.5)
 	self:_multiply_weapon_delay(self.presets.weapon.normal, 0)
@@ -39,6 +43,7 @@ function CharacterTweakData:_set_overkill()
 	self.presets.gang_member_damage.REGENERATE_TIME = 2.5
 	self.presets.gang_member_damage.REGENERATE_TIME_AWAY = 1.4
 end
+
 function CharacterTweakData:_set_overkill_145()
 	if SystemInfo:platform() == Idstring("PS3") then
 		self:_multiply_all_hp(1.7, 1.5)
@@ -54,6 +59,7 @@ function CharacterTweakData:_set_overkill_145()
 	self.presets.gang_member_damage.REGENERATE_TIME = 2.5
 	self.presets.gang_member_damage.REGENERATE_TIME_AWAY = 1.4
 end
+
 function CharacterTweakData:_multiply_weapon_delay(weap_usage_table, mul)
 	for _, weap_id in ipairs(self.weap_ids) do
 		local usage_data = weap_usage_table[weap_id]
@@ -62,6 +68,7 @@ function CharacterTweakData:_multiply_weapon_delay(weap_usage_table, mul)
 		end
 	end
 end
+
 function CharacterTweakData:_multiply_all_hp(hp_mul, hs_mul)
 	self.patrol.HEALTH_INIT = self.patrol.HEALTH_INIT * hp_mul
 	self.security.HEALTH_INIT = self.security.HEALTH_INIT * hp_mul
@@ -92,6 +99,7 @@ function CharacterTweakData:_multiply_all_hp(hp_mul, hs_mul)
 	self.shield.headshot_dmg_mul = self.shield.headshot_dmg_mul * hs_mul
 	self.taser.headshot_dmg_mul = self.taser.headshot_dmg_mul * hs_mul
 end
+
 function CharacterTweakData:_multiply_all_speeds(walk_mul, run_mul)
 	self.patrol.SPEED_WALK = self.patrol.SPEED_WALK * walk_mul
 	self.security.SPEED_WALK = self.security.SPEED_WALK * walk_mul
@@ -122,6 +130,7 @@ function CharacterTweakData:_multiply_all_speeds(walk_mul, run_mul)
 	self.shield.SPEED_RUN = self.shield.SPEED_RUN * run_mul
 	self.taser.SPEED_RUN = self.taser.SPEED_RUN * run_mul
 end
+
 function CharacterTweakData:init(tweak_data)
 	self:_create_table_structure()
 	local presets = self:_presets(tweak_data)
@@ -153,6 +162,7 @@ function CharacterTweakData:init(tweak_data)
 	self:_init_spanish(presets)
 	self:_init_american(presets)
 end
+
 function CharacterTweakData:_init_patrol(presets)
 	self.patrol = deep_clone(presets.base)
 	self.patrol.experience = {}
@@ -178,6 +188,7 @@ function CharacterTweakData:_init_patrol(presets)
 	self.patrol.dodge = presets.dodge.poor
 	self.patrol.chatter = presets.enemy_chatter.cop
 end
+
 function CharacterTweakData:_init_security(presets)
 	self.security = deep_clone(presets.base)
 	self.security.experience = {}
@@ -204,6 +215,7 @@ function CharacterTweakData:_init_security(presets)
 	self.security.deathguard = true
 	self.security.chatter = presets.enemy_chatter.cop
 end
+
 function CharacterTweakData:_init_cop(presets)
 	self.cop = deep_clone(presets.base)
 	self.cop.experience = {}
@@ -228,6 +240,7 @@ function CharacterTweakData:_init_cop(presets)
 	self.cop.no_arrest = true
 	self.cop.chatter = presets.enemy_chatter.cop
 end
+
 function CharacterTweakData:_init_fbi(presets)
 	self.fbi = deep_clone(presets.base)
 	self.fbi.experience = {}
@@ -251,6 +264,7 @@ function CharacterTweakData:_init_fbi(presets)
 	self.fbi.no_arrest = true
 	self.fbi.chatter = presets.enemy_chatter.cop
 end
+
 function CharacterTweakData:_init_swat(presets)
 	self.swat = deep_clone(presets.base)
 	self.swat.experience = {}
@@ -273,6 +287,7 @@ function CharacterTweakData:_init_swat(presets)
 	self.swat.no_arrest = true
 	self.swat.chatter = presets.enemy_chatter.swat
 end
+
 function CharacterTweakData:_init_heavy_swat(presets)
 	self.heavy_swat = deep_clone(presets.base)
 	self.heavy_swat.experience = {}
@@ -296,6 +311,7 @@ function CharacterTweakData:_init_heavy_swat(presets)
 	self.heavy_swat.no_arrest = true
 	self.heavy_swat.chatter = presets.enemy_chatter.swat
 end
+
 function CharacterTweakData:_init_murky(presets)
 	self.murky = deep_clone(presets.base)
 	self.murky.experience = {}
@@ -322,6 +338,7 @@ function CharacterTweakData:_init_murky(presets)
 	self.murky.no_arrest = true
 	self.murky.chatter = presets.enemy_chatter.swat
 end
+
 function CharacterTweakData:_init_sniper(presets)
 	self.sniper = deep_clone(presets.base)
 	self.sniper.experience = {}
@@ -344,6 +361,7 @@ function CharacterTweakData:_init_sniper(presets)
 	self.sniper.no_arrest = true
 	self.sniper.chatter = presets.enemy_chatter.no_chatter
 end
+
 function CharacterTweakData:_init_gangster(presets)
 	self.gangster = deep_clone(presets.base)
 	self.gangster.experience = {}
@@ -370,6 +388,7 @@ function CharacterTweakData:_init_gangster(presets)
 	self.gangster.challenges = {type = "gangster"}
 	self.gangster.chatter = presets.enemy_chatter.no_chatter
 end
+
 function CharacterTweakData:_init_dealer(presets)
 	self.dealer = deep_clone(presets.base)
 	self.dealer.experience = {}
@@ -396,6 +415,7 @@ function CharacterTweakData:_init_dealer(presets)
 	self.dealer.challenges = {type = "gangster"}
 	self.dealer.chatter = "gangster"
 end
+
 function CharacterTweakData:_init_tank(presets)
 	self.tank = deep_clone(presets.base)
 	self.tank.experience = {}
@@ -447,6 +467,7 @@ function CharacterTweakData:_init_tank(presets)
 	self.tank.chatter = presets.enemy_chatter.no_chatter
 	self.tank.announce_incomming = "incomming_tank"
 end
+
 function CharacterTweakData:_init_spooc(presets)
 	self.spooc = deep_clone(presets.base)
 	self.spooc.experience = {}
@@ -480,6 +501,7 @@ function CharacterTweakData:_init_spooc(presets)
 	self.spooc.chatter = presets.enemy_chatter.no_chatter
 	self.spooc.announce_incomming = "incomming_spooc"
 end
+
 function CharacterTweakData:_init_shield(presets)
 	self.shield = deep_clone(presets.base)
 	self.shield.experience = {}
@@ -583,6 +605,7 @@ function CharacterTweakData:_init_shield(presets)
 	self.shield.chatter = presets.enemy_chatter.shield
 	self.shield.announce_incomming = "incomming_shield"
 end
+
 function CharacterTweakData:_init_taser(presets)
 	self.taser = deep_clone(presets.base)
 	self.taser.damage.hurt_severity = {
@@ -618,6 +641,7 @@ function CharacterTweakData:_init_taser(presets)
 	self.taser.chatter = presets.enemy_chatter.no_chatter
 	self.taser.announce_incomming = "incomming_taser"
 end
+
 function CharacterTweakData:_init_civilian(presets)
 	self.civilian = {
 		experience = {}
@@ -652,6 +676,7 @@ function CharacterTweakData:_init_civilian(presets)
 	self.civilian_female.access = "civ_female"
 	self.civilian_female.no_run_death_anim = true
 end
+
 function CharacterTweakData:_init_bank_manager(presets)
 	self.bank_manager = {
 		experience = {},
@@ -686,6 +711,7 @@ function CharacterTweakData:_init_bank_manager(presets)
 	self.bank_manager.challenges = {type = "civilians"}
 	self.bank_manager.outline_on_discover = true
 end
+
 function CharacterTweakData:_init_escort(presets)
 	self.escort = {
 		experience = {},
@@ -722,29 +748,34 @@ function CharacterTweakData:_init_escort(presets)
 	self.escort.escort_idle_talk = true
 	self.escort.escort_scared_dist = 600
 end
+
 function CharacterTweakData:_init_escort_suitcase(presets)
 	self.escort_suitcase = deep_clone(self.escort)
 	self.escort_suitcase.SPEED_RUN = 170
 	self.escort_suitcase.speech_prefix = "mtt"
 	self.escort_suitcase.speech_prefix_count = nil
 end
+
 function CharacterTweakData:_init_escort_prisoner(presets)
 	self.escort_prisoner = deep_clone(self.escort)
 	self.escort_prisoner.SPEED_RUN = 320
 	self.escort_prisoner.speech_prefix = "chi"
 	self.escort_prisoner.speech_prefix_count = nil
 end
+
 function CharacterTweakData:_init_escort_ralph(presets)
 	self.escort_ralph = deep_clone(self.escort)
 	self.escort_ralph.speech_prefix = "rph"
 	self.escort_ralph.speech_prefix_count = nil
 end
+
 function CharacterTweakData:_init_escort_cfo(presets)
 	self.escort_cfo = deep_clone(self.escort)
 	self.escort_cfo.speech_prefix = "cfo"
 	self.escort_cfo.speech_prefix_count = nil
 	self.escort_cfo.access = "SO_ID2"
 end
+
 function CharacterTweakData:_init_escort_undercover(presets)
 	self.escort_undercover = deep_clone(self.escort)
 	self.escort_undercover.speech_prefix = "crs"
@@ -754,6 +785,7 @@ function CharacterTweakData:_init_escort_undercover(presets)
 	self.escort_undercover.SPEED_RUN = 170
 	self.escort_undercover.escort_scared_dist = 200
 end
+
 function CharacterTweakData:_init_russian(presets)
 	self.russian = {}
 	self.russian.damage = presets.gang_member_damage
@@ -767,6 +799,7 @@ function CharacterTweakData:_init_russian(presets)
 	self.russian.weapon_voice = "1"
 	self.russian.access = "teamAI1"
 end
+
 function CharacterTweakData:_init_german(presets)
 	self.german = {}
 	self.german.damage = presets.gang_member_damage
@@ -780,6 +813,7 @@ function CharacterTweakData:_init_german(presets)
 	self.german.weapon_voice = "2"
 	self.german.access = "teamAI2"
 end
+
 function CharacterTweakData:_init_spanish(presets)
 	self.spanish = {}
 	self.spanish.damage = presets.gang_member_damage
@@ -793,6 +827,7 @@ function CharacterTweakData:_init_spanish(presets)
 	self.spanish.weapon_voice = "3"
 	self.spanish.access = "teamAI3"
 end
+
 function CharacterTweakData:_init_american(presets)
 	self.american = {}
 	self.american.damage = presets.gang_member_damage
@@ -806,6 +841,7 @@ function CharacterTweakData:_init_american(presets)
 	self.american.weapon_voice = "3"
 	self.american.access = "teamAI4"
 end
+
 function CharacterTweakData:_presets(tweak_data)
 	local presets = {}
 	presets.base = {}
@@ -2384,6 +2420,7 @@ function CharacterTweakData:_presets(tweak_data)
 	}
 	return presets
 end
+
 function CharacterTweakData:_create_table_structure()
 	self.weap_ids = {
 		"beretta92",
@@ -2406,6 +2443,7 @@ function CharacterTweakData:_create_table_structure()
 		Idstring("units/weapons/sniper_rifle_npc/sniper_rifle_npc")
 	}
 end
+
 function CharacterTweakData:_process_weapon_usage_table(weap_usage_table)
 	for _, weap_id in ipairs(self.weap_ids) do
 		local usage_data = weap_usage_table[weap_id]

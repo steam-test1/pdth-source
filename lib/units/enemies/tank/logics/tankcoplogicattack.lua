@@ -1,4 +1,5 @@
 TankCopLogicAttack = class(CopLogicAttack)
+
 function TankCopLogicAttack.enter(data, new_logic_name, enter_params)
 	CopLogicBase.enter(data, new_logic_name, enter_params)
 	local old_internal_data = data.internal_data
@@ -32,6 +33,7 @@ function TankCopLogicAttack.enter(data, new_logic_name, enter_params)
 	my_data.update_queue_id = "TankCopLogicAttack.queued_update" .. key_str
 	TankCopLogicAttack.queue_update(data, my_data)
 end
+
 function TankCopLogicAttack.exit(data, new_logic_name, enter_params)
 	CopLogicBase.exit(data, new_logic_name, enter_params)
 	local my_data = data.internal_data
@@ -49,6 +51,7 @@ function TankCopLogicAttack.exit(data, new_logic_name, enter_params)
 	end
 	data.unit:brain():set_update_enabled_state(true)
 end
+
 function TankCopLogicAttack.update(data)
 	managers.groupai:state():on_unit_detection_updated(data.unit)
 	local t = data.t
@@ -136,6 +139,7 @@ function TankCopLogicAttack.update(data)
 		TankCopLogicAttack._cancel_chase_attempt(data, my_data)
 	end
 end
+
 function TankCopLogicAttack.queued_update(data)
 	local my_data = data.internal_data
 	my_data.update_queued = false
@@ -145,6 +149,7 @@ function TankCopLogicAttack.queued_update(data)
 		TankCopLogicAttack.queue_update(data, data.internal_data)
 	end
 end
+
 function TankCopLogicAttack._process_pathing_results(data, my_data)
 	if data.pathing_results then
 		local pathing_results = data.pathing_results
@@ -161,6 +166,7 @@ function TankCopLogicAttack._process_pathing_results(data, my_data)
 		end
 	end
 end
+
 function TankCopLogicAttack._cancel_chase_attempt(data, my_data)
 	my_data.chase_path = nil
 	if my_data.walking_to_chase_pos then
@@ -184,6 +190,7 @@ function TankCopLogicAttack._cancel_chase_attempt(data, my_data)
 		my_data.chase_pos = nil
 	end
 end
+
 function TankCopLogicAttack.action_complete_clbk(data, action)
 	local action_type = action:type()
 	local my_data = data.internal_data
@@ -219,13 +226,16 @@ function TankCopLogicAttack.action_complete_clbk(data, action)
 		CopLogicAttack._upd_aim(data, my_data)
 	end
 end
+
 function TankCopLogicAttack.chk_should_turn(data, my_data)
 	return not my_data.turning and not data.unit:movement():chk_action_forbidden("walk") and not my_data.moving_to_cover and not my_data.walking_to_cover_shoot_pos and not my_data.surprised and not my_data.walking_to_chase_pos
 end
+
 function TankCopLogicAttack.queue_update(data, my_data)
 	my_data.update_queued = true
 	CopLogicBase.queue_task(my_data, my_data.update_queue_id, TankCopLogicAttack.queued_update, data, data.t + (data.important and 0.5 or 1.5))
 end
+
 function TankCopLogicAttack._chk_request_action_walk_to_chase_pos(data, my_data, speed, end_rot)
 	if not data.unit:movement():chk_action_forbidden("walk") then
 		local new_action_data = {
@@ -253,16 +263,19 @@ function TankCopLogicAttack._chk_request_action_walk_to_chase_pos(data, my_data,
 		end
 	end
 end
+
 function TankCopLogicAttack.is_advancing(data)
 	if data.internal_data.walking_to_chase_pos then
 		return data.internal_data.rsrv_pos.move_dest.position
 	end
 end
+
 function TankCopLogicAttack._get_all_paths(data)
 	return {
 		chase_path = data.internal_data.chase_path
 	}
 end
+
 function TankCopLogicAttack._set_verified_paths(data, verified_paths)
 	data.internal_data.chase_path = verified_paths.chase_path
 end

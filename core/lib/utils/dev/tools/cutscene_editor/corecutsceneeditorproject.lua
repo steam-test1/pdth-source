@@ -4,22 +4,27 @@ CoreCutsceneEditorProject.VALID_EXPORT_TYPES = {
 	"footage_use"
 }
 CoreCutsceneEditorProject.DEFAULT_EXPORT_TYPE = "in_game_use"
+
 function CoreCutsceneEditorProject:path()
 	return self._path
 end
+
 function CoreCutsceneEditorProject:set_path(absolute_path)
 	self._path = assert(absolute_path, "Must supply a valid path.")
 	self._root_node = nil
 end
+
 function CoreCutsceneEditorProject:name()
 	return self:path() and managers.database:entry_name(self:path()) or "untitled"
 end
+
 function CoreCutsceneEditorProject:export_type()
 	local settings_node = self:child_node("settings") or responder(function()
 	end)
 	local export_type_node = self:child_node("export_type", settings_node) or responder(nil)
 	return export_type_node:parameter("value") or self.DEFAULT_EXPORT_TYPE
 end
+
 function CoreCutsceneEditorProject:save(audio_clips, film_clips, cutscene_keys, settings)
 	assert(self:path(), "A valid path has not been assigned. Call the set_path() method prior to saving.")
 	self._root_node = nil
@@ -81,6 +86,7 @@ function CoreCutsceneEditorProject:save(audio_clips, film_clips, cutscene_keys, 
 	managers.database:save_node(project_node, self:path())
 	managers.database:recompile()
 end
+
 function CoreCutsceneEditorProject:audio_clips()
 	local clips = {}
 	local audio_track_node = self:child_node("audio_track") or responder(function()
@@ -93,6 +99,7 @@ function CoreCutsceneEditorProject:audio_clips()
 	end
 	return clips
 end
+
 function CoreCutsceneEditorProject:film_clips()
 	local clips = {}
 	local film_tracks_node = self:child_node("film_tracks") or responder(0)
@@ -114,6 +121,7 @@ function CoreCutsceneEditorProject:film_clips()
 	end
 	return clips
 end
+
 function CoreCutsceneEditorProject:cutscene_keys(key_collection)
 	local cutscene_keys = {}
 	local key_track_node = self:child_node("key_track") or responder(function()
@@ -125,6 +133,7 @@ function CoreCutsceneEditorProject:cutscene_keys(key_collection)
 	end
 	return cutscene_keys
 end
+
 function CoreCutsceneEditorProject:animation_patches()
 	local patches = {}
 	local settings_node = self:child_node("settings") or responder(function()
@@ -142,12 +151,14 @@ function CoreCutsceneEditorProject:animation_patches()
 	end
 	return patches
 end
+
 function CoreCutsceneEditorProject:root_node()
 	if self._root_node == nil then
 		self._root_node = managers.database:load_node(self:path())
 	end
 	return self._root_node
 end
+
 function CoreCutsceneEditorProject:child_node(child_name, parent_node, child_properties)
 	parent_node = parent_node or self:root_node()
 	for child_node in parent_node:children() do

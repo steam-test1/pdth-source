@@ -1,4 +1,5 @@
 StatisticsTweakData = StatisticsTweakData or class()
+
 function StatisticsTweakData:init()
 	self.session = {}
 	self.killed = {

@@ -1,8 +1,10 @@
 CoreRandomUnitElement = CoreRandomUnitElement or class(MissionElement)
 RandomUnitElement = RandomUnitElement or class(CoreRandomUnitElement)
+
 function RandomUnitElement:init(...)
 	CoreRandomUnitElement.init(self, ...)
 end
+
 function CoreRandomUnitElement:init(unit)
 	MissionElement.init(self, unit)
 	self._hed.amount = 1
@@ -10,6 +12,7 @@ function CoreRandomUnitElement:init(unit)
 	table.insert(self._save_values, "amount")
 	table.insert(self._save_values, "ignore_disabled")
 end
+
 function CoreRandomUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

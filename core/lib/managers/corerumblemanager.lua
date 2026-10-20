@@ -1,5 +1,6 @@
 core:module("CoreRumbleManager")
 RumbleManager = RumbleManager or class()
+
 function RumbleManager:init()
 	self._last_played_ids = {}
 	self._preset_rumbles = {}
@@ -10,13 +11,16 @@ function RumbleManager:init()
 	self._registered_controller_pos_callback_list = {}
 	self._enabled = true
 end
+
 function RumbleManager:add_preset_rumbles(name, data)
 	self._preset_rumbles[name] = data
 end
+
 function RumbleManager:initialize_controller_types()
 	self._rumbling_controller_types.xbox360 = true
 	self._rumbling_controller_types.ps3 = true
 end
+
 function RumbleManager:stop(rumble_id)
 	if rumble_id then
 		if rumble_id == "all" then
@@ -35,6 +39,7 @@ function RumbleManager:stop(rumble_id)
 		end
 	end
 end
+
 function RumbleManager:register_controller(controller, pos_callback)
 	if self._rumbling_controller_types[controller.TYPE] then
 		local ctrl = controller:get_controller()
@@ -46,6 +51,7 @@ function RumbleManager:register_controller(controller, pos_callback)
 		return true
 	end
 end
+
 function RumbleManager:unregister_controller(controller, pos_callback)
 	local ctrl = controller:get_controller()
 	local key = ctrl:key()
@@ -61,15 +67,18 @@ function RumbleManager:unregister_controller(controller, pos_callback)
 		end
 	end
 end
+
 function RumbleManager:set_enabled(enabled)
 	self._enabled = enabled
 	if not enabled then
 		self:stop("all")
 	end
 end
+
 function RumbleManager:enabled()
 	return self._enabled
 end
+
 function RumbleManager:play(name, controller_wrapper, multiplier_data, custom_data)
 	if not self._enabled then
 		return false
@@ -139,6 +148,7 @@ function RumbleManager:play(name, controller_wrapper, multiplier_data, custom_da
 		Application:error("RumbleManager:: Effect ", name, " not found.")
 	end
 end
+
 function RumbleManager:set_multiplier(rumble_id, multiplier)
 	if not (self._enabled and rumble_id) or not multiplier then
 		return false
@@ -153,6 +163,7 @@ function RumbleManager:set_multiplier(rumble_id, multiplier)
 		end
 	end
 end
+
 function RumbleManager:mult_distance_lerp(pos_func_list, params)
 	if pos_func_list then
 		local closest_pos

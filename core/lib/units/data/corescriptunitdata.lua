@@ -24,6 +24,7 @@ CoreScriptUnitData.helper_type = "none"
 CoreScriptUnitData.disable_shadows = nil
 CoreScriptUnitData.hide_on_projection_light = nil
 CoreScriptUnitData.disable_on_ai_graph = nil
+
 function CoreScriptUnitData:init()
 	if Application:editor() then
 		self.unit_groups = {}

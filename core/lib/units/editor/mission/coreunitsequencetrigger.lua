@@ -1,8 +1,10 @@
 CoreUnitSequenceTriggerUnitElement = CoreUnitSequenceTriggerUnitElement or class(MissionElement)
 UnitSequenceTriggerUnitElement = UnitSequenceTriggerUnitElement or class(CoreUnitSequenceTriggerUnitElement)
+
 function UnitSequenceTriggerUnitElement:init(...)
 	CoreUnitSequenceTriggerUnitElement.init(self, ...)
 end
+
 function CoreUnitSequenceTriggerUnitElement:init(unit)
 	MissionElement.init(self, unit)
 	self._hed.trigger_times = 1
@@ -12,6 +14,7 @@ function CoreUnitSequenceTriggerUnitElement:init(unit)
 	self._sequences = {}
 	self._sequence_units = {}
 end
+
 function CoreUnitSequenceTriggerUnitElement:layer_finished()
 	MissionElement.layer_finished(self)
 	if self._hed.unit_id then
@@ -27,11 +30,13 @@ function CoreUnitSequenceTriggerUnitElement:layer_finished()
 		end
 	end
 end
+
 function CoreUnitSequenceTriggerUnitElement:load_unit(unit)
 	if unit then
 		self._sequence_units[unit:unit_data().unit_id] = unit
 	end
 end
+
 function CoreUnitSequenceTriggerUnitElement:update_selected()
 	for id, unit in pairs(self._sequence_units) do
 		if not alive(unit) then
@@ -50,9 +55,11 @@ function CoreUnitSequenceTriggerUnitElement:update_selected()
 		end
 	end
 end
+
 function CoreUnitSequenceTriggerUnitElement:update_unselected(t, dt, selected_unit, all_units)
 	self:_check_alive_units()
 end
+
 function CoreUnitSequenceTriggerUnitElement:_check_alive_units()
 	for id, unit in pairs(self._sequence_units) do
 		if not alive(unit) then
@@ -61,6 +68,7 @@ function CoreUnitSequenceTriggerUnitElement:_check_alive_units()
 		end
 	end
 end
+
 function CoreUnitSequenceTriggerUnitElement:draw_links_unselected(...)
 	CoreUnitSequenceTriggerUnitElement.super.draw_links_unselected(self, ...)
 	for id, unit in pairs(self._sequence_units) do
@@ -75,6 +83,7 @@ function CoreUnitSequenceTriggerUnitElement:draw_links_unselected(...)
 		Application:draw(unit, 0, 0, 0.5)
 	end
 end
+
 function CoreUnitSequenceTriggerUnitElement:update_editing()
 	local ray = managers.editor:unit_by_raycast({
 		sample = true,
@@ -88,6 +97,7 @@ function CoreUnitSequenceTriggerUnitElement:update_editing()
 		end
 	end
 end
+
 function CoreUnitSequenceTriggerUnitElement:select_unit()
 	local ray = managers.editor:unit_by_raycast({
 		sample = true,
@@ -108,9 +118,11 @@ function CoreUnitSequenceTriggerUnitElement:select_unit()
 		end
 	end
 end
+
 function CoreUnitSequenceTriggerUnitElement:add_triggers(vc)
 	vc:add_trigger(Idstring("lmb"), callback(self, self, "select_unit"))
 end
+
 function CoreUnitSequenceTriggerUnitElement:_build_panel(panel, panel_sizer)
 	self:_check_alive_units()
 	self:_create_panel()
@@ -122,6 +134,7 @@ function CoreUnitSequenceTriggerUnitElement:_build_panel(panel, panel_sizer)
 		self:_add_unit(unit, sequences, data)
 	end
 end
+
 function CoreUnitSequenceTriggerUnitElement:_remove_by_unit_id(unit_id)
 	local remove_entries = {}
 	for id, entry in pairs(self._guis) do
@@ -139,6 +152,7 @@ function CoreUnitSequenceTriggerUnitElement:_remove_by_unit_id(unit_id)
 	end
 	self:_remove_from_sequence_list(unit_id)
 end
+
 function CoreUnitSequenceTriggerUnitElement:remove_entry(id)
 	local unit_id = self._guis[id].unit_id
 	self._guis[id].unit_id_ctrlr:destroy()
@@ -159,6 +173,7 @@ function CoreUnitSequenceTriggerUnitElement:remove_entry(id)
 	end
 	self._sequence_units[unit_id] = nil
 end
+
 function CoreUnitSequenceTriggerUnitElement:_remove_from_sequence_list(unit_id)
 	for i, entry in pairs(clone(self._hed.sequence_list)) do
 		if entry.unit_id == unit_id then
@@ -166,6 +181,7 @@ function CoreUnitSequenceTriggerUnitElement:_remove_from_sequence_list(unit_id)
 		end
 	end
 end
+
 function CoreUnitSequenceTriggerUnitElement:_add_unit(unit, sequences, sequence_list_data)
 	local panel = self._panel
 	local panel_sizer = self._panel_sizer
@@ -207,6 +223,7 @@ function CoreUnitSequenceTriggerUnitElement:_add_unit(unit, sequences, sequence_
 	sequence:connect("EVT_COMMAND_COMBOBOX_SELECTED", callback(self, self, "set_sequence_data"), self._guis_id)
 	panel:layout()
 end
+
 function CoreUnitSequenceTriggerUnitElement:set_sequence_data(guis_id)
 	local sequence = self._guis[guis_id].sequence:get_value()
 	for i, entry in pairs(self._hed.sequence_list) do

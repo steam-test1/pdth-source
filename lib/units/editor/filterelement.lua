@@ -1,4 +1,5 @@
 FilterUnitElement = FilterUnitElement or class(MissionElement)
+
 function FilterUnitElement:init(unit)
 	FilterUnitElement.super.init(self, unit)
 	self._hed.difficulty_easy = true
@@ -28,6 +29,7 @@ function FilterUnitElement:init(unit)
 	table.insert(self._save_values, "mode_assault")
 	table.insert(self._save_values, "mode_control")
 end
+
 function FilterUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

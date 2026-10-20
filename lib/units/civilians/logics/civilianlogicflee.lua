@@ -1,4 +1,5 @@
 CivilianLogicFlee = class(CopLogicBase)
+
 function CivilianLogicFlee.enter(data, new_logic_name, enter_params)
 	CopLogicBase.enter(data, new_logic_name, enter_params)
 	data.unit:brain():cancel_all_pathing_searches()
@@ -52,6 +53,7 @@ function CivilianLogicFlee.enter(data, new_logic_name, enter_params)
 		CopLogicBase.queue_task(my_data, my_data.outline_detection_task_key, CivilianLogicIdle._upd_outline_detection, data, data.t + 2)
 	end
 end
+
 function CivilianLogicFlee.exit(data, new_logic_name, enter_params)
 	CopLogicBase.exit(data, new_logic_name, enter_params)
 	CopLogicBase._reset_attention(data)
@@ -68,6 +70,7 @@ function CivilianLogicFlee.exit(data, new_logic_name, enter_params)
 		managers.navigation:release_cover(my_data.nearest_cover[1])
 	end
 end
+
 function CivilianLogicFlee.update(data)
 	local exit_state
 	local unit = data.unit
@@ -137,6 +140,7 @@ function CivilianLogicFlee.update(data)
 		end
 	end
 end
+
 function CivilianLogicFlee._update_pathing(data, my_data)
 	if data.pathing_results then
 		local pathing_results = data.pathing_results
@@ -168,6 +172,7 @@ function CivilianLogicFlee._update_pathing(data, my_data)
 		end
 	end
 end
+
 function CivilianLogicFlee.action_complete_clbk(data, action)
 	if action:type() == "walk" then
 		local my_data = data.internal_data
@@ -202,9 +207,11 @@ function CivilianLogicFlee.action_complete_clbk(data, action)
 		end
 	end
 end
+
 function CivilianLogicFlee.can_deactivate(data)
 	return false
 end
+
 function CivilianLogicFlee.on_alert(data, alert_data)
 	if managers.groupai:state():whisper_mode() then
 		return
@@ -264,9 +271,11 @@ function CivilianLogicFlee.on_alert(data, alert_data)
 		CopLogicBase.queue_task(my_data, my_data.cover_search_task_key, CivilianLogicFlee._find_hide_cover, data)
 	end
 end
+
 function CivilianLogicFlee._flee_coarse_path_verify_clbk(shait, data, nav_seg)
 	return managers.groupai:state():is_area_safe(nav_seg)
 end
+
 function CivilianLogicFlee.on_intimidated(data, amount, aggressor_unit)
 	if not tweak_data.character[data.unit:base()._tweak_table].intimidateable or data.unit:base().unintimidateable or data.unit:anim_data().unintimidateable then
 		return
@@ -282,6 +291,7 @@ function CivilianLogicFlee.on_intimidated(data, amount, aggressor_unit)
 		}), TimerManager:game():time() + delay)
 	end
 end
+
 function CivilianLogicFlee._delayed_intimidate_clbk(ignore_this, params)
 	local my_data = params[1].internal_data
 	CopLogicBase.on_delayed_clbk(my_data, my_data.delayed_intimidate_id)
@@ -300,6 +310,7 @@ function CivilianLogicFlee._delayed_intimidate_clbk(ignore_this, params)
 	params[1].unit:sound():say("_a02x_any", true)
 	CivilianLogicIdle.switch_logic(params[1], {type = "free", surrender_data = logic_params}, "surrender", logic_params)
 end
+
 function CivilianLogicFlee._cancel_pathing(data, my_data)
 	data.unit:brain():cancel_all_pathing_searches()
 	my_data.pathing_to_cover = nil
@@ -309,6 +320,7 @@ function CivilianLogicFlee._cancel_pathing(data, my_data)
 	my_data.coarse_path = nil
 	my_data.coarse_path_index = nil
 end
+
 function CivilianLogicFlee._find_hide_cover(data)
 	local my_data = data.internal_data
 	my_data.cover_search_task_key = nil
@@ -337,6 +349,7 @@ function CivilianLogicFlee._find_hide_cover(data)
 		data.unit:brain():set_update_enabled_state(true)
 	end
 end
+
 function CivilianLogicFlee._start_moving_to_cover(data, my_data)
 	data.unit:sound():say("_a03x_any", true)
 	CivilianLogicFlee._unregister_rescue_SO(data, my_data)
@@ -360,6 +373,7 @@ function CivilianLogicFlee._start_moving_to_cover(data, my_data)
 		my_data.rsrv_pos.stand = nil
 	end
 end
+
 function CivilianLogicFlee._add_delayed_rescue_SO(data, my_data)
 	if data.char_tweak.flee_type == "hide" or data.unit:unit_data() and data.unit:unit_data().not_rescued then
 	elseif my_data.delayed_clbks and my_data.delayed_clbks[my_data.delayed_rescue_SO_id] then
@@ -378,6 +392,7 @@ function CivilianLogicFlee._add_delayed_rescue_SO(data, my_data)
 		CopLogicBase.add_delayed_clbk(my_data, my_data.delayed_rescue_SO_id, callback(CivilianLogicFlee, CivilianLogicFlee, "register_rescue_SO", data), TimerManager:game():time() + 1)
 	end
 end
+
 function CivilianLogicFlee.register_rescue_SO(ignore_this, data)
 	local my_data = data.internal_data
 	CopLogicBase.on_delayed_clbk(my_data, my_data.delayed_rescue_SO_id)
@@ -462,6 +477,7 @@ function CivilianLogicFlee.register_rescue_SO(ignore_this, data)
 	my_data.rescue_SO_id = so_id
 	managers.groupai:state():add_special_objective(so_id, so_descriptor)
 end
+
 function CivilianLogicFlee._unregister_rescue_SO(data, my_data)
 	if my_data.rescuer then
 		local rescuer = my_data.rescuer
@@ -475,15 +491,18 @@ function CivilianLogicFlee._unregister_rescue_SO(data, my_data)
 		my_data.delayed_rescue_SO_id = nil
 	end
 end
+
 function CivilianLogicFlee.on_rescue_SO_administered(ignore_this, data, receiver_unit)
 	managers.groupai:state():on_civilian_try_freed()
 	local my_data = data.internal_data
 	my_data.rescuer = receiver_unit
 	my_data.rescue_SO_id = nil
 end
+
 function CivilianLogicFlee.rescue_SO_verification(ignore_this, unit)
 	return tweak_data.character[unit:base()._tweak_table].rescue_hostages
 end
+
 function CivilianLogicFlee.on_rescue_SO_failed(ignore_this, data)
 	local my_data = data.internal_data
 	if my_data.rescuer then
@@ -491,6 +510,7 @@ function CivilianLogicFlee.on_rescue_SO_failed(ignore_this, data)
 		CivilianLogicFlee._add_delayed_rescue_SO(data, data.internal_data)
 	end
 end
+
 function CivilianLogicFlee.on_rescue_SO_completed(ignore_this, data, good_pig)
 	if data.internal_data.rescuer and good_pig:key() == data.internal_data.rescuer:key() then
 		data.internal_data.rescuer = nil
@@ -514,6 +534,7 @@ function CivilianLogicFlee.on_rescue_SO_completed(ignore_this, data, good_pig)
 	managers.groupai:state():on_civilian_freed()
 	good_pig:sound():say("_h01x_sin", true)
 end
+
 function CivilianLogicFlee._do_rescued(data)
 	local flee_pos = managers.groupai:state():flee_point(data.unit)
 	if flee_pos then
@@ -522,9 +543,11 @@ function CivilianLogicFlee._do_rescued(data)
 		data.unit:brain():set_update_enabled_state(true)
 	end
 end
+
 function CivilianLogicFlee.on_new_objective(data, old_objective)
 	CivilianLogicIdle.on_new_objective(data, old_objective)
 end
+
 function CivilianLogicFlee.on_rescue_allowed_state(data, state)
 	local my_data = data.internal_data
 	if state then
@@ -535,14 +558,17 @@ function CivilianLogicFlee.on_rescue_allowed_state(data, state)
 		CivilianLogicFlee._unregister_rescue_SO(data, my_data)
 	end
 end
+
 function CivilianLogicFlee.wants_rescue(data)
 	return data.internal_data.rescue_SO_id
 end
+
 function CivilianLogicFlee._get_all_paths(data)
 	return {
 		flee_path = data.internal_data.flee_path
 	}
 end
+
 function CivilianLogicFlee._set_verified_paths(data, verified_paths)
 	data.internal_data.flee_path = verified_paths.flee_path
 end

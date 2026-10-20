@@ -2,6 +2,7 @@ core:module("CorePrefHud")
 PrefHud = PrefHud or class()
 PrefHud.CONFIG_FILE_PATH = "core/settings/prefhud"
 PrefHud.CONFIG_FILE_EXTENSION = "prefhud"
+
 function PrefHud:init()
 	self._const = {}
 	self._const._bar_y = 14
@@ -14,12 +15,15 @@ function PrefHud:init()
 	self:build_gui()
 	self:hide()
 end
+
 function PrefHud:remove_counter(name)
 	self._counters[name] = nil
 end
+
 function PrefHud:remove_all_counters()
 	self._counters = {}
 end
+
 function PrefHud:add_counter(name, sort, min, mid, max, precision, inv, inv_colors, call_str)
 	self._counters[name] = {
 		_sort = sort or table.size(self._counters) + 1,
@@ -35,6 +39,7 @@ function PrefHud:add_counter(name, sort, min, mid, max, precision, inv, inv_colo
 		_raw_value = 0
 	}
 end
+
 function PrefHud:load_config()
 	assert(DB:has(self.CONFIG_FILE_EXTENSION, self.CONFIG_FILE_PATH), "[CorePrefHud] Can't open \"" .. tostring(self.CONFIG_FILE_PATH) .. "." .. tostring(self.CONFIG_FILE_EXTENSION) .. "\".")
 	local data = PackageManager:script_data(Idstring(self.CONFIG_FILE_EXTENSION), Idstring(self.CONFIG_FILE_PATH))
@@ -45,6 +50,7 @@ function PrefHud:load_config()
 		end
 	end
 end
+
 function PrefHud:build_gui()
 	if self._workspace then
 		Overlay:newgui():destroy_workspace(self._workspace)
@@ -85,14 +91,17 @@ function PrefHud:build_gui()
 		i = i + 1
 	end
 end
+
 function PrefHud:show()
 	self._workspace:show()
 	self._visible = true
 end
+
 function PrefHud:hide()
 	self._workspace:hide()
 	self._visible = false
 end
+
 function PrefHud:toggle()
 	if self._visible then
 		self:hide()
@@ -100,6 +109,7 @@ function PrefHud:toggle()
 		self:show()
 	end
 end
+
 function PrefHud:update_bars(t, dt)
 	if (self._prev_upd or self._upd_interval) >= self._upd_interval then
 		self._prev_upd = 0
@@ -147,24 +157,29 @@ function PrefHud:update_bars(t, dt)
 		self._prev_upd = self._prev_upd + dt
 	end
 end
+
 local ids_win32 = Idstring("WIN32")
 local ids_left_ctrl = Idstring("left ctrl")
 local ids_f1 = Idstring("f1")
 local is_win32 = SystemInfo:platform() == ids_win32
+
 function PrefHud:update_keys()
 	if Application:production_build() and is_win32 and Input:keyboard():down(ids_left_ctrl) and Input:keyboard():pressed(ids_f1) then
 		self:toggle()
 	end
 end
+
 function PrefHud:update(t, dt)
 	if self._visible then
 		self:update_bars(t, dt)
 	end
 	self:update_keys()
 end
+
 function PrefHud:paused_update(t, dt)
 	self:update(t, dt)
 end
+
 function PrefHud:destroy()
 	if alive(self._workspace) then
 		Overlay:newgui():destroy_workspace(self._workspace)

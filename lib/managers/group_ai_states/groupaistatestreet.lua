@@ -1,10 +1,12 @@
 GroupAIStateStreet = GroupAIStateStreet or class(GroupAIStateBase)
+
 function GroupAIStateStreet:init()
 	GroupAIStateStreet.super.init(self)
 	if Network:is_server() and not self._police_upd_task_queued then
 		self:_queue_police_upd_task()
 	end
 end
+
 function GroupAIStateStreet:_init_misc_data()
 	GroupAIStateStreet.super:_init_misc_data(self)
 	if managers.navigation:is_data_ready() then
@@ -32,28 +34,36 @@ function GroupAIStateStreet:_init_misc_data()
 		}
 	end
 end
+
 function GroupAIStateStreet:update(t, dt)
 	GroupAIStateBesiege.update(self, t, dt)
 end
+
 function GroupAIStateStreet:paused_update(t, dt)
 	GroupAIStateBesiege.paused_update(self, t, dt)
 end
+
 function GroupAIStateStreet:_queue_police_upd_task()
 	self._police_upd_task_queued = true
 	managers.enemy:queue_task("GroupAIStateStreet._upd_police_activity", GroupAIStateStreet._upd_police_activity, self, self._t + 2)
 end
+
 function GroupAIStateStreet:assign_enemy_to_group_ai(unit)
 	GroupAIStateBesiege.assign_enemy_to_group_ai(self, unit)
 end
+
 function GroupAIStateStreet:on_enemy_unregistered(unit)
 	GroupAIStateBesiege.on_enemy_unregistered(self, unit)
 end
+
 function GroupAIStateStreet:on_enemy_active_state_change(unit, state)
 	GroupAIStateBesiege.on_enemy_active_state_change(self, unit, state)
 end
+
 function GroupAIStateStreet:_mark_enemy_active_state(u_properties, state)
 	GroupAIStateBesiege._mark_enemy_active_state(self, u_properties, state)
 end
+
 function GroupAIStateStreet:_upd_police_activity()
 	self._police_upd_task_queued = false
 	if self._ai_enabled then
@@ -74,6 +84,7 @@ function GroupAIStateStreet:_upd_police_activity()
 	end
 	self:_queue_police_upd_task()
 end
+
 function GroupAIStateStreet:_begin_new_tasks(t)
 	local all_areas = self._area_data
 	local nav_manager = managers.navigation
@@ -91,6 +102,7 @@ function GroupAIStateStreet:_begin_new_tasks(t)
 		end
 	end
 end
+
 function GroupAIStateStreet:_begin_blockade_task(t)
 	local event = self:_find_blockade_event(t)
 	if not event then
@@ -112,6 +124,7 @@ function GroupAIStateStreet:_begin_blockade_task(t)
 		next_dispatch_t = t + math.random(5, 30)
 	}
 	task_data.mission_fwd = event.rot:y()
+	
 	function task_data.dispatch()
 		task_data.next_dispatch_t = nil
 		task_data.phase = "anticipation"
@@ -126,8 +139,10 @@ function GroupAIStateStreet:_begin_blockade_task(t)
 			})
 		end
 	end
+	
 	self:_use_spawn_event(event)
 end
+
 function GroupAIStateStreet:_upd_blockade_task(t)
 	local task_data = self._task_data.blockade
 	if not task_data.active then
@@ -412,6 +427,7 @@ function GroupAIStateStreet:_upd_blockade_task(t)
 		end
 	end
 end
+
 function GroupAIStateStreet:_find_blockade_event(t)
 	local mvec3_dis = mvector3.distance
 	local min_dis = tweak_data.group_ai.street.blockade.min_distance
@@ -457,6 +473,7 @@ function GroupAIStateStreet:_find_blockade_event(t)
 		end
 	end
 end
+
 function GroupAIStateStreet:_begin_reenforce_task(nav_seg, force)
 	self._task_data.reenforce.active = true
 	local new_task = {
@@ -466,6 +483,7 @@ function GroupAIStateStreet:_begin_reenforce_task(nav_seg, force)
 	}
 	table.insert(self._task_data.reenforce.tasks, new_task)
 end
+
 function GroupAIStateStreet:_upd_reenforce_tasks(t)
 	for i_task, task_data in ipairs(self._task_data.reenforce.tasks) do
 		local target_area = task_data.target_area
@@ -531,6 +549,7 @@ function GroupAIStateStreet:_upd_reenforce_tasks(t)
 		end
 	end
 end
+
 function GroupAIStateStreet:_begin_assault_task(t)
 	local available_criminals = {}
 	for c_key, c_data in pairs(self._player_criminals) do
@@ -572,6 +591,7 @@ function GroupAIStateStreet:_begin_assault_task(t)
 		})
 	end
 end
+
 function GroupAIStateStreet:_upd_assault_task(t)
 	local task_data = self._task_data.assault
 	if not task_data.active then
@@ -966,6 +986,7 @@ function GroupAIStateStreet:_upd_assault_task(t)
 		end
 	end
 end
+
 function GroupAIStateStreet:_find_spawn_points_behind_pos(start_nav_seg, target_pos, nr_wanted, fwd, nav_segs, max_dis)
 	local all_areas = self._area_data
 	local all_nav_segs = managers.navigation._nav_segments
@@ -1040,6 +1061,7 @@ function GroupAIStateStreet:_find_spawn_points_behind_pos(start_nav_seg, target_
 	until #to_search_segs == 0
 	return 0 < #s_points and s_points
 end
+
 function GroupAIStateStreet:_spawn_cops_with_objective(area, spawn_points, objective, unit_weights)
 	local produce_data = {
 		{
@@ -1068,6 +1090,7 @@ function GroupAIStateStreet:_spawn_cops_with_objective(area, spawn_points, objec
 		end
 	end
 end
+
 function GroupAIStateStreet:_spawn_cops_with_objectives(spawn_points, objectives, unit_weights, spawned_units)
 	local produce_data = {
 		{
@@ -1098,6 +1121,7 @@ function GroupAIStateStreet:_spawn_cops_with_objectives(spawn_points, objectives
 		end
 	end
 end
+
 function GroupAIStateStreet:_begin_regroup_task(from_assault)
 	self._task_data.regroup.start_t = self._t
 	self._task_data.regroup.end_t = self._t + self:_get_difficulty_dependent_value(tweak_data.group_ai.street.regroup.duration)
@@ -1109,12 +1133,15 @@ function GroupAIStateStreet:_begin_regroup_task(from_assault)
 		})
 	end
 end
+
 function GroupAIStateStreet:_upd_regroup_task(t)
 	GroupAIStateBesiege._upd_regroup_task(self)
 end
+
 function GroupAIStateStreet:_find_nearest_safe_area(nav_seg_id, start_pos)
 	return GroupAIStateBesiege._find_nearest_safe_area(self, nav_seg_id, start_pos)
 end
+
 function GroupAIStateStreet:_end_regroup_task(regroup_task)
 	regroup_task = regroup_task or self._task_data.regroup
 	if self._wave_mode then
@@ -1143,17 +1170,21 @@ function GroupAIStateStreet:_end_regroup_task(regroup_task)
 		self._draw_drama.regroup_hist[#self._draw_drama.regroup_hist][2] = self._t
 	end
 end
+
 function GroupAIStateStreet:is_area_safe(nav_seg)
 	local all_areas = self._area_data
 	local area = all_areas[nav_seg]
 	return area and area.is_safe
 end
+
 function GroupAIStateStreet:set_enemy_assigned(nav_seg, unit_key)
 	GroupAIStateBesiege._set_enemy_assigned(self, self._area_data[nav_seg], unit_key)
 end
+
 function GroupAIStateStreet:_set_enemy_assigned(area_data, unit_key)
 	GroupAIStateBesiege._set_enemy_assigned(self, area_data, unit_key)
 end
+
 function GroupAIStateStreet:criminal_spotted(unit)
 	local u_key = unit:key()
 	local u_sighting = self._criminals[u_key]
@@ -1173,9 +1204,11 @@ function GroupAIStateStreet:criminal_spotted(unit)
 		self:_on_area_safety_status(seg, {reason = "criminal", record = u_sighting})
 	end
 end
+
 function GroupAIStateStreet:on_objective_complete(unit, objective)
 	GroupAIStateBesiege.on_objective_complete(self, unit, objective)
 end
+
 function GroupAIStateStreet:on_defend_travel_end(unit, objective)
 	local seg = objective.nav_seg
 	local area_data = self._area_data[seg]
@@ -1184,8 +1217,10 @@ function GroupAIStateStreet:on_defend_travel_end(unit, objective)
 		self:_on_area_safety_status(seg, {reason = "guard", unit = unit})
 	end
 end
+
 function GroupAIStateStreet:on_cop_jobless(unit)
 end
+
 function GroupAIStateStreet:_empty_area_data()
 	return {
 		police = {
@@ -1198,30 +1233,39 @@ function GroupAIStateStreet:_empty_area_data()
 		neighbours = {}
 	}
 end
+
 function GroupAIStateStreet:_map_spawn_points_to_respective_areas(id, spawn_points)
 	GroupAIStateBesiege._map_spawn_points_to_respective_areas(self, id, spawn_points)
 end
+
 function GroupAIStateStreet:add_preferred_spawn_points(id, spawn_points)
 	GroupAIStateBesiege.add_preferred_spawn_points(self, id, spawn_points)
 end
+
 function GroupAIStateStreet:remove_preferred_spawn_points(id)
 	GroupAIStateBesiege.remove_preferred_spawn_points(self, id)
 end
+
 function GroupAIStateStreet:_draw_enemy_activity(t)
 	GroupAIStateBesiege._draw_enemy_activity(self, t)
 end
+
 function GroupAIStateStreet:on_nav_segment_state_change(changed_seg, state)
 	GroupAIStateBesiege.on_nav_segment_state_change(self, changed_seg, state)
 end
+
 function GroupAIStateStreet:find_occupation_in_area(nav_seg)
 	return GroupAIStateBesiege.find_occupation_in_area(self, nav_seg)
 end
+
 function GroupAIStateStreet:verify_occupation_in_area(objective)
 	return GroupAIStateBesiege.verify_occupation_in_area(self, objective)
 end
+
 function GroupAIStateStreet:filter_area_unsafe(nav_seg)
 	return not self:is_area_safe()
 end
+
 function GroupAIStateStreet:_on_area_safety_status(seg, event)
 	local all_areas = self._area_data
 	local area_data = all_areas[seg]
@@ -1240,16 +1284,20 @@ function GroupAIStateStreet:_on_area_safety_status(seg, event)
 		end
 	end
 end
+
 function GroupAIStateStreet:add_flee_point(id, pos)
 	self._flee_points[id] = pos
 end
+
 function GroupAIStateStreet:remove_flee_point(id)
 	self._flee_points[id] = nil
 end
+
 function GroupAIStateStreet:flee_point(unit)
 	local flee_point_id, flee_point = next(self._flee_points)
 	return flee_point
 end
+
 function GroupAIStateStreet:_draw_spawn_points()
 	local all_areas = self._area_data
 	for seg_id, area_data in pairs(all_areas) do
@@ -1261,15 +1309,19 @@ function GroupAIStateStreet:_draw_spawn_points()
 		end
 	end
 end
+
 function GroupAIStateStreet:on_hostage_fleeing(unit)
 	self._hostage_fleeing = unit
 end
+
 function GroupAIStateStreet:on_hostage_flee_end()
 	self._hostage_fleeing = nil
 end
+
 function GroupAIStateStreet:can_hostage_flee()
 	return not self._hostage_fleeing
 end
+
 function GroupAIStateStreet:add_to_surrendered(unit, update)
 	local hos_data = self._hostage_data
 	local nr_entries = #hos_data
@@ -1283,6 +1335,7 @@ function GroupAIStateStreet:add_to_surrendered(unit, update)
 	end
 	table.insert(hos_data, entry)
 end
+
 function GroupAIStateStreet:remove_from_surrendered(unit)
 	local hos_data = self._hostage_data
 	local u_key = unit:key()
@@ -1297,6 +1350,7 @@ function GroupAIStateStreet:remove_from_surrendered(unit)
 		self._hostage_upd_key = nil
 	end
 end
+
 function GroupAIStateStreet:_upd_hostage_task()
 	self._hostage_upd_key = nil
 	local hos_data = self._hostage_data
@@ -1308,6 +1362,7 @@ function GroupAIStateStreet:_upd_hostage_task()
 		managers.enemy:queue_task(self._hostage_upd_key, self._upd_hostage_task, self, self._t + 1)
 	end
 end
+
 function GroupAIStateStreet:get_unit_assigned_area(u_key)
 	local u_area_data = self._police[u_key].assigned_area
 	if u_area_data then
@@ -1318,6 +1373,7 @@ function GroupAIStateStreet:get_unit_assigned_area(u_key)
 		end
 	end
 end
+
 function GroupAIStateStreet:set_area_min_police_force(id, force, pos)
 	GroupAIStateBesiege.set_area_min_police_force(self, id, force, pos)
 	if force and 0 < force then
@@ -1352,15 +1408,19 @@ function GroupAIStateStreet:set_area_min_police_force(id, force, pos)
 		end
 	end
 end
+
 function GroupAIStateStreet:set_mission_fwd_vector(direction, position)
 	Application:error("[GroupAIStateStreet:set_mission_fwd_vector] Redundant function call.")
 end
+
 function GroupAIStateStreet:register_criminal(unit)
 	GroupAIStateBesiege.register_criminal(self, unit)
 end
+
 function GroupAIStateStreet:unregister_criminal(unit)
 	GroupAIStateBesiege.unregister_criminal(self, unit)
 end
+
 function GroupAIStateStreet:set_wave_mode(flag)
 	local old_wave_mode = self._wave_mode
 	self._wave_mode = flag
@@ -1419,6 +1479,7 @@ function GroupAIStateStreet:set_wave_mode(flag)
 		Application:error("[GroupAIStateStreet:set_wave_mode] flag", flag, " does not apply to the current Group AI state.")
 	end
 end
+
 function GroupAIStateStreet:on_simulation_ended()
 	GroupAIStateStreet.super.on_simulation_ended(self)
 	if managers.navigation:is_data_ready() then
@@ -1440,6 +1501,7 @@ function GroupAIStateStreet:on_simulation_ended()
 		managers.enemy:unqueue_task("GroupAIStateStreet._upd_police_activity")
 	end
 end
+
 function GroupAIStateStreet:on_simulation_started()
 	GroupAIStateStreet.super.on_simulation_started(self)
 	if managers.navigation:is_data_ready() then
@@ -1452,6 +1514,7 @@ function GroupAIStateStreet:on_simulation_started()
 		self:_queue_police_upd_task()
 	end
 end
+
 function GroupAIStateStreet:add_spawn_event(id, event_data)
 	GroupAIStateStreet.super.add_spawn_event(self, id, event_data)
 	if event_data.task_type == "blockade" then
@@ -1461,6 +1524,7 @@ function GroupAIStateStreet:add_spawn_event(id, event_data)
 		event_data.relevant_areas = relevant_nav_segments
 	end
 end
+
 function GroupAIStateStreet:_map_ai_blockade_spots()
 	self._blockade_spots_mapped = true
 	local nav_manager = managers.navigation
@@ -1480,9 +1544,11 @@ function GroupAIStateStreet:_map_ai_blockade_spots()
 		table.insert(area.blockade_spots, entry)
 	end
 end
+
 function GroupAIStateStreet:is_detection_persistent()
 	return not self._task_data.assault.active and (not self._task_data.regroup.active or not self._task_data.regroup.phase) and self._task_data.blockade.active and self._task_data.blockade.phase
 end
+
 function GroupAIStateStreet:is_smoke_grenade_active()
 	return self._smoke_end_t and Application:time() < self._smoke_end_t
 end

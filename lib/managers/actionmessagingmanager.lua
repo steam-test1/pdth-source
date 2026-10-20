@@ -2,10 +2,12 @@ ActionMessagingManager = ActionMessagingManager or class()
 ActionMessagingManager.PATH = "gamedata/action_messages"
 ActionMessagingManager.FILE_EXTENSION = "action_message"
 ActionMessagingManager.FULL_PATH = ActionMessagingManager.PATH .. "." .. ActionMessagingManager.FILE_EXTENSION
+
 function ActionMessagingManager:init()
 	self._messages = {}
 	self:_parse_messages()
 end
+
 function ActionMessagingManager:_parse_messages()
 	local list = PackageManager:script_data(self.FILE_EXTENSION:id(), self.PATH:id())
 	for _, data in ipairs(list) do
@@ -16,6 +18,7 @@ function ActionMessagingManager:_parse_messages()
 		end
 	end
 end
+
 function ActionMessagingManager:_parse_message(data)
 	local id = data.id
 	local text_id = data.text_id
@@ -29,6 +32,7 @@ function ActionMessagingManager:_parse_message(data)
 		equipment_id = equipment_id
 	}
 end
+
 function ActionMessagingManager:ids()
 	local t = {}
 	for id, _ in pairs(self._messages) do
@@ -37,12 +41,15 @@ function ActionMessagingManager:ids()
 	table.sort(t)
 	return t
 end
+
 function ActionMessagingManager:messages()
 	return self._messages
 end
+
 function ActionMessagingManager:message(id)
 	return self._messages[id]
 end
+
 function ActionMessagingManager:show_message(id, instigator)
 	if not id or not self:message(id) then
 		Application:stack_dump_error("Bad id to show message, " .. tostring(id) .. ".")
@@ -50,6 +57,7 @@ function ActionMessagingManager:show_message(id, instigator)
 	end
 	self:_show_message(id, instigator)
 end
+
 function ActionMessagingManager:_show_message(id, instigator)
 	local msg_data = self:message(id)
 	local title = instigator:base():nick_name()
@@ -75,12 +83,15 @@ function ActionMessagingManager:_show_message(id, instigator)
 		managers.dialog:queue_dialog(self:message(id).dialog_id, {})
 	end
 end
+
 function ActionMessagingManager:sync_show_message(id, instigator)
 	if alive(instigator) and managers.network:game():member_from_unit(instigator) then
 		self:_show_message(id, instigator)
 	end
 end
+
 function ActionMessagingManager:save(data)
 end
+
 function ActionMessagingManager:load(data)
 end

@@ -1,4 +1,5 @@
 TaserLogicAttack = class(CopLogicAttack)
+
 function TaserLogicAttack.enter(data, new_logic_name, enter_params)
 	CopLogicBase.enter(data, new_logic_name, enter_params)
 	data.unit:brain():cancel_all_pathing_searches()
@@ -39,6 +40,7 @@ function TaserLogicAttack.enter(data, new_logic_name, enter_params)
 	data.tase_delay_t = data.tase_delay_t or -1
 	TaserLogicAttack._chk_play_charge_weapon_sound(data, my_data, my_data.focus_enemy)
 end
+
 function TaserLogicAttack.exit(data, new_logic_name, enter_params)
 	CopLogicBase.exit(data, new_logic_name, enter_params)
 	local my_data = data.internal_data
@@ -62,6 +64,7 @@ function TaserLogicAttack.exit(data, new_logic_name, enter_params)
 	end
 	data.unit:brain():set_update_enabled_state(true)
 end
+
 function TaserLogicAttack.queued_update(data)
 	if CopLogicIdle._chk_relocate(data) then
 		return
@@ -228,6 +231,7 @@ function TaserLogicAttack.queued_update(data)
 	CopLogicBase.queue_task(my_data, my_data.update_task_key, TaserLogicAttack.queued_update, data, data.t + (data.important and 0.5 or 2))
 	CopLogicBase._report_detections(my_data.detected_enemies)
 end
+
 function TaserLogicAttack._upd_enemy_detection(data)
 	managers.groupai:state():on_unit_detection_updated(data.unit)
 	local my_data = data.internal_data
@@ -296,6 +300,7 @@ function TaserLogicAttack._upd_enemy_detection(data)
 		my_data.focus_type = focus_type
 	end
 end
+
 function TaserLogicAttack._upd_aim(data, my_data)
 	local shoot, aim
 	local focus_enemy = my_data.focus_enemy
@@ -388,6 +393,7 @@ function TaserLogicAttack._upd_aim(data, my_data)
 	end
 	CopLogicAttack.aim_allow_fire(shoot, aim, data, my_data)
 end
+
 function TaserLogicAttack.action_complete_clbk(data, action)
 	local my_data = data.internal_data
 	local action_type = action:type()
@@ -418,12 +424,14 @@ function TaserLogicAttack.action_complete_clbk(data, action)
 		my_data.tasing = nil
 	end
 end
+
 function TaserLogicAttack._cancel_tase_attempt(data, my_data)
 	if my_data.tasing then
 		local new_action = {type = "idle", body_part = 3}
 		data.unit:brain():action_request(new_action)
 	end
 end
+
 function TaserLogicAttack.on_criminal_neutralized(data, criminal_key)
 	local my_data = data.internal_data
 	if my_data.tasing and criminal_key == my_data.tasing.target_u_data.unit:key() then
@@ -435,6 +443,7 @@ function TaserLogicAttack.on_criminal_neutralized(data, criminal_key)
 		CopLogicAttack.on_criminal_neutralized(data, criminal_key)
 	end
 end
+
 function TaserLogicAttack.on_detected_enemy_destroyed(data, enemy_unit)
 	CopLogicAttack.on_detected_enemy_destroyed(data, enemy_unit)
 	local my_data = data.internal_data
@@ -442,9 +451,11 @@ function TaserLogicAttack.on_detected_enemy_destroyed(data, enemy_unit)
 		TaserLogicAttack._cancel_tase_attempt(data, my_data)
 	end
 end
+
 function TaserLogicAttack.damage_clbk(data, damage_info)
 	CopLogicIdle.damage_clbk(data, damage_info)
 end
+
 function TaserLogicAttack._chk_reaction_to_criminal(data, key_criminal, criminal_data, stationary)
 	local my_data = data.internal_data
 	local record = managers.groupai:state():criminal_record(key_criminal)
@@ -494,6 +505,7 @@ function TaserLogicAttack._chk_reaction_to_criminal(data, key_criminal, criminal
 		end
 	end
 end
+
 function TaserLogicAttack._chk_play_charge_weapon_sound(data, my_data, focus_enemy)
 	if not my_data.tasing and (not my_data.last_charge_snd_play_t or data.t - my_data.last_charge_snd_play_t > 30) and focus_enemy.verified_dis < 2000 and math.abs(data.m_pos.z - focus_enemy.m_pos.z) < 300 then
 		my_data.last_charge_snd_play_t = data.t

@@ -5,6 +5,7 @@ core:import("CoreEws")
 core:import("CoreColorPickerPanel")
 ColorPickerDialog = ColorPickerDialog or CoreClass.mixin(CoreClass.class(), CoreEvent.BasicEventHandling)
 ColorPickerDialog.EDITOR_TITLE = "Color Picker"
+
 function ColorPickerDialog:init(parent_frame, enable_alpha, orientation, enable_value)
 	orientation = orientation or "HORIZONTAL"
 	assert(orientation == "HORIZONTAL" or orientation == "VERTICAL", "Invalid orientation.")
@@ -20,33 +21,43 @@ function ColorPickerDialog:init(parent_frame, enable_alpha, orientation, enable_
 	sizer:add(self._picker_panel:panel(), 0, 0, "EXPAND")
 	self:set_visible(true)
 end
+
 function ColorPickerDialog:update(time, delta_time)
 	self._picker_panel:update(time, delta_time)
 end
+
 function ColorPickerDialog:color()
 	return self._picker_panel:color()
 end
+
 function ColorPickerDialog:set_color(color)
 	self._picker_panel:set_color(color)
 end
+
 function ColorPickerDialog:set_position(newpos)
 	self._window:set_position(newpos)
 end
+
 function ColorPickerDialog:set_visible(visible)
 	self._window:set_visible(visible)
 end
+
 function ColorPickerDialog:center(window)
 	self._window:set_position(window:get_position() + window:get_size() * 0.5 - self._window:get_size() * 0.5)
 end
+
 function ColorPickerDialog:close()
 	self._window:destroy()
 end
+
 function ColorPickerDialog:_on_color_updated(sender, color)
 	self:_send_event("EVT_COLOR_UPDATED", color)
 end
+
 function ColorPickerDialog:_on_color_changed(sender, color)
 	self:_send_event("EVT_COLOR_CHANGED", color)
 end
+
 function ColorPickerDialog:_on_close()
 	self._window:set_visible(false)
 	self:_send_event("EVT_CLOSE_WINDOW", self._window)

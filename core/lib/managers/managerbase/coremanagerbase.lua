@@ -10,6 +10,7 @@ PRIO_WORLDCAMERA = 30
 PRIO_GAMEPLAY = 40
 PRIO_DEFAULT = PRIO_GAMEPLAY
 ManagerBase = ManagerBase or class()
+
 function ManagerBase:init(name)
 	self.__name = name
 	self.__aos = {}
@@ -18,6 +19,7 @@ function ManagerBase:init(name)
 	self.__active_requested = {}
 	self.__changed = false
 end
+
 function ManagerBase:_add_accessobj(accessobj, prio)
 	assert(accessobj:active_requested() == false)
 	assert(accessobj:really_active() == false)
@@ -25,6 +27,7 @@ function ManagerBase:_add_accessobj(accessobj, prio)
 	self.__ao2prio[accessobj] = prio
 	table.insert(self.__aos, accessobj)
 end
+
 function ManagerBase:_del_accessobj(accessobj)
 	self.__ao2prio[accessobj] = nil
 	table.delete(self.__aos, accessobj)
@@ -32,35 +35,43 @@ function ManagerBase:_del_accessobj(accessobj)
 	table.delete(self.__active_requested, accessobj)
 	accessobj:_really_deactivate()
 end
+
 function ManagerBase:_all_ao()
 	return self.__aos
 end
+
 function ManagerBase:_all_really_active()
 	return self.__really_active
 end
+
 function ManagerBase:_all_active_requested()
 	return self.__active_requested
 end
+
 function ManagerBase:_ao_by_name(name)
 	return table.find_value(self.__aos, function(ao)
 		return ao:name() == name
 	end)
 end
+
 function ManagerBase:_all_ao_by_prio(prio)
 	return table.find_all_values(self.__aos, function(ao)
 		return self.__ao2prio[ao] == prio
 	end)
 end
+
 function ManagerBase:_all_really_active_by_prio(prio)
 	return table.find_all_values(self.__really_active, function(ao)
 		return self.__ao2prio[ao] == prio
 	end)
 end
+
 function ManagerBase:_all_active_requested_by_prio(prio)
 	return table.find_all_values(self.__active_requested, function(ao)
 		return self.__ao2prio[ao] == prio
 	end)
 end
+
 function ManagerBase:_prioritize_and_activate()
 	self.__active_requested = table.find_all_values(self.__aos, function(ao)
 		return ao:active_requested()
@@ -92,6 +103,7 @@ function ManagerBase:_prioritize_and_activate()
 	end)
 	self.__changed = true
 end
+
 function ManagerBase:end_update(t, dt)
 	if self.__changed then
 		local p2aos = {}

@@ -1,9 +1,11 @@
 core:import("CoreShapeManager")
 CoreAreaTriggerUnitElement = CoreAreaTriggerUnitElement or class(MissionElement)
 AreaTriggerUnitElement = AreaTriggerUnitElement or class(CoreAreaTriggerUnitElement)
+
 function AreaTriggerUnitElement:init(...)
 	CoreAreaTriggerUnitElement.init(self, ...)
 end
+
 function CoreAreaTriggerUnitElement:init(unit)
 	MissionElement.init(self, unit)
 	self._timeline_color = Vector3(1, 1, 0)
@@ -26,6 +28,7 @@ function CoreAreaTriggerUnitElement:init(unit)
 	table.insert(self._save_values, "spawn_unit_elements")
 	table.insert(self._save_values, "amount")
 end
+
 function CoreAreaTriggerUnitElement:draw_links(t, dt, selected_unit, all_units)
 	MissionElement.draw_links(self, t, dt, selected_unit)
 	for _, id in ipairs(self._hed.spawn_unit_elements) do
@@ -42,8 +45,10 @@ function CoreAreaTriggerUnitElement:draw_links(t, dt, selected_unit, all_units)
 		end
 	end
 end
+
 function CoreAreaTriggerUnitElement:update_editing()
 end
+
 function CoreAreaTriggerUnitElement:add_element()
 	local ray = managers.editor:unit_by_raycast({mask = 10, ray_type = "editor"})
 	if ray and ray.unit and string.find(ray.unit:name():s(), "point_spawn_unit", 1, true) then
@@ -55,6 +60,7 @@ function CoreAreaTriggerUnitElement:add_element()
 		end
 	end
 end
+
 function CoreAreaTriggerUnitElement:remove_links(unit)
 	for _, id in ipairs(self._hed.spawn_unit_elements) do
 		if id == unit:unit_data().unit_id then
@@ -62,17 +68,21 @@ function CoreAreaTriggerUnitElement:remove_links(unit)
 		end
 	end
 end
+
 function CoreAreaTriggerUnitElement:update_selected(t, dt)
 	if self._shape then
 		self._shape:draw(t, dt, 1, 1, 1)
 	end
 end
+
 function CoreAreaTriggerUnitElement:set_shape_property(params)
 	self._shape:set_property(params.property, self._hed[params.value])
 end
+
 function CoreAreaTriggerUnitElement:add_triggers(vc)
 	vc:add_trigger(Idstring("lmb"), callback(self, self, "add_element"))
 end
+
 function CoreAreaTriggerUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel
@@ -187,6 +197,7 @@ function CoreAreaTriggerUnitElement:_build_panel(panel, panel_sizer)
 	self:scale_slider(panel, panel_sizer, depth_params, "depth", "Depth scale:")
 	self:scale_slider(panel, panel_sizer, height_params, "height", "Height scale:")
 end
+
 function CoreAreaTriggerUnitElement:scale_slider(panel, sizer, number_ctrlr_params, value, name)
 	local slider_sizer = EWS:BoxSizer("HORIZONTAL")
 	slider_sizer:add(EWS:StaticText(panel, name, "", "ALIGN_LEFT"), 1, 0, "ALIGN_CENTER_VERTICAL")
@@ -214,11 +225,13 @@ function CoreAreaTriggerUnitElement:scale_slider(panel, sizer, number_ctrlr_para
 	})
 	sizer:add(slider_sizer, 0, 0, "EXPAND")
 end
+
 function CoreAreaTriggerUnitElement:set_size(params)
 	local value = self._hed[params.value] * params.ctrlr:get_value() / 100
 	self._shape:set_property(params.value, value)
 	CoreEWS.change_entered_number(params.number_ctrlr_params, value)
 end
+
 function CoreAreaTriggerUnitElement:size_release(params)
 	self._hed[params.value] = params.number_ctrlr_params.value
 	params.ctrlr:set_value(100)

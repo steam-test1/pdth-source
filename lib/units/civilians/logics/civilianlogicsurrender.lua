@@ -1,4 +1,5 @@
 CivilianLogicSurrender = class(CopLogicBase)
+
 function CivilianLogicSurrender.enter(data, new_logic_name, enter_params)
 	CopLogicBase.enter(data, new_logic_name, enter_params)
 	data.unit:brain():cancel_all_pathing_searches()
@@ -65,6 +66,7 @@ function CivilianLogicSurrender.enter(data, new_logic_name, enter_params)
 		CopLogicBase.queue_task(my_data, my_data.outline_detection_task_key, CivilianLogicIdle._upd_outline_detection, data, data.t + 2)
 	end
 end
+
 function CivilianLogicSurrender.exit(data, new_logic_name, enter_params)
 	CopLogicBase.exit(data, new_logic_name, enter_params)
 	local my_data = data.internal_data
@@ -93,6 +95,7 @@ function CivilianLogicSurrender.exit(data, new_logic_name, enter_params)
 	end
 	CopLogicBase._reset_attention(data)
 end
+
 function CivilianLogicSurrender.queued_update(rubbish, data)
 	local my_data = data.internal_data
 	CivilianLogicSurrender._update_enemy_detection(data, my_data)
@@ -117,6 +120,7 @@ function CivilianLogicSurrender.queued_update(rubbish, data)
 		managers.navigation:move_pos_rsrv(my_data.rsrv_pos.stand)
 	end
 end
+
 function CivilianLogicSurrender.on_tied(data, aggressor_unit, not_tied)
 	local my_data = data.internal_data
 	if my_data.is_hostage then
@@ -171,6 +175,7 @@ function CivilianLogicSurrender.on_tied(data, aggressor_unit, not_tied)
 		end
 	end
 end
+
 function CivilianLogicSurrender._do_initial_act(data, amount, aggressor_unit, initial_act)
 	local my_data = data.internal_data
 	local adj_sumbission = amount * data.char_tweak.submission_intimidate
@@ -185,6 +190,7 @@ function CivilianLogicSurrender._do_initial_act(data, amount, aggressor_unit, in
 	}
 	data.unit:brain():action_request(action_data)
 end
+
 function CivilianLogicSurrender.action_complete_clbk(data, action)
 	local my_data = data.internal_data
 	if action:type() == "walk" then
@@ -204,6 +210,7 @@ function CivilianLogicSurrender.action_complete_clbk(data, action)
 		end
 	end
 end
+
 function CivilianLogicSurrender.on_intimidated(data, amount, aggressor_unit, skip_delay)
 	if data.unit:anim_data().tied then
 		return
@@ -230,6 +237,7 @@ function CivilianLogicSurrender.on_intimidated(data, amount, aggressor_unit, ski
 		end
 	end
 end
+
 function CivilianLogicSurrender._delayed_intimidate_clbk(ignore_this, params)
 	local data = params[1]
 	local my_data = data.internal_data
@@ -273,6 +281,7 @@ function CivilianLogicSurrender._delayed_intimidate_clbk(ignore_this, params)
 		end
 	end
 end
+
 function CivilianLogicSurrender.on_alert(data, alert_data)
 	if managers.groupai:state():whisper_mode() then
 		return
@@ -315,6 +324,7 @@ function CivilianLogicSurrender.on_alert(data, alert_data)
 		end
 	end
 end
+
 function CivilianLogicSurrender._update_enemy_detection(data, my_data)
 	local t = TimerManager:game():time()
 	local delta_t = t - my_data.last_upd_t
@@ -362,13 +372,17 @@ function CivilianLogicSurrender._update_enemy_detection(data, my_data)
 	my_data.scare_meter = math.max(0, my_data.scare_meter - delta_t)
 	my_data.last_upd_t = t
 end
+
 function CivilianLogicSurrender.is_available_for_assignment(data, old_objective)
 	return not data.unit:anim_data().tied and data.internal_data.submission_meter / data.internal_data.submission_max < 0.95
 end
+
 function CivilianLogicSurrender.on_new_objective(data, old_objective)
 	CivilianLogicIdle.on_new_objective(data, old_objective)
 end
+
 function CivilianLogicSurrender.on_rescue_allowed_state(data, state)
 	CivilianLogicFlee.on_rescue_allowed_state(data, state)
 end
+
 CivilianLogicSurrender.wants_rescue = CivilianLogicFlee.wants_rescue

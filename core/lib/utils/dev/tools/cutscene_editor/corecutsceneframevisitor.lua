@@ -1,4 +1,5 @@
 CoreCutsceneFrameVisitor = CoreCutsceneFrameVisitor or class()
+
 function CoreCutsceneFrameVisitor:init(parent_window, cutscene_editor, start_frame, end_frame)
 	self.__parent_window = assert(parent_window)
 	self.__cutscene_editor = assert(cutscene_editor)
@@ -7,6 +8,7 @@ function CoreCutsceneFrameVisitor:init(parent_window, cutscene_editor, start_fra
 	self.__frame = self.__start_frame
 	assert(type(self._visit_frame) == "function", "Subclasses of CoreCutsceneFrameVisitor must define _visit_frame(frame).")
 end
+
 function CoreCutsceneFrameVisitor:begin()
 	assert(alive(self.__parent_window), "Parent window has been destroyed.")
 	if not alive(self.__progress_dialog) then
@@ -17,6 +19,7 @@ function CoreCutsceneFrameVisitor:begin()
 	self.__cutscene_editor:set_playhead_position(self.__frame)
 	self.__cutscene_editor:refresh_player()
 end
+
 function CoreCutsceneFrameVisitor:update(time, delta_time)
 	Application:set_forced_timestep(0.033333335)
 	if not self:_is_ready_to_go() then
@@ -38,6 +41,7 @@ function CoreCutsceneFrameVisitor:update(time, delta_time)
 	end
 	return is_done
 end
+
 function CoreCutsceneFrameVisitor:end_update(time, delta_time)
 	if self.__should_visit_frame_at_end_update then
 		self:_visit_frame(self.__frame)
@@ -45,15 +49,19 @@ function CoreCutsceneFrameVisitor:end_update(time, delta_time)
 		self.__should_visit_frame_at_end_update = nil
 	end
 end
+
 function CoreCutsceneFrameVisitor:_done(aborted)
 end
+
 function CoreCutsceneFrameVisitor:_is_ready_to_go()
 	self.__sync_frames = (self.__sync_frames or 30) - 1
 	return self.__sync_frames <= 0
 end
+
 function CoreCutsceneFrameVisitor:_progress_message(frame)
 	return "Processing frame " .. frame
 end
+
 function CoreCutsceneFrameVisitor:_cleanup()
 	Application:set_forced_timestep(0)
 	self.__sync_frames = nil

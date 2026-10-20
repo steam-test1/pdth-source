@@ -3,6 +3,7 @@ core:import("CoreSerialize")
 core:import("CoreMenuItem")
 core:import("CoreMenuItemToggle")
 MenuNode = MenuNode or class()
+
 function MenuNode:init(data_node)
 	local parameters = {}
 	for key, value in pairs(data_node) do
@@ -47,6 +48,7 @@ function MenuNode:init(data_node)
 	self:_parse_items(data_node)
 	self._selected_item = nil
 end
+
 function MenuNode:_parse_items(data_node)
 	self._items = {}
 	self._legends = {}
@@ -65,11 +67,14 @@ function MenuNode:_parse_items(data_node)
 		end
 	end
 end
+
 function MenuNode:update(t, dt)
 end
+
 function MenuNode:clean_items()
 	self._items = {}
 end
+
 function MenuNode:create_item(data_node, parameters)
 	local item = CoreMenuItem.Item
 	if data_node then
@@ -82,18 +87,23 @@ function MenuNode:create_item(data_node, parameters)
 	item = item:new(data_node, parameters)
 	return item
 end
+
 function MenuNode:default_item_name()
 	return self._default_item_name
 end
+
 function MenuNode:set_default_item_name(default_item_name)
 	self._default_item_name = default_item_name
 end
+
 function MenuNode:parameters()
 	return self._parameters
 end
+
 function MenuNode:set_parameters(parameters)
 	self._parameters = parameters
 end
+
 function MenuNode:add_item(item)
 	item.dirty_callback = callback(self, self, "item_dirty")
 	if self.callback_handler then
@@ -107,6 +117,7 @@ function MenuNode:add_item(item)
 		table.insert(self._items, item)
 	end
 end
+
 function MenuNode:delete_item(item_name)
 	for i, item in ipairs(self:items()) do
 		if item:parameters().name == item_name then
@@ -117,6 +128,7 @@ function MenuNode:delete_item(item_name)
 		end
 	end
 end
+
 function MenuNode:item(item_name)
 	item_name = item_name or self._default_item_name
 	local item
@@ -128,15 +140,19 @@ function MenuNode:item(item_name)
 	end
 	return item
 end
+
 function MenuNode:items()
 	return self._items
 end
+
 function MenuNode:set_items(items)
 	self._items = items
 end
+
 function MenuNode:selected_item()
 	return self._selected_item
 end
+
 function MenuNode:select_item(item_name)
 	if not item_name and self:item() and not self:item():visible() then
 		for i, item in ipairs(self:items()) do
@@ -148,6 +164,7 @@ function MenuNode:select_item(item_name)
 	end
 	self._selected_item = self:item(item_name)
 end
+
 function MenuNode:set_callback_handler(callback_handler)
 	self.callback_handler = callback_handler
 	for _, callback_name in pairs(self._parameters.back_callback_name) do
@@ -157,16 +174,19 @@ function MenuNode:set_callback_handler(callback_handler)
 		item:set_callback_handler(callback_handler)
 	end
 end
+
 function MenuNode:trigger_back()
 	for _, callback in pairs(self:parameters().back_callback) do
 		callback(self)
 	end
 end
+
 function MenuNode:item_dirty(item)
 	if self.dirty_callback then
 		self.dirty_callback(self, item)
 	end
 end
+
 function MenuNode:legends()
 	return self._legends
 end

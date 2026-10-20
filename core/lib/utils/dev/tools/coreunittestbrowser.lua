@@ -1,4 +1,5 @@
 CoreUnitTestBrowser = CoreUnitTestBrowser or class()
+
 function CoreUnitTestBrowser:init()
 	self._unit_msg = {}
 	self._ignore_list = {}
@@ -8,6 +9,7 @@ function CoreUnitTestBrowser:init()
 		self:init_tree_view()
 	end
 end
+
 function CoreUnitTestBrowser:error_frame()
 	self._error_frame = EWS:Frame("Unit Test Browser", Vector3(100, 400, 0), Vector3(500, 500, 0), "FRAME_FLOAT_ON_PARENT,DEFAULT_FRAME_STYLE", Global.frame)
 	local menu_bar = EWS:MenuBar()
@@ -46,6 +48,7 @@ function CoreUnitTestBrowser:error_frame()
 	self._error_frame:set_sizer(error_box)
 	self._error_frame:set_visible(true)
 end
+
 function CoreUnitTestBrowser:search_frame()
 	self._search_frame = EWS:Frame("Search Unit", Vector3(100, 400, 0), Vector3(250, 350, 0), "")
 	self._search_frame:connect("", "EVT_CLOSE_WINDOW", callback(self, self, "on_close_search"), "")
@@ -70,11 +73,14 @@ function CoreUnitTestBrowser:search_frame()
 	self._search_frame:set_sizer(search_box)
 	self._search_frame:set_visible(true)
 end
+
 function CoreUnitTestBrowser:set_position(newpos)
 	self._error_frame:set_position(newpos)
 end
+
 function CoreUnitTestBrowser:update(t, dt)
 end
+
 function CoreUnitTestBrowser:on_popup()
 	local selected_item = self._error_box.tree_ctrl:selected_item()
 	if -1 < selected_item then
@@ -113,18 +119,21 @@ function CoreUnitTestBrowser:on_popup()
 		end
 	end
 end
+
 function CoreUnitTestBrowser:ignore_popup(critical)
 	local popup = EWS:Menu("")
 	popup:append_item("IGNORE", "Ignore", "")
 	popup:connect("IGNORE", "EVT_COMMAND_MENU_SELECTED", callback(self, self, "on_ignore"), critical)
 	self._error_frame:popup_menu(popup, Vector3(-1, -1, 0))
 end
+
 function CoreUnitTestBrowser:include_popup(critical)
 	local popup = EWS:Menu("")
 	popup:append_item("INCLUDE", "Include", "")
 	popup:connect("INCLUDE", "EVT_COMMAND_MENU_SELECTED", callback(self, self, "on_include"), critical)
 	self._error_frame:popup_menu(popup, Vector3(-1, -1, 0))
 end
+
 function CoreUnitTestBrowser:on_ignore(custom_data, event)
 	local id = self._error_box.tree_ctrl:selected_item()
 	if custom_data then
@@ -136,6 +145,7 @@ function CoreUnitTestBrowser:on_ignore(custom_data, event)
 	end
 	table.insert(self._ignore_list, id)
 end
+
 function CoreUnitTestBrowser:on_include(custom_data, event)
 	local id = self._error_box.tree_ctrl:selected_item()
 	if custom_data then
@@ -147,6 +157,7 @@ function CoreUnitTestBrowser:on_include(custom_data, event)
 	end
 	table.delete(self._ignore_list, id)
 end
+
 function CoreUnitTestBrowser:on_ignore_all()
 	for _, id in ipairs(self._error_box.tree_ctrl:get_children(self._failed_id)) do
 		local found = false
@@ -177,6 +188,7 @@ function CoreUnitTestBrowser:on_ignore_all()
 		end
 	end
 end
+
 function CoreUnitTestBrowser:on_ignore_none()
 	while #self._ignore_list > 0 do
 		for _, ignore_id in ipairs(self._ignore_list) do
@@ -205,6 +217,7 @@ function CoreUnitTestBrowser:on_ignore_none()
 		end
 	end
 end
+
 function CoreUnitTestBrowser:destroy()
 	if alive(self._error_frame) then
 		self._error_frame:destroy()
@@ -215,19 +228,23 @@ function CoreUnitTestBrowser:destroy()
 		self._search_frame = nil
 	end
 end
+
 function CoreUnitTestBrowser:close()
 	self._error_frame:destroy()
 	self:close_search()
 end
+
 function CoreUnitTestBrowser:close_search()
 	if self._search_frame then
 		self._search_frame:destroy()
 		self._search_frame = nil
 	end
 end
+
 function CoreUnitTestBrowser:on_find_unit()
 	self:search_frame()
 end
+
 function CoreUnitTestBrowser:on_close()
 	if self._autorun then
 		self:close()
@@ -235,9 +252,11 @@ function CoreUnitTestBrowser:on_close()
 		managers.toolhub:close("Unit Test Browser")
 	end
 end
+
 function CoreUnitTestBrowser:on_close_search()
 	self:close_search()
 end
+
 function CoreUnitTestBrowser:on_search()
 	self._search_box.list_box:clear()
 	local search_str = self._search_box.search_text_ctrl:get_value()
@@ -260,6 +279,7 @@ function CoreUnitTestBrowser:on_search()
 		end
 	end
 end
+
 function CoreUnitTestBrowser:on_listbox_selected()
 	local unit_msg = self._unit_msg[self._search_box.list_box:get_string(self._search_box.list_box:selected_index())]
 	if unit_msg and unit_msg.id then
@@ -270,6 +290,7 @@ function CoreUnitTestBrowser:on_listbox_selected()
 		self._error_box.tree_ctrl:select_item(unit_msg.id, true)
 	end
 end
+
 function CoreUnitTestBrowser:on_send_emails()
 	if self._warning_mail_dialog:show_modal() == "ID_OK" then
 		local call = "ruby unit_test_report"
@@ -295,6 +316,7 @@ function CoreUnitTestBrowser:on_send_emails()
 		Application:system(call, false)
 	end
 end
+
 function CoreUnitTestBrowser:on_send_emails_to()
 	if self._receiver_dialog:show_modal() then
 		local receiver_name = self._receiver_dialog:get_value()
@@ -321,6 +343,7 @@ function CoreUnitTestBrowser:on_send_emails_to()
 		Application:system(call, false)
 	end
 end
+
 function CoreUnitTestBrowser:on_tree_ctrl_change()
 	local id = self._error_box.tree_ctrl:selected_item()
 	if -1 < id then
@@ -335,6 +358,7 @@ function CoreUnitTestBrowser:on_tree_ctrl_change()
 		end
 	end
 end
+
 function CoreUnitTestBrowser:init_tree_view()
 	self._error_box.tree_ctrl:clear()
 	local num_units = 0
@@ -393,7 +417,9 @@ function CoreUnitTestBrowser:init_tree_view()
 	self._unit_msg.Critical = {}
 	self._unit_msg.Critical.msg = tostring(num_critical) .. " / " .. tostring(num_units) .. " units is in a critical condition."
 end
+
 CoreUnitTestBrowserInputDialog = CoreUnitTestBrowserInputDialog or class()
+
 function CoreUnitTestBrowserInputDialog:init(p)
 	self._dialog = EWS:Dialog(p, "Receiver", "", Vector3(0, 0, 0), Vector3(300, 86, 0), "CAPTION,SYSTEM_MENU")
 	local box = EWS:BoxSizer("VERTICAL")
@@ -412,6 +438,7 @@ function CoreUnitTestBrowserInputDialog:init(p)
 	box:add(button_box, 0, 0, "EXPAND")
 	self._dialog:set_sizer(box)
 end
+
 function CoreUnitTestBrowserInputDialog:show_modal()
 	self._key_text_ctrl:set_value("")
 	self._key = nil
@@ -422,16 +449,19 @@ function CoreUnitTestBrowserInputDialog:show_modal()
 	end
 	return self._return_val
 end
+
 function CoreUnitTestBrowserInputDialog:on_send_button()
 	self._done = true
 	self._key = self._key_text_ctrl:get_value()
 	self._dialog:end_modal("")
 end
+
 function CoreUnitTestBrowserInputDialog:on_cancel_button()
 	self._done = true
 	self._return_val = false
 	self._dialog:end_modal("")
 end
+
 function CoreUnitTestBrowserInputDialog:get_value()
 	return self._key
 end

@@ -1,4 +1,5 @@
 DramaTweakData = DramaTweakData or class()
+
 function DramaTweakData:init()
 	self:_create_table_structure()
 	self.drama_actions = {
@@ -13,5 +14,6 @@ function DramaTweakData:init()
 	self.peak = 0.95
 	self.assault_fade_end = 0.25
 end
+
 function DramaTweakData:_create_table_structure()
 end

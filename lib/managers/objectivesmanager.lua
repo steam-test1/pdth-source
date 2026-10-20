@@ -2,6 +2,7 @@ ObjectivesManager = ObjectivesManager or class()
 ObjectivesManager.PATH = "gamedata/objectives"
 ObjectivesManager.FILE_EXTENSION = "objective"
 ObjectivesManager.FULL_PATH = ObjectivesManager.PATH .. "." .. ObjectivesManager.FILE_EXTENSION
+
 function ObjectivesManager:init()
 	self._objectives = {}
 	self._active_objectives = {}
@@ -11,6 +12,7 @@ function ObjectivesManager:init()
 	self._objectives_level_id = {}
 	self:_parse_objectives()
 end
+
 function ObjectivesManager:_parse_objectives()
 	local list = PackageManager:script_data(self.FILE_EXTENSION:id(), self.PATH:id())
 	for _, data in ipairs(list) do
@@ -21,6 +23,7 @@ function ObjectivesManager:_parse_objectives()
 		end
 	end
 end
+
 function ObjectivesManager:_parse_objective(data)
 	local id = data.id
 	local text = managers.localization:text(data.text)
@@ -57,11 +60,13 @@ function ObjectivesManager:_parse_objective(data)
 		}
 	end
 end
+
 function ObjectivesManager:update_objective(id, load_data)
 	self:activate_objective(id, load_data, {
 		title_message = managers.localization:text("mission_objective_updated")
 	})
 end
+
 function ObjectivesManager:activate_objective(id, load_data, data)
 	if not id or not self._objectives[id] then
 		Application:stack_dump_error("Bad id to activate objective, " .. tostring(id) .. ".")
@@ -97,6 +102,7 @@ function ObjectivesManager:activate_objective(id, load_data, data)
 	end
 	self._active_objectives[id] = objective
 end
+
 function ObjectivesManager:remove_objective(id, load_data)
 	if not load_data then
 		if not id or not self._objectives[id] then
@@ -116,6 +122,7 @@ function ObjectivesManager:remove_objective(id, load_data)
 	})
 	self._active_objectives[id] = nil
 end
+
 function ObjectivesManager:complete_objective(id, load_data)
 	if not load_data then
 		if not id or not self._objectives[id] then
@@ -157,6 +164,7 @@ function ObjectivesManager:complete_objective(id, load_data)
 	table.insert(self._completed_objectives_ordered, 1, id)
 	self._active_objectives[id] = nil
 end
+
 function ObjectivesManager:complete_sub_objective(id, sub_id, load_data)
 	if not load_data then
 		if not id or not self._objectives[id] then
@@ -194,29 +202,37 @@ function ObjectivesManager:complete_sub_objective(id, sub_id, load_data)
 		self:complete_objective(id)
 	end
 end
+
 function ObjectivesManager:objective_is_active(id)
 	return self._active_objectives[id]
 end
+
 function ObjectivesManager:objective_is_completed(id)
 	return self._completed_objectives[id]
 end
+
 function ObjectivesManager:get_objective(id)
 	return self._objectives[id]
 end
+
 function ObjectivesManager:get_all_objectives()
 	local res = {}
 	mix(res, self._active_objectives, self._completed_objectives)
 	return res
 end
+
 function ObjectivesManager:get_active_objectives()
 	return self._active_objectives
 end
+
 function ObjectivesManager:get_completed_objectives()
 	return self._completed_objectives
 end
+
 function ObjectivesManager:get_completed_objectives_ordered()
 	return self._completed_objectives_ordered
 end
+
 function ObjectivesManager:objectives_by_name()
 	local t = {}
 	for name, _ in pairs(self._objectives) do
@@ -225,6 +241,7 @@ function ObjectivesManager:objectives_by_name()
 	table.sort(t)
 	return t
 end
+
 function ObjectivesManager:sub_objectives_by_name(id)
 	local t = {}
 	local objective = self._objectives[id]
@@ -236,6 +253,7 @@ function ObjectivesManager:sub_objectives_by_name(id)
 	table.sort(t)
 	return t
 end
+
 function ObjectivesManager:_get_xp(level_id, id)
 	if not self._objectives_level_id[level_id] then
 		Application:error("Had no xp for level", level_id)
@@ -248,10 +266,12 @@ function ObjectivesManager:_get_xp(level_id, id)
 	local xp_weight = self:_get_real_xp_weight(level_id, self._objectives_level_id[level_id][id].xp_weight)
 	return math.round(xp_weight * tweak_data.experience_manager.total_level_objectives)
 end
+
 function ObjectivesManager:_get_real_xp_weight(level_id, xp_weight)
 	local total_xp_weight = self:_total_xp_weight(level_id)
 	return xp_weight / total_xp_weight
 end
+
 function ObjectivesManager:_total_xp_weight(level_id)
 	if not self._objectives_level_id[level_id] then
 		return 0
@@ -262,6 +282,7 @@ function ObjectivesManager:_total_xp_weight(level_id)
 	end
 	return xp_weight
 end
+
 function ObjectivesManager:_check_xp_weight(level_id)
 	local total_xp = 0
 	local total_xp_weight = self:_total_xp_weight(level_id)
@@ -272,6 +293,7 @@ function ObjectivesManager:_check_xp_weight(level_id)
 	end
 	print("total", total_xp)
 end
+
 function ObjectivesManager:total_objectives(level_id)
 	if not self._objectives_level_id[level_id] then
 		return 0
@@ -282,6 +304,7 @@ function ObjectivesManager:total_objectives(level_id)
 	end
 	return i
 end
+
 function ObjectivesManager:save(data)
 	if next(self._active_objectives) or next(self._completed_objectives) or next(self._read_objectives) then
 		local state = {}
@@ -314,6 +337,7 @@ function ObjectivesManager:save(data)
 		return false
 	end
 end
+
 function ObjectivesManager:load(data)
 	local state = data.ObjectivesManager
 	if state then
@@ -339,6 +363,7 @@ function ObjectivesManager:load(data)
 		end
 	end
 end
+
 function ObjectivesManager:reset()
 	self._active_objectives = {}
 	self._completed_objectives = {}
@@ -347,9 +372,11 @@ function ObjectivesManager:reset()
 	self:_parse_objectives()
 	managers.hud:clear_objectives()
 end
+
 function ObjectivesManager:set_read(id, is_read)
 	self._read_objectives[id] = is_read
 end
+
 function ObjectivesManager:is_read(id)
 	return self._read_objectives[id]
 end

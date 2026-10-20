@@ -2,21 +2,27 @@ require("core/lib/utils/dev/tools/cutscene_editor/CoreCutsceneClipMetadata")
 require("core/lib/managers/cutscene/CoreCutsceneKeys")
 local CAMERA_ICON_IMAGE_COUNT = 30
 CoreCutsceneFootage = CoreCutsceneFootage or class()
+
 function CoreCutsceneFootage:init(cutscene)
 	self._cutscene = cutscene
 end
+
 function CoreCutsceneFootage:name()
 	return self._cutscene:name()
 end
+
 function CoreCutsceneFootage:controlled_unit_types()
 	return self._cutscene:controlled_unit_types()
 end
+
 function CoreCutsceneFootage:camera_names()
 	return self._cutscene:camera_names()
 end
+
 function CoreCutsceneFootage:keys()
 	return self._cutscene:_all_keys_sorted_by_time()
 end
+
 function CoreCutsceneFootage:add_clips_to_track(track, time)
 	time = time or 0
 	track:freeze()
@@ -25,6 +31,7 @@ function CoreCutsceneFootage:add_clips_to_track(track, time)
 	end
 	track:thaw()
 end
+
 function CoreCutsceneFootage:add_cameras_to_list_ctrl(list_ctrl)
 	list_ctrl:freeze()
 	list_ctrl:delete_all_items()
@@ -35,6 +42,7 @@ function CoreCutsceneFootage:add_cameras_to_list_ctrl(list_ctrl)
 	end
 	list_ctrl:thaw()
 end
+
 function CoreCutsceneFootage:create_clip(start_frame, end_frame, camera)
 	local clip = EWS:SequencerCroppedClip()
 	local metadata = core_or_local("CutsceneClipMetadata", self, camera)
@@ -46,9 +54,11 @@ function CoreCutsceneFootage:create_clip(start_frame, end_frame, camera)
 	clip:set_colour(self:colour():unpack())
 	return clip
 end
+
 function CoreCutsceneFootage:frame_count()
 	return self._cutscene:frame_count()
 end
+
 function CoreCutsceneFootage:colour()
 	if self._colour == nil then
 		local precision = 255
@@ -67,6 +77,7 @@ function CoreCutsceneFootage:colour()
 	end
 	return self._colour
 end
+
 function CoreCutsceneFootage:camera_icon_index(camera_name, image_count)
 	image_count = image_count or CAMERA_ICON_IMAGE_COUNT + 1
 	local name_without_prefix = string.match(camera_name, "camera_(.+)")
@@ -76,6 +87,7 @@ function CoreCutsceneFootage:camera_icon_index(camera_name, image_count)
 	end
 	return icon_index
 end
+
 function CoreCutsceneFootage:_camera_cuts()
 	local cuts = self:_camera_cut_list()
 	local index = 0
@@ -84,6 +96,7 @@ function CoreCutsceneFootage:_camera_cuts()
 		return unpack(cuts[index] or {})
 	end
 end
+
 function CoreCutsceneFootage:_camera_cut_list()
 	if self._camera_cut_cache == nil then
 		self._camera_cut_cache = {}
@@ -92,11 +105,13 @@ function CoreCutsceneFootage:_camera_cut_list()
 				if start_frame < end_frame then
 					table.insert(self._camera_cut_cache, {
 						start_frame,
+						
 						end_frame,
 						camera
 					})
 				end
 			end
+			
 			local previous_key = responder_map({
 				frame = 0,
 				camera = self._cutscene:default_camera()
@@ -110,6 +125,7 @@ function CoreCutsceneFootage:_camera_cut_list()
 	end
 	return self._camera_cut_cache
 end
+
 function CoreCutsceneFootage:prime_cast(cast)
 	cast:prime(self._cutscene)
 end

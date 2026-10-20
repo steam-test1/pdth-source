@@ -1,4 +1,5 @@
 SmokeGrenadeElement = SmokeGrenadeElement or class(MissionElement)
+
 function SmokeGrenadeElement:init(unit)
 	SmokeGrenadeElement.super.init(self, unit)
 	self._hed.duration = 15
@@ -8,6 +9,7 @@ function SmokeGrenadeElement:init(unit)
 	table.insert(self._save_values, "immediate")
 	table.insert(self._save_values, "ignore_control")
 end
+
 function SmokeGrenadeElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

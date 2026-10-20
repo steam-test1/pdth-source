@@ -1,4 +1,5 @@
 SelectWorkView = SelectWorkView or class(CoreEditorEwsDialog)
+
 function SelectWorkView:init(...)
 	CoreEditorEwsDialog.init(self, nil, "Workviews", "", Vector3(300, 150, 0), Vector3(350, 500, 0), "DEFAULT_DIALOG_STYLE,RESIZE_BORDER,STAY_ON_TOP", ...)
 	self:create_panel("VERTICAL")
@@ -65,6 +66,7 @@ function SelectWorkView:init(...)
 	self:fill_views_list()
 	self._dialog:set_visible(true)
 end
+
 function SelectWorkView:build_cbs()
 	self._continents_cbs = {}
 	local continents = managers.editor:continents()
@@ -82,39 +84,46 @@ function SelectWorkView:build_cbs()
 		self._continents_sizer:add(cb, 0, 2, "EXPAND,TOP")
 	end
 end
+
 function SelectWorkView:key_delete(ctrlr, event)
 	event:skip()
 	if EWS:name_to_key_code("K_DELETE") == event:key_code() then
 		self:on_delete()
 	end
 end
+
 function SelectWorkView:key_cancel(ctrlr, event)
 	event:skip()
 	if EWS:name_to_key_code("K_ESCAPE") == event:key_code() then
 		self:on_cancel()
 	end
 end
+
 function SelectWorkView:on_continent_cb()
 	self:fill_views_list()
 end
+
 function SelectWorkView:on_all_continents()
 	for name, cb in pairs(self._continents_cbs) do
 		cb:set_value(true)
 	end
 	self:fill_views_list()
 end
+
 function SelectWorkView:on_none_continents()
 	for name, cb in pairs(self._continents_cbs) do
 		cb:set_value(false)
 	end
 	self:fill_views_list()
 end
+
 function SelectWorkView:on_invert_continents()
 	for name, cb in pairs(self._continents_cbs) do
 		cb:set_value(not cb:get_value())
 	end
 	self:fill_views_list()
 end
+
 function SelectWorkView:on_delete()
 	local index = self._list:selected_item()
 	if index == -1 then
@@ -126,6 +135,7 @@ function SelectWorkView:on_delete()
 	managers.editor:delete_workview(continent, view_name)
 	self:fill_views_list()
 end
+
 function SelectWorkView:on_set_info()
 	local index = self._list:selected_item()
 	if index == -1 then
@@ -135,15 +145,18 @@ function SelectWorkView:on_set_info()
 	local view = self._views[j].view
 	view.text = self._info_ctrlr:get_value()
 end
+
 function SelectWorkView:on_mark_view()
 	local index = self._list:selected_item()
 	local j = self._list:get_item_data_ref(index)
 	local view = self._views[j].view
 	self._info_ctrlr:change_value(view.text or "")
 end
+
 function SelectWorkView:on_select_view()
 	self:on_goto()
 end
+
 function SelectWorkView:on_goto()
 	local index = self._list:selected_item()
 	if index == -1 then
@@ -152,15 +165,19 @@ function SelectWorkView:on_goto()
 	local j = self._list:get_item_data_ref(index)
 	managers.editor:goto_workview(self._views[j].view)
 end
+
 function SelectWorkView:on_add()
 	managers.editor:on_add_workview()
 end
+
 function SelectWorkView:update_filter()
 	self:fill_views_list()
 end
+
 function SelectWorkView:workview_added()
 	self:fill_views_list()
 end
+
 function SelectWorkView:fill_views_list()
 	self._list:delete_all_items()
 	local j = 1
@@ -190,15 +207,19 @@ function SelectWorkView:fill_views_list()
 	self._list:thaw()
 	self._list:autosize_column(0)
 end
+
 function SelectWorkView:reset()
 	self:fill_views_list()
 end
+
 function SelectWorkView:freeze()
 	self._list:freeze()
 end
+
 function SelectWorkView:thaw()
 	self._list:thaw()
 end
+
 function SelectWorkView:recreate()
 	for name, cb in pairs(self._continents_cbs) do
 		self._continents_sizer:detach(cb)

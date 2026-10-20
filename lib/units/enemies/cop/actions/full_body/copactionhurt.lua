@@ -63,6 +63,7 @@ CopActionHurt.hurt_anim_variants = {
 		}
 	}
 }
+
 function CopActionHurt:init(action_desc, common_data)
 	self._common_data = common_data
 	self._ext_movement = common_data.ext_movement
@@ -267,6 +268,7 @@ function CopActionHurt:init(action_desc, common_data)
 	self._ext_movement:enable_update()
 	return true
 end
+
 function CopActionHurt:_get_floor_normal(at_pos, fwd, right)
 	local padding_height = 150
 	local center_pos = at_pos + math.UP
@@ -326,6 +328,7 @@ function CopActionHurt:_get_floor_normal(at_pos, fwd, right)
 	mvec3_norm(ground_normal)
 	return ground_normal
 end
+
 function CopActionHurt:on_exit()
 	if self._shooting_hurt then
 		self._shooting_hurt = false
@@ -342,6 +345,7 @@ function CopActionHurt:on_exit()
 		managers.hud:set_mugshot_normal(self._unit:unit_data().mugshot_id)
 	end
 end
+
 function CopActionHurt:_get_pos_clamped_to_graph(test_head)
 	local tracker = self._ext_movement:nav_tracker()
 	local r = tracker:field_position()
@@ -379,8 +383,10 @@ function CopActionHurt:_get_pos_clamped_to_graph(test_head)
 	mvector3.set(new_pos, ray_params.trace[1])
 	return new_pos
 end
+
 function CopActionHurt:_upd_empty(t)
 end
+
 function CopActionHurt:_upd_hurt(t)
 	local dt = TimerManager:game():delta_time()
 	if self._ext_anim.hurt or self._ext_anim.death then
@@ -421,6 +427,7 @@ function CopActionHurt:_upd_hurt(t)
 		end
 	end
 end
+
 function CopActionHurt:_upd_bleedout(t)
 	if self._floor_normal then
 		local normal
@@ -517,6 +524,7 @@ function CopActionHurt:_upd_bleedout(t)
 		end
 	end
 end
+
 function CopActionHurt:_upd_ragdolled(t)
 	local dt = TimerManager:game():delta_time()
 	if self._shooting_hurt then
@@ -538,15 +546,19 @@ function CopActionHurt:_upd_ragdolled(t)
 		self._died = true
 	end
 end
+
 function CopActionHurt:type()
 	return "hurt"
 end
+
 function CopActionHurt:hurt_type()
 	return self._hurt_type
 end
+
 function CopActionHurt:expired()
 	return self._expired
 end
+
 function CopActionHurt:_action_hurt_equip(event)
 	if self._weapon_unit then
 		local weapon_unit = self._unit:inventory():equipped_unit()
@@ -560,12 +572,14 @@ function CopActionHurt:_action_hurt_equip(event)
 		self._falloff = weapon_usage_tweak.FALLOFF
 	end
 end
+
 function CopActionHurt:_action_hurt_death_exit()
 	if self._shooting_hurt then
 		self._shooting_hurt = false
 		self._weapon_unit:base():stop_autofire()
 	end
 end
+
 function CopActionHurt:chk_block(action_type, t)
 	if CopActionAct.chk_block(self, action_type, t) then
 		return true
@@ -574,9 +588,11 @@ function CopActionHurt:chk_block(action_type, t)
 		return true
 	end
 end
+
 function CopActionHurt:on_attention(attention)
 	self._attention = attention
 end
+
 function CopActionHurt:on_death_exit()
 	if self._shooting_hurt then
 		self._shooting_hurt = false
@@ -586,6 +602,7 @@ function CopActionHurt:on_death_exit()
 		self._unit:set_animations_enabled(false)
 	end
 end
+
 function CopActionHurt:on_death_drop(unit, stage)
 	if self._weapon_dropped then
 		return
@@ -603,9 +620,11 @@ function CopActionHurt:on_death_drop(unit, stage)
 	end
 	return
 end
+
 function CopActionHurt:body_part()
 	return self._body_part
 end
+
 function CopActionHurt:need_upd()
 	if self._died then
 		return false
@@ -613,6 +632,7 @@ function CopActionHurt:need_upd()
 		return true
 	end
 end
+
 function CopActionHurt:on_inventory_event(event)
 	local weapon_unit = self._ext_inventory:equipped_unit()
 	if weapon_unit then
@@ -630,11 +650,13 @@ function CopActionHurt:on_inventory_event(event)
 		self.update = self._upd_empty
 	end
 end
+
 function CopActionHurt:save(save_data)
 	for i, k in pairs(self._action_desc) do
 		save_data[i] = k
 	end
 end
+
 function CopActionHurt:_start_ragdoll()
 	if self._ragdolled then
 		return true
@@ -675,12 +697,14 @@ function CopActionHurt:_start_ragdoll()
 		return true
 	end
 end
+
 function CopActionHurt:force_ragdoll()
 	if self:_start_ragdoll() then
 		self.update = self._upd_ragdolled
 		self._ext_movement:enable_update()
 	end
 end
+
 function CopActionHurt:clbk_body_active_state(tag, unit, body, activated)
 	if self._root_act_tags[tag:key()] then
 		if activated then
@@ -695,13 +719,16 @@ function CopActionHurt:clbk_body_active_state(tag, unit, body, activated)
 		end
 	end
 end
+
 CopActionHurt._apply_freefall = CopActionWalk._apply_freefall
+
 function CopActionHurt:_freeze_ragdoll()
 	self._root_act_tags = {}
 	if self._unit:damage() and self._unit:damage():has_sequence("freeze_ragdoll") then
 		self._unit:damage():run_sequence_simple("freeze_ragdoll")
 	end
 end
+
 function CopActionHurt:clbk_chk_freeze_ragdoll()
 	if not alive(self._unit) then
 		self._ragdoll_freeze_clbk_id = nil

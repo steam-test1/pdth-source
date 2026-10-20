@@ -1,6 +1,7 @@
 core:import("CoreMenuItem")
 MenuItemKitSlot = MenuItemKitSlot or class(CoreMenuItem.Item)
 MenuItemKitSlot.TYPE = "kitslot"
+
 function MenuItemKitSlot:init(data_node, parameters)
 	CoreMenuItem.Item.init(self, data_node, parameters)
 	self._type = MenuItemKitSlot.TYPE
@@ -35,6 +36,7 @@ function MenuItemKitSlot:init(data_node, parameters)
 		end
 	end
 end
+
 function MenuItemKitSlot:next()
 	if not self._enabled then
 		return
@@ -64,6 +66,7 @@ function MenuItemKitSlot:next()
 	managers.menu:get_menu("kit_menu").renderer:set_kit_selection(peer_id, self._parameters.category, self._options[self._current_index], self._parameters.slot)
 	return true
 end
+
 function MenuItemKitSlot:previous()
 	if not self._enabled then
 		return
@@ -93,15 +96,19 @@ function MenuItemKitSlot:previous()
 	managers.menu:get_menu("kit_menu").renderer:set_kit_selection(peer_id, self._parameters.category, self._options[self._current_index], self._parameters.slot)
 	return true
 end
+
 function MenuItemKitSlot:left_arrow_visible()
 	return self._current_index > 1 and self._enabled
 end
+
 function MenuItemKitSlot:right_arrow_visible()
 	return self._current_index < #self._options and self._enabled
 end
+
 function MenuItemKitSlot:arrow_visible()
 	return #self._options > 0
 end
+
 function MenuItemKitSlot:text()
 	if #self._options == 0 then
 		return managers.localization:text("menu_kit_locked")
@@ -121,6 +128,7 @@ function MenuItemKitSlot:text()
 		return managers.localization:text(name_id)
 	end
 end
+
 function MenuItemKitSlot:icon_and_description()
 	if #self._options == 0 then
 		return "locked", managers.localization:text("des_locked")
@@ -145,6 +153,7 @@ function MenuItemKitSlot:icon_and_description()
 		return hud_icon, managers.localization:text(description_id)
 	end
 end
+
 function MenuItemKitSlot:upgrade_progress()
 	if #self._options == 0 then
 		return 0, 0
@@ -162,9 +171,11 @@ function MenuItemKitSlot:upgrade_progress()
 	end
 	return 0, 0
 end
+
 function MenuItemKitSlot:percentage()
 	return 66
 end
+
 function MenuItemKitSlot.clbk_msg_set_kit_selection(overwrite_data, msg_queue, rpc_name, peer_id, category, selection_name, slot)
 	if msg_queue then
 		local category_data = overwrite_data.categories[category]

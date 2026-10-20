@@ -6,6 +6,7 @@ require("core/lib/utils/dev/tools/particle_editor/CoreParticleEditorInitializers
 require("core/lib/utils/dev/tools/particle_editor/CoreParticleEditorSimulators")
 require("core/lib/utils/dev/tools/particle_editor/CoreParticleEditorVisualizers")
 require("core/lib/utils/dev/tools/particle_editor/CoreParticleEditorPanel")
+
 function collect_members(cls, m)
 	for funcname, funcobj in pairs(cls) do
 		if funcname:find("create_") then
@@ -14,6 +15,7 @@ function collect_members(cls, m)
 		end
 	end
 end
+
 function collect_member_names(members, member_names)
 	for k, v in pairs(members) do
 		local vi = v()
@@ -26,6 +28,7 @@ function collect_member_names(members, member_names)
 		return a.ui_name < b.ui_name
 	end)
 end
+
 stack_members = {
 	initializer = {},
 	simulator = {},
@@ -43,6 +46,7 @@ collect_member_names(stack_members.initializer, stack_member_names.initializer)
 collect_member_names(stack_members.simulator, stack_member_names.simulator)
 collect_member_names(stack_members.visualizer, stack_member_names.visualizer)
 CoreParticleEditor = CoreParticleEditor or class()
+
 function CoreParticleEditor:init()
 	if managers.editor then
 		managers.editor:set_listener_enabled(true)
@@ -56,6 +60,7 @@ function CoreParticleEditor:init()
 	self:start_dialog()
 	CoreEWS.check_news(self._main_frame, "particle_editor", true)
 end
+
 function CoreParticleEditor:start_dialog()
 	local dialog = EWS:Dialog(self._main_frame, "Tsar Bomba Particle Editor : Choose...", "", Vector3(-1, -1, 0), Vector3(400, 400, 0), "DEFAULT_DIALOG_STYLE")
 	local on_new = function(dialog)
@@ -93,6 +98,7 @@ function CoreParticleEditor:start_dialog()
 		managers.toolhub:close("Particle Editor")
 	end
 end
+
 function CoreParticleEditor:new_dialog()
 	local dialog = EWS:Dialog(self._main_frame, "Create New Effect", "", Vector3(-1, -1, 0), Vector3(300, 400, 0), "DEFAULT_DIALOG_STYLE")
 	local on_new = function(dialog)
@@ -131,6 +137,7 @@ function CoreParticleEditor:new_dialog()
 		self:add_effect(effect)
 	end
 end
+
 function CoreParticleEditor:create_main_frame()
 	self._main_frame = EWS:Frame("Tsar Bomba Particle Editor", Vector3(-1, -1, -1), Vector3(1000, 800, -1), "DEFAULT_FRAME_STYLE,FRAME_FLOAT_ON_PARENT", Global.frame)
 	local menu_bar = EWS:MenuBar()
@@ -219,12 +226,14 @@ function CoreParticleEditor:create_main_frame()
 	self._main_frame:center("BOTH")
 	self._main_frame:set_visible(true)
 end
+
 function CoreParticleEditor:on_undo()
 	local cur_effect = self:current_effect()
 	if cur_effect then
 		cur_effect:undo()
 	end
 end
+
 function CoreParticleEditor:on_batch_all_remove_update_render()
 	local ret = EWS:message_box(self._main_frame, [[
 You are about to batch all effects of project database and remove update_render
@@ -264,6 +273,7 @@ Are you sure you want to continue?]], "Are you sure you wish to continue?", "YES
 		cat_debug("debug", "Nothing modified, not saving database")
 	end
 end
+
 function CoreParticleEditor:on_batch_all_load_unload()
 	local ret = EWS:message_box(self._main_frame, [[
 You are about to batch all effects of project database and load and unload them.
@@ -286,12 +296,14 @@ Are you sure you want to continue?]], "Are you sure you wish to continue?", "YES
 	end
 	cat_debug("debug", "Done!")
 end
+
 function CoreParticleEditor:on_redo()
 	local cur_effect = self:current_effect()
 	if cur_effect then
 		cur_effect:redo()
 	end
 end
+
 function CoreParticleEditor:on_effect_changed(arg, event)
 	if event:get_id() ~= "EFFECTS_NOTEBOOK" then
 		return
@@ -311,24 +323,28 @@ function CoreParticleEditor:on_effect_changed(arg, event)
 	end
 	event:skip()
 end
+
 function CoreParticleEditor:on_play()
 	local cur_effect = self:current_effect()
 	if cur_effect then
 		cur_effect:update_effect_instance()
 	end
 end
+
 function CoreParticleEditor:on_play_lowest()
 	local cur_effect = self:current_effect()
 	if cur_effect then
 		cur_effect:update_effect_instance(0)
 	end
 end
+
 function CoreParticleEditor:on_play_highest()
 	local cur_effect = self:current_effect()
 	if cur_effect then
 		cur_effect:update_effect_instance(1)
 	end
 end
+
 function CoreParticleEditor:on_debug_draw()
 	local b = "true"
 	if not self._view_menu:is_checked("DEBUG_DRAWING") then
@@ -336,21 +352,25 @@ function CoreParticleEditor:on_debug_draw()
 	end
 	Application:console_command("set show_tngeffects " .. b)
 end
+
 function CoreParticleEditor:on_effect_stats()
 	Application:console_command("stats tngeffects")
 end
+
 function CoreParticleEditor:on_show_stack_overview()
 	local cur_effect = self:current_effect()
 	if cur_effect then
 		cur_effect:show_stack_overview(self._view_menu:is_checked("SHOW_STACK_OVERVIEW"))
 	end
 end
+
 function CoreParticleEditor:on_automove_gizmo_no_move()
 	self._gizmo_menu:set_checked("PARENT_JUMP", false)
 	self._gizmo_menu:set_checked("PARENT_SMOOTH", false)
 	self._gizmo_menu:set_checked("PARENT_CIRCLE", false)
 	self._gizmo_movement = "NO_MOVE"
 end
+
 function CoreParticleEditor:on_automove_gizmo_jump()
 	self._gizmo_menu:set_checked("PARENT_NO_MOVE", false)
 	self._gizmo_menu:set_checked("PARENT_SMOOTH", false)
@@ -359,6 +379,7 @@ function CoreParticleEditor:on_automove_gizmo_jump()
 	self._gizmo_anchor = self:effect_gizmo():position()
 	self._gizmo_accum = 0
 end
+
 function CoreParticleEditor:on_automove_gizmo_smooth()
 	self._gizmo_menu:set_checked("PARENT_NO_MOVE", false)
 	self._gizmo_menu:set_checked("PARENT_JUMP", false)
@@ -367,6 +388,7 @@ function CoreParticleEditor:on_automove_gizmo_smooth()
 	self._gizmo_anchor = self:effect_gizmo():position()
 	self._gizmo_accum = 0
 end
+
 function CoreParticleEditor:on_automove_gizmo_circle()
 	self._gizmo_menu:set_checked("PARENT_NO_MOVE", false)
 	self._gizmo_menu:set_checked("PARENT_SMOOTH", false)
@@ -375,30 +397,36 @@ function CoreParticleEditor:on_automove_gizmo_circle()
 	self._gizmo_anchor = self:effect_gizmo():position()
 	self._gizmo_accum = 0
 end
+
 function CoreParticleEditor:on_move_gizmo_to_origo()
 	local gizmo = self:effect_gizmo()
 	gizmo:set_position(Vector3(0, 0, 0))
 	gizmo:set_rotation(Rotation())
 end
+
 function CoreParticleEditor:on_move_gizmo_to_camera()
 	local gizmo = self:effect_gizmo()
 	local camera_rot = Application:last_camera_rotation()
 	local camera_pos = Application:last_camera_position()
 	gizmo:set_position(camera_pos + camera_rot:y() * 400)
 end
+
 function CoreParticleEditor:on_move_gizmo_to_player()
 	local gizmo = self:effect_gizmo()
 	local pos = gizmo:position()
 	local rot = gizmo:rotation()
 	gizmo:set_position(pos)
 end
+
 function CoreParticleEditor:on_set_gizmo_rotation(rot)
 	local gizmo = self:effect_gizmo()
 	self:effect_gizmo():set_rotation(rot)
 end
+
 function CoreParticleEditor:on_reset_gizmo_rotation()
 	self:effect_gizmo():set_rotation(Rotation())
 end
+
 function CoreParticleEditor:create_top_bar(parent)
 	local panel = EWS:Panel(parent, "", "")
 	local play_button = EWS:Button(panel, "Play", "", "BU_EXACTFIT")
@@ -420,6 +448,7 @@ function CoreParticleEditor:create_top_bar(parent)
 	panel:set_sizer(top_sizer)
 	return panel
 end
+
 function CoreParticleEditor:effect_gizmo()
 	if not self._effect_gizmo or not alive(self._effect_gizmo) then
 		self._effect_gizmo = World:spawn_unit(Idstring("core/units/effect_gizmo/effect_gizmo"), Vector3(0, 300, 100), Rotation())
@@ -429,6 +458,7 @@ function CoreParticleEditor:effect_gizmo()
 	end
 	return self._effect_gizmo
 end
+
 function CoreParticleEditor:update(t, dt)
 	local cur_effect = self:current_effect()
 	if cur_effect then
@@ -456,17 +486,21 @@ function CoreParticleEditor:update(t, dt)
 		gizmo:set_rotation(Rotation(Vector3(0, 0, 1), a) * Rotation(Vector3(1, 0, 0), -90))
 	end
 end
+
 function CoreParticleEditor:set_position(pos)
 end
+
 function CoreParticleEditor:destroy()
 	if alive(self._main_frame) then
 		self._main_frame:destroy()
 		self._main_frame = nil
 	end
 end
+
 function CoreParticleEditor:close()
 	self._main_frame:destroy()
 end
+
 function CoreParticleEditor:on_close_effect()
 	local curi = self:current_effect_index()
 	if 0 < curi then
@@ -477,6 +511,7 @@ function CoreParticleEditor:on_close_effect()
 		table.remove(self._effects, curi)
 	end
 end
+
 function CoreParticleEditor:on_close()
 	for _, e in ipairs(self._effects) do
 		if not e:close() then
@@ -488,6 +523,7 @@ function CoreParticleEditor:on_close()
 		managers.editor:set_listener_enabled(false)
 	end
 end
+
 function CoreParticleEditor:add_effect(effect)
 	self._main_frame:freeze()
 	local effect_panel = CoreParticleEditorPanel:new(self, self._effects_notebook, effect)
@@ -501,6 +537,7 @@ function CoreParticleEditor:add_effect(effect)
 	effect_panel:set_init_positions()
 	self._main_frame:thaw()
 end
+
 function CoreParticleEditor:current_effect()
 	local i = self:current_effect_index()
 	if i < 0 then
@@ -508,6 +545,7 @@ function CoreParticleEditor:current_effect()
 	end
 	return self._effects[i]
 end
+
 function CoreParticleEditor:current_effect_index()
 	local page = self._effects_notebook:get_current_page()
 	for i, e in ipairs(self._effects) do
@@ -517,6 +555,7 @@ function CoreParticleEditor:current_effect_index()
 	end
 	return -1
 end
+
 function CoreParticleEditor:effect_for_page(page)
 	for _, e in ipairs(self._effects) do
 		if e:panel() == page then
@@ -525,6 +564,7 @@ function CoreParticleEditor:effect_for_page(page)
 	end
 	return nil
 end
+
 function CoreParticleEditor:set_page_name(page, name)
 	local i = 0
 	while i < self._effects_notebook:get_page_count() do
@@ -534,9 +574,11 @@ function CoreParticleEditor:set_page_name(page, name)
 		i = i + 1
 	end
 end
+
 function CoreParticleEditor:on_new()
 	self:new_dialog()
 end
+
 function CoreParticleEditor:on_open()
 	local f = managers.database:open_file_dialog(self._main_frame, "*.effect", self._last_used_dir)
 	if not f then
@@ -549,12 +591,14 @@ function CoreParticleEditor:on_open()
 	effect:set_name(f)
 	self:add_effect(effect)
 end
+
 function CoreParticleEditor:on_save()
 	local cur = self:current_effect()
 	if cur then
 		cur:on_save()
 	end
 end
+
 function CoreParticleEditor:on_save_as()
 	local cur = self:current_effect()
 	if cur then

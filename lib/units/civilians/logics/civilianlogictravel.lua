@@ -1,4 +1,5 @@
 CivilianLogicTravel = class(CopLogicBase)
+
 function CivilianLogicTravel.enter(data, new_logic_name, enter_params)
 	CopLogicBase.enter(data, new_logic_name, enter_params)
 	data.unit:brain():cancel_all_pathing_searches()
@@ -21,6 +22,7 @@ function CivilianLogicTravel.enter(data, new_logic_name, enter_params)
 	end
 	managers.groupai:state():register_fleeing_civilian(data.key, data.unit)
 end
+
 function CivilianLogicTravel.exit(data, new_logic_name, enter_params)
 	CopLogicBase.exit(data, new_logic_name, enter_params)
 	local my_data = data.internal_data
@@ -32,6 +34,7 @@ function CivilianLogicTravel.exit(data, new_logic_name, enter_params)
 		data.unit:brain():set_update_enabled_state(true)
 	end
 end
+
 function CivilianLogicTravel.update(data)
 	local my_data = data.internal_data
 	local unit = data.unit
@@ -104,15 +107,19 @@ function CivilianLogicTravel.update(data)
 		CopLogicBase._exit(data.unit, "idle")
 	end
 end
+
 function CivilianLogicTravel.on_new_objective(data, old_objective)
 	CivilianLogicIdle.on_new_objective(data, old_objective)
 end
+
 function CivilianLogicTravel.action_complete_clbk(data, action)
 	CopLogicTravel.action_complete_clbk(data, action)
 end
+
 function CivilianLogicTravel.on_alert(data, alert_data)
 	return CivilianLogicIdle.on_alert(data, alert_data)
 end
+
 function CivilianLogicTravel.on_intimidated(data, amount, aggressor_unit)
 	local logic_params = {amount = amount, aggressor_unit = aggressor_unit}
 	local anim_data = data.unit:anim_data()

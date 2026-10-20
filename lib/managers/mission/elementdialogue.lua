@@ -1,11 +1,14 @@
 core:import("CoreMissionScriptElement")
 ElementDialogue = ElementDialogue or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementDialogue:init(...)
 	ElementDialogue.super.init(self, ...)
 end
+
 function ElementDialogue:client_on_executed(...)
 	self:on_executed(...)
 end
+
 function ElementDialogue:on_executed(instigator)
 	if not self._values.enabled then
 		return

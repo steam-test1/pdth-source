@@ -1,8 +1,10 @@
 require("lib/states/GameState")
 IngameArrestedState = IngameArrestedState or class(IngamePlayerBaseState)
+
 function IngameArrestedState:init(game_state_machine)
 	IngameArrestedState.super.init(self, "ingame_arrested", game_state_machine)
 end
+
 function IngameArrestedState:update(t, dt)
 	local player = managers.player:player_unit()
 	if not alive(player) then
@@ -10,6 +12,7 @@ function IngameArrestedState:update(t, dt)
 	end
 	player:character_damage():update_arrested(t, dt)
 end
+
 function IngameArrestedState:at_enter()
 	local players = managers.player:players()
 	for k, player in ipairs(players) do
@@ -31,6 +34,7 @@ function IngameArrestedState:at_enter()
 	managers.hud:show(PlayerBase.PLAYER_DOWNED_HUD)
 	managers.challenges:count_up("arrested")
 end
+
 function IngameArrestedState:at_exit()
 	local player = managers.player:player_unit()
 	if player then
@@ -41,12 +45,15 @@ function IngameArrestedState:at_exit()
 	managers.hud:hide(PlayerBase.PLAYER_INFO_HUD_FULLSCREEN)
 	managers.hud:hide(PlayerBase.PLAYER_DOWNED_HUD)
 end
+
 function IngameArrestedState:on_server_left()
 	IngameCleanState.on_server_left(self)
 end
+
 function IngameArrestedState:on_kicked()
 	IngameCleanState.on_kicked(self)
 end
+
 function IngameArrestedState:on_disconnected()
 	IngameCleanState.on_disconnected(self)
 end

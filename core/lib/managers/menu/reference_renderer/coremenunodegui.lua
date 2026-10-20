@@ -1,6 +1,7 @@
 core:module("CoreMenuNodeGui")
 core:import("CoreUnit")
 NodeGui = NodeGui or class()
+
 function NodeGui:init(node, layer, parameters)
 	self.node = node
 	self.name = node:parameters().name
@@ -55,8 +56,10 @@ function NodeGui:init(node, layer, parameters)
 	self.row_items = {}
 	self:_setup_item_rows(node)
 end
+
 function NodeGui:_setup_panels(node)
 end
+
 function NodeGui:_setup_item_rows(node)
 	local items = node:items()
 	local i = 0
@@ -104,10 +107,12 @@ function NodeGui:_setup_item_rows(node)
 	self:_set_item_positions()
 	self._highlighted_item = nil
 end
+
 function NodeGui:refresh_gui(node)
 	self:_clear_gui()
 	self:_setup_item_rows(node)
 end
+
 function NodeGui:_clear_gui()
 	for _, row_item in ipairs(self.row_items) do
 		if alive(row_item.gui_panel) then
@@ -123,6 +128,7 @@ function NodeGui:_clear_gui()
 	end
 	self.row_items = {}
 end
+
 function NodeGui:close()
 	if self._menu_plane then
 		World:newgui():destroy_workspace(self.ws)
@@ -134,9 +140,11 @@ function NodeGui:close()
 	end
 	self.ws = nil
 end
+
 function NodeGui:layer()
 	return self.layers.last
 end
+
 function NodeGui:set_visible(visible)
 	if visible then
 		self.ws:show()
@@ -144,6 +152,7 @@ function NodeGui:set_visible(visible)
 		self.ws:hide()
 	end
 end
+
 function NodeGui:reload_item(item)
 	local type = item:type()
 	if type == "" then
@@ -156,6 +165,7 @@ function NodeGui:reload_item(item)
 		self:_reload_slider_item(item)
 	end
 end
+
 function NodeGui:_reload_item(item)
 	local row_item = self:row_item(item)
 	local params = item:parameters()
@@ -171,6 +181,7 @@ function NodeGui:_reload_item(item)
 		row_item.gui_panel:set_text(row_item.text)
 	end
 end
+
 function NodeGui:_reload_toggle_item(item)
 	local row_item = self:row_item(item)
 	if self.localize_strings and item:selected_option():parameters().localize ~= "false" then
@@ -180,13 +191,16 @@ function NodeGui:_reload_toggle_item(item)
 	end
 	row_item.gui_panel:set_text(row_item.text .. ": " .. row_item.option_text)
 end
+
 function NodeGui:_reload_slider_item(item)
 	local row_item = self:row_item(item)
 	local value = string.format("%.0f", item:percentage())
 	row_item.gui_panel:set_text(row_item.text .. ": " .. value .. "%")
 end
+
 function NodeGui:_create_menu_item(row_item)
 end
+
 function NodeGui:_reposition_items(highlighted_row_item)
 	local safe_rect = managers.viewport:get_safe_rect_pixels()
 	local dy = 0
@@ -210,6 +224,7 @@ function NodeGui:_reposition_items(highlighted_row_item)
 	end
 	self:scroll_start(dy)
 end
+
 function NodeGui:scroll_setup()
 	self._scroll_data = {}
 	self._scroll_data.max_scroll_duration = 0.5
@@ -217,6 +232,7 @@ function NodeGui:scroll_setup()
 	self._scroll_data.dy_total = 0
 	self._scroll_data.dy_left = 0
 end
+
 function NodeGui:scroll_start(dy)
 	local speed = self._scroll_data.scroll_speed
 	if 0 < speed and math.abs(dy / speed) > self._scroll_data.max_scroll_duration then
@@ -227,6 +243,7 @@ function NodeGui:scroll_start(dy)
 	self._scroll_data.dy_left = dy
 	self:scroll_update(TimerManager:main():delta_time())
 end
+
 function NodeGui:scroll_update(dt)
 	local dy_left = self._scroll_data.dy_left
 	if dy_left ~= 0 then
@@ -241,6 +258,7 @@ function NodeGui:scroll_update(dt)
 		self.item_panel:move(0, dy)
 	end
 end
+
 function NodeGui:highlight_item(item, mouse_over)
 	if not item then
 		return
@@ -251,23 +269,27 @@ function NodeGui:highlight_item(item, mouse_over)
 	self:_reposition_items(row_item)
 	self._highlighted_item = item
 end
+
 function NodeGui:_highlight_row_item(row_item, mouse_over)
 	if row_item then
 		row_item.color = row_item_hightlight_color or self.row_item_hightlight_color
 		row_item.gui_panel:set_color(row_item.color)
 	end
 end
+
 function NodeGui:fade_item(item)
 	local item_name = item:parameters().name
 	local row_item = self:row_item(item)
 	self:_fade_row_item(row_item)
 end
+
 function NodeGui:_fade_row_item(row_item)
 	if row_item then
 		row_item.color = row_item.row_item_color or self.row_item_color
 		row_item.gui_panel:set_color(row_item.color)
 	end
 end
+
 function NodeGui:row_item(item)
 	local item_name = item:parameters().name
 	for _, row_item in ipairs(self.row_items) do
@@ -277,6 +299,7 @@ function NodeGui:row_item(item)
 	end
 	return nil
 end
+
 function NodeGui:row_item_by_name(item_name)
 	for _, row_item in ipairs(self.row_items) do
 		if row_item.name == item_name then
@@ -285,12 +308,14 @@ function NodeGui:row_item_by_name(item_name)
 	end
 	return nil
 end
+
 function NodeGui:update(t, dt)
 	if self._menu_plane then
 		self._menu_plane:set_rotation(Rotation(math.sin(t * 60) * 40, math.sin(t * 50) * 30, 0))
 	end
 	self:scroll_update(dt)
 end
+
 function NodeGui:_item_panel_height()
 	local height = 0
 	for _, row_item in pairs(self.row_items) do
@@ -301,6 +326,7 @@ function NodeGui:_item_panel_height()
 	end
 	return height
 end
+
 function NodeGui:_set_item_positions()
 	local total_height = self:_item_panel_height()
 	local current_y = 0
@@ -315,18 +341,22 @@ function NodeGui:_set_item_positions()
 		end
 	end
 end
+
 function NodeGui:resolution_changed()
 	self:_setup_size()
 	self:_set_item_positions()
 	self:highlight_item(self._highlighted_item)
 end
+
 function NodeGui:_setup_main_panel(safe_rect)
 	self._main_panel:set_shape(safe_rect.x, safe_rect.y, safe_rect.width, safe_rect.height)
 end
+
 function NodeGui:_set_width_and_height(safe_rect)
 	self.width = safe_rect.width
 	self.height = safe_rect.height
 end
+
 function NodeGui:_setup_item_panel(safe_rect, res)
 	local item_panel_offset = safe_rect.height * 0.5 - #self.row_items * 0.5 * (self.font_size + self.spacing)
 	if item_panel_offset < 0 then
@@ -336,6 +366,7 @@ function NodeGui:_setup_item_panel(safe_rect, res)
 	self.item_panel:set_w(safe_rect.width)
 	self.background:set_shape(0, 0, res.x, res.y)
 end
+
 function NodeGui:_setup_size()
 	local safe_rect = managers.viewport:get_safe_rect_pixels()
 	local res = RenderSettings.resolution
@@ -367,17 +398,21 @@ function NodeGui:_setup_size()
 		self:_setup_item_size(row_item)
 	end
 end
+
 function NodeGui:_setup_item_size(row_item)
 end
+
 function NodeGui:_flash_background_setup()
 	self._background_flash = {}
 	self._background_flash.duration = 0
 	self._background_flash.timer = 0
 end
+
 function NodeGui:_flash_background_start(duration)
 	self._background_flash.duration = duration
 	self._background_flash.timer = duration
 end
+
 function NodeGui:_flash_background_update(dt)
 	if self._background_flash.timer > 0 then
 		self._background_flash.timer = self._background_flash.timer - dt

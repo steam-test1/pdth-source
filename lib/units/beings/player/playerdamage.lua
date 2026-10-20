@@ -1,6 +1,7 @@
 PlayerDamage = PlayerDamage or class()
 PlayerDamage._HEALTH_INIT = tweak_data.player.damage.HEALTH_INIT
 PlayerDamage._ARMOR_INIT = tweak_data.player.damage.ARMOR_INIT
+
 function PlayerDamage:init(unit)
 	self._unit = unit
 	self:replenish()
@@ -15,6 +16,7 @@ function PlayerDamage:init(unit)
 	self._next_allowed_dmg_t = -100
 	self._last_received_dmg = 0
 end
+
 function PlayerDamage:update(unit, t, dt)
 	if self._regenerate_timer and not self._dead and not self._bleed_out then
 		self._regenerate_timer = self._regenerate_timer - dt
@@ -51,6 +53,7 @@ function PlayerDamage:update(unit, t, dt)
 		end
 	end
 end
+
 function PlayerDamage:replenish()
 	if managers.platform:presence() == "Playing" and (self:arrested() or self:need_revive()) then
 		self:revive(true)
@@ -67,6 +70,7 @@ function PlayerDamage:replenish()
 	})
 	SoundDevice:set_rtpc("shield_status", 100)
 end
+
 function PlayerDamage:_regenerate_armor()
 	if self._unit:sound() then
 		self._unit:sound():play("shield_full_indicator")
@@ -75,6 +79,7 @@ function PlayerDamage:_regenerate_armor()
 	self._regenerate_timer = nil
 	self:_send_set_armor()
 end
+
 function PlayerDamage:_regenerated()
 	self._health = self:_max_health()
 	self._revive_health_i = 1
@@ -84,6 +89,7 @@ function PlayerDamage:_regenerated()
 	self:_set_health_effect()
 	self._said_hurt = false
 end
+
 function PlayerDamage:set_health(health)
 	self._health = health
 	self:_send_set_health()
@@ -93,21 +99,27 @@ function PlayerDamage:set_health(health)
 		total = self:_max_health()
 	})
 end
+
 function PlayerDamage:down_time()
 	return self._down_time
 end
+
 function PlayerDamage:health_ratio()
 	return self._health / self:_max_health()
 end
+
 function PlayerDamage:_max_health()
 	return math.round(self._HEALTH_INIT + managers.player:thick_skin_value())
 end
+
 function PlayerDamage:_max_armor()
 	return (self._ARMOR_INIT + managers.player:body_armor_value()) * managers.player:synced_crew_bonus_upgrade_value("protector", 1)
 end
+
 function PlayerDamage:full_health()
 	return self._health == self:_max_health()
 end
+
 function PlayerDamage:damage_tase(attack_data)
 	if self._god_mode then
 		return
@@ -121,12 +133,14 @@ function PlayerDamage:damage_tase(attack_data)
 		self:_call_listeners(damage_info)
 	end
 end
+
 function PlayerDamage:damage_melee(attack_data)
 	local damage_info = {
 		result = {type = "hurt", variant = "melee"}
 	}
 	self:_call_listeners(damage_info)
 end
+
 function PlayerDamage:_look_for_friendly_fire(unit)
 	local players = managers.player:players()
 	for _, player in ipairs(players) do
@@ -140,11 +154,13 @@ function PlayerDamage:_look_for_friendly_fire(unit)
 	end
 	return false
 end
+
 function PlayerDamage:play_whizby(position)
 	self._unit:sound():play_whizby({position = position})
 	self._unit:camera():play_shaker("whizby", 0.1)
 	managers.rumble:play("bullet_whizby")
 end
+
 function PlayerDamage:damage_bullet(attack_data)
 	local damage_info = {
 		result = {type = "hurt", variant = "bullet"},
@@ -191,6 +207,7 @@ function PlayerDamage:damage_bullet(attack_data)
 	end
 	self:_call_listeners(damage_info)
 end
+
 function PlayerDamage:_calc_armor_damage(attack_data)
 	local health_subtracted
 	if self._armor > 0 then
@@ -207,6 +224,7 @@ function PlayerDamage:_calc_armor_damage(attack_data)
 	end
 	return health_subtracted
 end
+
 function PlayerDamage:_calc_health_damage(attack_data)
 	local health_subtracted
 	if self._armor <= 0 then
@@ -225,6 +243,7 @@ function PlayerDamage:_calc_health_damage(attack_data)
 	end
 	return health_subtracted
 end
+
 function PlayerDamage:_send_damage_drama(attack_data, health_subtracted)
 	local dmg_percent = health_subtracted / self._HEALTH_INIT
 	local attacker
@@ -243,6 +262,7 @@ function PlayerDamage:_send_damage_drama(attack_data, health_subtracted)
 		self._unit:network():send_to_host("damage_bullet", attacker, 1, 1, 1)
 	end
 end
+
 function PlayerDamage:damage_killzone(attack_data)
 	local damage_info = {
 		result = {type = "hurt", variant = "killzone"}
@@ -263,6 +283,7 @@ function PlayerDamage:damage_killzone(attack_data)
 	health_subtracted = health_subtracted or self:_calc_health_damage(attack_data)
 	self:_call_listeners(damage_info)
 end
+
 function PlayerDamage:damage_fall(data)
 	local damage_info = {
 		result = {type = "hurt", variant = "fall"}
@@ -312,6 +333,7 @@ function PlayerDamage:damage_fall(data)
 	self:_call_listeners(damage_info)
 	return true
 end
+
 function PlayerDamage:damage_explosion(attack_data)
 	local damage_info = {
 		result = {type = "hurt", variant = "explosion"}
@@ -336,6 +358,7 @@ function PlayerDamage:damage_explosion(attack_data)
 	local health_subtracted = self:_calc_health_damage(attack_data)
 	self:_call_listeners(damage_info)
 end
+
 function PlayerDamage:update_downed(t, dt)
 	if self._downed_timer and self._downed_paused_counter == 0 then
 		self._downed_timer = self._downed_timer - dt
@@ -343,6 +366,7 @@ function PlayerDamage:update_downed(t, dt)
 	end
 	return false
 end
+
 function PlayerDamage:_check_bleed_out()
 	if self._health == 0 then
 		self._bleed_out = true
@@ -357,6 +381,7 @@ function PlayerDamage:_check_bleed_out()
 		PlayerStandard.say_line(self, "g80x_plu")
 	end
 end
+
 function PlayerDamage:_drop_blood_sample()
 	local remove = math.rand(1) < 0.5
 	if not remove then
@@ -387,6 +412,7 @@ function PlayerDamage:_drop_blood_sample()
 		end
 	end
 end
+
 function PlayerDamage:on_downed()
 	self._downed_timer = self:down_time()
 	self._downed_paused_counter = 0
@@ -394,6 +420,7 @@ function PlayerDamage:on_downed()
 		time = self._downed_timer
 	})
 end
+
 function PlayerDamage:pause_downed_timer()
 	self._downed_paused_counter = self._downed_paused_counter + 1
 	if self._downed_paused_counter == 1 then
@@ -401,6 +428,7 @@ function PlayerDamage:pause_downed_timer()
 		managers.hud:pd_start_progress(0, tweak_data.interaction.revive.timer, "debug_interact_being_revived", "interaction_help")
 	end
 end
+
 function PlayerDamage:unpause_downed_timer()
 	self._downed_paused_counter = self._downed_paused_counter - 1
 	if self._downed_paused_counter == 0 then
@@ -408,6 +436,7 @@ function PlayerDamage:unpause_downed_timer()
 		managers.hud:pd_stop_progress()
 	end
 end
+
 function PlayerDamage:update_arrested(t, dt)
 	if self._arrested_timer and self._arrested_paused_counter == 0 then
 		self._arrested_timer = self._arrested_timer - dt
@@ -415,10 +444,12 @@ function PlayerDamage:update_arrested(t, dt)
 	end
 	return false
 end
+
 function PlayerDamage:on_freed()
 	self._arrested_timer = nil
 	self._arrested = nil
 end
+
 function PlayerDamage:on_arrested()
 	self._bleed_out = false
 	self._arrested_timer = tweak_data.player.damage.ARRESTED_TIME
@@ -427,6 +458,7 @@ function PlayerDamage:on_arrested()
 		time = self._arrested_timer
 	})
 end
+
 function PlayerDamage:pause_arrested_timer()
 	if not self._arrested_timer or self._arrested_timer <= 0 then
 		return
@@ -437,6 +469,7 @@ function PlayerDamage:pause_arrested_timer()
 		managers.hud:pd_start_progress(0, tweak_data.interaction.free.timer, "debug_interact_being_freed", "interaction_free")
 	end
 end
+
 function PlayerDamage:unpause_arrested_timer()
 	if not self._arrested_timer or self._arrested_timer <= 0 then
 		return
@@ -447,22 +480,28 @@ function PlayerDamage:unpause_arrested_timer()
 		managers.hud:pd_stop_progress()
 	end
 end
+
 function PlayerDamage:update_incapacitated(t, dt)
 	return self:update_downed(t, dt)
 end
+
 function PlayerDamage:on_incapacitated()
 	self:on_downed()
 	self._incapacitated = true
 end
+
 function PlayerDamage:bleed_out()
 	return self._bleed_out
 end
+
 function PlayerDamage:incapacitated()
 	return self._incapacitated
 end
+
 function PlayerDamage:arrested()
 	return self._arrested_timer or self._arrested
 end
+
 function PlayerDamage:_bleed_out_damage(attack_data)
 	local health_subtracted = self._bleed_out_health
 	self._bleed_out_health = math.max(0, self._bleed_out_health - attack_data.damage)
@@ -476,6 +515,7 @@ function PlayerDamage:_bleed_out_damage(attack_data)
 		self:_send_damage_drama(attack_data, health_subtracted)
 	end
 end
+
 function PlayerDamage:_hit_direction(col_ray)
 	if col_ray then
 		local dir = col_ray.ray
@@ -499,11 +539,13 @@ function PlayerDamage:_hit_direction(col_ray)
 	else
 	end
 end
+
 function PlayerDamage:_damage_screen()
 	self._regenerate_timer = tweak_data.player.damage.REGENERATE_TIME
 	self._hurt_value = 1 - math.clamp(0.8 - math.pow(self._armor / self:_max_armor(), 2), 0, 1)
 	managers.environment_controller:set_hurt_value(self._hurt_value)
 end
+
 function PlayerDamage:revive(helped_self)
 	local arrested = self:arrested()
 	managers.player:set_player_state("standard")
@@ -532,59 +574,73 @@ function PlayerDamage:revive(helped_self)
 	self:_set_health_effect()
 	managers.hud:pd_stop_progress()
 end
+
 function PlayerDamage:need_revive()
 	return self._bleed_out or self._incapacitated
 end
+
 function PlayerDamage:dead()
 	return self._dead
 end
+
 function PlayerDamage:set_god_mode(state)
 	Global.god_mode = state
 	self._god_mode = state
 	self:print("PlayerDamage god mode " .. (state and "ON" or "OFF"))
 end
+
 function PlayerDamage:god_mode()
 	return self._god_mode
 end
+
 function PlayerDamage:print(...)
 	cat_print("player_damage", ...)
 end
+
 function PlayerDamage:set_invulnerable(state)
 	self._invulnerable = state
 end
+
 function PlayerDamage:set_danger_level(danger_level)
 	self._danger_level = self._danger_level ~= danger_level and danger_level or nil
 	self._focus_delay_mul = danger_level and tweak_data.danger_zones[self._danger_level] or 1
 end
+
 function PlayerDamage:focus_delay_mul()
 	return self._focus_delay_mul
 end
+
 function PlayerDamage:shoot_pos_mid(m_pos)
 	mvector3.set(m_pos, self._unit:movement():m_head_pos())
 end
+
 function PlayerDamage:_send_set_health()
 	if self._unit:network() then
 		local hp = math.round(self._health / self:_max_health() * 100)
 		self._unit:network():send("set_health", math.clamp(hp, 0, 100))
 	end
 end
+
 function PlayerDamage:_set_health_effect()
 	local hp = self._health / self:_max_health()
 	math.clamp(hp, 0, 1)
 	managers.environment_controller:set_health_effect_value(hp)
 end
+
 function PlayerDamage:_send_set_armor()
 	if self._unit:network() then
 		local armor = math.round(self._armor / self:_max_armor() * 100)
 		self._unit:network():send("set_armor", math.clamp(armor, 0, 100))
 	end
 end
+
 function PlayerDamage:stop_heartbeat()
 	if self._critical_state_heart_loop_instance then
 		self._critical_state_heart_loop_instance:stop()
 		self._critical_state_heart_loop_instance = nil
 	end
 end
+
 function PlayerDamage:destroy()
 	if alive(self._gui) and alive(self._ws) then
 		self._gui:destroy_workspace(self._ws)
@@ -596,32 +652,39 @@ function PlayerDamage:destroy()
 	managers.environment_controller:set_hurt_value(1)
 	managers.environment_controller:set_health_effect_value(1)
 end
+
 function PlayerDamage:_call_listeners(damage_info)
 	CopDamage._call_listeners(self, damage_info)
 end
+
 function PlayerDamage:add_listener(...)
 	CopDamage.add_listener(self, ...)
 end
+
 function PlayerDamage:remove_listener(key)
 	CopDamage.remove_listener(self, key)
 end
+
 function PlayerDamage:on_fatal_state_enter()
 	local dmg_info = {
 		result = {type = "death"}
 	}
 	self:_call_listeners(dmg_info)
 end
+
 function PlayerDamage:on_incapacitated_state_enter()
 	local dmg_info = {
 		result = {type = "death"}
 	}
 	self:_call_listeners(dmg_info)
 end
+
 function PlayerDamage:_chk_dmg_too_soon(damage)
 	if damage <= self._last_received_dmg and TimerManager:game():time() < self._next_allowed_dmg_t then
 		return true
 	end
 end
+
 function PlayerDamage.clbk_msg_overwrite_criminal_hurt(overwrite_data, msg_queue, msg_name, crim_unit, attacker_unit, dmg)
 	if msg_queue then
 		local crim_key = crim_unit:key()

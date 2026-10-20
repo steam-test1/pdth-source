@@ -1,4 +1,5 @@
 CoreMaterialEditor = CoreMaterialEditor or class()
+
 function CoreMaterialEditor:_on_material_popup()
 	local popup = EWS:Menu("")
 	popup:append_item("POPUP_ADD_MATERIAL", "Add", "")
@@ -20,6 +21,7 @@ function CoreMaterialEditor:_on_material_popup()
 	popup:connect("POPUP_REMOVE_MATERIAL", "EVT_COMMAND_MENU_SELECTED", callback(self, self, "_on_remove_material"), "")
 	self._material_list_box:popup_menu(popup, Vector3(-1, -1, 0))
 end
+
 function CoreMaterialEditor:_on_parameter_popup()
 	local popup = EWS:Menu("")
 	popup:append_check_item("POPUP_CUSTOMIZE", "Customize", "")
@@ -45,6 +47,7 @@ function CoreMaterialEditor:_on_parameter_popup()
 	popup:connect("POPUP_COPY_TO_PARENT", "EVT_COMMAND_MENU_SELECTED", callback(self, self, "on_copy_to_parent"), "")
 	self._parent_btn:popup_menu(popup, Vector3(-1, -1, 0))
 end
+
 function CoreMaterialEditor:_on_edit_global_popup(event)
 	local popup = EWS:Menu("")
 	popup:append_item("POPUP_GLOBAL_REMOVE", "Remove", "")

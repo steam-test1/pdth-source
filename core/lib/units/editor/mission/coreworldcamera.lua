@@ -1,8 +1,10 @@
 CoreWorldCameraUnitElement = CoreWorldCameraUnitElement or class(MissionElement)
 WorldCameraUnitElement = WorldCameraUnitElement or class(CoreWorldCameraUnitElement)
+
 function WorldCameraUnitElement:init(...)
 	CoreWorldCameraUnitElement.init(self, ...)
 end
+
 function CoreWorldCameraUnitElement:init(unit)
 	MissionElement.init(self, unit)
 	self._hed.worldcamera = "none"
@@ -10,6 +12,7 @@ function CoreWorldCameraUnitElement:init(unit)
 	table.insert(self._save_values, "worldcamera")
 	table.insert(self._save_values, "worldcamera_sequence")
 end
+
 function CoreWorldCameraUnitElement:test_element()
 	if self._hed.worldcamera_sequence ~= "none" then
 		managers.worldcamera:play_world_camera_sequence(self._hed.worldcamera_sequence)
@@ -17,6 +20,7 @@ function CoreWorldCameraUnitElement:test_element()
 		managers.worldcamera:play_world_camera(self._hed.worldcamera)
 	end
 end
+
 function CoreWorldCameraUnitElement:selected()
 	MissionElement.selected(self)
 	self:_populate_worldcameras()
@@ -30,6 +34,7 @@ function CoreWorldCameraUnitElement:selected()
 		self._sequences:set_value(self._hed.worldcamera_sequence)
 	end
 end
+
 function CoreWorldCameraUnitElement:_populate_worldcameras()
 	self._worldcameras:clear()
 	self._worldcameras:append("none")
@@ -38,6 +43,7 @@ function CoreWorldCameraUnitElement:_populate_worldcameras()
 	end
 	self._worldcameras:set_value(self._hed.worldcamera)
 end
+
 function CoreWorldCameraUnitElement:_populate_sequences()
 	self._sequences:clear()
 	self._sequences:append("none")
@@ -46,6 +52,7 @@ function CoreWorldCameraUnitElement:_populate_sequences()
 	end
 	self._sequences:set_value(self._hed.worldcamera_sequence)
 end
+
 function CoreWorldCameraUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

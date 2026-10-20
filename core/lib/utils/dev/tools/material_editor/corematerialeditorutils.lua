@@ -1,4 +1,5 @@
 CoreMaterialEditor = CoreMaterialEditor or class()
+
 function CoreMaterialEditor:live_update_parameter(name, param_type, param_ui_type, value)
 	if alive(self._selected_unit) then
 		table.insert(self._live_update_parameter_list, {
@@ -9,6 +10,7 @@ function CoreMaterialEditor:live_update_parameter(name, param_type, param_ui_typ
 		})
 	end
 end
+
 function CoreMaterialEditor:_get_node(node, name)
 	for n in node:children() do
 		if n:name() == name then
@@ -16,6 +18,7 @@ function CoreMaterialEditor:_get_node(node, name)
 		end
 	end
 end
+
 function CoreMaterialEditor:_get_all_nodes(node, name)
 	local t = {}
 	for n in node:children() do
@@ -25,6 +28,7 @@ function CoreMaterialEditor:_get_all_nodes(node, name)
 	end
 	return t
 end
+
 function CoreMaterialEditor:_find_node(node, name, key, value)
 	for n in node:children() do
 		if n:parameter(key) == value and (not name or n:name() == name) then
@@ -32,6 +36,7 @@ function CoreMaterialEditor:_find_node(node, name, key, value)
 		end
 	end
 end
+
 function CoreMaterialEditor:_find_all_nodes(node, name, key, value)
 	local t = {}
 	for n in node:children() do
@@ -41,6 +46,7 @@ function CoreMaterialEditor:_find_all_nodes(node, name, key, value)
 	end
 	return t
 end
+
 function CoreMaterialEditor:_read_config()
 	self._global_material_config_name = self.PROJECT_GLOBAL_GONFIG_NAME
 	if not managers.database:has(managers.database:base_path() .. self._global_material_config_name) then
@@ -58,6 +64,7 @@ function CoreMaterialEditor:_read_config()
 		end
 	end
 end
+
 function CoreMaterialEditor:_write_config()
 	local file = assert(SystemFS:open(managers.database:base_path() .. self.SETTINGS_FILE, "w"))
 	local str = "<material_editor>\n"
@@ -67,20 +74,25 @@ function CoreMaterialEditor:_write_config()
 	file:write(string.format("%s</material_editor>", str))
 	file:close()
 end
+
 function CoreMaterialEditor:_freeze_frame()
 	self._main_frame:freeze()
 end
+
 function CoreMaterialEditor:_unfreeze_frame()
 	self._main_frame:layout()
 	self._main_frame:thaw()
 	self._main_frame:refresh()
 end
+
 function CoreMaterialEditor:_freeze_output()
 	self._lock_output = true
 end
+
 function CoreMaterialEditor:_unfreeze_output()
 	self._lock_output = nil
 end
+
 function CoreMaterialEditor:_remot_compile()
 	local defines
 	for k, v in pairs(self._shader_defines) do
@@ -91,6 +103,7 @@ function CoreMaterialEditor:_remot_compile()
 	local cmd = string.format("start /D \"%score\\utils\\shader_server\" lua5.1.exe client.lua %s %s %s %s", managers.database:base_path(), self._remote_host, Application:short_game_name(), self._compilable_shader_combo_box:get_value(), defines)
 	assert(os.execute(cmd) == 0)
 end
+
 function CoreMaterialEditor:_create_make_file(rebuild)
 	local make_params, temp_params = self:_get_make_params()
 	local file = SystemFS:open(managers.database:base_path() .. self.TEMP_PATH .. "make.xml", "w")
@@ -123,6 +136,7 @@ function CoreMaterialEditor:_create_make_file(rebuild)
 	file:close()
 	return make_params, temp_params
 end
+
 function CoreMaterialEditor:_run_compiler()
 	local cmd = Application:nice_path(managers.database:root_path() .. "aux_assets\\engine\\bin\\shaderdev\\", true) .. "shaderdev -m \"" .. Application:nice_path(managers.database:base_path() .. self.TEMP_PATH .. "make.xml", false) .. "\" > \"" .. Application:nice_path(managers.database:base_path() .. self.TEMP_PATH .. "compile_log.txt", false) .. "\""
 	local ret = os.execute(cmd)
@@ -132,6 +146,7 @@ function CoreMaterialEditor:_run_compiler()
 	CoreEWS.show_log(self._main_frame, log, ret == 0 and "Shader compiled OK!" or "Shader ERROR!")
 	return ret == 0
 end
+
 function CoreMaterialEditor:_get_make_params()
 	local shader = self._compilable_shaders[self._compilable_shader_combo_box:get_value()]
 	local srcpath = managers.database:base_path() .. self.SHADER_PATH .. managers.database:entry_name(shader._entry)
@@ -154,12 +169,15 @@ function CoreMaterialEditor:_get_make_params()
 	temp_params.lrb = tmppath .. managers.database:entry_name(shader._entry) .. ".lrb.shaders"
 	return make_params, temp_params
 end
+
 function CoreMaterialEditor:_insert_libs_in_database(temp_params, make_params)
 	assert(SystemFS:copy_file(temp_params.render_templates, make_params.render_templates), string.format("Could not copy %s -> %s", temp_params.render_templates, make_params.render_templates))
 	managers.database:recompile()
 end
+
 function CoreMaterialEditor:_copy_to_remote_client()
 end
+
 function CoreMaterialEditor:_find_unit_material(unit)
 	local path = unit:material_config():s()
 	local node = DB:has("material_config", path) and DB:load_node("material_config", path)
@@ -167,6 +185,7 @@ function CoreMaterialEditor:_find_unit_material(unit)
 		return node, managers.database:entry_expanded_path("material_config", path)
 	end
 end
+
 function CoreMaterialEditor:_find_selected_unit()
 	if managers.editor and managers.editor:selected_unit() and managers.editor:selected_unit() ~= self._selected_unit then
 		self._selected_unit = managers.editor:selected_unit()
@@ -179,6 +198,7 @@ function CoreMaterialEditor:_find_selected_unit()
 		end
 	end
 end
+
 function CoreMaterialEditor:_get_material()
 	local units_in_world = World:find_units_quick("all")
 	for _, unit_in_world in ipairs(units_in_world) do
@@ -188,6 +208,7 @@ function CoreMaterialEditor:_get_material()
 		end
 	end
 end
+
 function CoreMaterialEditor:_create_rt_name(rt)
 	table.sort(rt)
 	local rt_str = "generic"
@@ -196,6 +217,7 @@ function CoreMaterialEditor:_create_rt_name(rt)
 	end
 	return rt_str
 end
+
 function CoreMaterialEditor:_try_convert_parameter(mat, child, rt)
 	if child:name() == "diffuse_texture" then
 		table.insert(rt, "DIFFUSE_TEXTURE")
@@ -205,6 +227,7 @@ function CoreMaterialEditor:_try_convert_parameter(mat, child, rt)
 		mat:remove_child_at(mat:index_of_child(child))
 	end
 end
+
 function CoreMaterialEditor:_version_error(mat)
 	local res = EWS:message_box(self._main_frame, "This material is not of the expected version! Do you want to convert it?", "Version", "YES_NO", Vector3(-1, -1, -1))
 	if res == "YES" then
@@ -220,6 +243,7 @@ function CoreMaterialEditor:_version_error(mat)
 		return false
 	end
 end
+
 function CoreMaterialEditor:_update_material(param)
 	local material = self:_get_material()
 	if material then
@@ -236,6 +260,7 @@ function CoreMaterialEditor:_update_material(param)
 		end
 	end
 end
+
 function CoreMaterialEditor:_live_update()
 	if alive(self._selected_unit) then
 		for _, param in ipairs(self._live_update_parameter_list) do
@@ -244,6 +269,7 @@ function CoreMaterialEditor:_live_update()
 		self._live_update_parameter_list = {}
 	end
 end
+
 function CoreMaterialEditor:_check_valid_xml_on_save(node)
 	local str
 	for mat in node:children() do
@@ -255,6 +281,7 @@ function CoreMaterialEditor:_check_valid_xml_on_save(node)
 	end
 	return str == nil, str
 end
+
 function CoreMaterialEditor:_set_channels_default_texture(node)
 	for mat in node:children() do
 		for var in mat:children() do

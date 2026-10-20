@@ -36,6 +36,7 @@ CopActionShoot._ik_presets = {
 		get_blend = "_get_blend_ik_r_arm"
 	}
 }
+
 function CopActionShoot:init(action_desc, common_data)
 	self._common_data = common_data
 	self._ext_movement = common_data.ext_movement
@@ -140,6 +141,7 @@ function CopActionShoot:init(action_desc, common_data)
 	self._skipped_frames = 1
 	return true
 end
+
 function CopActionShoot:on_inventory_event(event)
 	if self._weapon_unit then
 		if self._autofiring then
@@ -163,6 +165,7 @@ function CopActionShoot:on_inventory_event(event)
 		self._autoshots_fired = nil
 	end
 end
+
 function CopActionShoot:on_attention(attention, old_attention)
 	if attention then
 		self[self._ik_preset.start](self)
@@ -224,14 +227,17 @@ function CopActionShoot:on_attention(attention, old_attention)
 	end
 	self._attention = attention
 end
+
 function CopActionShoot:save(save_data)
 	save_data.type = "shoot"
 	save_data.body_part = 3
 end
+
 function CopActionShoot:get_husk_interrupt_desc()
 	local desc = {type = "shoot", body_part = 3}
 	return desc
 end
+
 function CopActionShoot:on_exit()
 	if Network:is_server() then
 		self._ext_movement:set_stance("hos")
@@ -249,6 +255,7 @@ function CopActionShoot:on_exit()
 		self._common_data.unit:network():send("action_aim_end")
 	end
 end
+
 function CopActionShoot:update(t)
 	local vis_state = self._ext_base:lod_stage()
 	vis_state = vis_state or 4
@@ -439,9 +446,11 @@ function CopActionShoot:update(t)
 		self._ext_movement:upd_m_head_pos()
 	end
 end
+
 function CopActionShoot:type()
 	return "shoot"
 end
+
 function CopActionShoot:_get_shoot_falloff(target_dis, falloff)
 	for _, range_data in ipairs(falloff) do
 		if target_dis < range_data.r then
@@ -450,6 +459,7 @@ function CopActionShoot:_get_shoot_falloff(target_dis, falloff)
 	end
 	return falloff[#falloff]
 end
+
 function CopActionShoot:_get_unit_shoot_pos(unit, t, pos, dis, w_tweak)
 	local shoot_hist = self._shoot_history
 	local enemy_vec = temp_vec2
@@ -483,6 +493,7 @@ function CopActionShoot:_get_unit_shoot_pos(unit, t, pos, dis, w_tweak)
 		return error_vec
 	end
 end
+
 function CopActionShoot:on_death_drop()
 	if self._weapon_dropped then
 		return
@@ -499,6 +510,7 @@ function CopActionShoot:on_death_drop()
 		self._weapon_dropped = true
 	end
 end
+
 function CopActionShoot:get_husk_interrupt_desc()
 	local old_action_desc = {
 		type = "shoot",
@@ -507,9 +519,11 @@ function CopActionShoot:get_husk_interrupt_desc()
 	}
 	return old_action_desc
 end
+
 function CopActionShoot:need_upd()
 	return true
 end
+
 function CopActionShoot:_get_transition_target_pos(shoot_from_pos, attention, t)
 	local transition = self._aim_transition
 	local prog = (t - transition.start_t) / transition.duration
@@ -534,6 +548,7 @@ function CopActionShoot:_get_transition_target_pos(shoot_from_pos, attention, t)
 	mvec3_lerp(target_vec, transition.start_vec, target_vec, prog)
 	return target_pos, target_vec, target_dis, autotarget
 end
+
 function CopActionShoot:_get_target_pos(shoot_from_pos, attention)
 	local target_pos, target_vec, target_dis, autotarget
 	if attention.unit then
@@ -549,12 +564,14 @@ function CopActionShoot:_get_target_pos(shoot_from_pos, attention)
 	target_dis = mvec3_dir(target_vec, shoot_from_pos, target_pos)
 	return target_pos, target_vec, target_dis, autotarget
 end
+
 function CopActionShoot:set_ik_preset(preset_name)
 	self[self._ik_preset.stop](self)
 	local preset_data = self._ik_presets[preset_name]
 	self._ik_preset = preset_data
 	self[preset_data.start](self)
 end
+
 function CopActionShoot:_begin_ik_spine()
 	self._modifier_name = Idstring("action_upper_body")
 	self._modifier = self._machine:get_modifier(self._modifier_name)
@@ -562,6 +579,7 @@ function CopActionShoot:_begin_ik_spine()
 	self._modifier_on = nil
 	self._mod_enable_t = nil
 end
+
 function CopActionShoot:_stop_ik_spine()
 	if self._modifier then
 		self._machine:allow_modifier(self._modifier_name)
@@ -570,6 +588,7 @@ function CopActionShoot:_stop_ik_spine()
 		self._modifier_on = nil
 	end
 end
+
 function CopActionShoot:_upd_ik_spine(target_vec, fwd_dot, t)
 	if 0.5 < fwd_dot then
 		if not self._modifier_on then
@@ -588,9 +607,11 @@ function CopActionShoot:_upd_ik_spine(target_vec, fwd_dot, t)
 		return nil
 	end
 end
+
 function CopActionShoot:_get_blend_ik_spine()
 	return self._modifier:blend()
 end
+
 function CopActionShoot:_begin_ik_r_arm()
 	self._head_modifier_name = Idstring("look_head")
 	self._head_modifier = self._machine:get_modifier(self._head_modifier_name)
@@ -600,6 +621,7 @@ function CopActionShoot:_begin_ik_r_arm()
 	self._mod_enable_t = false
 	self:_set_ik_updator("_upd_ik_r_arm")
 end
+
 function CopActionShoot:_stop_ik_r_arm()
 	if self._head_modifier then
 		self._machine:allow_modifier(self._head_modifier_name)
@@ -611,6 +633,7 @@ function CopActionShoot:_stop_ik_r_arm()
 		self._modifier_on = nil
 	end
 end
+
 function CopActionShoot:_upd_ik_r_arm(target_vec, fwd_dot, t)
 	if 0.5 < fwd_dot then
 		if not self._modifier_on then
@@ -632,9 +655,11 @@ function CopActionShoot:_upd_ik_r_arm(target_vec, fwd_dot, t)
 		return nil
 	end
 end
+
 function CopActionShoot:_get_blend_ik_r_arm()
 	return self._r_arm_modifier:blend()
 end
+
 function CopActionShoot:_set_ik_updator(name)
 	self._upd_ik = self[name]
 end

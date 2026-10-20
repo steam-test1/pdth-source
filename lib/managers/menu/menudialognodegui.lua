@@ -1,9 +1,11 @@
 core:import("CoreMenuNodeGui")
 MenuDialogNodeGui = MenuDialogNodeGui or class(CoreMenuNodeGui.NodeGui)
+
 function MenuDialogNodeGui:init(node, layer, parameters)
 	CoreMenuNodeGui.NodeGui.init(self, node, layer, parameters)
 	self.font = "fonts/font_fortress_22"
 end
+
 function MenuDialogNodeGui:_create_menu_item(row_item)
 	if row_item.gui_panel then
 		self.item_panel:remove(row_item.gui_panel)

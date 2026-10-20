@@ -1,4 +1,5 @@
 CivilianLogicIdle = class(CopLogicBase)
+
 function CivilianLogicIdle.enter(data, new_logic_name, enter_params)
 	CopLogicBase.enter(data, new_logic_name, enter_params)
 	local my_data = {
@@ -49,6 +50,7 @@ function CivilianLogicIdle.enter(data, new_logic_name, enter_params)
 	end
 	managers.groupai:state():register_fleeing_civilian(data.key, data.unit)
 end
+
 function CivilianLogicIdle.exit(data, new_logic_name, enter_params)
 	CopLogicBase.exit(data, new_logic_name, enter_params)
 	local my_data = data.internal_data
@@ -60,6 +62,7 @@ function CivilianLogicIdle.exit(data, new_logic_name, enter_params)
 	CopLogicBase.cancel_queued_tasks(my_data)
 	managers.groupai:state():unregister_fleeing_civilian(data.key)
 end
+
 function CivilianLogicIdle._upd_outline_detection(data)
 	local my_data = data.internal_data
 	if my_data.been_outlined or my_data.has_outline then
@@ -91,6 +94,7 @@ function CivilianLogicIdle._upd_outline_detection(data)
 		CopLogicBase.queue_task(my_data, my_data.outline_detection_task_key, CivilianLogicIdle._upd_outline_detection, data, t + 0.33)
 	end
 end
+
 function CivilianLogicIdle._enable_outline(data)
 	local my_data = data.internal_data
 	data.unit:base():set_contour(true)
@@ -98,6 +102,7 @@ function CivilianLogicIdle._enable_outline(data)
 	my_data.been_outlined = true
 	my_data.outline_detection_task_key = nil
 end
+
 function CivilianLogicIdle.on_alert(data, alert_data)
 	if data.objective and not data.objective.interrupt_on and data.objective.type ~= "free" then
 		return
@@ -111,6 +116,7 @@ function CivilianLogicIdle.on_alert(data, alert_data)
 		CopLogicBase.add_delayed_clbk(my_data, my_data.delayed_alert_id, callback(CivilianLogicIdle, CivilianLogicIdle, "_delayed_alert_clbk", {data = data, alert_data = alert_data}), TimerManager:game():time() + math.random())
 	end
 end
+
 function CivilianLogicIdle._delayed_alert_clbk(ignore_this, params)
 	local data = params.data
 	local alert_data = params.alert_data
@@ -123,6 +129,7 @@ function CivilianLogicIdle._delayed_alert_clbk(ignore_this, params)
 	local logic_params = {alert_data = alert_data}
 	CivilianLogicIdle.switch_logic(data, {type = "free", flee_data = logic_params}, "flee", logic_params)
 end
+
 function CivilianLogicIdle.switch_logic(data, new_obj, logic, logic_params)
 	local objective = data.objective
 	local brain = data.unit:brain()
@@ -140,6 +147,7 @@ function CivilianLogicIdle.switch_logic(data, new_obj, logic, logic_params)
 		brain:set_logic(logic, logic_params)
 	end
 end
+
 function CivilianLogicIdle.on_intimidated(data, amount, aggressor_unit)
 	if data.objective and not data.objective.interrupt_on and data.objective.type ~= "free" then
 		return
@@ -150,6 +158,7 @@ function CivilianLogicIdle.on_intimidated(data, amount, aggressor_unit)
 	local logic_params = {amount = amount, aggressor_unit = aggressor_unit}
 	CivilianLogicIdle.switch_logic(data, {type = "free", surrender_data = logic_params}, "surrender", logic_params)
 end
+
 function CivilianLogicIdle.damage_clbk(data, damage_info)
 	if data.objective and not data.objective.interrupt_on and data.objective.type ~= "free" then
 		return
@@ -157,6 +166,7 @@ function CivilianLogicIdle.damage_clbk(data, damage_info)
 	local logic_params = {dmg_info = damage_info}
 	CivilianLogicIdle.switch_logic(data, {type = "free", flee_data = logic_params}, "flee", logic_params)
 end
+
 function CivilianLogicIdle.on_new_objective(data, old_objective)
 	local new_objective = data.objective
 	local my_data = data.internal_data
@@ -179,6 +189,7 @@ function CivilianLogicIdle.on_new_objective(data, old_objective)
 		old_objective.fail_clbk()
 	end
 end
+
 function CivilianLogicIdle.action_complete_clbk(data, action)
 	local my_data = data.internal_data
 	if action:type() == "turn" then
@@ -192,6 +203,7 @@ function CivilianLogicIdle.action_complete_clbk(data, action)
 		end
 	end
 end
+
 function CivilianLogicIdle._upd_detection(data)
 	local my_data = data.internal_data
 	local t = TimerManager:game():time()
@@ -295,9 +307,11 @@ function CivilianLogicIdle._upd_detection(data)
 	local delay = idle_attention and 1.5 or 5
 	CopLogicBase.queue_task(my_data, my_data.detection_task_key, CivilianLogicIdle._upd_detection, data, t + delay)
 end
+
 function CivilianLogicIdle.is_available_for_assignment(data, objective)
 	return (not data.internal_data.acting or data.unit:anim_data().act_idle) and not data.internal_data.exiting
 end
+
 function CivilianLogicIdle.anim_clbk(data, info_type)
 	if info_type == "reset_attention" and data.internal_data.idle_attention then
 		data.internal_data.idle_attention = nil

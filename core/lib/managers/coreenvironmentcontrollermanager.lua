@@ -1,4 +1,5 @@
 CoreEnvironmentControllerManager = CoreEnvironmentControllerManager or class()
+
 function CoreEnvironmentControllerManager:init()
 	self._DEFAULT_DOF_DISTANCE = 10
 	self._dof_distance = self._DEFAULT_DOF_DISTANCE
@@ -21,49 +22,62 @@ function CoreEnvironmentControllerManager:init()
 	self._hit_amount = 1
 	self._hit_cap = 1
 end
+
 function CoreEnvironmentControllerManager:update(t, dt)
 	self:_update_values(t, dt)
 	self:set_post_composite(t, dt)
 end
+
 function CoreEnvironmentControllerManager:_update_values(t, dt)
 	if self._current_dof_distance ~= self._dof_distance then
 		self._current_dof_distance = math.step(self._current_dof_distance, self._dof_distance, 80000 * dt)
 	end
 end
+
 function CoreEnvironmentControllerManager:set_dof_distance(distance)
 	self._dof_distance = math.max(self._DEFAULT_DOF_DISTANCE, distance or self._DEFAULT_DOF_DISTANCE)
 end
+
 function CoreEnvironmentControllerManager:set_hurt_value(hurt)
 	self._hurt_value = hurt
 end
+
 function CoreEnvironmentControllerManager:set_health_effect_value(health_effect_value)
 	self._health_effect_value = health_effect_value
 end
+
 function CoreEnvironmentControllerManager:hurt_value()
 	return self._hurt_value
 end
+
 function CoreEnvironmentControllerManager:set_taser_value(taser)
 	self._taser_value = taser
 end
+
 function CoreEnvironmentControllerManager:taser_value()
 	return self._taser_value
 end
+
 function CoreEnvironmentControllerManager:hit_feedback_right()
 	self._hit_right = math.min(self._hit_right + self._hit_amount, 1.1)
 	self._hit_some = math.min(self._hit_some + self._hit_amount, 1.1)
 end
+
 function CoreEnvironmentControllerManager:hit_feedback_left()
 	self._hit_left = math.min(self._hit_left + self._hit_amount, 1.1)
 	self._hit_some = math.min(self._hit_some + self._hit_amount, 1.1)
 end
+
 function CoreEnvironmentControllerManager:hit_feedback_up()
 	self._hit_up = math.min(self._hit_up + self._hit_amount, 1.1)
 	self._hit_some = math.min(self._hit_some + self._hit_amount, 1.1)
 end
+
 function CoreEnvironmentControllerManager:hit_feedback_down()
 	self._hit_down = math.min(self._hit_down + self._hit_amount, 1.1)
 	self._hit_some = math.min(self._hit_some + self._hit_amount, 1.1)
 end
+
 function CoreEnvironmentControllerManager:set_blurzone(mode, pos, radius, height)
 	if 0 < mode then
 		self._blurzone = mode
@@ -97,6 +111,7 @@ function CoreEnvironmentControllerManager:set_blurzone(mode, pos, radius, height
 		end
 	end
 end
+
 function CoreEnvironmentControllerManager:blurzone_flash_in(t, dt, camera_pos)
 	self._opacity = self._opacity - dt * 0.3
 	if self._opacity < 1 then
@@ -105,6 +120,7 @@ function CoreEnvironmentControllerManager:blurzone_flash_in(t, dt, camera_pos)
 	end
 	return self:_blurzone_check(camera_pos) * (1 + 11 * (self._opacity - 1))
 end
+
 function CoreEnvironmentControllerManager:blurzone_fade_in(t, dt, camera_pos)
 	self._opacity = self._opacity + dt
 	if self._opacity > 1 then
@@ -113,6 +129,7 @@ function CoreEnvironmentControllerManager:blurzone_fade_in(t, dt, camera_pos)
 	end
 	return self:_blurzone_check(camera_pos)
 end
+
 function CoreEnvironmentControllerManager:blurzone_fade_out(t, dt, camera_pos)
 	self._opacity = self._opacity - dt
 	if self._opacity < 0 then
@@ -122,12 +139,15 @@ function CoreEnvironmentControllerManager:blurzone_fade_out(t, dt, camera_pos)
 	end
 	return self:_blurzone_check(camera_pos)
 end
+
 function CoreEnvironmentControllerManager:blurzone_fade_idle(t, dt, camera_pos)
 	return self:_blurzone_check(camera_pos)
 end
+
 function CoreEnvironmentControllerManager:blurzone_fade_out_switch(t, dt, camera_pos)
 	return self:_blurzone_check(camera_pos)
 end
+
 function CoreEnvironmentControllerManager:blurzone_check_cylinder(camera_pos)
 	local pos_z = self._pos.z
 	local cam_z = camera_pos.z
@@ -143,12 +163,14 @@ function CoreEnvironmentControllerManager:blurzone_check_cylinder(camera_pos)
 	result = result * result
 	return (1 - result) * self._opacity
 end
+
 function CoreEnvironmentControllerManager:blurzone_check_sphere(camera_pos)
 	local len = (self._pos - camera_pos):length()
 	local result = math.min(len / self._radius, 1)
 	result = result * result
 	return (1 - result) * self._opacity
 end
+
 local ids_dof_settings = Idstring("dof_settings")
 local ids_tgl_r = Idstring("tgl_r")
 local hit_feedback_rlu = Idstring("hit_feedback_rlu")
@@ -160,6 +182,7 @@ local mvec2 = Vector3()
 local new_cam_fwd = Vector3()
 local new_cam_up = Vector3()
 local new_cam_right = Vector3()
+
 function CoreEnvironmentControllerManager:refresh_render_settings(vp)
 	if not alive(self._vp) then
 		return
@@ -172,6 +195,7 @@ function CoreEnvironmentControllerManager:refresh_render_settings(vp)
 	self._vp:vp():set_post_processor_effect("World", Idstring("tonemapper"), Idstring(managers.user:get_setting("video_streaks") and "streaks_2" or "streaks_2_off"))
 	self._vp:vp():set_post_processor_effect("World", ids_hdr_post_processor, Idstring(managers.user:get_setting("light_adaption") and "default" or "no_light_adaption"))
 end
+
 function CoreEnvironmentControllerManager:set_post_composite(t, dt)
 	local vp = managers.viewport:first_active_viewport()
 	if not vp then
@@ -229,7 +253,9 @@ function CoreEnvironmentControllerManager:set_post_composite(t, dt)
 	self._material:set_variable(hit_feedback_rlu, color)
 	self._material:set_variable(hit_feedback_d, self._hit_down)
 end
+
 local ids_d_sun = Idstring("d_sun")
+
 function CoreEnvironmentControllerManager:feed_params()
 	local sun = Underlay:get_object(ids_d_sun)
 	if not sun then
@@ -239,9 +265,11 @@ function CoreEnvironmentControllerManager:feed_params()
 	sun_dir = sun_dir * -1
 	self:feed_param_underlay("cloud_overlay", "global_sun_dir", sun_dir)
 end
+
 function CoreEnvironmentControllerManager:feed_param_underlay(material_name, param_name, param_value)
 	local material = Underlay:material(Idstring(material_name))
 	material:set_variable(Idstring(param_name), param_value)
 end
+
 function CoreEnvironmentControllerManager:set_global_param(param_name, param_value)
 end

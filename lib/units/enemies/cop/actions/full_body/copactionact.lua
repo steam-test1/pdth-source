@@ -657,6 +657,7 @@ CopActionAct._civilian_actions = {
 	"so_check_patient",
 	"walk_with_iv_stand"
 }
+
 function CopActionAct:init(action_desc, common_data)
 	self._common_data = common_data
 	self._action_desc = action_desc
@@ -686,6 +687,7 @@ function CopActionAct:init(action_desc, common_data)
 	end
 	return true
 end
+
 function CopActionAct:on_exit()
 	if self._changed_driving then
 		self._unit:set_driving("script")
@@ -707,12 +709,14 @@ function CopActionAct:on_exit()
 		self._common_data.ext_network:send("action_act_end")
 	end
 end
+
 function CopActionAct:_init_ik()
 	self._look_vec = mvector3.copy(self._common_data.fwd)
 	self._ik_update = callback(self, self, "_ik_update_func")
 	self._m_head_pos = self._ext_movement:m_head_pos()
 	self:on_attention(self._common_data.attention)
 end
+
 function CopActionAct:_ik_update_func(t)
 	self:_update_ik_type()
 	if self._attention and self._ik_type then
@@ -777,12 +781,14 @@ function CopActionAct:_ik_update_func(t)
 		self._machine:allow_modifier(self._modifier_name)
 	end
 end
+
 function CopActionAct:on_attention(attention)
 	self:_update_ik_type()
 	self._m_attention_head_pos = attention and attention.unit and attention.unit:movement():m_head_pos()
 	self._attention = attention
 	self._ext_movement:enable_update()
 end
+
 function CopActionAct:_update_ik_type()
 	local new_ik_type = self._ext_anim.ik_type
 	if self._ik_type ~= new_ik_type then
@@ -799,6 +805,7 @@ function CopActionAct:_update_ik_type()
 		end
 	end
 end
+
 function CopActionAct:_upd_wait_for_full_blend()
 	if not self._ext_anim.idle or self._ext_anim.idle_full_blend then
 		self._waiting_full_blend = nil
@@ -814,6 +821,7 @@ function CopActionAct:_upd_wait_for_full_blend()
 		end
 	end
 end
+
 function CopActionAct:_clamping_update(t)
 	if self._ext_anim.act then
 		local dt = TimerManager:game():delta_time()
@@ -830,6 +838,7 @@ function CopActionAct:_clamping_update(t)
 		self._ik_update(t)
 	end
 end
+
 function CopActionAct:update(t)
 	if not self._ext_anim.act then
 		self._expired = true
@@ -878,12 +887,15 @@ function CopActionAct:update(t)
 		self._ext_movement:set_m_pos(self._unit:position())
 	end
 end
+
 function CopActionAct:type()
 	return "act"
 end
+
 function CopActionAct:expired()
 	return self._expired
 end
+
 function CopActionAct:save(save_data)
 	for k, v in pairs(self._action_desc) do
 		save_data[k] = v
@@ -900,13 +912,16 @@ function CopActionAct:save(save_data)
 		save_data.variant = state_index
 	end
 end
+
 function CopActionAct:need_upd()
 	return self._attention or self._waiting_full_blend
 end
+
 function CopActionAct:chk_block(action_type, t)
 	local unblock_t = self._blocks[action_type]
 	return unblock_t and (unblock_t == -1 or t < unblock_t)
 end
+
 function CopActionAct:_create_blocks_table(block_desc)
 	local blocks = self._blocks or {}
 	if block_desc then
@@ -917,6 +932,7 @@ function CopActionAct:_create_blocks_table(block_desc)
 	end
 	self._blocks = blocks
 end
+
 function CopActionAct:_get_act_index(anim_name)
 	for action_index, action_name in ipairs(self._act_redirects) do
 		if action_name == anim_name then
@@ -930,6 +946,7 @@ function CopActionAct:_get_act_index(anim_name)
 	end
 	debug_pause("[CopActionAct:_get_act_index] animation", anim_name, "not found on look-up table.")
 end
+
 function CopActionAct:_get_act_name_from_index(index)
 	if index > #self._act_redirects then
 		return self._civilian_actions[index - #self._act_redirects]
@@ -937,6 +954,7 @@ function CopActionAct:_get_act_name_from_index(index)
 		return self._act_redirects[index]
 	end
 end
+
 function CopActionAct:_play_anim()
 	local redir_name, redir_res
 	if type(self._action_desc.variant) == "number" then
@@ -975,6 +993,7 @@ function CopActionAct:_play_anim()
 	end
 	return true
 end
+
 function CopActionAct:_sync_anim_play()
 	if Network:is_server() then
 		local action_index = self:_get_act_index(self._action_desc.variant)
@@ -994,7 +1013,9 @@ function CopActionAct:_sync_anim_play()
 		end
 	end
 end
+
 function CopActionAct:_set_updator(func_name)
 	self.update = func_name and self[func_name] or nil
 end
+
 CopActionAct._apply_freefall = CopActionWalk._apply_freefall

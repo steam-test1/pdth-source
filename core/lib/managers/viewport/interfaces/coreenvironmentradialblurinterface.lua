@@ -8,12 +8,15 @@ EnvironmentRadialBlurInterface.DATA_PATH = {
 	"radial_blur"
 }
 EnvironmentRadialBlurInterface.SHARED = false
+
 function EnvironmentRadialBlurInterface:init(handle)
 	self._handle = handle
 end
+
 function EnvironmentRadialBlurInterface:parameters()
 	return table.list_copy(self._handle:parameters())
 end
+
 function EnvironmentRadialBlurInterface:_process_return(params)
 	assert(table.maxn(params) == 4, "[EnvironmentRadialBlurInterface] You did not return all parameters!")
 	return params

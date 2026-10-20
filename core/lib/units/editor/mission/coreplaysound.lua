@@ -1,8 +1,10 @@
 CorePlaySoundUnitElement = CorePlaySoundUnitElement or class(MissionElement)
 PlaySoundUnitElement = PlaySoundUnitElement or class(CorePlaySoundUnitElement)
+
 function PlaySoundUnitElement:init(...)
 	PlaySoundUnitElement.super.init(self, ...)
 end
+
 function CorePlaySoundUnitElement:init(unit)
 	CorePlaySoundUnitElement.super.init(self, unit)
 	self._hed.elements = {}
@@ -11,11 +13,14 @@ function CorePlaySoundUnitElement:init(unit)
 	table.insert(self._save_values, "elements")
 	table.insert(self._save_values, "append_prefix")
 end
+
 function CorePlaySoundUnitElement:draw_links(t, dt, selected_unit, all_units)
 	MissionElement.draw_links(self, t, dt, selected_unit, all_units)
 end
+
 function CorePlaySoundUnitElement:update_editing()
 end
+
 function CorePlaySoundUnitElement:update_selected(t, dt, selected_unit, all_units)
 	for _, id in ipairs(self._hed.elements) do
 		local unit = all_units[id]
@@ -31,6 +36,7 @@ function CorePlaySoundUnitElement:update_selected(t, dt, selected_unit, all_unit
 		end
 	end
 end
+
 function CorePlaySoundUnitElement:add_element()
 	local ray = managers.editor:unit_by_raycast({mask = 10, ray_type = "editor"})
 	if ray and ray.unit and (string.find(ray.unit:name():s(), "ai_spawn_enemy", 1, true) or string.find(ray.unit:name():s(), "ai_spawn_civilian", 1, true)) then
@@ -42,6 +48,7 @@ function CorePlaySoundUnitElement:add_element()
 		end
 	end
 end
+
 function CorePlaySoundUnitElement:remove_links(unit)
 	for _, id in ipairs(self._hed.elements) do
 		if id == unit:unit_data().unit_id then
@@ -49,13 +56,16 @@ function CorePlaySoundUnitElement:remove_links(unit)
 		end
 	end
 end
+
 function CorePlaySoundUnitElement:add_triggers(vc)
 	vc:add_trigger(Idstring("lmb"), callback(self, self, "add_element"))
 end
+
 function CorePlaySoundUnitElement:post_init(...)
 	CorePlaySoundUnitElement.super.post_init(self, ...)
 	self:_add_soundbank()
 end
+
 function CorePlaySoundUnitElement:test_element()
 	if self._hed.sound_event then
 		managers.editor:set_wanted_mute(false)
@@ -69,6 +79,7 @@ function CorePlaySoundUnitElement:test_element()
 		self._ss:post_event(self._hed.sound_event)
 	end
 end
+
 function CorePlaySoundUnitElement:stop_test_element()
 	managers.editor:set_wanted_mute(true)
 	managers.editor:set_listener_enabled(false)
@@ -76,6 +87,7 @@ function CorePlaySoundUnitElement:stop_test_element()
 		self._ss:stop()
 	end
 end
+
 function CorePlaySoundUnitElement:set_category()
 	local value = self._paths_params.value
 	CoreEWS.update_combobox_options(self._sound_params, managers.sound_environment:scene_events(value))
@@ -83,10 +95,12 @@ function CorePlaySoundUnitElement:set_category()
 	self._hed.sound_event = self._sound_params.value
 	self:_add_soundbank()
 end
+
 function CorePlaySoundUnitElement:_add_soundbank()
 	self:stop_test_element()
 	managers.sound_environment:add_soundbank(managers.sound_environment:scene_soundbank(self._hed.sound_event))
 end
+
 function CorePlaySoundUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel
@@ -141,12 +155,14 @@ function CorePlaySoundUnitElement:_build_panel(panel, panel_sizer)
 	})
 	panel_sizer:add(prefix, 0, 0, "EXPAND")
 end
+
 function CorePlaySoundUnitElement:add_to_mission_package()
 	managers.editor:add_to_sound_package({
 		category = "soundbanks",
 		name = managers.sound_environment:scene_soundbank(self._hed.sound_event)
 	})
 end
+
 function CorePlaySoundUnitElement:destroy()
 	self:stop_test_element()
 	CorePlaySoundUnitElement.super.destroy(self)

@@ -1,6 +1,7 @@
 core:module("CoreClass")
 __overrides = {}
 __everyclass = {}
+
 function class(...)
 	local super = (...)
 	if select("#", ...) >= 1 and super == nil then
@@ -14,6 +15,7 @@ function class(...)
 	class_table.__index = class_table
 	class_table.__module__ = getfenv(2)
 	setmetatable(class_table, __overrides[super] or super)
+	
 	function class_table.new(klass, ...)
 		local object = {}
 		setmetatable(object, __overrides[class_table] or class_table)
@@ -22,8 +24,10 @@ function class(...)
 		end
 		return object
 	end
+	
 	return class_table
 end
+
 function override_class(old_class, new_class)
 	assert(__everyclass, "Too late to override class now.")
 	for _, ct in ipairs(__everyclass) do
@@ -34,9 +38,11 @@ function override_class(old_class, new_class)
 	end
 	__overrides[old_class] = new_class
 end
+
 function close_override()
 	__everyclass = nil
 end
+
 function type_name(value)
 	local name = type(value)
 	if name == "userdata" and value.type_name then
@@ -44,6 +50,7 @@ function type_name(value)
 	end
 	return name
 end
+
 function mixin(res, ...)
 	for _, t in ipairs({
 		...
@@ -56,9 +63,11 @@ function mixin(res, ...)
 	end
 	return res
 end
+
 function mix(...)
 	return mixin({}, ...)
 end
+
 function mixin_add(res, ...)
 	for _, t in ipairs({
 		...
@@ -69,9 +78,11 @@ function mixin_add(res, ...)
 	end
 	return res
 end
+
 function mix_add(...)
 	return mixin_add({}, ...)
 end
+
 function hijack_func(instance_or_meta, func_name, func)
 	local meta = getmetatable(instance_or_meta) or instance_or_meta
 	if not meta then
@@ -87,6 +98,7 @@ function hijack_func(instance_or_meta, func_name, func)
 		end
 	end
 end
+
 function unhijack_func(instance_or_meta, func_name)
 	local meta = getmetatable(instance_or_meta) or instance_or_meta
 	if not meta then
@@ -99,9 +111,11 @@ function unhijack_func(instance_or_meta, func_name)
 		end
 	end
 end
+
 __frozen__newindex = __frozen__newindex or function(self, key, value)
 	error(string.format("Attempt to set %s = %s in frozen %s.", tostring(key), tostring(value), type_or_class_name(self)))
 end
+
 function freeze(...)
 	for _, instance in ipairs({
 		...
@@ -121,32 +135,40 @@ function freeze(...)
 	end
 	return ...
 end
+
 function is_frozen(instance)
 	local metatable = debug.getmetatable(instance)
 	return metatable and metatable.__newindex == __frozen__newindex
 end
+
 function frozen_class(...)
 	local class_table = class(...)
 	local new = class_table.new
+	
 	function class_table.new(klass, ...)
 		local instance, ret = new(klass, ...)
 		return freeze(instance), ret
 	end
+	
 	return class_table
 end
+
 function responder(...)
 	local response = {
 		...
 	}
+	
 	local function responder_function()
 		return unpack(response)
 	end
+	
 	return setmetatable({}, {
 		__index = function()
 			return responder_function
 		end
 	})
 end
+
 function responder_map(response_table)
 	local responder = {}
 	for key, value in pairs(response_table) do
@@ -166,7 +188,9 @@ function responder_map(response_table)
 	end
 	return responder
 end
+
 GetSet = GetSet or class()
+
 function GetSet:init(t)
 	for k, v in pairs(t) do
 		self["_" .. k] = v

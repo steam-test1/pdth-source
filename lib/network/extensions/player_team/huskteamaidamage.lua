@@ -7,8 +7,10 @@ TeamAIDamage._RESULT_NAME_TABLE = {
 	"heavy_hurt",
 	"fatal"
 }
+
 function HuskTeamAIDamage:update(unit, t, dt)
 end
+
 function HuskTeamAIDamage:damage_bullet(attack_data)
 	if self._dead or self._fatal then
 		return
@@ -30,6 +32,7 @@ function HuskTeamAIDamage:damage_bullet(attack_data)
 		self:_send_damage_drama(attack_data, damage_abs)
 	end
 end
+
 function HuskTeamAIDamage:damage_explosion(attack_data)
 	if self._dead or self._fatal then
 		return
@@ -46,6 +49,7 @@ function HuskTeamAIDamage:damage_explosion(attack_data)
 		self:_send_damage_drama(attack_data, damage_abs)
 	end
 end
+
 function HuskTeamAIDamage:damage_melee(attack_data)
 	if self._dead or self._fatal then
 		return
@@ -65,6 +69,7 @@ function HuskTeamAIDamage:damage_melee(attack_data)
 		self:_send_damage_drama(attack_data, damage_abs)
 	end
 end
+
 function HuskTeamAIDamage:sync_damage_bullet(attacker_unit, hit_offset_height, result_index)
 	if self._dead or self._fatal then
 		return
@@ -98,6 +103,7 @@ function HuskTeamAIDamage:sync_damage_bullet(attacker_unit, hit_offset_height, r
 	end
 	self:_call_listeners(attack_data)
 end
+
 function HuskTeamAIDamage:sync_damage_explosion(attacker_unit, result_index)
 	if self._dead or self._fatal then
 		return
@@ -131,6 +137,7 @@ function HuskTeamAIDamage:sync_damage_explosion(attacker_unit, result_index)
 	end
 	self:_call_listeners(attack_data)
 end
+
 function HuskTeamAIDamage:sync_damage_melee(attacker_unit, hit_offset_height, result_index)
 	if self._dead or self._fatal then
 		return
@@ -165,6 +172,7 @@ function HuskTeamAIDamage:sync_damage_melee(attacker_unit, hit_offset_height, re
 	end
 	self:_call_listeners(attack_data)
 end
+
 function HuskTeamAIDamage:sync_damage_bleeding()
 	local dmg_info = {
 		variant = "bleeding",
@@ -174,6 +182,7 @@ function HuskTeamAIDamage:sync_damage_bleeding()
 	self:_call_listeners(dmg_info)
 	self:_unregister_unit()
 end
+
 function HuskTeamAIDamage:sync_damage_incapacitated()
 	self._fatal = true
 	self._unit:interaction():set_active(true, false)
@@ -183,9 +192,11 @@ function HuskTeamAIDamage:sync_damage_incapacitated()
 	}
 	self:_call_listeners(dmg_info)
 end
+
 function HuskTeamAIDamage:sync_damage_tase()
 	self:damage_tase()
 end
+
 function HuskTeamAIDamage:sync_unit_recovered()
 	if self._tase_effect then
 		World:effect_manager():fade_kill(self._tase_effect)
@@ -196,18 +207,21 @@ function HuskTeamAIDamage:sync_unit_recovered()
 	managers.groupai:state():on_criminal_recovered(self._unit)
 	managers.hud:set_mugshot_normal(self._unit:unit_data().mugshot_id)
 end
+
 function HuskTeamAIDamage:revive(reviving_unit)
 	if self._dead then
 		return
 	end
 	self._unit:network():send_to_host("revive_unit", reviving_unit)
 end
+
 function HuskTeamAIDamage:pause_bleed_out()
 	if self._dead then
 		return
 	end
 	self._unit:network():send_to_host("pause_bleed_out")
 end
+
 function HuskTeamAIDamage:unpause_bleed_out()
 	if self._dead then
 		return
@@ -217,12 +231,14 @@ function HuskTeamAIDamage:unpause_bleed_out()
 	end
 	self._unit:network():send_to_host("unpause_bleed_out")
 end
+
 function HuskTeamAIDamage:pause_arrested_timer()
 	if self._dead then
 		return
 	end
 	self._unit:network():send_to_host("pause_arrested_timer")
 end
+
 function HuskTeamAIDamage:unpause_arrested_timer()
 	if self._dead then
 		return
@@ -232,6 +248,7 @@ function HuskTeamAIDamage:unpause_arrested_timer()
 	end
 	self._unit:network():send_to_host("unpause_arrested_timer")
 end
+
 function HuskTeamAIDamage:_on_bleedout()
 	self._bleed_out = true
 	self._fatal = nil
@@ -239,6 +256,7 @@ function HuskTeamAIDamage:_on_bleedout()
 	self._unit:interaction():set_active(true, false)
 	managers.hud:set_mugshot_downed(self._unit:unit_data().mugshot_id)
 end
+
 function HuskTeamAIDamage:_on_fatal()
 	self._fatal = true
 	if not self._bleed_out then
@@ -248,6 +266,7 @@ function HuskTeamAIDamage:_on_fatal()
 	end
 	self._bleed_out = nil
 end
+
 function HuskTeamAIDamage:_on_death()
 	self._dead = true
 	self._bleed_out = nil
@@ -255,6 +274,7 @@ function HuskTeamAIDamage:_on_death()
 	self._unit:interaction():set_active(false, false)
 	self:_unregister_unit()
 end
+
 function HuskTeamAIDamage:load(data)
 	if not data.char_dmg then
 		return

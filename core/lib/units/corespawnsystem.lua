@@ -1,4 +1,5 @@
 CoreAiArea = CoreAiArea or class()
+
 function CoreAiArea:init(unit, surface_name, obj_name, xml)
 	self._unit = unit
 	self._spawn_point_index = 1
@@ -8,6 +9,7 @@ function CoreAiArea:init(unit, surface_name, obj_name, xml)
 	self._spawn_points = {}
 	self:find_spawnpoints(xml)
 end
+
 function CoreAiArea:spawn(unit_name, spawn_point_name)
 	local spawn_point
 	if spawn_point_name ~= "" then
@@ -28,6 +30,7 @@ function CoreAiArea:spawn(unit_name, spawn_point_name)
 		return unit
 	end
 end
+
 function CoreAiArea:find_spawnpoints(xml)
 	for point in xml:children() do
 		if point:name() == "ai_spawn_point" and point:parameter("name") ~= "" then
@@ -39,7 +42,9 @@ function CoreAiArea:find_spawnpoints(xml)
 		end
 	end
 end
+
 CoreSpawnSystem = CoreSpawnSystem or class()
+
 function CoreSpawnSystem:init(unit)
 	self._unit = unit
 	self._post_init = false
@@ -47,6 +52,7 @@ function CoreSpawnSystem:init(unit)
 	self._ai_spawn_areas = {}
 	self:read_spawn_xml()
 end
+
 function CoreSpawnSystem:get_linked_unit_list()
 	local linked_unit_list = {}
 	if self._linked_unit_map then
@@ -58,6 +64,7 @@ function CoreSpawnSystem:get_linked_unit_list()
 	end
 	return linked_unit_list
 end
+
 function CoreSpawnSystem:destroy()
 	if self._linked_unit_map then
 		for _, unit_map in pairs(self._linked_unit_map) do
@@ -70,6 +77,7 @@ function CoreSpawnSystem:destroy()
 		end
 	end
 end
+
 function CoreSpawnSystem:update(unit, t, dt)
 	if self._delayed_var_and_cb_init then
 		for lv2, unit in pairs(self._delayed_var_and_cb_init) do
@@ -80,6 +88,7 @@ function CoreSpawnSystem:update(unit, t, dt)
 	self._unit:set_extension_update_enabled("spawn_system", false)
 	self._post_init = true
 end
+
 function CoreSpawnSystem:get_child_unit(socket_name, unit_name)
 	if self._linked_unit_map then
 		local unit_map = self._linked_unit_map[socket_name]
@@ -89,12 +98,14 @@ function CoreSpawnSystem:get_child_unit(socket_name, unit_name)
 	end
 	return nil
 end
+
 function CoreSpawnSystem:init_ai_area(name, xml)
 	local object = self._unit:get_object(Idstring(name))
 	if not self._ai_spawn_areas[object:name()] then
 		self._ai_spawn_areas[object:name()] = CoreAiArea:new(self._unit, self._ai_surface_name, object:name(), xml)
 	end
 end
+
 function CoreSpawnSystem:find_spawn_node(xml)
 	for spawn_node in xml:children() do
 		if spawn_node:name() == "spawn" then
@@ -104,6 +115,7 @@ function CoreSpawnSystem:find_spawn_node(xml)
 	end
 	Application:error("[CoreSpawnSystem] Could not find spawn node on: " .. self._unit:name())
 end
+
 function CoreSpawnSystem:set_var_and_cb_delayed(new_unit, lv2)
 	if not self._post_init then
 		self._delayed_var_and_cb_init = self._delayed_var_and_cb_init or {}
@@ -112,6 +124,7 @@ function CoreSpawnSystem:set_var_and_cb_delayed(new_unit, lv2)
 		self:set_var_and_cb(new_unit, lv2)
 	end
 end
+
 function CoreSpawnSystem:set_var_and_cb(new_unit, lv2)
 	for lv3 in lv2:children() do
 		if lv3:name() == "variables" and lv3:parameter("extension") ~= "" then
@@ -145,6 +158,7 @@ function CoreSpawnSystem:set_var_and_cb(new_unit, lv2)
 		end
 	end
 end
+
 function CoreSpawnSystem:read_spawn_xml()
 	local xml_data = self:find_spawn_node(PackageManager:unit_data(self._unit:name():id()):model_script_data())
 	if xml_data then
@@ -188,6 +202,7 @@ function CoreSpawnSystem:read_spawn_xml()
 		self._post_init = true
 	end
 end
+
 function CoreSpawnSystem:setup_unit(lv1, lv2)
 	local lv1_name = lv1:parameter("name")
 	local lv2_name = lv2:parameter("name")
@@ -235,6 +250,7 @@ function CoreSpawnSystem:setup_unit(lv1, lv2)
 	self._linked_unit_map[lv1_name] = unit_map
 	self:set_var_and_cb_delayed(new_unit, lv2)
 end
+
 function CoreSpawnSystem:set_unit_enabled(socket_name, unit_name, enabled)
 	local unit_map = self._enabled_unit_map[socket_name]
 	if unit_map then
@@ -257,6 +273,7 @@ function CoreSpawnSystem:set_unit_enabled(socket_name, unit_name, enabled)
 		Application:error("Unable to set enabled state \"" .. tostring(enabled) .. "\" on unit name \"" .. tostring(unit_name) .. "\" and socket name \"" .. tostring(socket_name) .. "\". It was either not disabled or it doesn't exist.")
 	end
 end
+
 function CoreSpawnSystem:get_socket_nodes(socket_name, unit_name)
 	local xml_data = self:find_spawn_node(PackageManager:unit_data(self._unit:name():id()):model_script_data())
 	if xml_data then

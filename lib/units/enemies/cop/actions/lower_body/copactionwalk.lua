@@ -264,6 +264,7 @@ CopActionWalk._anim_block_presets = {
 	},
 	block_none = {stand = -1, crouch = -1}
 }
+
 function CopActionWalk:init(action_desc, common_data)
 	self._common_data = common_data
 	self._unit = common_data.unit
@@ -294,6 +295,7 @@ function CopActionWalk:init(action_desc, common_data)
 				function nav_point.element.value(element, name)
 					return element[name]
 				end
+				
 				function nav_point.element.nav_link_wants_align_pos(element)
 					return element.from_idle
 				end
@@ -405,6 +407,7 @@ function CopActionWalk:init(action_desc, common_data)
 	self._skipped_frames = 1
 	return true
 end
+
 function CopActionWalk:_sanitize()
 	if not self._ext_anim.pose then
 		debug_pause("[CopActionWalk:init] no pose in anim", self._machine:segment_state(idstr_base), self._common_data.unit)
@@ -422,6 +425,7 @@ function CopActionWalk:_sanitize()
 	end
 	return true
 end
+
 function CopActionWalk:_chk_start_anim(next_pos)
 	if self._haste ~= "run" then
 		return
@@ -500,6 +504,7 @@ function CopActionWalk:_chk_start_anim(next_pos)
 		end
 	end
 end
+
 function CopActionWalk._calculate_shortened_path(path)
 	local index = 2
 	local test_pos = tmp_vec1
@@ -515,6 +520,7 @@ function CopActionWalk._calculate_shortened_path(path)
 		index = index + 1
 	end
 end
+
 function CopActionWalk._apply_padding_to_simplified_path(path)
 	local dim_mag = 212.132
 	mvector3.set_static(tmp_vec1, dim_mag, dim_mag, 0)
@@ -553,6 +559,7 @@ function CopActionWalk._apply_padding_to_simplified_path(path)
 		end
 	end
 end
+
 function CopActionWalk:_calculate_curved_path(path, index, curvature_factor, enter_dir)
 	local curved_path = {}
 	local p1 = self._nav_point_pos(path[index])
@@ -599,6 +606,7 @@ function CopActionWalk:_calculate_curved_path(path, index, curvature_factor, ent
 	bezier_func = #bezier_params == 4 and math.bezier or #bezier_params == 3 and math.quadratic_bezier
 	table.insert(curved_path, mvec3_cpy(p1))
 	local raycast_params = {}
+	
 	local function _on_fail()
 		if curvature_factor < 1 then
 			return {
@@ -609,6 +617,7 @@ function CopActionWalk:_calculate_curved_path(path, index, curvature_factor, ent
 			return self:_calculate_curved_path(path, index, 0.5, enter_dir)
 		end
 	end
+	
 	if bezier_func then
 		local nr_samples = 7
 		local prev_pos = curved_path[1]
@@ -635,6 +644,7 @@ function CopActionWalk:_calculate_curved_path(path, index, curvature_factor, ent
 	end
 	return curved_path
 end
+
 function CopActionWalk:on_exit()
 	if self._root_blend_disabled then
 		self._ext_movement:set_root_blend(true)
@@ -660,6 +670,7 @@ function CopActionWalk:on_exit()
 		Application:draw_cylinder(self._common_data.pos, self._common_data.pos + math.UP * 5000, 30, 1, 0, 0)
 	end
 end
+
 function CopActionWalk:update(t)
 	local dt
 	local vis_state = self._ext_base:lod_stage()
@@ -789,6 +800,7 @@ function CopActionWalk:update(t)
 	end
 	self:_set_new_pos(dt)
 end
+
 function CopActionWalk:_upd_start_anim_first_frame(t)
 	local pose = self._ext_anim.pose or "stand"
 	local speed_mul = self._walk_velocity / self._walk_anim_velocities[pose][self._haste].fwd
@@ -797,6 +809,7 @@ function CopActionWalk:_upd_start_anim_first_frame(t)
 	self:_set_updator("_upd_start_anim")
 	self._ext_base:chk_freeze_anims()
 end
+
 function CopActionWalk:_upd_start_anim(t)
 	if not self._ext_anim.run_start then
 		self._start_run = nil
@@ -883,6 +896,7 @@ function CopActionWalk:_upd_start_anim(t)
 	end
 	self:_set_new_pos(dt)
 end
+
 function CopActionWalk:_set_new_pos(dt)
 	local path_pos = self._last_pos
 	local path_z = path_pos.z
@@ -902,9 +916,11 @@ function CopActionWalk:_set_new_pos(dt)
 	end
 	self._ext_movement:set_position(pos_new)
 end
+
 function CopActionWalk:type()
 	return "walk"
 end
+
 function CopActionWalk:get_husk_interrupt_desc()
 	local old_action_desc = {
 		type = "walk",
@@ -929,9 +945,11 @@ function CopActionWalk:get_husk_interrupt_desc()
 	end
 	return old_action_desc
 end
+
 function CopActionWalk:expired()
 	return self._expired
 end
+
 function CopActionWalk:on_attention(attention)
 	if attention then
 		if attention.unit then
@@ -943,9 +961,11 @@ function CopActionWalk:on_attention(attention)
 		self._attention_pos = false
 	end
 end
+
 function CopActionWalk:_get_max_walk_speed()
 	return self._haste == "walk" and self._common_data.char_tweak.SPEED_WALK or self._common_data.char_tweak.SPEED_RUN
 end
+
 function CopActionWalk:save(save_data)
 	save_data.type = "walk"
 	save_data.body_part = self._body_part
@@ -977,6 +997,7 @@ function CopActionWalk:save(save_data)
 	save_data.nav_path = sync_path
 	save_data.path_index = self._simplified_path_index
 end
+
 function CopActionWalk.synthesize_nav_link(pos, rot, anim, from_idle)
 	local fake_element = {
 		position = pos,
@@ -987,7 +1008,9 @@ function CopActionWalk.synthesize_nav_link(pos, rot, anim, from_idle)
 	local nav_link = {element = fake_element}
 	return nav_link
 end
+
 CopActionWalk._chk_shortcut_pos_to_pos_params = {allow_entry = true}
+
 function CopActionWalk._chk_shortcut_pos_to_pos(from, to, trace)
 	local params = CopActionWalk._chk_shortcut_pos_to_pos_params
 	params.pos_from = from
@@ -996,6 +1019,7 @@ function CopActionWalk._chk_shortcut_pos_to_pos(from, to, trace)
 	local res = managers.navigation:raycast(params)
 	return res, params.trace
 end
+
 function CopActionWalk._calculate_simplified_path(good_pos, path)
 	local simplified_path = {good_pos}
 	local size_path = #path
@@ -1040,6 +1064,7 @@ function CopActionWalk._calculate_simplified_path(good_pos, path)
 	end
 	return simplified_path
 end
+
 function CopActionWalk:_nav_chk_walk(t, dt, vis_state)
 	local s_path = self._simplified_path
 	local c_path = self._curve_path
@@ -1185,6 +1210,7 @@ function CopActionWalk:_nav_chk_walk(t, dt, vis_state)
 		self._last_pos = mvec3_cpy(new_pos)
 	end
 end
+
 function CopActionWalk._walk_spline(path, pos, index, walk_dis)
 	while true do
 		mvec3_set(tmp_vec1, path[index + 1])
@@ -1214,6 +1240,7 @@ function CopActionWalk._walk_spline(path, pos, index, walk_dis)
 		end
 	end
 end
+
 function CopActionWalk:_reserve_nav_pos(nav_pos, next_pos, from_pos, vel)
 	local step_vec = nav_pos - self._common_data.pos
 	local dis = step_vec:length()
@@ -1235,6 +1262,7 @@ function CopActionWalk:_reserve_nav_pos(nav_pos, next_pos, from_pos, vel)
 		return true
 	end
 end
+
 function CopActionWalk:_rserve_pos_step_clbk(data, test_pos)
 	local nav_manager = managers.navigation
 	local step_vec = data.step_vec
@@ -1282,10 +1310,12 @@ function CopActionWalk:_rserve_pos_step_clbk(data, test_pos)
 	end
 	return true
 end
+
 function CopActionWalk:_adjust_walk_anim_speed(dt, target_speed)
 	local state = self._machine:segment_state(idstr_base)
 	self._machine:set_speed(state, target_speed)
 end
+
 function CopActionWalk:_adjust_move_anim(side, speed)
 	local anim_data = self._ext_anim
 	if anim_data[speed] and anim_data["move_" .. side] then
@@ -1313,6 +1343,7 @@ function CopActionWalk:_adjust_move_anim(side, speed)
 	end
 	return redir_res
 end
+
 function CopActionWalk:_start_move_anim(side, speed, speed_mul, turn)
 	local redirect_name = speed .. "_start_" .. (turn and "turn_" or "") .. side
 	local redir_res = self._ext_movement:play_redirect(redirect_name)
@@ -1323,6 +1354,7 @@ function CopActionWalk:_start_move_anim(side, speed, speed_mul, turn)
 	self._machine:set_speed(redir_res, speed_mul)
 	return redir_res
 end
+
 function CopActionWalk:_stop_walk()
 	local redir_res = self._ext_movement:play_redirect("idle")
 	if not redir_res then
@@ -1331,15 +1363,18 @@ function CopActionWalk:_stop_walk()
 	end
 	return redir_res
 end
+
 function CopActionWalk._apply_freefall(pos, vel, gnd_z, dt)
 	local vel_z = vel - dt * 981
 	local new_z = pos.z + vel_z * dt
 	mvec3_set_z(pos, gnd_z and math_max(gnd_z, new_z) or new_z)
 	return vel_z
 end
+
 function CopActionWalk:get_walk_to_pos()
 	return self._nav_point_pos(self._simplified_path[self._simplified_path_index + 1])
 end
+
 function CopActionWalk:_upd_wait(t)
 	if self._ext_anim.move then
 		self:_stop_walk()
@@ -1361,6 +1396,7 @@ function CopActionWalk:_upd_wait(t)
 		self._cur_vel = 0
 	end
 end
+
 function CopActionWalk:_upd_stop_anim_first_frame(t)
 	local enter_t
 	local redir_name = "run_stop_" .. self._stop_anim_side
@@ -1379,11 +1415,13 @@ function CopActionWalk:_upd_stop_anim_first_frame(t)
 		if self._stop_anim_side == "fwd" then
 			function self._stop_anim_displacement_f(p1, p2, t)
 				local t_clamp = (math.clamp(t, 0, 0.6) / 0.6) ^ 0.8
+				
 				return math.lerp(p1, p2, t_clamp)
 			end
 		elseif self._stop_anim_side == "bwd" then
 			function self._stop_anim_displacement_f(p1, p2, t)
 				local low = 0.97
+				
 				local p_1_5 = 0.9
 				local t_clamp = math.clamp(t, 0, 0.8) / 0.8
 				if p_1_5 > t_clamp then
@@ -1396,6 +1434,7 @@ function CopActionWalk:_upd_stop_anim_first_frame(t)
 		elseif self._stop_anim_side == "l" then
 			function self._stop_anim_displacement_f(p1, p2, t)
 				local p_1_5 = 0.6
+				
 				local low = 0.8
 				local t_clamp = math.clamp(t, 0, 0.75) / 0.75
 				if p_1_5 > t_clamp then
@@ -1408,6 +1447,7 @@ function CopActionWalk:_upd_stop_anim_first_frame(t)
 		else
 			function self._stop_anim_displacement_f(p1, p2, t)
 				local low = 0.9
+				
 				local p_1_5 = 0.85
 				local t_clamp = math.clamp(t, 0, 0.8) / 0.8
 				if p_1_5 > t_clamp then
@@ -1421,12 +1461,14 @@ function CopActionWalk:_upd_stop_anim_first_frame(t)
 	elseif self._stop_anim_side == "fwd" then
 		function self._stop_anim_displacement_f(p1, p2, t)
 			local t_clamp = math.clamp(t, 0, 0.7) / 0.7
+			
 			t_clamp = t_clamp ^ 0.85
 			return math.lerp(p1, p2, t_clamp)
 		end
 	elseif self._stop_anim_side == "bwd" then
 		function self._stop_anim_displacement_f(p1, p2, t)
 			local low = 0.97
+			
 			local p_1_5 = 0.9
 			local t_clamp = t
 			return math.lerp(p1, p2, t_clamp)
@@ -1434,6 +1476,7 @@ function CopActionWalk:_upd_stop_anim_first_frame(t)
 	elseif self._stop_anim_side == "l" then
 		function self._stop_anim_displacement_f(p1, p2, t)
 			local p_1_5 = 0.6
+			
 			local low = 0.8
 			local t_clamp = math.clamp(t, 0, 0.75) / 0.75
 			if p_1_5 > t_clamp then
@@ -1446,6 +1489,7 @@ function CopActionWalk:_upd_stop_anim_first_frame(t)
 	else
 		function self._stop_anim_displacement_f(p1, p2, t)
 			local low = 0.9
+			
 			local p_1_5 = 0.85
 			local t_clamp = math.clamp(t, 0, 0.75) / 0.75
 			if p_1_5 > t_clamp then
@@ -1459,6 +1503,7 @@ function CopActionWalk:_upd_stop_anim_first_frame(t)
 	self._ext_base:chk_freeze_anims()
 	self:update(t)
 end
+
 function CopActionWalk:_upd_stop_anim(t)
 	local dt = TimerManager:game():delta_time()
 	local rot_new = self._common_data.rot:slerp(Rotation(self._stop_anim_fwd, math.UP), math.min(1, dt * 5))
@@ -1487,6 +1532,7 @@ function CopActionWalk:_upd_stop_anim(t)
 	end
 	self:_set_new_pos(dt)
 end
+
 function CopActionWalk:stop(pos)
 	local s_path = self._simplified_path
 	if not s_path[#s_path].x then
@@ -1522,11 +1568,13 @@ function CopActionWalk:stop(pos)
 		end
 	end
 end
+
 function CopActionWalk:append_nav_point(nav_point)
 	if not nav_point.x then
 		function nav_point.element.value(element, name)
 			return element[name]
 		end
+		
 		function nav_point.element.nav_link_wants_align_pos(element)
 			return element.from_idle
 		end
@@ -1540,14 +1588,17 @@ function CopActionWalk:append_nav_point(nav_point)
 	end
 	self:_advance_simplified_path(self._simplified_path_index)
 end
+
 function CopActionWalk:chk_block(action_type, t)
 	return CopActionAct.chk_block(self, action_type, t)
 end
+
 function CopActionWalk:chk_block_client(action_desc, action_type, t)
 	if CopActionAct.chk_block(self, action_type, t) and (not action_desc or action_desc.body_part ~= 3) then
 		return true
 	end
 end
+
 function CopActionWalk:set_blocks(preset_name, state)
 	if state then
 		if not self._old_blocks then
@@ -1567,12 +1618,15 @@ function CopActionWalk:set_blocks(preset_name, state)
 		})
 	end
 end
+
 function CopActionWalk:_set_blocks(blocks)
 	self._blocks = blocks
 end
+
 function CopActionWalk:need_upd()
 	return true
 end
+
 function CopActionWalk:_upd_nav_link_first_frame(t)
 	if self._next_is_nav_link.element:nav_link_wants_align_pos() and self:_stop_walk() then
 		self:_set_updator("_upd_nav_link_blend_to_idle")
@@ -1580,12 +1634,14 @@ function CopActionWalk:_upd_nav_link_first_frame(t)
 	end
 	self:_play_nav_link_anim(t)
 end
+
 function CopActionWalk:_upd_nav_link_blend_to_idle(t)
 	if self._ext_anim.idle and not self._ext_anim.idle_full_blend then
 		return
 	end
 	self:_play_nav_link_anim(t)
 end
+
 function CopActionWalk:_play_nav_link_anim(t)
 	self._old_blocks = self._blocks
 	self:_set_blocks(self._anim_block_presets.block_all)
@@ -1644,6 +1700,7 @@ function CopActionWalk:_play_nav_link_anim(t)
 		self:update(t)
 	end
 end
+
 function CopActionWalk:_upd_nav_link(t)
 	if self._ext_anim.act then
 		self._last_pos = self._unit:position()
@@ -1702,9 +1759,11 @@ function CopActionWalk:_upd_nav_link(t)
 		self:_set_updator("_upd_wait")
 	end
 end
+
 function CopActionWalk._nav_point_pos(nav_point)
 	return nav_point.x and nav_point or nav_point.element:value("position")
 end
+
 function CopActionWalk:_send_nav_point(nav_point)
 	if nav_point.x then
 		self._ext_network:send("action_walk_nav_point", nav_point)
@@ -1722,12 +1781,14 @@ function CopActionWalk:_send_nav_point(nav_point)
 		self._ext_network:send("action_walk_nav_link", element:value("position"), sync_yaw, anim_index, element:nav_link_wants_align_pos() and true or false)
 	end
 end
+
 function CopActionWalk:_set_updator(name)
 	self.update = self[name]
 	if not name then
 		self._last_upd_t = TimerManager:game():time() - 0.001
 	end
 end
+
 function CopActionWalk:on_nav_link_unregistered(element_id)
 	if self._next_is_nav_link and self._next_is_nav_link.element._id == element_id then
 		self._ext_movement:action_request({type = "idle", body_part = 2})
@@ -1740,6 +1801,7 @@ function CopActionWalk:on_nav_link_unregistered(element_id)
 		end
 	end
 end
+
 function CopActionWalk:anim_act_clbk(anim_act)
 	if not self._sync then
 		return
@@ -1750,12 +1812,14 @@ function CopActionWalk:anim_act_clbk(anim_act)
 		return
 	end
 end
+
 function CopActionWalk:_advance_simplified_path(nav_index)
 	self._simplified_path_index = nav_index
 	if self._simplified_path[nav_index + 1] and not self._simplified_path[nav_index + 1].x then
 		self._next_is_nav_link = self._simplified_path[nav_index + 1]
 	end
 end
+
 function CopActionWalk:_husk_needs_speedup()
 	if next(self._ext_movement._queued_actions) then
 		return true

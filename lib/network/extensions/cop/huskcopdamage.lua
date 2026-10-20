@@ -1,4 +1,5 @@
 HuskCopDamage = HuskCopDamage or class(CopDamage)
+
 function HuskCopDamage:die(variant)
 	self._unit:base():set_slot(self._unit, 17)
 	if self._unit:inventory() then

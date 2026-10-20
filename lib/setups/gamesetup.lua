@@ -126,6 +126,7 @@ require("lib/units/props/SecurityLockGui")
 require("lib/units/props/ChristmasPresentBase")
 require("lib/units/props/TvGui")
 GameSetup = GameSetup or class(Setup)
+
 function GameSetup:load_packages()
 	Setup.load_packages(self)
 	if not PackageManager:loaded("packages/game_base") then
@@ -143,6 +144,7 @@ function GameSetup:load_packages()
 		PackageManager:load(level_package)
 	end
 end
+
 function GameSetup:unload_packages()
 	Setup.unload_packages(self)
 	if Global.load_level or PackageManager:loaded("packages/game_base") then
@@ -152,6 +154,7 @@ function GameSetup:unload_packages()
 		self._loaded_level_package = nil
 	end
 end
+
 function GameSetup:init_managers(managers)
 	Setup.init_managers(self, managers)
 	managers.interaction = ObjectInteractionManager:new()
@@ -177,6 +180,7 @@ function GameSetup:init_managers(managers)
 	managers.trade = TradeManager:new()
 	managers.feedback = FeedBackManager:new()
 end
+
 function GameSetup:init_game()
 	local gsm = Setup.init_game(self)
 	if not Application:editor() then
@@ -211,6 +215,7 @@ function GameSetup:init_game()
 	end
 	return gsm
 end
+
 function GameSetup:init_finalize()
 	if script_data.level_script and script_data.level_script.post_init then
 		script_data.level_script:post_init()
@@ -229,6 +234,7 @@ function GameSetup:init_finalize()
 	end
 	self._keyboard = Input:keyboard()
 end
+
 function GameSetup:update(t, dt)
 	Setup.update(self, t, dt)
 	managers.interaction:update(t, dt)
@@ -248,6 +254,7 @@ function GameSetup:update(t, dt)
 	end
 	self:_update_debug_input()
 end
+
 function GameSetup:paused_update(t, dt)
 	Setup.paused_update(self, t, dt)
 	managers.groupai:paused_update(t, dt)
@@ -256,6 +263,7 @@ function GameSetup:paused_update(t, dt)
 	end
 	self:_update_debug_input()
 end
+
 function GameSetup:destroy()
 	Setup.destroy(self)
 	if script_data.level_script and script_data.level_script.destroy then
@@ -263,10 +271,12 @@ function GameSetup:destroy()
 	end
 	managers.navigation:destroy()
 end
+
 function GameSetup:end_update(t, dt)
 	Setup.end_update(self, t, dt)
 	managers.game_play_central:end_update(t, dt)
 end
+
 function GameSetup:save(data)
 	Setup.save(self, data)
 	managers.game_play_central:save(data)
@@ -280,6 +290,7 @@ function GameSetup:save(data)
 	managers.trade:save(data)
 	managers.groupai:state():save(data)
 end
+
 function GameSetup:load(data)
 	Setup.load(self, data)
 	managers.game_play_central:load(data)
@@ -293,6 +304,7 @@ function GameSetup:load(data)
 	managers.trade:load(data)
 	managers.groupai:state():load(data)
 end
+
 function GameSetup:_update_debug_input()
 	local editor_ok = not Application:editor() or Global.running_simulation
 	local debug_on_ok = Global.DEBUG_MENU_ON or Application:production_build()
@@ -314,4 +326,5 @@ function GameSetup:_update_debug_input()
 		end
 	end
 end
+
 return GameSetup

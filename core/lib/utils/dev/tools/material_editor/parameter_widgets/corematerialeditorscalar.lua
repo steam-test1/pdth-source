@@ -1,6 +1,7 @@
 require("core/lib/utils/dev/tools/material_editor/CoreSmartNode")
 local CoreMaterialEditorParameter = require("core/lib/utils/dev/tools/material_editor/parameter_widgets/CoreMaterialEditorParameter")
 local CoreMaterialEditorScalar = CoreMaterialEditorScalar or class(CoreMaterialEditorParameter)
+
 function CoreMaterialEditorScalar:init(parent, editor, parameter_info, parameter_node)
 	CoreMaterialEditorParameter.init(self, parent, editor, parameter_info, parameter_node)
 	self._slider = EWS:Slider(self._right_panel, self:to_slider_range(self._value, parameter_info.min, parameter_info.step), 0, self:to_slider_range(parameter_info.max, parameter_info.min, parameter_info.step), "", "")
@@ -12,12 +13,15 @@ function CoreMaterialEditorScalar:init(parent, editor, parameter_info, parameter
 	self._text_ctrl:set_min_size(Vector3(40, -1, -1))
 	self._right_box:add(self._text_ctrl, 0, 4, "ALL,EXPAND")
 end
+
 function CoreMaterialEditorScalar:update(t, dt)
 	CoreMaterialEditorParameter.update(self, t, dt)
 end
+
 function CoreMaterialEditorScalar:destroy()
 	CoreMaterialEditorParameter.destroy(self)
 end
+
 function CoreMaterialEditorScalar:on_toggle_customize()
 	self._customize = not self._customize
 	self:_load_value()
@@ -27,12 +31,14 @@ function CoreMaterialEditorScalar:on_toggle_customize()
 	self._slider:set_value(self:to_slider_range(self._value, self._parameter_info.min, self._parameter_info.step))
 	self:update_live()
 end
+
 function CoreMaterialEditorScalar:_on_slider()
 	self._value = self:from_slider_range(self._slider:get_value(), self._parameter_info.min, self._parameter_info.step)
 	self._parameter_node:set_parameter("value", tostring(self._value))
 	self._text_ctrl:set_value(string.format("%.3f", self._value))
 	self:update_live()
 end
+
 function CoreMaterialEditorScalar:_on_text_ctrl()
 	self._value = tonumber(self._text_ctrl:get_value()) or 0
 	self._parameter_node:set_parameter("value", tostring(self._value))
@@ -40,4 +46,5 @@ function CoreMaterialEditorScalar:_on_text_ctrl()
 	self._editor:_update_output()
 	self:update_live()
 end
+
 return CoreMaterialEditorScalar

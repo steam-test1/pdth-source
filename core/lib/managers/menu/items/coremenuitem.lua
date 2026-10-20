@@ -1,6 +1,7 @@
 core:module("CoreMenuItem")
 Item = Item or class()
 Item.TYPE = "item"
+
 function Item:init(data_node, parameters)
 	self._type = ""
 	local params = parameters or {}
@@ -36,34 +37,44 @@ function Item:init(data_node, parameters)
 	self:set_parameters(params)
 	self._enabled = true
 end
+
 function Item:set_enabled(enabled)
 	self._enabled = enabled
 	self:dirty()
 end
+
 function Item:enabled()
 	return self._enabled
 end
+
 function Item:type()
 	return self._type
 end
+
 function Item:name()
 	return self._parameters.name
 end
+
 function Item:info_panel()
 	return self._parameters.info_panel
 end
+
 function Item:parameters()
 	return self._parameters
 end
+
 function Item:parameter(name)
 	return self._parameters[name]
 end
+
 function Item:set_parameter(name, value)
 	self._parameters[name] = value
 end
+
 function Item:set_parameters(parameters)
 	self._parameters = parameters
 end
+
 function Item:set_callback_handler(callback_handler)
 	self._callback_handler = callback_handler
 	for _, callback_name in pairs(self._parameters.callback_name) do
@@ -84,16 +95,19 @@ function Item:set_callback_handler(callback_handler)
 		end
 	end
 end
+
 function Item:trigger()
 	for _, callback in pairs(self:parameters().callback) do
 		callback(self)
 	end
 end
+
 function Item:dirty()
 	if self.dirty_callback then
 		self.dirty_callback(self)
 	end
 end
+
 function Item:visible()
 	if self._visible_callback_list then
 		for _, visible_callback in pairs(self._visible_callback_list) do

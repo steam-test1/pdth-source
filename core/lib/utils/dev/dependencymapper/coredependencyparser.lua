@@ -29,6 +29,7 @@ TEXTURE = CoreDependencyNode.TEXTURE
 CUTSCENE = CoreDependencyNode.CUTSCENE
 EFFECT = CoreDependencyNode.EFFECT
 DependencyParser = DependencyParser or CoreClass.class()
+
 function DependencyParser:init(db)
 	self._database = db or Database
 	self._dn_cb = CoreEvent.callback(self, self, "_dn")
@@ -44,9 +45,11 @@ function DependencyParser:init(db)
 	self:_make_nodes_from_db(CoreCutsceneDn.CutsceneDependencyNode, "cutscene")
 	self:_make_nodes_from_db(CoreEffectDn.EffectDependencyNode, "effect")
 end
+
 function DependencyParser:_key(type_, name)
 	return string.format("%s:%s", type_, name)
 end
+
 function DependencyParser:_dn(...)
 	local name, type_ = parse_kwargs({
 		...
@@ -54,10 +57,12 @@ function DependencyParser:_dn(...)
 	local key = self:_key(type_, name)
 	return self._key2node[key]
 end
+
 function DependencyParser:_make_game_node()
 	local key = self:_key(GAME, "Game")
 	self._key2node[key] = CoreGameDn.GameDependencyNode:new("Game", self._dn_cb, self._database)
 end
+
 function DependencyParser:_make_level_nodes()
 	for _, dir in ipairs(File:list(CoreLevelDn.LEVEL_BASE, true)) do
 		local file = string.format(CoreLevelDn.LEVEL_FILE, dir)
@@ -67,10 +72,12 @@ function DependencyParser:_make_level_nodes()
 		end
 	end
 end
+
 function DependencyParser:_make_materialfile_node()
 	local key = self:_key(MATERIALS_FILE, "Materialsfile")
 	self._key2node[key] = CoreMaterialfileDn.MaterialsfileDependencyNode:new("Materialsfile", self._dn_cb, self._database)
 end
+
 function DependencyParser:_make_nodes_from_db(dn_class, db_type)
 	for _, name in ipairs(managers.database:list_entries_of_type(db_type)) do
 		local dn = dn_class:new(name, self._dn_cb, self._database)
@@ -78,6 +85,7 @@ function DependencyParser:_make_nodes_from_db(dn_class, db_type)
 		self._key2node[key] = dn
 	end
 end
+
 function DependencyParser:nodes(pattern)
 	local dn_list = {}
 	for _, dn in pairs(self._key2node) do
@@ -87,11 +95,13 @@ function DependencyParser:nodes(pattern)
 	end
 	return dn_list
 end
+
 function DependencyParser:complement(dn_list, pattern)
 	local all_dn = self:nodes()
 	local list = set_difference(all_dn, dn_list)
 	return filter(list, pattern)
 end
+
 function DependencyParser:reached(start_dn_list, pattern)
 	local reached_dn = {}
 	for _, start_dn in ipairs(start_dn_list) do
@@ -99,11 +109,13 @@ function DependencyParser:reached(start_dn_list, pattern)
 	end
 	return filter(reached_dn, pattern)
 end
+
 function DependencyParser:not_reached(start_dn_list, pattern)
 	local reached_dn = self:reached(start_dn_list)
 	local not_reached_dn = self:complement(reached_dn)
 	return filter(not_reached_dn, pattern)
 end
+
 function _set2list(set)
 	local list = {}
 	for n, _ in pairs(set) do
@@ -111,6 +123,7 @@ function _set2list(set)
 	end
 	return list
 end
+
 function _list2set(list)
 	local set = {}
 	for _, n in ipairs(list) do
@@ -118,6 +131,7 @@ function _list2set(list)
 	end
 	return set
 end
+
 function union(A_list, B_list)
 	local set = {}
 	for _, dn in ipairs(A_list) do
@@ -128,6 +142,7 @@ function union(A_list, B_list)
 	end
 	return _set2list(set)
 end
+
 function intersect(A_list, B_list)
 	local b_set = _list2set(B_list)
 	local c_set = {}
@@ -138,6 +153,7 @@ function intersect(A_list, B_list)
 	end
 	return _set2list(c_set)
 end
+
 function set_difference(A_list, B_list)
 	local set = _list2set(A_list)
 	for _, n in ipairs(B_list) do
@@ -145,6 +161,7 @@ function set_difference(A_list, B_list)
 	end
 	return _set2list(set)
 end
+
 function names(A_list)
 	local names = {}
 	for _, dn in ipairs(A_list) do
@@ -153,6 +170,7 @@ function names(A_list)
 	table.sort(names)
 	return names
 end
+
 function filter(dn_list, pattern)
 	res_list = {}
 	for _, dn in ipairs(dn_list) do
@@ -162,6 +180,7 @@ function filter(dn_list, pattern)
 	end
 	return res_list
 end
+
 function generate_report(filepath, protected_list, dp)
 	local workbook = CoreWorkbook.Workbook:new()
 	local dp = dp or DependencyParser:new(ProjectDatabase)
@@ -171,6 +190,7 @@ function generate_report(filepath, protected_list, dp)
 		reached = union(reached, dp:reached(protected_list))
 	end
 	local not_reached = dp:complement(reached)
+	
 	function make_first_worksheet()
 		local ws = CoreWorksheet.Worksheet:new("README")
 		ws:add_row(CoreSsRow.Header1Row:new("Candidates for Removal Report"))
@@ -197,6 +217,7 @@ function generate_report(filepath, protected_list, dp)
 		ws:add_row(CoreSsRow.Row:new("be removed. The protected assets are listed in the last worksheet."))
 		return ws
 	end
+	
 	function make_worksheet(type_, name)
 		local ws = CoreWorksheet.Worksheet:new(name)
 		ws:add_row(CoreSsRow.Header1Row:new(string.format("%s, Candidates to be Removed:", name)))
@@ -208,6 +229,7 @@ function generate_report(filepath, protected_list, dp)
 		collectgarbage()
 		return ws
 	end
+	
 	function make_protected_worksheet()
 		local ws = CoreWorksheet.Worksheet:new("Protected Assets")
 		ws:add_row(CoreSsRow.Header1Row:new("Proteted Assets (by type):"))
@@ -227,6 +249,7 @@ function generate_report(filepath, protected_list, dp)
 		collectgarbage()
 		return ws
 	end
+	
 	workbook:add_worksheet(make_first_worksheet())
 	workbook:add_worksheet(make_worksheet(LEVEL, "Levels"))
 	workbook:add_worksheet(make_worksheet(UNIT, "Units"))
@@ -248,6 +271,7 @@ function generate_report(filepath, protected_list, dp)
 		f:close()
 	end
 end
+
 function generate_BC_report(filepath)
 	local dp = dp or DependencyParser:new(ProjectDatabase)
 	local units = dp:nodes(UNIT)
@@ -268,6 +292,7 @@ function generate_BC_report(filepath)
 	prot = union(prot, effects)
 	generate_report(filepath, prot, dp)
 end
+
 function generate_FAITH_report(filepath)
 	local dp = dp or DependencyParser:new(ProjectDatabase)
 	local levels = dp:nodes(LEVEL)

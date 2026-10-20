@@ -9,6 +9,7 @@ core:import("CoreSessionState")
 core:import("CoreSessionDebug")
 core:import("CoreDebug")
 SessionManager = SessionManager or class()
+
 function SessionManager:init(session_factory, input_manager)
 	if not session_factory then
 		return
@@ -45,14 +46,18 @@ function SessionManager:init(session_factory, input_manager)
 	}
 	self._debug = CoreSessionDebug.SessionDebug:new(self._session_state)
 end
+
 function SessionManager:destroy()
 end
+
 function SessionManager:_main_systems_are_stable_for_loading()
 	return self:_check_if_stable_for_loading(self._state_machines_except_menu_and_game)
 end
+
 function SessionManager:all_systems_are_stable_for_loading()
 	return self:_check_if_stable_for_loading(self._state_machines)
 end
+
 function SessionManager:_check_if_stable_for_loading(collection)
 	for _, state in pairs(collection) do
 		if not state:is_stable_for_loading() then
@@ -62,6 +67,7 @@ function SessionManager:_check_if_stable_for_loading(collection)
 	end
 	return true
 end
+
 function SessionManager:_update(t, dt)
 	if not self._factory then
 		return
@@ -75,6 +81,7 @@ function SessionManager:_update(t, dt)
 		state:transition()
 	end
 end
+
 function SessionManager:end_update(t, dt)
 	if not self._factory then
 		return
@@ -85,18 +92,23 @@ function SessionManager:end_update(t, dt)
 		end
 	end
 end
+
 function SessionManager:update(t, dt)
 	self:_update(t, dt)
 end
+
 function SessionManager:paused_update(t, dt)
 	self:_update(t, dt)
 end
+
 function SessionManager:player_slots()
 	return self._player_slots
 end
+
 function SessionManager:session()
 	return self._session_state
 end
+
 function SessionManager:_debug_time()
 	return self._debug_timer
 end

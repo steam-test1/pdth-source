@@ -2,6 +2,7 @@ require("core/lib/utils/dev/editor/WorldHolder")
 core:module("CoreGameStateLoadingGame")
 core:import("CoreGameStateInGame")
 LoadingGame = LoadingGame or class()
+
 function LoadingGame:init()
 	self._debug_time = self.game_state._session_manager:_debug_time()
 	for _, unit in ipairs(World:find_units_quick("all")) do
@@ -20,8 +21,10 @@ function LoadingGame:init()
 	local local_user_manager = self.game_state._session_manager._local_user_manager
 	local_user_manager:enter_level_handler(self._level_handler)
 end
+
 function LoadingGame:destroy()
 end
+
 function LoadingGame:transition()
 	local current_time = self.game_state._session_manager:_debug_time()
 	if current_time > self._debug_time + 2 then

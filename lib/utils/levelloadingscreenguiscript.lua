@@ -1,4 +1,5 @@
 LevelLoadingScreenGuiScript = LevelLoadingScreenGuiScript or class()
+
 function LevelLoadingScreenGuiScript:init(scene_gui, res, progress, base_layer)
 	self._scene_gui = scene_gui
 	self._res = res
@@ -278,6 +279,7 @@ function LevelLoadingScreenGuiScript:init(scene_gui, res, progress, base_layer)
 	self._max_bar_width = 0
 	self:setup(res, progress)
 end
+
 function LevelLoadingScreenGuiScript:setup(res, progress)
 	self._saferect_bottom_y = self._saferect_panel:h() - self._gui_tweak_data.upper_saferect_border
 	self._level_title_text:set_shape(0, 0, self._safe_rect_pixels.width, self._gui_tweak_data.upper_saferect_border - self._gui_tweak_data.border_pad)
@@ -354,6 +356,7 @@ function LevelLoadingScreenGuiScript:setup(res, progress)
 	self._indicator:set_left(self._level_title_text:right() + 8)
 	self._indicator:set_bottom(self._gui_tweak_data.upper_saferect_border - self._gui_tweak_data.border_pad)
 end
+
 function LevelLoadingScreenGuiScript:update(progress, t, dt)
 	if self._tv_text:right() < 0 then
 		self._tv_text:set_x(self._tv_panel:w())
@@ -374,13 +377,16 @@ function LevelLoadingScreenGuiScript:update(progress, t, dt)
 		self._bar_gui:set_w(self._max_bar_width * progress / (100 - self._init_progress))
 	end
 end
+
 function LevelLoadingScreenGuiScript:get_loading_text(dot_count)
 	return self._init_text .. string.rep(".", math.floor(dot_count))
 end
+
 function LevelLoadingScreenGuiScript:set_text(text)
 	self._text_gui:set_text(text)
 	self._init_text = text
 end
+
 function LevelLoadingScreenGuiScript:destroy()
 	if alive(self._saferect) then
 		self._scene_gui:destroy_workspace(self._saferect)
@@ -395,9 +401,11 @@ function LevelLoadingScreenGuiScript:destroy()
 		self._ws = nil
 	end
 end
+
 function LevelLoadingScreenGuiScript:visible()
 	return self._ws:visible()
 end
+
 function LevelLoadingScreenGuiScript:set_visible(visible)
 	if visible then
 		self._ws:show()

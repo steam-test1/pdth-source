@@ -1,5 +1,6 @@
 require("lib/states/GameState")
 IngameDialogState = IngameDialogState or class(GameState)
+
 function IngameDialogState:init(game_state_machine)
 	GameState.init(self, "ingame_dialog", game_state_machine)
 	self._ws = Overlay:newgui():create_screen_workspace()
@@ -16,6 +17,7 @@ function IngameDialogState:init(game_state_machine)
 	self._controller:set_enabled(true)
 	self._ws:hide()
 end
+
 function IngameDialogState:set_controller_enabled(enabled)
 	local players = managers.player:players()
 	for _, player in ipairs(players) do
@@ -25,14 +27,17 @@ function IngameDialogState:set_controller_enabled(enabled)
 		end
 	end
 end
+
 function IngameDialogState:at_enter()
 	self:set_controller_enabled(false)
 	self._ws:show()
 end
+
 function IngameDialogState:at_exit()
 	self:set_controller_enabled(true)
 	self._ws:hide()
 end
+
 function IngameDialogState:update(t, dt)
 	if not managers.dialog:is_active() then
 		managers.player:set_player_state("adventure")

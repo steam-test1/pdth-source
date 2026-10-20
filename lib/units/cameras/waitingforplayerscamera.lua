@@ -1,4 +1,5 @@
 WaitingForPlayersCamera = WaitingForPlayersCamera or class()
+
 function WaitingForPlayersCamera:init(unit)
 	self._unit = unit
 	self._camera = World:create_camera()
@@ -15,6 +16,7 @@ function WaitingForPlayersCamera:init(unit)
 	self._director:position_as(self._camera)
 	self._camera_controller:set_both(self._unit:get_object(Idstring("a_camera")))
 end
+
 function WaitingForPlayersCamera:_setup_sound_listener()
 	self._listener_id = managers.listener:add_listener("wait_camera", self._camera, self._camera, nil, false)
 	managers.listener:add_set("wait_camera", {
@@ -27,6 +29,7 @@ function WaitingForPlayersCamera:_setup_sound_listener()
 		primary = true
 	})
 end
+
 function WaitingForPlayersCamera:start(time)
 	self._playing = true
 	self._unit:anim_stop(Idstring("camera_animation"))
@@ -34,12 +37,14 @@ function WaitingForPlayersCamera:start(time)
 	self._unit:anim_play(Idstring("camera_animation"), 1)
 	self._viewport:set_active(true)
 end
+
 function WaitingForPlayersCamera:stop()
 	self._viewport:set_active(false)
 	self._unit:anim_stop(Idstring("camera_animation"))
 	self._unit:anim_set_time(Idstring("camera_animation"), 0)
 	self._playing = false
 end
+
 function WaitingForPlayersCamera:update(unit, t, dt)
 	if self._playing then
 		if self._wait_t then
@@ -52,6 +57,7 @@ function WaitingForPlayersCamera:update(unit, t, dt)
 		end
 	end
 end
+
 function WaitingForPlayersCamera:destroy()
 	if self._viewport then
 		self._viewport:destroy()

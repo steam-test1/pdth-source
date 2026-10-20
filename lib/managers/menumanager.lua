@@ -22,6 +22,7 @@ core:import("CoreEvent")
 MenuManager = MenuManager or class(CoreMenuManager.Manager)
 MenuManager.ONLINE_AGE = 18
 require("lib/managers/MenuManagerDialogs")
+
 function MenuManager:init(is_start_menu)
 	MenuManager.super.init(self)
 	self._is_start_menu = is_start_menu
@@ -134,27 +135,34 @@ function MenuManager:init(is_start_menu)
 	managers.system_menu:add_active_changed_callback(callback(self, self, "system_menu_active_changed"))
 	self._sound_source = SoundDevice:create_source("MenuManager")
 end
+
 function MenuManager:post_event(event)
 	self._sound_source:post_event(event)
 end
+
 function MenuManager:_cb_matchmake_found_game(game_id, created)
 	print("_cb_matchmake_found_game", game_id, created)
 end
+
 function MenuManager:_cb_matchmake_player_joined(player_info)
 	print("_cb_matchmake_player_joined")
 	if managers.network.group:is_group_leader() then
 	end
 end
+
 function MenuManager:destroy()
 	MenuManager.super.destroy(self)
 	self:destroy_controller()
 end
+
 function MenuManager:set_delayed_open_savefile_menu_callback(callback_func)
 	self._delayed_open_savefile_menu_callback = callback_func
 end
+
 function MenuManager:set_save_game_callback(callback_func)
 	self._save_game_callback = callback_func
 end
+
 function MenuManager:system_menu_active_changed(active)
 	local active_menu = self:active_menu()
 	if not active_menu then
@@ -166,28 +174,33 @@ function MenuManager:system_menu_active_changed(active)
 		active_menu.renderer:disable_input(0.01)
 	end
 end
+
 function MenuManager:active_menu(node_name, parameter_list)
 	local active_menu = self._open_menus[#self._open_menus]
 	if active_menu then
 		return active_menu
 	end
 end
+
 function MenuManager:open_menu(menu_name)
 	MenuManager.super.open_menu(self, menu_name)
 	self:activate()
 end
+
 function MenuManager:open_node(node_name, parameter_list)
 	local active_menu = self._open_menus[#self._open_menus]
 	if active_menu then
 		active_menu.logic:select_node(node_name, true, unpack(parameter_list or {}))
 	end
 end
+
 function MenuManager:back(queue)
 	local active_menu = self._open_menus[#self._open_menus]
 	if active_menu then
 		active_menu.input:back(queue)
 	end
 end
+
 function MenuManager:close_menu(menu_name)
 	self:post_event("menu_exit")
 	if Global.game_settings.single_player and menu_name == "menu_pause" then
@@ -196,10 +209,12 @@ function MenuManager:close_menu(menu_name)
 	end
 	MenuManager.super.close_menu(self, menu_name)
 end
+
 function MenuManager:_menu_closed(menu_name)
 	MenuManager.super._menu_closed(self, menu_name)
 	self:deactivate()
 end
+
 function MenuManager:close_all_menus()
 	local names = {}
 	for _, menu in pairs(self._open_menus) do
@@ -209,6 +224,7 @@ function MenuManager:close_all_menus()
 		self:close_menu(name)
 	end
 end
+
 function MenuManager:is_open(menu_name)
 	for _, menu in ipairs(self._open_menus) do
 		if menu.name == menu_name then
@@ -217,6 +233,7 @@ function MenuManager:is_open(menu_name)
 	end
 	return false
 end
+
 function MenuManager:is_in_root(menu_name)
 	for _, menu in ipairs(self._open_menus) do
 		if menu.name == menu_name then
@@ -225,9 +242,11 @@ function MenuManager:is_in_root(menu_name)
 	end
 	return false
 end
+
 function MenuManager:is_pc_controller()
 	return self:active_menu() and self:active_menu().input._controller.TYPE == "pc"
 end
+
 function MenuManager:toggle_menu_state()
 	if managers.hud and managers.hud._chat_focus then
 		return
@@ -246,11 +265,13 @@ function MenuManager:toggle_menu_state()
 		end
 	end
 end
+
 function MenuManager:push_to_talk(enabled)
 	if managers.network and managers.network.voice_chat then
 		managers.network.voice_chat:set_recording(enabled)
 	end
 end
+
 function MenuManager:toggle_chatinput()
 	if Global.game_settings.single_player or Application:editor() then
 		return
@@ -268,6 +289,7 @@ function MenuManager:toggle_chatinput()
 		managers.hud:toggle_chatinput()
 	end
 end
+
 function MenuManager:set_slot_voice(peer, peer_id, active)
 	local lobby_menu = managers.menu:get_menu("lobby_menu")
 	if lobby_menu and lobby_menu.renderer:is_open() then
@@ -278,12 +300,14 @@ function MenuManager:set_slot_voice(peer, peer_id, active)
 		kit_menu.renderer:set_slot_voice(peer, peer_id, active)
 	end
 end
+
 function MenuManager:enter_gameover_state()
 	if not self._is_start_menu and not self:is_open("menu_gameover") then
 		self:close_menu("menu_pause")
 		self:open_menu("menu_gameover")
 	end
 end
+
 function MenuManager:toggle_inventory_outfit()
 	local is_open = self:is_open("menu_inventory_outfit")
 	if not self._active or is_open then
@@ -294,6 +318,7 @@ function MenuManager:toggle_inventory_outfit()
 		end
 	end
 end
+
 function MenuManager:create_controller()
 	if not self._controller then
 		self._controller = managers.controller:create_controller("MenuManager", nil, false)
@@ -305,6 +330,7 @@ function MenuManager:create_controller()
 		end
 	end
 end
+
 function MenuManager:safefile_manager_active_changed(active)
 	if self._controller then
 		if active then
@@ -322,12 +348,14 @@ function MenuManager:safefile_manager_active_changed(active)
 		end
 	end
 end
+
 function MenuManager:destroy_controller()
 	if self._controller then
 		self._controller:destroy()
 		self._controller = nil
 	end
 end
+
 function MenuManager:activate()
 	if #self._open_menus == 1 then
 		managers.rumble:set_enabled(false)
@@ -335,6 +363,7 @@ function MenuManager:activate()
 		self._active = true
 	end
 end
+
 function MenuManager:deactivate()
 	if #self._open_menus == 0 then
 		managers.rumble:set_enabled(managers.user:get_setting("rumble"))
@@ -342,19 +371,24 @@ function MenuManager:deactivate()
 		self._active = false
 	end
 end
+
 function MenuManager:is_active()
 	return self._active
 end
+
 function MenuManager:add_active_changed_callback(callback_func)
 	self._active_changed_callback_handler:add(callback_func)
 end
+
 function MenuManager:remove_active_changed_callback(callback_func)
 	self._active_changed_callback_handler:remove(callback_func)
 end
+
 function MenuManager:brightness_changed(name, old_value, new_value)
 	local brightness = math.clamp(new_value, _G.tweak_data.menu.MIN_BRIGHTNESS, _G.tweak_data.menu.MAX_BRIGHTNESS)
 	Application:set_brightness(brightness)
 end
+
 function MenuManager:set_mouse_sensitivity(zoomed)
 	if SystemInfo:platform() == Idstring("PS3") then
 		return
@@ -363,6 +397,7 @@ function MenuManager:set_mouse_sensitivity(zoomed)
 	self._controller:get_setup():get_connection("look"):set_multiplier(sens * self._look_multiplier)
 	managers.controller:rebind_connections()
 end
+
 function MenuManager:camera_sensitivity_changed(name, old_value, new_value)
 	if alive(managers.player:player_unit()) then
 		local plr_state = managers.player:player_unit():movement():current_state()
@@ -373,9 +408,11 @@ function MenuManager:camera_sensitivity_changed(name, old_value, new_value)
 		self:set_mouse_sensitivity(false)
 	end
 end
+
 function MenuManager:rumble_changed(name, old_value, new_value)
 	managers.rumble:set_enabled(new_value)
 end
+
 function MenuManager:invert_camera_x_changed(name, old_value, new_value)
 	local setup = self._controller:get_setup()
 	local look_connection = setup:get_connection("look")
@@ -388,6 +425,7 @@ function MenuManager:invert_camera_x_changed(name, old_value, new_value)
 	look_connection:set_inversion(look_inversion)
 	managers.controller:rebind_connections()
 end
+
 function MenuManager:invert_camera_y_changed(name, old_value, new_value)
 	local setup = self._controller:get_setup()
 	local look_connection = setup:get_connection("look")
@@ -400,36 +438,44 @@ function MenuManager:invert_camera_y_changed(name, old_value, new_value)
 	look_connection:set_inversion(look_inversion)
 	managers.controller:rebind_connections()
 end
+
 function MenuManager:subtitle_changed(name, old_value, new_value)
 	managers.subtitle:set_visible(new_value)
 end
+
 function MenuManager:music_volume_changed(name, old_value, new_value)
 	local tweak = _G.tweak_data.menu
 	local percentage = (new_value - tweak.MIN_MUSIC_VOLUME) / (tweak.MAX_MUSIC_VOLUME - tweak.MIN_MUSIC_VOLUME)
 	SoundDevice:set_rtpc("option_music_volume", percentage * 100)
 end
+
 function MenuManager:sfx_volume_changed(name, old_value, new_value)
 	local tweak = _G.tweak_data.menu
 	local percentage = (new_value - tweak.MIN_SFX_VOLUME) / (tweak.MAX_SFX_VOLUME - tweak.MIN_SFX_VOLUME)
 	SoundDevice:set_rtpc("option_sfx_volume", percentage * 100)
 	managers.video:volume_changed(percentage)
 end
+
 function MenuManager:voice_volume_changed(name, old_value, new_value)
 	if managers.network and managers.network.voice_chat then
 		managers.network.voice_chat:set_volume(new_value)
 	end
 end
+
 function MenuManager:lightfx_changed(name, old_value, new_value)
 	if managers.network and managers.network.account then
 		managers.network.account:set_lightfx()
 	end
 end
+
 function MenuManager:set_debug_menu_enabled(enabled)
 	self._debug_menu_enabled = enabled
 end
+
 function MenuManager:debug_menu_enabled()
 	return self._debug_menu_enabled
 end
+
 function MenuManager:add_back_button(new_node)
 	new_node:delete_item("back")
 	local params = {
@@ -442,9 +488,11 @@ function MenuManager:add_back_button(new_node)
 	local new_item = new_node:create_item(nil, params)
 	new_node:add_item(new_item)
 end
+
 function MenuManager:reload()
 	self:_recompile(managers.database:root_path() .. "assets\\guis\\")
 end
+
 function MenuManager:_recompile(dir)
 	local source_files = self:_source_files(dir)
 	local t = {
@@ -463,6 +511,7 @@ function MenuManager:_recompile(dir)
 		PackageManager:reload(managers.database:entry_type(file):id(), managers.database:entry_path(file):id())
 	end
 end
+
 function MenuManager:_source_files(dir)
 	local files = {}
 	local entry_path = managers.database:entry_path(dir) .. "/"
@@ -476,6 +525,7 @@ function MenuManager:_source_files(dir)
 	end
 	return files
 end
+
 function MenuManager:progress_resetted()
 	local dialog_data = {}
 	dialog_data.title = "Dr Evil"
@@ -486,8 +536,10 @@ function MenuManager:progress_resetted()
 	dialog_data.button_list = {no_button}
 	managers.system_menu:show(dialog_data)
 end
+
 function MenuManager:_dialog_progress_resetted_ok()
 end
+
 function MenuManager:relay_chat_message(message, id)
 	for _, menu in pairs(self._open_menus) do
 		if menu.renderer.sync_chat_message then
@@ -502,9 +554,11 @@ function MenuManager:relay_chat_message(message, id)
 		managers.hud:sync_say(message, id)
 	end
 end
+
 function MenuManager:is_ps3()
 	return SystemInfo:platform() == Idstring("PS3")
 end
+
 function MenuManager:open_sign_in_menu(cb)
 	if self:is_ps3() then
 		managers.network.matchmake:register_callback("found_game", callback(self, self, "_cb_matchmake_found_game"))
@@ -516,6 +570,7 @@ function MenuManager:open_sign_in_menu(cb)
 		self:show_err_not_signed_in_dialog()
 	end
 end
+
 function MenuManager:open_ps3_sign_in_menu(cb)
 	local success = true
 	if managers.network.account:signin_state() == "not signed in" then
@@ -538,6 +593,7 @@ function MenuManager:open_ps3_sign_in_menu(cb)
 	end
 	cb(success)
 end
+
 function MenuManager:_enter_online_menus()
 	if PSN:user_age() < MenuManager.ONLINE_AGE and PSN:parental_control_settings_active() then
 		self:show_err_under_age()
@@ -550,6 +606,7 @@ function MenuManager:_enter_online_menus()
 		return true
 	end
 end
+
 function MenuManager:psn_disconnected()
 	if managers.network:session() then
 		managers.network:queue_stop_network()
@@ -561,6 +618,7 @@ function MenuManager:psn_disconnected()
 	end
 	self:show_mp_disconnected_internet_dialog({ok_func = nil})
 end
+
 function MenuManager:steam_disconnected()
 	if managers.network:session() then
 		managers.network:queue_stop_network()
@@ -571,6 +629,7 @@ function MenuManager:steam_disconnected()
 	end
 	self:show_mp_disconnected_internet_dialog({ok_func = nil})
 end
+
 function MenuManager:ps3_disconnect(connected)
 	if not connected and not PSN:is_online() then
 		managers.network:queue_stop_network()
@@ -581,6 +640,7 @@ function MenuManager:ps3_disconnect(connected)
 		self:show_disconnect_message(true)
 	end
 end
+
 function MenuManager:show_disconnect_message(requires_signin)
 	if self._showing_disconnect_message then
 		return
@@ -592,21 +652,25 @@ function MenuManager:show_disconnect_message(requires_signin)
 	self._showing_disconnect_message = true
 	self:show_err_not_signed_in_dialog()
 end
+
 function MenuManager:created_lobby()
 	Global.game_settings.single_player = false
 	managers.menu:close_menu("menu_main")
 	managers.menu:open_menu("lobby_menu")
 end
+
 function MenuManager:exit_online_menues()
 	self:close_menu(self:active_menu().name)
 	self:open_menu("menu_main")
 end
+
 function MenuManager:leave_online_menu()
 	if self:is_ps3() then
 		PSN:set_online_callback(function()
 		end)
 	end
 end
+
 function MenuManager:on_leave_lobby()
 	managers.network:prepare_stop_network()
 	managers.menu:close_menu("lobby_menu")
@@ -617,6 +681,7 @@ function MenuManager:on_leave_lobby()
 		Global.game_settings.difficulty = "overkill"
 	end
 end
+
 function MenuManager:show_global_success(node)
 	local node_gui
 	if not node then
@@ -660,140 +725,184 @@ function MenuManager:show_global_success(node)
 		node_gui:set_mini_info(rate_str)
 	end
 end
+
 function MenuManager:change_theme(theme)
 	managers.user:set_setting("menu_theme", theme)
 	for _, menu in ipairs(self._open_menus) do
 		menu.renderer:refresh_theme()
 	end
 end
+
 MenuCallbackHandler = MenuCallbackHandler or class(CoreMenuCallbackHandler.CallbackHandler)
+
 function MenuCallbackHandler:init()
 	MenuCallbackHandler.super.init(self)
 	self._sound_source = SoundDevice:create_source("MenuCallbackHandler")
 end
+
 function MenuCallbackHandler:trial_buy()
 	print("[MenuCallbackHandler:trial_buy]")
 	managers.dlc:buy_full_game()
 end
+
 function MenuCallbackHandler:dlc_buy_pc()
 	print("[MenuCallbackHandler:dlc_buy_pc]")
 	Steam:overlay_activate("store", 24240)
 end
+
 function MenuCallbackHandler:dlc_buy_ps3()
 	print("[MenuCallbackHandler:dlc_buy_ps3]")
 	managers.dlc:buy_product("dlc1")
 end
+
 function MenuCallbackHandler:has_full_game()
 	return managers.dlc:has_full_game()
 end
+
 function MenuCallbackHandler:is_trial()
 	return managers.dlc:is_trial()
 end
+
 function MenuCallbackHandler:is_not_trial()
 	return not self:is_trial()
 end
+
 function MenuCallbackHandler:is_pre_dlc()
 	return managers.dlc:has_pre_dlc()
 end
+
 function MenuCallbackHandler:is_not_pre_dlc()
 	return not managers.dlc:has_pre_dlc()
 end
+
 function MenuCallbackHandler:has_dlc1()
 	return managers.dlc:has_dlc1()
 end
+
 function MenuCallbackHandler:not_has_dlc1()
 	return not managers.dlc:has_dlc1()
 end
+
 function MenuCallbackHandler:has_dlc2()
 	return managers.dlc:has_dlc2()
 end
+
 function MenuCallbackHandler:has_dlc3()
 	return managers.dlc:has_dlc3()
 end
+
 function MenuCallbackHandler:has_dlc4()
 	return managers.dlc:has_dlc4()
 end
+
 function MenuCallbackHandler:has_all_dlcs()
 	return managers.dlc:has_dlc1() and managers.dlc:has_dlc2() and managers.dlc:has_dlc3()
 end
+
 function MenuCallbackHandler:not_has_all_dlcs()
 	return not self:has_all_dlcs()
 end
+
 function MenuCallbackHandler:reputation_check(data)
 	return managers.experience:current_level() >= data:value()
 end
+
 function MenuCallbackHandler:non_overkill_145(data)
 	return Global.game_settings.difficulty ~= "overkill_145"
 end
+
 function MenuCallbackHandler:is_level_145()
 	return managers.experience:current_level() >= 145
 end
+
 function MenuCallbackHandler:is_win32()
 	return SystemInfo:platform() == Idstring("WIN32")
 end
+
 function MenuCallbackHandler:voice_enabled()
 	return not self:is_ps3() and self:is_win32() and managers.network and managers.network.voice_chat and managers.network.voice_chat:enabled()
 end
+
 function MenuCallbackHandler:customize_controller_enabled()
 	return true
 end
+
 function MenuCallbackHandler:is_win32_not_lan()
 	return SystemInfo:platform() == Idstring("WIN32") and not Global.game_settings.playing_lan
 end
+
 function MenuCallbackHandler:is_ps3()
 	return SystemInfo:platform() == Idstring("PS3")
 end
+
 function MenuCallbackHandler:has_dropin()
 	return NetworkManager.DROPIN_ENABLED
 end
+
 function MenuCallbackHandler:is_server()
 	return Network:is_server()
 end
+
 function MenuCallbackHandler:is_online()
 	return managers.network.account:signin_state() == "signed in"
 end
+
 function MenuCallbackHandler:is_singleplayer()
 	return Global.game_settings.single_player
 end
+
 function MenuCallbackHandler:is_multiplayer()
 	return not Global.game_settings.single_player
 end
+
 function MenuCallbackHandler:hidden()
 	return false
 end
+
 function MenuCallbackHandler:chat_visible()
 	return SystemInfo:platform() == Idstring("WIN32")
 end
+
 function MenuCallbackHandler:is_pc_controller()
 	return managers.menu:active_menu().input._controller.TYPE == "pc"
 end
+
 function MenuCallbackHandler:is_not_editor()
 	return not Application:editor()
 end
+
 function MenuCallbackHandler:show_credits()
 	game_state_machine:change_state_by_name("menu_credits")
 end
+
 function MenuCallbackHandler:can_load_game()
 	return not Application:editor() and not Network:multiplayer()
 end
+
 function MenuCallbackHandler:can_save_game()
 	return not Application:editor() and not Network:multiplayer()
 end
+
 function MenuCallbackHandler:is_not_multiplayer()
 	return not Network:multiplayer()
 end
+
 function MenuCallbackHandler:debug_menu_enabled()
 	return managers.menu:debug_menu_enabled()
 end
+
 function MenuCallbackHandler:leave_online_menu()
 	managers.menu:leave_online_menu()
 end
+
 function MenuCallbackHandler:on_visit_forum()
 	Steam:overlay_activate("url", "http://forums.steampowered.com/forums/forumdisplay.php?f=1225")
 end
+
 function MenuCallbackHandler:on_buy_dlc1()
 	Steam:overlay_activate("store", 24240)
 end
+
 function MenuCallbackHandler:quit_game()
 	local dialog_data = {}
 	dialog_data.title = managers.localization:text("dialog_warning_title")
@@ -808,6 +917,7 @@ function MenuCallbackHandler:quit_game()
 	dialog_data.button_list = {yes_button, no_button}
 	managers.system_menu:show(dialog_data)
 end
+
 function MenuCallbackHandler:_dialog_quit_yes()
 	local dialog_data = {}
 	dialog_data.title = managers.localization:text("dialog_warning_title")
@@ -822,15 +932,19 @@ function MenuCallbackHandler:_dialog_quit_yes()
 	dialog_data.button_list = {yes_button, no_button}
 	managers.system_menu:show(dialog_data)
 end
+
 function MenuCallbackHandler:_dialog_quit_no()
 end
+
 function MenuCallbackHandler:_dialog_save_progress_backup_yes()
 	managers.savefile:save_progress("local_hdd")
 	setup:quit()
 end
+
 function MenuCallbackHandler:_dialog_save_progress_backup_no()
 	setup:quit()
 end
+
 function MenuCallbackHandler:toggle_god_mode(item)
 	local god_mode_on = item:value() == "on"
 	Global.god_mode = god_mode_on
@@ -838,6 +952,7 @@ function MenuCallbackHandler:toggle_god_mode(item)
 		managers.player:player_unit():character_damage():set_god_mode(god_mode_on)
 	end
 end
+
 function MenuCallbackHandler:toggle_alienware_mask(item)
 	local use_mask = item:value() == "on"
 	if SystemInfo:platform() ~= Idstring("WIN32") or not managers.network.account:has_alienware() then
@@ -845,6 +960,7 @@ function MenuCallbackHandler:toggle_alienware_mask(item)
 	end
 	managers.user:set_setting("alienware_mask", use_mask)
 end
+
 function MenuCallbackHandler:toggle_developer_mask(item)
 	local use_mask = item:value() == "on"
 	if SystemInfo:platform() ~= Idstring("WIN32") or not managers.network.account:is_developer() then
@@ -852,6 +968,7 @@ function MenuCallbackHandler:toggle_developer_mask(item)
 	end
 	managers.user:set_setting("developer_mask", use_mask)
 end
+
 function MenuCallbackHandler:toggle_ready(item)
 	local ready = item:value() == "on"
 	if not managers.network:session() then
@@ -864,41 +981,50 @@ function MenuCallbackHandler:toggle_ready(item)
 	end
 	managers.network:game():on_set_member_ready(managers.network:session():local_peer():id(), ready)
 end
+
 function MenuCallbackHandler:freeflight(item)
 	if setup:freeflight() then
 		setup:freeflight():enable()
 		self:resume_game()
 	end
 end
+
 function MenuCallbackHandler:change_nr_players(item)
 	local nr_players = item:value()
 	Global.nr_players = nr_players
 	managers.player:set_nr_players(nr_players)
 end
+
 function MenuCallbackHandler:toggle_rumble(item)
 	local rumble = item:value() == "on"
 	managers.user:set_setting("rumble", rumble)
 end
+
 function MenuCallbackHandler:invert_camera_horisontally(item)
 	local invert = item:value() == "on"
 	managers.user:set_setting("invert_camera_x", invert)
 end
+
 function MenuCallbackHandler:invert_camera_vertically(item)
 	local invert = item:value() == "on"
 	managers.user:set_setting("invert_camera_y", invert)
 end
+
 function MenuCallbackHandler:hold_to_steelsight(item)
 	local hold = item:value() == "on"
 	managers.user:set_setting("hold_to_steelsight", hold)
 end
+
 function MenuCallbackHandler:hold_to_run(item)
 	local hold = item:value() == "on"
 	managers.user:set_setting("hold_to_run", hold)
 end
+
 function MenuCallbackHandler:hold_to_duck(item)
 	local hold = item:value() == "on"
 	managers.user:set_setting("hold_to_duck", hold)
 end
+
 function MenuCallbackHandler:toggle_fullscreen(item)
 	local fullscreen = item:value() == "on"
 	if RenderSettings.fullscreen == fullscreen then
@@ -910,22 +1036,27 @@ function MenuCallbackHandler:toggle_fullscreen(item)
 		item:set_value(not fullscreen and "on" or "off")
 	end)
 end
+
 function MenuCallbackHandler:toggle_subtitle(item)
 	local subtitle = item:value() == "on"
 	managers.user:set_setting("subtitle", subtitle)
 end
+
 function MenuCallbackHandler:toggle_voicechat(item)
 	local vchat = item:value() == "on"
 	managers.user:set_setting("voice_chat", vchat)
 end
+
 function MenuCallbackHandler:toggle_push_to_talk(item)
 	local vchat = item:value() == "on"
 	managers.user:set_setting("push_to_talk", vchat)
 end
+
 function MenuCallbackHandler:toggle_team_AI(item)
 	Global.criminal_team_AI_disabled = item:value() == "off"
 	managers.groupai:state():on_criminal_team_AI_enabled_state_changed()
 end
+
 function MenuCallbackHandler:toggle_coordinates(item)
 	if item:value() == "off" then
 		managers.hud:debug_hide_coordinates()
@@ -933,6 +1064,7 @@ function MenuCallbackHandler:toggle_coordinates(item)
 		managers.hud:debug_show_coordinates()
 	end
 end
+
 function MenuCallbackHandler:change_resolution(item)
 	local old_resolution = RenderSettings.resolution
 	if item:parameters().resolution == old_resolution then
@@ -945,10 +1077,12 @@ function MenuCallbackHandler:change_resolution(item)
 		managers.viewport:set_aspect_ratio(old_resolution.x / old_resolution.y)
 	end)
 end
+
 function MenuCallbackHandler:choice_test(item)
 	local test = item:value()
 	print("MenuCallbackHandler", test)
 end
+
 function MenuCallbackHandler:choice_mask(item)
 	local mask_set = item:value()
 	print("[MenuCallbackHandler:choice_mask]", mask_set)
@@ -964,6 +1098,7 @@ function MenuCallbackHandler:choice_mask(item)
 		managers.network:session():send_to_peers("set_mask_set", peer:id(), mask_set)
 	end
 end
+
 function MenuCallbackHandler:choice_distance_filter(item)
 	local dist_filter = item:value()
 	if managers.network.matchmake:distance_filter() == dist_filter then
@@ -972,6 +1107,7 @@ function MenuCallbackHandler:choice_distance_filter(item)
 	managers.network.matchmake:set_distance_filter(dist_filter)
 	managers.network.matchmake:search_lobby(managers.network.matchmake:search_friends_only())
 end
+
 function MenuCallbackHandler:choice_difficulty_filter(item)
 	local diff_filter = item:value()
 	print("diff_filter", diff_filter)
@@ -981,6 +1117,7 @@ function MenuCallbackHandler:choice_difficulty_filter(item)
 	managers.network.matchmake:set_difficulty_filter(diff_filter)
 	managers.network.matchmake:search_lobby(managers.network.matchmake:search_friends_only())
 end
+
 function MenuCallbackHandler:choice_difficulty_filter_ps3(item)
 	local diff_filter = item:value()
 	print("diff_filter", diff_filter)
@@ -990,6 +1127,7 @@ function MenuCallbackHandler:choice_difficulty_filter_ps3(item)
 	managers.network.matchmake:set_difficulty_filter(diff_filter)
 	managers.network.matchmake:start_search_lobbys(managers.network.matchmake:searching_friends_only())
 end
+
 function MenuCallbackHandler:choice_lobby_difficulty(item)
 	local difficulty = item:value()
 	Global.game_settings.difficulty = difficulty
@@ -1006,6 +1144,7 @@ function MenuCallbackHandler:choice_lobby_difficulty(item)
 	managers.menu:show_global_success()
 	self:update_matchmake_attributes()
 end
+
 function MenuCallbackHandler:choice_lobby_campaign(item)
 	if not item:enabled() then
 		return
@@ -1021,12 +1160,14 @@ function MenuCallbackHandler:choice_lobby_campaign(item)
 	managers.menu:show_global_success()
 	self:update_matchmake_attributes()
 end
+
 function MenuCallbackHandler:choice_lobby_permission(item)
 	local permission = item:value()
 	local level_id = item:value()
 	Global.game_settings.permission = permission
 	self:update_matchmake_attributes()
 end
+
 function MenuCallbackHandler:choice_lobby_reputation_permission(item)
 	local reputation_permission = item:value()
 	Global.game_settings.reputation_permission = reputation_permission
@@ -1043,24 +1184,30 @@ function MenuCallbackHandler:choice_lobby_reputation_permission(item)
 	end
 	self:update_matchmake_attributes()
 end
+
 function MenuCallbackHandler:choice_team_ai(item)
 	local team_ai = item:value() == "on"
 	Global.game_settings.team_ai = team_ai
 end
+
 function MenuCallbackHandler:choice_drop_in(item)
 	local choice_drop_in = item:value() == "on"
 	Global.game_settings.drop_in_allowed = choice_drop_in
 	self:update_matchmake_attributes()
 end
+
 function MenuCallbackHandler:kit_menu_ready()
 	managers.menu:close_menu("kit_menu")
 end
+
 function MenuCallbackHandler:set_lan_game()
 	Global.game_settings.playing_lan = true
 end
+
 function MenuCallbackHandler:set_not_lan_game()
 	Global.game_settings.playing_lan = nil
 end
+
 function MenuCallbackHandler:get_matchmake_attributes()
 	local level_id = tweak_data.levels:get_index_from_level_id(Global.game_settings.level_id)
 	local difficulty_id = tweak_data:difficulty_to_index(Global.game_settings.difficulty)
@@ -1079,21 +1226,26 @@ function MenuCallbackHandler:get_matchmake_attributes()
 		}
 	}
 end
+
 function MenuCallbackHandler:update_matchmake_attributes()
 	managers.network.matchmake:set_server_attributes(self:get_matchmake_attributes())
 end
+
 function MenuCallbackHandler:create_lobby()
 	managers.network:host_game()
 	managers.network.matchmake:create_lobby(self:get_matchmake_attributes())
 end
+
 function MenuCallbackHandler:play_single_player()
 	Global.game_settings.single_player = true
 	managers.network:host_game()
 	Network:set_server()
 end
+
 function MenuCallbackHandler:play_online_game()
 	Global.game_settings.single_player = false
 end
+
 function MenuCallbackHandler:choice_choose_character(item)
 	local character = item:value()
 	local peer_id = managers.network:session():local_peer():id()
@@ -1103,52 +1255,63 @@ function MenuCallbackHandler:choice_choose_character(item)
 		managers.network:session():send_to_host("request_character", peer_id, character)
 	end
 end
+
 function MenuCallbackHandler:choice_choose_texture_quality(item)
 	RenderSettings.texture_quality_default = item:value()
 	Application:apply_render_settings()
 	Application:save_render_settings()
 end
+
 function MenuCallbackHandler:choice_choose_anisotropic(item)
 	RenderSettings.max_anisotropy = item:value()
 	Application:apply_render_settings()
 	Application:save_render_settings()
 end
+
 function MenuCallbackHandler:choice_choose_color_grading(item)
 	managers.user:set_setting("video_color_grading", item:value())
 	if managers.environment_controller then
 		managers.environment_controller:refresh_render_settings()
 	end
 end
+
 function MenuCallbackHandler:choice_choose_menu_theme(item)
 	managers.menu:change_theme(item:value())
 end
+
 function MenuCallbackHandler:choice_choose_anti_alias(item)
 	managers.user:set_setting("video_anti_alias", item:value())
 	if managers.environment_controller then
 		managers.environment_controller:refresh_render_settings()
 	end
 end
+
 function MenuCallbackHandler:choice_choose_anim_lod(item)
 	managers.user:set_setting("video_animation_lod", item:value())
 end
+
 function MenuCallbackHandler:toggle_vsync(item)
 	managers.viewport:set_vsync(item:value() == "on")
 end
+
 function MenuCallbackHandler:toggle_streaks(item)
 	managers.user:set_setting("video_streaks", item:value() == "on")
 	if managers.environment_controller then
 		managers.environment_controller:refresh_render_settings()
 	end
 end
+
 function MenuCallbackHandler:toggle_light_adaption(item)
 	managers.user:set_setting("light_adaption", item:value() == "on")
 	if managers.environment_controller then
 		managers.environment_controller:refresh_render_settings()
 	end
 end
+
 function MenuCallbackHandler:toggle_lightfx(item)
 	managers.user:set_setting("use_lightfx", item:value() == "on")
 end
+
 function MenuCallbackHandler:set_fov_standard(item)
 	local fov = item:value()
 	managers.user:set_setting("fov_standard", fov)
@@ -1163,6 +1326,7 @@ function MenuCallbackHandler:set_fov_standard(item)
 		plr_state._camera_unit:base():set_stance_fov_instant(stance)
 	end
 end
+
 function MenuCallbackHandler:set_fov_zoom(item)
 	local fov = item:value()
 	managers.user:set_setting("fov_zoom", fov)
@@ -1177,6 +1341,7 @@ function MenuCallbackHandler:set_fov_zoom(item)
 		plr_state._camera_unit:base():set_stance_fov_instant(stance)
 	end
 end
+
 function MenuCallbackHandler:lobby_start_the_game()
 	if Global.game_settings.difficulty == "overkill_145" then
 		for _, peer in pairs(managers.network:session():peers()) do
@@ -1194,6 +1359,7 @@ function MenuCallbackHandler:lobby_start_the_game()
 	end
 	managers.network:session():load_level(level_name, nil, nil, nil, level_id)
 end
+
 function MenuCallbackHandler:leave_lobby()
 	if game_state_machine:current_state_name() == "ingame_lobby_menu" then
 		self:end_game()
@@ -1212,6 +1378,7 @@ function MenuCallbackHandler:leave_lobby()
 	dialog_data.button_list = {yes_button, no_button}
 	managers.system_menu:show(dialog_data)
 end
+
 function MenuCallbackHandler:_dialog_leave_lobby_yes()
 	if managers.network:session() then
 		managers.network:session():local_peer():set_in_lobby(false)
@@ -1220,12 +1387,15 @@ function MenuCallbackHandler:_dialog_leave_lobby_yes()
 		managers.menu:on_leave_lobby()
 	end
 end
+
 function MenuCallbackHandler:_dialog_leave_lobby_no()
 end
+
 function MenuCallbackHandler:connect_to_host_rpc(item)
 	local function f(res)
 		if res == "JOINED_LOBBY" then
 			managers.menu:close_menu("menu_main")
+			
 			managers.menu:open_menu("lobby_menu")
 		elseif res == "JOINED_GAME" then
 			local level_id = tweak_data.levels:get_level_name_from_world_name(item:parameters().level_name)
@@ -1236,8 +1406,10 @@ function MenuCallbackHandler:connect_to_host_rpc(item)
 			Application:error("[MenuCallbackHandler:connect_to_host_rpc] FAILED TO START MULTIPLAYER!")
 		end
 	end
+	
 	managers.network:join_game_at_host_rpc(item:parameters().rpc, f)
 end
+
 function MenuCallbackHandler:host_multiplayer(item)
 	managers.network:host_game()
 	local level_id = item:parameters().level_id
@@ -1247,6 +1419,7 @@ function MenuCallbackHandler:host_multiplayer(item)
 	Global.game_settings.level_id = level_id
 	managers.network:session():load_level(level_name, nil, nil, nil, level_id)
 end
+
 function MenuCallbackHandler:join_multiplayer()
 	local f = function(new_host_rpc)
 		if new_host_rpc then
@@ -1255,6 +1428,7 @@ function MenuCallbackHandler:join_multiplayer()
 	end
 	managers.network:discover_hosts(f)
 end
+
 function MenuCallbackHandler:find_lan_games()
 	if self:is_win32() then
 		local f = function(new_host_rpc)
@@ -1265,20 +1439,25 @@ function MenuCallbackHandler:find_lan_games()
 		managers.network:discover_hosts(f)
 	end
 end
+
 function MenuCallbackHandler:find_online_games_with_friends()
 	self:_find_online_games(true)
 end
+
 function MenuCallbackHandler:find_online_games()
 	self:_find_online_games()
 end
+
 function MenuCallbackHandler:_find_online_games(friends_only)
 	if self:is_win32() then
 		local function f(info)
 			print("info in function")
+			
 			print(inspect(info))
 			managers.network.matchmake:search_lobby_done()
 			managers.menu:active_menu().logic:refresh_node("play_online", true, info, friends_only)
 		end
+		
 		managers.network:start_client()
 		managers.network.matchmake:register_callback("search_lobby", f)
 		managers.network.matchmake:search_lobby(friends_only)
@@ -1302,29 +1481,36 @@ function MenuCallbackHandler:_find_online_games(friends_only)
 		managers.network.matchmake:start_search_lobbys(friends_only)
 	end
 end
+
 function MenuCallbackHandler:connect_to_lobby(item)
 	managers.network.matchmake:join_server_with_check(item:parameters().room_id)
 end
+
 function MenuCallbackHandler:stop_multiplayer()
 	if managers.network:session() and managers.network:session():local_peer():id() == 1 then
 		managers.network:stop_network(true)
 	end
 end
+
 function MenuCallbackHandler:find_friends()
 end
+
 function MenuCallbackHandler:invite_friends()
 	Steam:overlay_activate("game", "LobbyInvite")
 end
+
 function MenuCallbackHandler:invite_friend(item)
 	if item:parameters().signin_status ~= "signed_in" then
 		return
 	end
 	managers.network.matchmake:send_join_invite(item:parameters().friend)
 end
+
 function MenuCallbackHandler:view_invites()
 	print("View invites")
 	print(PSN:display_message_invitation())
 end
+
 function MenuCallbackHandler:kick_player(item)
 	local dialog_data = {}
 	dialog_data.title = managers.localization:text("dialog_mp_kick_player_title")
@@ -1333,36 +1519,43 @@ function MenuCallbackHandler:kick_player(item)
 	})
 	local yes_button = {}
 	yes_button.text = managers.localization:text("dialog_yes")
+	
 	function yes_button.callback_func()
 		local peer = item:parameters().peer
 		managers.network:session():send_to_peers("kick_peer", peer:id())
 		managers.network:session():on_peer_kicked(peer, peer:id())
 		managers.menu:back(true)
 	end
+	
 	local no_button = {}
 	no_button.text = managers.localization:text("dialog_no")
 	no_button.cancel_button = true
 	dialog_data.button_list = {yes_button, no_button}
 	managers.system_menu:show(dialog_data)
 end
+
 function MenuCallbackHandler:mute_player(item)
 	if managers.network.voice_chat then
 		managers.network.voice_chat:mute_player(item:parameters().peer, item:value() == "on")
 	end
 end
+
 function MenuCallbackHandler:save_settings()
 	managers.savefile:save_setting(true)
 end
+
 function MenuCallbackHandler:jump_in_timeline(item)
 	local param_map = item:parameters()
 	managers.timeline:jump(param_map.event_id, param_map.checkpoint_index, false, true)
 end
+
 function MenuCallbackHandler:debug_level_jump(item)
 	local param_map = item:parameters()
 	managers.network:host_game()
 	local level_id = tweak_data.levels:get_level_name_from_world_name(param_map.level)
 	managers.network:session():load_level(param_map.level, param_map.mission, param_map.world_setting, param_map.level_class_name, level_id, nil)
 end
+
 function MenuCallbackHandler:save_game(item)
 	if not managers.savefile:is_active() then
 		local param_map = item:parameters()
@@ -1374,10 +1567,12 @@ function MenuCallbackHandler:save_game(item)
 		end
 	end
 end
+
 function MenuCallbackHandler:save_game_callback()
 	managers.menu:set_save_game_callback(nil)
 	managers.menu:back()
 end
+
 function MenuCallbackHandler:restart_game(item)
 	managers.menu:show_restart_game_dialog({
 		yes_func = function()
@@ -1388,12 +1583,15 @@ function MenuCallbackHandler:restart_game(item)
 		end
 	})
 end
+
 function MenuCallbackHandler:start_credits(item)
 	managers.timeline:debug_level_jump("credits_fortress2", nil, nil, "CreditsFotressLevel")
 end
+
 function MenuCallbackHandler:load_roaming_map()
 	setup:load_roaming_map()
 end
+
 function MenuCallbackHandler:set_music_volume(item)
 	local volume = item:value()
 	local old_volume = managers.user:get_setting("music_volume")
@@ -1404,6 +1602,7 @@ function MenuCallbackHandler:set_music_volume(item)
 		self._sound_source:post_event("menu_music_decrease")
 	end
 end
+
 function MenuCallbackHandler:set_sfx_volume(item)
 	local volume = item:value()
 	local old_volume = managers.user:get_setting("sfx_volume")
@@ -1414,14 +1613,17 @@ function MenuCallbackHandler:set_sfx_volume(item)
 		self._sound_source:post_event("menu_sfx_decrease")
 	end
 end
+
 function MenuCallbackHandler:set_voice_volume(item)
 	local volume = item:value()
 	managers.user:set_setting("voice_volume", volume)
 end
+
 function MenuCallbackHandler:set_brightness(item)
 	local brightness = item:value()
 	managers.user:set_setting("brightness", brightness)
 end
+
 function MenuCallbackHandler:set_camera_sensitivity(item)
 	local value = item:value()
 	managers.user:set_setting("camera_sensitivity", value)
@@ -1433,6 +1635,7 @@ function MenuCallbackHandler:set_camera_sensitivity(item)
 		end
 	end
 end
+
 function MenuCallbackHandler:set_camera_zoom_sensitivity(item)
 	local value = item:value()
 	managers.user:set_setting("camera_zoom_sensitivity", value)
@@ -1444,6 +1647,7 @@ function MenuCallbackHandler:set_camera_zoom_sensitivity(item)
 		end
 	end
 end
+
 function MenuCallbackHandler:toggle_zoom_sensitivity(item)
 	local value = item:value() == "on"
 	managers.user:set_setting("enable_camera_zoom_sensitivity", value)
@@ -1454,6 +1658,7 @@ function MenuCallbackHandler:toggle_zoom_sensitivity(item)
 		item_sens_zoom:trigger()
 	end
 end
+
 function MenuCallbackHandler:end_game()
 	local dialog_data = {}
 	dialog_data.title = managers.localization:text("dialog_warning_title")
@@ -1468,6 +1673,7 @@ function MenuCallbackHandler:end_game()
 	dialog_data.button_list = {yes_button, no_button}
 	managers.system_menu:show(dialog_data)
 end
+
 function MenuCallbackHandler:_dialog_end_game_yes()
 	managers.statistics:stop_session()
 	managers.savefile:save_progress()
@@ -1485,29 +1691,37 @@ function MenuCallbackHandler:_dialog_end_game_yes()
 	managers.menu:close_menu("menu_pause")
 	setup:load_start_menu()
 end
+
 function MenuCallbackHandler:_dialog_end_game_no()
 end
+
 function MenuCallbackHandler:set_default_options()
 	managers.menu:show_default_option_dialog()
 end
+
 function MenuCallbackHandler:resume_game()
 	managers.menu:close_menu("menu_pause")
 end
+
 function MenuCallbackHandler:close_inventory_screen()
 	managers.menu:close_menu()
 end
+
 function MenuCallbackHandler:spawn_spearman()
 	World:spawn_unit(Idstring("units/characters/spearman/spearman"), Application:last_camera_position() + Application:last_camera_rotation():y() * 750)
 	self:resume_game()
 end
+
 function MenuCallbackHandler:spawn_chocobo()
 	World:spawn_unit(Idstring("units/characters/npc/chocobo/chocobo"), Application:last_camera_position() + Application:last_camera_rotation():y() * 750)
 	self:resume_game()
 end
+
 function MenuCallbackHandler:spawn_giant()
 	World:spawn_unit(Idstring("units/characters/giant/giant"), Application:last_camera_position() + Application:last_camera_rotation():y() * 1500)
 	self:resume_game()
 end
+
 function MenuCallbackHandler:spawn_enemy()
 	if script_data and script_data.level_script and script_data.level_script.spawn_dummy then
 		script_data.level_script:spawn_dummy()
@@ -1517,17 +1731,21 @@ function MenuCallbackHandler:spawn_enemy()
 	end
 	self:resume_game()
 end
+
 function MenuCallbackHandler:equip_item(item)
 	local params = item:parameters()
 	managers.player:add_item(1, params.slot_name, params.item)
 end
+
 function MenuCallbackHandler:clear_inventory_slot(item)
 	local params = item:parameters()
 	managers.player:remove_item(1, params.slot_name)
 end
+
 function MenuCallbackHandler:change_upgrade(menu_item)
 	cat_print("johan", "change upgrade")
 end
+
 function MenuCallbackHandler:delayed_open_savefile_menu(item)
 	if not self._delayed_open_savefile_menu_callback then
 		if managers.savefile:is_active() then
@@ -1537,40 +1755,49 @@ function MenuCallbackHandler:delayed_open_savefile_menu(item)
 		end
 	end
 end
+
 function MenuCallbackHandler:open_savefile_menu(item)
 	managers.menu:set_delayed_open_savefile_menu_callback(nil)
 	local parameter_map = item:parameters()
 	managers.menu:open_node(parameter_map.delayed_node, {parameter_map})
 end
+
 function MenuCallbackHandler:dialog_options(item)
 	local params = item:parameters()
 	managers.dialog:go_to_node(params.go_to_node)
 	managers.menu:close_menu("menu_dialog_options")
 end
+
 function MenuCallbackHandler:load_slot(item)
 	if not managers.savefile:is_active() then
 		local slot = item:parameters().slot
 		managers.timeline:load_game(slot)
 	end
 end
+
 function MenuCallbackHandler:give_weapon()
 	local player = managers.player:player_unit()
 	if player then
 		player:inventory():add_unit_by_name(Idstring("units/weapons/mp5/mp5"), false)
 	end
 end
+
 function MenuCallbackHandler:give_experience()
 	managers.experience:debug_add_points(2500, true)
 end
+
 function MenuCallbackHandler:give_more_experience()
 	managers.experience:debug_add_points(25000, false)
 end
+
 function MenuCallbackHandler:give_max_experience()
 	managers.experience:debug_add_points(360000, false)
 end
+
 function MenuCallbackHandler:hide_huds()
 	managers.hud:set_disabled()
 end
+
 function MenuCallbackHandler:clear_progress()
 	local dialog_data = {}
 	dialog_data.title = managers.localization:text("dialog_warning_title")
@@ -1585,6 +1812,7 @@ function MenuCallbackHandler:clear_progress()
 	dialog_data.button_list = {yes_button, no_button}
 	managers.system_menu:show(dialog_data)
 end
+
 function MenuCallbackHandler:_dialog_clear_progress_yes()
 	managers.experience:reset()
 	managers.challenges:reset_challenges()
@@ -1595,8 +1823,10 @@ function MenuCallbackHandler:_dialog_clear_progress_yes()
 	managers.user:set_setting("mask_set", "clowns")
 	managers.savefile:save_setting(true)
 end
+
 function MenuCallbackHandler:_dialog_clear_progress_no()
 end
+
 function MenuCallbackHandler:reset_statistics()
 	local dialog_data = {}
 	dialog_data.title = managers.localization:text("dialog_warning_title")
@@ -1611,23 +1841,29 @@ function MenuCallbackHandler:reset_statistics()
 	dialog_data.button_list = {yes_button, no_button}
 	managers.system_menu:show(dialog_data)
 end
+
 function MenuCallbackHandler:_dialog_reset_statistics_yes()
 	managers.statistics:reset()
 	managers.savefile:save_progress()
 end
+
 function MenuCallbackHandler:_dialog_reset_statistics_no()
 end
+
 function MenuCallbackHandler:set_default_controller(item)
 	managers.controller:load_settings("settings/controller_settings")
 	managers.controller:clear_user_mod()
 	managers.menu:back(true)
 end
+
 function MenuCallbackHandler:debug_modify_challenge(item)
 	managers.challenges:debug_set_amount(item:parameters().challenge, item:parameters().count - 1)
 	managers.menu:back(true)
 	managers.menu:open_node("modify_active_challenges")
 end
+
 MenuChallenges = MenuChallenges or class()
+
 function MenuChallenges:modify_node(node, up)
 	local new_node = up and node or deep_clone(node)
 	for _, data in pairs(managers.challenges:get_near_completion()) do
@@ -1648,7 +1884,9 @@ function MenuChallenges:modify_node(node, up)
 	managers.menu:add_back_button(new_node)
 	return new_node
 end
+
 MenuChallengesAwarded = MenuChallengesAwarded or class()
+
 function MenuChallengesAwarded:modify_node(node, up)
 	local new_node = up and node or deep_clone(node)
 	for _, data in pairs(managers.challenges:get_completed()) do
@@ -1668,7 +1906,9 @@ function MenuChallengesAwarded:modify_node(node, up)
 	managers.menu:add_back_button(new_node)
 	return new_node
 end
+
 MenuModifyActiveChallenges = MenuModifyActiveChallenges or class()
+
 function MenuModifyActiveChallenges:modify_node(node, up)
 	local new_node = up and node or deep_clone(node)
 	for _, data in pairs(managers.challenges:get_near_completion()) do
@@ -1693,7 +1933,9 @@ function MenuModifyActiveChallenges:modify_node(node, up)
 	managers.menu:add_back_button(new_node)
 	return new_node
 end
+
 MenuUpgrades = MenuUpgrades or class()
+
 function MenuUpgrades:modify_node(node, up, ...)
 	local new_node = up and node or deep_clone(node)
 	local tree = new_node:parameters().tree
@@ -1734,6 +1976,7 @@ function MenuUpgrades:modify_node(node, up, ...)
 	managers.menu:add_back_button(new_node)
 	return new_node
 end
+
 function MenuCallbackHandler:toggle_visual_upgrade(item)
 	managers.upgrades:toggle_visual_weapon_upgrade(item:parameters().upgrade_id)
 	managers.upgrades:setup_current_weapon()
@@ -1744,7 +1987,9 @@ function MenuCallbackHandler:toggle_visual_upgrade(item)
 	end
 	print("Toggled", item:parameters().upgrade_id)
 end
+
 InviteFriendsPSN = InviteFriendsPSN or class()
+
 function InviteFriendsPSN:modify_node(node, up)
 	local new_node = up and node or deep_clone(node)
 	local f2 = function(friends)
@@ -1756,6 +2001,7 @@ function InviteFriendsPSN:modify_node(node, up)
 	managers.network.friends:get_friends(new_node)
 	return new_node
 end
+
 function InviteFriendsPSN:refresh_node(node, friends)
 	for i, friend in ipairs(friends) do
 		if i < 103 then
@@ -1782,6 +2028,7 @@ function InviteFriendsPSN:refresh_node(node, friends)
 	end
 	return node
 end
+
 function InviteFriendsPSN:update_node(node)
 	if self._update_friends_t and self._update_friends_t > Application:time() then
 		return
@@ -1789,16 +2036,22 @@ function InviteFriendsPSN:update_node(node)
 	self._update_friends_t = Application:time() + 2
 	managers.network.friends:get_friends()
 end
+
 InviteFriendsSTEAM = InviteFriendsSTEAM or class()
+
 function InviteFriendsSTEAM:modify_node(node, up)
 	return node
 end
+
 function InviteFriendsSTEAM:refresh_node(node, friend)
 	return node
 end
+
 function InviteFriendsSTEAM:update_node(node)
 end
+
 KickPlayer = KickPlayer or class()
+
 function KickPlayer:modify_node(node, up)
 	local new_node = deep_clone(node)
 	for _, peer in pairs(managers.network:session():peers()) do
@@ -1816,7 +2069,9 @@ function KickPlayer:modify_node(node, up)
 	managers.menu:add_back_button(new_node)
 	return new_node
 end
+
 MutePlayer = MutePlayer or class()
+
 function MutePlayer:modify_node(node, up)
 	local new_node = deep_clone(node)
 	for _, peer in pairs(managers.network:session():peers()) do
@@ -1866,17 +2121,21 @@ function MutePlayer:modify_node(node, up)
 	managers.menu:add_back_button(new_node)
 	return new_node
 end
+
 MenuPSNHostBrowser = MenuPSNHostBrowser or class()
+
 function MenuPSNHostBrowser:modify_node(node, up)
 	local new_node = up and node or deep_clone(node)
 	return new_node
 end
+
 function MenuPSNHostBrowser:update_node(node)
 	if #PSN:get_world_list() == 0 then
 		return
 	end
 	managers.network.matchmake:start_search_lobbys(managers.network.matchmake:searching_friends_only())
 end
+
 function MenuPSNHostBrowser:add_filter(node)
 	if node:item("difficulty_filter") then
 		return
@@ -1928,6 +2187,7 @@ function MenuPSNHostBrowser:add_filter(node)
 	new_item:set_value(managers.network.matchmake:difficulty_filter())
 	node:add_item(new_item)
 end
+
 function MenuPSNHostBrowser:refresh_node(node, info_list, friends_only)
 	local new_node = node
 	if not friends_only then
@@ -2018,14 +2278,18 @@ function MenuPSNHostBrowser:refresh_node(node, info_list, friends_only)
 	end
 	return new_node
 end
+
 MenuSTEAMHostBrowser = MenuSTEAMHostBrowser or class()
+
 function MenuSTEAMHostBrowser:modify_node(node, up)
 	local new_node = up and node or deep_clone(node)
 	return new_node
 end
+
 function MenuSTEAMHostBrowser:update_node(node)
 	managers.network.matchmake:search_lobby(managers.network.matchmake:search_friends_only())
 end
+
 function MenuSTEAMHostBrowser:add_filter(node)
 	if node:item("server_filter") then
 		return
@@ -2106,6 +2370,7 @@ function MenuSTEAMHostBrowser:add_filter(node)
 	new_item:set_value(managers.network.matchmake:difficulty_filter())
 	node:add_item(new_item)
 end
+
 function MenuSTEAMHostBrowser:refresh_node(node, info, friends_only)
 	local new_node = node
 	if not friends_only then
@@ -2196,11 +2461,14 @@ function MenuSTEAMHostBrowser:refresh_node(node, info, friends_only)
 	managers.menu:add_back_button(new_node)
 	return new_node
 end
+
 MenuLANHostBrowser = MenuLANHostBrowser or class()
+
 function MenuLANHostBrowser:modify_node(node, up)
 	local new_node = up and node or deep_clone(node)
 	return new_node
 end
+
 function MenuLANHostBrowser:refresh_node(node)
 	local new_node = node
 	local hosts = managers.network:session():discovered_hosts()
@@ -2254,12 +2522,15 @@ function MenuLANHostBrowser:refresh_node(node)
 	managers.menu:add_back_button(new_node)
 	return new_node
 end
+
 MenuMPHostBrowser = MenuMPHostBrowser or class()
+
 function MenuMPHostBrowser:modify_node(node, up)
 	local new_node = up and node or deep_clone(node)
 	managers.menu:add_back_button(new_node)
 	return new_node
 end
+
 function MenuMPHostBrowser:refresh_node(node)
 	local new_node = node
 	local hosts = managers.network:session():discovered_hosts()
@@ -2316,7 +2587,9 @@ function MenuMPHostBrowser:refresh_node(node)
 	managers.menu:add_back_button(new_node)
 	return new_node
 end
+
 MenuResolutionCreator = MenuResolutionCreator or class()
+
 function MenuResolutionCreator:modify_node(node)
 	local new_node = deep_clone(node)
 	if SystemInfo:platform() == Idstring("WIN32") then
@@ -2338,7 +2611,9 @@ function MenuResolutionCreator:modify_node(node)
 	managers.menu:add_back_button(new_node)
 	return new_node
 end
+
 MenuSoundCreator = MenuSoundCreator or class()
+
 function MenuSoundCreator:modify_node(node)
 	local music_item = node:item("music_volume")
 	if music_item then
@@ -2379,6 +2654,7 @@ function MenuSoundCreator:modify_node(node)
 	end
 	return node
 end
+
 function MenuManager.refresh_level_select(node, verify_dlc_owned)
 	if verify_dlc_owned and tweak_data.levels[Global.game_settings.level_id].dlc then
 		local dlcs = string.split(managers.dlc:dlcs_string(), " ")
@@ -2407,12 +2683,16 @@ function MenuManager.refresh_level_select(node, verify_dlc_owned)
 		item_difficulty:set_value(Global.game_settings.difficulty)
 	end
 end
+
 GlobalSuccessRateInitiator = GlobalSuccessRateInitiator or class()
+
 function GlobalSuccessRateInitiator:modify_node(node)
 	managers.menu:show_global_success(node)
 	return node
 end
+
 SinglePlayerOptionInitiator = SinglePlayerOptionInitiator or class()
+
 function SinglePlayerOptionInitiator:modify_node(node)
 	MenuManager.refresh_level_select(node, true)
 	local item_lobby_toggle_ai = node:item("toggle_ai")
@@ -2423,7 +2703,9 @@ function SinglePlayerOptionInitiator:modify_node(node)
 	end
 	return node
 end
+
 LobbyOptionInitiator = LobbyOptionInitiator or class()
+
 function LobbyOptionInitiator:modify_node(node)
 	MenuManager.refresh_level_select(node, Network:is_server())
 	if Global.game_settings.difficulty == "overkill_145" then
@@ -2453,12 +2735,16 @@ function LobbyOptionInitiator:modify_node(node)
 	end
 	return node
 end
+
 VerifyLevelOptionInitiator = VerifyLevelOptionInitiator or class()
+
 function VerifyLevelOptionInitiator:modify_node(node)
 	MenuManager.refresh_level_select(node, true)
 	return node
 end
+
 MaskOptionInitiator = MaskOptionInitiator or class()
+
 function MaskOptionInitiator:modify_node(node)
 	local choose_mask = node:item("choose_mask")
 	local params = {
@@ -2578,6 +2864,7 @@ function MaskOptionInitiator:modify_node(node)
 	choose_mask:set_value(managers.user:get_setting("mask_set"))
 	return node
 end
+
 MenuCustomizeControllerCreator = MenuCustomizeControllerCreator or class()
 MenuCustomizeControllerCreator.CONTROLS = {
 	"move",
@@ -2671,6 +2958,7 @@ MenuCustomizeControllerCreator.CONTROLS_INFO.push_to_talk = {
 MenuCustomizeControllerCreator.CONTROLS_INFO.continue = {
 	text_id = "menu_button_continue"
 }
+
 function MenuCustomizeControllerCreator:modify_node(node)
 	local new_node = deep_clone(node)
 	local connections = managers.controller:get_settings(managers.controller:get_default_wrapper_type()):get_connection_map()
@@ -2721,7 +3009,9 @@ function MenuCustomizeControllerCreator:modify_node(node)
 	managers.menu:add_back_button(new_node)
 	return new_node
 end
+
 MenuOptionInitiator = MenuOptionInitiator or class()
+
 function MenuOptionInitiator:modify_node(node)
 	local node_name = node:parameters().name
 	if node_name == "resolution" then
@@ -2738,6 +3028,7 @@ function MenuOptionInitiator:modify_node(node)
 		return self:modify_options(node)
 	end
 end
+
 function MenuOptionInitiator:modify_resolution(node)
 	if SystemInfo:platform() == Idstring("WIN32") then
 		local res_name = string.format("%d x %d", RenderSettings.resolution.x, RenderSettings.resolution.y)
@@ -2745,6 +3036,7 @@ function MenuOptionInitiator:modify_resolution(node)
 	end
 	return node
 end
+
 function MenuOptionInitiator:modify_adv_video(node)
 	node:item("toggle_vsync"):set_value(RenderSettings.v_sync and "on" or "off")
 	node:item("choose_streaks"):set_value(managers.user:get_setting("video_streaks") and "on" or "off")
@@ -2760,6 +3052,7 @@ function MenuOptionInitiator:modify_adv_video(node)
 	node:item("choose_menu_theme"):set_value(managers.user:get_setting("menu_theme"))
 	return node
 end
+
 function MenuOptionInitiator:modify_video(node)
 	local option_value = "off"
 	local fs_item = node:item("toggle_fullscreen")
@@ -2787,6 +3080,7 @@ function MenuOptionInitiator:modify_video(node)
 	end
 	return node
 end
+
 function MenuOptionInitiator:modify_controls(node)
 	local option_value = "off"
 	local rumble_item = node:item("toggle_rumble")
@@ -2853,6 +3147,7 @@ function MenuOptionInitiator:modify_controls(node)
 	node:item("toggle_zoom_sensitivity"):set_value(managers.user:get_setting("enable_camera_zoom_sensitivity") and "on" or "off")
 	return node
 end
+
 function MenuOptionInitiator:modify_debug_options(node)
 	local option_value = "off"
 	local players_item = node:item("toggle_players")
@@ -2871,10 +3166,13 @@ function MenuOptionInitiator:modify_debug_options(node)
 	end
 	return node
 end
+
 function MenuOptionInitiator:modify_options(node)
 	return node
 end
+
 MenuTimelineCreator = MenuTimelineCreator or class()
+
 function MenuTimelineCreator:modify_node(original_node)
 	local node = deep_clone(original_node)
 	local event_list = managers.timeline:event_list()
@@ -2888,6 +3186,7 @@ function MenuTimelineCreator:modify_node(original_node)
 	end
 	return node
 end
+
 function MenuTimelineCreator:add_item(node, event_id, checkpoint_index, name, description)
 	local text = string.format("%s: %s", managers.localization:text(tostring(name)), managers.localization:text(tostring(description)))
 	local param_map = {
@@ -2901,7 +3200,9 @@ function MenuTimelineCreator:add_item(node, event_id, checkpoint_index, name, de
 	local item = node:create_item(nil, param_map)
 	node:add_item(item)
 end
+
 MenuPlayerInventory = MenuPlayerInventory or class()
+
 function MenuPlayerInventory:modify_node(node, ...)
 	if not managers.player:player_unit() or not managers.player:player_unit():outfit() then
 		return node
@@ -2916,6 +3217,7 @@ function MenuPlayerInventory:modify_node(node, ...)
 		return self:slot_item_upgrades(node, ...)
 	end
 end
+
 function MenuPlayerInventory:modify_player_inventory(node)
 	local new_node = deep_clone(node)
 	local inventory = managers.player:player_unit():inventory()
@@ -2949,6 +3251,7 @@ function MenuPlayerInventory:modify_player_inventory(node)
 	end
 	return new_node
 end
+
 function MenuPlayerInventory:modify_player_outfit(node)
 	local new_node = deep_clone(node)
 	local outfit = managers.player:player_unit():outfit()
@@ -2982,6 +3285,7 @@ function MenuPlayerInventory:modify_player_outfit(node)
 	end
 	return new_node
 end
+
 function MenuPlayerInventory:equippable_slot_items(node, inventory_slot)
 	local new_node = deep_clone(node)
 	local inventory = managers.player:player_unit():inventory()
@@ -3041,6 +3345,7 @@ function MenuPlayerInventory:equippable_slot_items(node, inventory_slot)
 	end
 	return new_node
 end
+
 function MenuPlayerInventory:slot_item_upgrades(node, item)
 	local new_node = deep_clone(node)
 	local item_upgrade_list = item:upgrade_list()
@@ -3069,7 +3374,9 @@ function MenuPlayerInventory:slot_item_upgrades(node, item)
 	end
 	return new_node
 end
+
 MenuLoadGameCreator = MenuLoadGameCreator or class()
+
 function MenuLoadGameCreator:modify_node(original_node)
 	local node = deep_clone(original_node)
 	local save_info_list = managers.savefile:get_save_info_list(false, nil)
@@ -3088,7 +3395,9 @@ function MenuLoadGameCreator:modify_node(original_node)
 	managers.menu:add_back_button(node)
 	return node
 end
+
 MenuSelectSaveSlotCreator = MenuSelectSaveSlotCreator or class()
+
 function MenuSelectSaveSlotCreator:modify_node(original_node, parameter_map)
 	local node = deep_clone(original_node)
 	local save_info_list = managers.savefile:get_save_info_list(true)
@@ -3108,7 +3417,9 @@ function MenuSelectSaveSlotCreator:modify_node(original_node, parameter_map)
 	end
 	return node
 end
+
 MenuDialogOptions = MenuDialogOptions or class()
+
 function MenuDialogOptions:modify_node(node, ...)
 	local new_node = deep_clone(node)
 	local option_list = managers.dialog:option_list()

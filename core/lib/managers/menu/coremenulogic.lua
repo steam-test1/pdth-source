@@ -1,5 +1,6 @@
 core:module("CoreMenuLogic")
 Logic = Logic or class()
+
 function Logic:init(menu_data)
 	self._data = menu_data
 	self._node_stack = {}
@@ -23,10 +24,12 @@ function Logic:init(menu_data)
 	self._action_callback_map.refresh_node = callback(self, self, "_refresh_node")
 	self._action_callback_map.update_node = callback(self, self, "_update_node")
 end
+
 function Logic:open(...)
 	self._accept_input = not managers.system_menu:is_active()
 	self:select_node(nil, true)
 end
+
 function Logic:_queue_action(action_name, ...)
 	table.insert(self._action_queue, {
 		action_name = action_name,
@@ -35,6 +38,7 @@ function Logic:_queue_action(action_name, ...)
 		}
 	})
 end
+
 function Logic:_execute_action_queue()
 	while self._accept_input and #self._action_queue > 0 do
 		local action = self._action_queue[1]
@@ -44,17 +48,20 @@ function Logic:_execute_action_queue()
 		table.remove(self._action_queue, 1)
 	end
 end
+
 function Logic:update(t, dt)
 	if self:selected_node() then
 		self:selected_node():update(t, dt)
 	end
 	self:_execute_action_queue()
 end
+
 function Logic:select_node(node_name, queue, ...)
 	if self._accept_input or queue then
 		self:_queue_action("select_node", node_name, ...)
 	end
 end
+
 function Logic:_select_node(node_name, ...)
 	local node = self:get_node(node_name, ...)
 	if node then
@@ -64,9 +71,11 @@ function Logic:_select_node(node_name, ...)
 		self:_call_callback("renderer_select_item", node:selected_item())
 	end
 end
+
 function Logic:refresh_node(node_name, queue, ...)
 	self:_queue_action("refresh_node", node_name, ...)
 end
+
 function Logic:_refresh_node(node_name, ...)
 	local node = self:selected_node()
 	if node:parameters().refresh then
@@ -81,9 +90,11 @@ function Logic:_refresh_node(node_name, ...)
 		self:_call_callback("renderer_select_item", node:selected_item())
 	end
 end
+
 function Logic:update_node(node_name, queue, ...)
 	self:_queue_action("update_node", node_name, ...)
 end
+
 function Logic:_update_node(node_name, ...)
 	local node = self:selected_node()
 	if node:parameters().update then
@@ -92,11 +103,13 @@ function Logic:_update_node(node_name, ...)
 		end
 	end
 end
+
 function Logic:navigate_back(queue)
 	if self._accept_input or queue then
 		self:_queue_action("navigate_back")
 	end
 end
+
 function Logic:_navigate_back()
 	local node = self._node_stack[#self._node_stack]
 	if node then
@@ -107,19 +120,23 @@ function Logic:_navigate_back()
 		self:_call_callback("renderer_navigate_back")
 	end
 end
+
 function Logic:selected_node()
 	return self._node_stack[#self._node_stack]
 end
+
 function Logic:select_item(item_name, queue)
 	if self._accept_input or queue then
 		self:_queue_action("select_item", item_name)
 	end
 end
+
 function Logic:mouse_over_select_item(item_name, queue)
 	if self._accept_input or queue then
 		self:_queue_action("select_item", item_name, true)
 	end
 end
+
 function Logic:_select_item(item_name, mouse_over)
 	local current_node = self:selected_node()
 	if current_node then
@@ -131,11 +148,13 @@ function Logic:_select_item(item_name, mouse_over)
 		self:_call_callback("renderer_select_item", current_node:selected_item(), mouse_over)
 	end
 end
+
 function Logic:trigger_item(queue, item)
 	if self._accept_input or queue then
 		self:_queue_action("trigger_item", item)
 	end
 end
+
 function Logic:_trigger_item(item)
 	item = item or self:selected_item()
 	if item then
@@ -143,6 +162,7 @@ function Logic:_trigger_item(item)
 		self:_call_callback("renderer_trigger_item", item)
 	end
 end
+
 function Logic:selected_item()
 	local item
 	local node = self:selected_node()
@@ -151,6 +171,7 @@ function Logic:selected_item()
 	end
 	return item
 end
+
 function Logic:get_item(name)
 	local item
 	local node = self:selected_node()
@@ -159,6 +180,7 @@ function Logic:get_item(name)
 	end
 	return item
 end
+
 function Logic:get_node(node_name, ...)
 	local node = self._data:get_node(node_name, ...)
 	if node and not node.dirty_callback then
@@ -166,13 +188,16 @@ function Logic:get_node(node_name, ...)
 	end
 	return node
 end
+
 function Logic:accept_input(accept)
 	self._accept_input = accept
 	self:_call_callback("input_accept_input", accept)
 end
+
 function Logic:register_callback(id, callback)
 	self._callback_map[id] = callback
 end
+
 function Logic:_call_callback(id, ...)
 	if self._callback_map[id] then
 		self._callback_map[id](...)
@@ -180,12 +205,15 @@ function Logic:_call_callback(id, ...)
 		Application:error("Logic:_call_callback: Callback " .. id .. " not found.")
 	end
 end
+
 function Logic:node_item_dirty(node, item)
 	self:_call_callback("renderer_node_item_dirty", node, item)
 end
+
 function Logic:renderer_closed()
 	self:_call_callback("menu_manager_menu_closed")
 end
+
 function Logic:close(closing_menu)
 	for index = #self._node_stack, 1, -1 do
 		local node = self._node_stack[index]

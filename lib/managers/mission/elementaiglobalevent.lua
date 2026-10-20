@@ -1,8 +1,10 @@
 core:import("CoreMissionScriptElement")
 ElementAiGlobalEvent = ElementAiGlobalEvent or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementAiGlobalEvent:init(...)
 	ElementAiGlobalEvent.super.init(self, ...)
 end
+
 function ElementAiGlobalEvent:on_executed(instigator)
 	if not self._values.enabled then
 		return

@@ -24,6 +24,7 @@ require("lib/states/DisconnectedState")
 require("lib/states/KickedState")
 require("lib/states/IngameLobbyMenu")
 GameStateMachine = GameStateMachine or class(CoreGameStateMachine.GameStateMachine)
+
 function GameStateMachine:init()
 	if not Global.game_state_machine then
 		Global.game_state_machine = {is_boot_intro_done = false, is_boot_from_sign_out = false}
@@ -271,36 +272,46 @@ function GameStateMachine:init()
 	managers.menu:add_active_changed_callback(callback(self, self, "menu_active_changed_callback"))
 	managers.system_menu:add_active_changed_callback(callback(self, self, "dialog_active_changed_callback"))
 end
+
 function GameStateMachine:init_finilize()
 	if managers.hud then
 		managers.hud:add_chatinput_changed_callback(callback(self, self, "chatinput_changed_callback"))
 	end
 end
+
 function GameStateMachine:set_boot_intro_done(is_boot_intro_done)
 	Global.game_state_machine.is_boot_intro_done = is_boot_intro_done
 	self._is_boot_intro_done = is_boot_intro_done
 end
+
 function GameStateMachine:is_boot_intro_done()
 	return self._is_boot_intro_done
 end
+
 function GameStateMachine:set_boot_from_sign_out(is_boot_from_sign_out)
 	Global.game_state_machine.is_boot_from_sign_out = is_boot_from_sign_out
 end
+
 function GameStateMachine:is_boot_from_sign_out()
 	return self._is_boot_from_sign_out
 end
+
 function GameStateMachine:menu_active_changed_callback(active)
 	self:_set_controller_enabled(not active)
 end
+
 function GameStateMachine:dialog_active_changed_callback(active)
 	self:_set_controller_enabled(not active)
 end
+
 function GameStateMachine:chatinput_changed_callback(active)
 	self:_set_controller_enabled(not active)
 end
+
 function GameStateMachine:is_controller_enabled()
 	return self._controller_enabled_count > 0
 end
+
 function GameStateMachine:_set_controller_enabled(enabled)
 	local was_enabled = self:is_controller_enabled()
 	if enabled then

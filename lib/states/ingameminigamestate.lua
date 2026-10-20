@@ -1,5 +1,6 @@
 require("lib/states/GameState")
 IngameMinigameState = IngameMinigameState or class(GameState)
+
 function IngameMinigameState:init(game_state_machine)
 	GameState.init(self, "ingame_minigame", game_state_machine)
 	self._ws = Overlay:newgui():create_screen_workspace()
@@ -22,6 +23,7 @@ function IngameMinigameState:init(game_state_machine)
 	self._controller = managers.controller:get_controller_by_name("ingame_dialog")
 	self._ws:hide()
 end
+
 function IngameMinigameState:set_controller_enabled(enabled)
 	local players = managers.player:players()
 	for _, player in ipairs(players) do
@@ -31,6 +33,7 @@ function IngameMinigameState:set_controller_enabled(enabled)
 		end
 	end
 end
+
 function IngameMinigameState:at_enter()
 	local players = managers.player:players()
 	for k, player in ipairs(players) do
@@ -45,6 +48,7 @@ function IngameMinigameState:at_enter()
 	self:_start_game()
 	self._ws:show()
 end
+
 function IngameMinigameState:at_exit()
 	local players = managers.player:players()
 	for _, player in ipairs(players) do
@@ -56,6 +60,7 @@ function IngameMinigameState:at_exit()
 	self:set_controller_enabled(true)
 	self._ws:hide()
 end
+
 function IngameMinigameState:update(t, dt)
 	local any_button = self._controller:get_any_input_pressed()
 	local buttons = {}
@@ -103,6 +108,7 @@ function IngameMinigameState:update(t, dt)
 		end
 	end
 end
+
 function IngameMinigameState:_start_game()
 	self._level = 0
 	self._user = false
@@ -110,6 +116,7 @@ function IngameMinigameState:_start_game()
 	self._last = 0
 	self:_update_level()
 end
+
 function IngameMinigameState:_update_level()
 	self._level = self._level + 1
 	self._text:set_text("Minigame(X360 controller only) , Simon says , Level : " .. self._level)

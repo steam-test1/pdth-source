@@ -2,6 +2,7 @@ core:module("SlotManager")
 core:import("CoreSlotManager")
 core:import("CoreClass")
 SlotManager = SlotManager or class(CoreSlotManager.SlotManager)
+
 function SlotManager:init()
 	SlotManager.super.init(self)
 	local C_UnitManager = World:unit_manager()
@@ -66,4 +67,5 @@ function SlotManager:init()
 	self._masks.flesh = World:make_slot_mask(12, 16, 17, 21, 22, 24, 33)
 	self._masks.footstep = World:make_slot_mask(1, 8, 11)
 end
+
 CoreClass.override_class(CoreSlotManager.SlotManager, SlotManager)

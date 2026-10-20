@@ -5,10 +5,12 @@ require("lib/managers/menu/renderers/MenuNodeStatsGui")
 require("lib/managers/menu/renderers/MenuNodeCreditsGui")
 require("lib/managers/menu/renderers/MenuNodeButtonLayoutGui")
 MenuRenderer = MenuRenderer or class(CoreMenuRenderer.Renderer)
+
 function MenuRenderer:init(logic, ...)
 	MenuRenderer.super.init(self, logic, ...)
 	self._sound_source = SoundDevice:create_source("MenuRenderer")
 end
+
 function MenuRenderer:show_node(node)
 	local gui_class = MenuNodeGui
 	if node:parameters().gui_class then
@@ -28,6 +30,7 @@ function MenuRenderer:show_node(node)
 		self._video_anim_f = 1
 	end
 end
+
 function MenuRenderer:open(...)
 	repeat
 		MenuRenderer.super.open(self, ...)
@@ -55,6 +58,7 @@ function MenuRenderer:open(...)
 	self:setup_frames_and_logo()
 	self:_layout_menu_bg()
 end
+
 function MenuRenderer:setup_frames_and_logo()
 	self._upper_frame_gradient = self._main_panel:rect({
 		x = 0,
@@ -85,6 +89,7 @@ function MenuRenderer:setup_frames_and_logo()
 		h = 56
 	})
 end
+
 function MenuRenderer:layout_frames_and_logo()
 	local res = RenderSettings.resolution
 	local safe_rect_pixels = managers.viewport:get_safe_rect_pixels()
@@ -97,11 +102,13 @@ function MenuRenderer:layout_frames_and_logo()
 	self._stonecold_small_logo:set_right(safe_rect_pixels.width)
 	self._stonecold_small_logo:set_bottom(tweak_data.load_level.upper_saferect_border - tweak_data.load_level.border_pad)
 end
+
 function MenuRenderer:close(...)
 	if self._menu_video then
 	end
 	MenuRenderer.super.close(self, ...)
 end
+
 function MenuRenderer:_layout_menu_bg()
 	local res = RenderSettings.resolution
 	local safe_rect_pixels = managers.viewport:get_safe_rect_pixels()
@@ -110,6 +117,7 @@ function MenuRenderer:_layout_menu_bg()
 	self:layout_frames_and_logo()
 	self:set_stencil_align(self._menu_stencil_align, self._menu_stencil_align_percent)
 end
+
 function MenuRenderer:update(t, dt)
 	MenuRenderer.super.update(self, t, dt)
 	if self._video_anim_t then
@@ -147,6 +155,7 @@ function MenuRenderer:update(t, dt)
 		end
 	end
 end
+
 local mugshot_stencil = {
 	random = {
 		"bg_lobby_fullteam",
@@ -161,6 +170,7 @@ local mugshot_stencil = {
 	russian = {"bg_dallas", 65},
 	spanish = {"bg_chains", 60}
 }
+
 function MenuRenderer:highlight_item(item, ...)
 	MenuRenderer.super.highlight_item(self, item, ...)
 	if self:active_node_gui().name == "play_single_player" then
@@ -170,6 +180,7 @@ function MenuRenderer:highlight_item(item, ...)
 	end
 	self:post_event("highlight")
 end
+
 function MenuRenderer:trigger_item(item)
 	MenuRenderer.super.trigger_item(self, item)
 	if item and item:visible() and item:parameters().sound ~= "false" then
@@ -190,9 +201,11 @@ function MenuRenderer:trigger_item(item)
 		end
 	end
 end
+
 function MenuRenderer:post_event(event)
 	self._sound_source:post_event(event)
 end
+
 function MenuRenderer:navigate_back()
 	MenuRenderer.super.navigate_back(self)
 	self:post_event("menu_exit")
@@ -200,11 +213,13 @@ function MenuRenderer:navigate_back()
 		self._video_anim_t = 1
 	end
 end
+
 function MenuRenderer:resolution_changed(...)
 	MenuRenderer.super.resolution_changed(self, ...)
 	self:_layout_video()
 	self:_layout_menu_bg()
 end
+
 function MenuRenderer:_layout_video()
 	if alive(self._menu_video) then
 		local res = RenderSettings.resolution
@@ -216,9 +231,11 @@ function MenuRenderer:_layout_video()
 		self._menu_video:set_center(res.x / 2, res.y / 2)
 	end
 end
+
 function MenuRenderer:set_bg_visible(visible)
 	self._menu_bg:set_visible(visible)
 end
+
 function MenuRenderer:set_stencil_image(image)
 	if not self._menu_stencil then
 		return
@@ -232,10 +249,12 @@ function MenuRenderer:set_stencil_image(image)
 	self._menu_stencil:set_image(self._menu_stencil_image)
 	self:set_stencil_align(self._menu_stencil_align, self._menu_stencil_align_percent)
 end
+
 function MenuRenderer:refresh_theme()
 	self:set_stencil_image(self._menu_stencil_image_name)
 	self._menu_bg:set_image(tweak_data.menu_themes[managers.user:get_setting("menu_theme")].background)
 end
+
 function MenuRenderer:set_stencil_align(align, percent)
 	if not self._menu_stencil then
 		return
@@ -271,6 +290,7 @@ function MenuRenderer:set_stencil_align(align, percent)
 		self._menu_stencil:set_left(res.x * percent - y * m * percent)
 	end
 end
+
 function MenuRenderer:current_menu_text(topic_id)
 	local ids = {}
 	for i, node_gui in ipairs(self._node_gui_stack) do

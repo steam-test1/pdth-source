@@ -1,10 +1,12 @@
 core:import("CoreMenuNodeGui")
 require("lib/managers/menu/MenuNodeKitGui")
 MenuKitRenderer = MenuKitRenderer or class(MenuLobbyRenderer)
+
 function MenuKitRenderer:init(logic)
 	local parameters = {layer = 0}
 	MenuRenderer.init(self, logic, parameters)
 end
+
 function MenuKitRenderer:show_node(node)
 	local parameters = {
 		font = tweak_data.menu.default_font,
@@ -17,6 +19,7 @@ function MenuKitRenderer:show_node(node)
 	}
 	MenuKitRenderer.super.super.show_node(self, node, parameters)
 end
+
 function MenuKitRenderer:open(...)
 	self._all_items_enabled = true
 	self._no_stencil = true
@@ -28,6 +31,7 @@ function MenuKitRenderer:open(...)
 		end
 	end
 end
+
 function MenuKitRenderer:_entered_menu()
 	self:on_request_lobby_slot_reply()
 	self:set_player_slots_kit(managers.network:session():local_peer():id())
@@ -35,6 +39,7 @@ function MenuKitRenderer:_entered_menu()
 		self:set_slot_joining(peer, peer_id)
 	end
 end
+
 function MenuKitRenderer:_set_player_slot(nr, params)
 	local peer = managers.network:session():peer(nr)
 	local ready = peer:waiting_for_player_ready()
@@ -42,6 +47,7 @@ function MenuKitRenderer:_set_player_slot(nr, params)
 	params.kit_panel_visible = true
 	MenuKitRenderer.super._set_player_slot(self, nr, params)
 end
+
 function MenuKitRenderer:sync_chat_message(message, id)
 	for _, node_gui in ipairs(self._node_gui_stack) do
 		local row_item_chat = node_gui:row_item_by_name("chat")
@@ -52,6 +58,7 @@ function MenuKitRenderer:sync_chat_message(message, id)
 	end
 	return false
 end
+
 function MenuKitRenderer:set_all_items_enabled(enabled)
 	self._all_items_enabled = enabled
 	for _, node in ipairs(self._logic._node_stack) do
@@ -62,6 +69,7 @@ function MenuKitRenderer:set_all_items_enabled(enabled)
 		end
 	end
 end
+
 function MenuKitRenderer:set_ready_items_enabled(enabled)
 	if not self._all_items_enabled then
 		return
@@ -74,6 +82,7 @@ function MenuKitRenderer:set_ready_items_enabled(enabled)
 		end
 	end
 end
+
 function MenuKitRenderer:close(...)
 	MenuKitRenderer.super.close(self, ...)
 end

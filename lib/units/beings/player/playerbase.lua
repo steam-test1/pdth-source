@@ -4,6 +4,7 @@ PlayerBase.PLAYER_INFO_HUD_FULLSCREEN = Idstring("guis/player_info_hud_fullscree
 PlayerBase.XP_HUD = Idstring("guis/experience_hud")
 PlayerBase.PLAYER_INFO_HUD = Idstring("guis/player_info_hud")
 PlayerBase.PLAYER_DOWNED_HUD = Idstring("guis/player_downed_hud")
+
 function PlayerBase:init(unit)
 	UnitBase.init(self, unit, false)
 	self._unit = unit
@@ -15,6 +16,7 @@ function PlayerBase:init(unit)
 	self._stats_screen_visible = false
 	managers.game_play_central:restart_portal_effects()
 end
+
 function PlayerBase:update(unit, t, dt)
 	if self._wanted_controller_enabled_t then
 		if self._wanted_controller_enabled_t <= 0 then
@@ -29,9 +31,11 @@ function PlayerBase:update(unit, t, dt)
 		end
 	end
 end
+
 function PlayerBase:stats_screen_visible()
 	return self._stats_screen_visible
 end
+
 function PlayerBase:set_stats_screen_visible(visible)
 	self._stats_screen_visible = visible
 	if self._stats_screen_visible then
@@ -42,9 +46,11 @@ function PlayerBase:set_stats_screen_visible(visible)
 		managers.experience:hide_stats()
 	end
 end
+
 function PlayerBase:set_enabled(enabled)
 	self._unit:set_extension_update_enabled(Idstring("movement"), enabled)
 end
+
 function PlayerBase:_setup_hud()
 	if not managers.hud:exists(self.PLAYER_HUD) then
 		managers.hud:load_hud(self.PLAYER_HUD, false, false, true, {})
@@ -62,8 +68,10 @@ function PlayerBase:_setup_hud()
 		managers.hud:load_hud(self.PLAYER_DOWNED_HUD, false, false, true, {})
 	end
 end
+
 function PlayerBase:_equip_default_weapon()
 end
+
 function PlayerBase:post_init()
 	self._unit:movement():post_init()
 	self:_equip_default_weapon()
@@ -73,16 +81,20 @@ function PlayerBase:post_init()
 		self._unregistered = true
 	end
 end
+
 function PlayerBase:_setup_controller()
 	self._controller = managers.controller:create_controller("player_" .. tostring(self._id), nil, false)
 	managers.rumble:register_controller(self._controller, self._rumble_pos_callback)
 end
+
 function PlayerBase:id()
 	return self._id
 end
+
 function PlayerBase:nick_name()
 	return Global.local_member:peer():name()
 end
+
 function PlayerBase:set_controller_enabled(enabled)
 	if not self._controller then
 		return
@@ -96,9 +108,11 @@ function PlayerBase:set_controller_enabled(enabled)
 		self._unit:set_extension_update_enabled(Idstring("base"), true)
 	end
 end
+
 function PlayerBase:controller()
 	return self._controller
 end
+
 function PlayerBase:anim_data_clbk_footstep(foot)
 	local obj = self._unit:orientation_object()
 	local proj_dir = math.UP
@@ -107,9 +121,11 @@ function PlayerBase:anim_data_clbk_footstep(foot)
 	local material_name, pos, norm = World:pick_decal_material(proj_from, proj_to, managers.slot:get_mask("surface_move"))
 	self._unit:sound():play_footstep(foot, material_name)
 end
+
 function PlayerBase:get_rumble_position()
 	return self._unit:position() + math.UP * 100
 end
+
 function PlayerBase:replenish()
 	for _, weapon in pairs(self._unit:inventory():available_selections()) do
 		if alive(weapon.unit) then
@@ -120,12 +136,14 @@ function PlayerBase:replenish()
 	managers.hud:set_ammo_amount(self._unit:inventory():equipped_unit():base():ammo_info())
 	self._unit:character_damage():replenish()
 end
+
 function PlayerBase:_unregister()
 	if not self._unregistered then
 		managers.groupai:state():unregister_criminal(self._unit)
 		self._unregistered = true
 	end
 end
+
 function PlayerBase:pre_destroy(unit)
 	self:_unregister()
 	UnitBase.pre_destroy(self, unit)

@@ -1,5 +1,6 @@
 core:module("CoreDOFManager")
 DOFManager = DOFManager or class()
+
 function DOFManager:init()
 	self._queued_effects = {}
 	self._sorted_effect_list = {}
@@ -23,6 +24,7 @@ function DOFManager:init()
 	}
 	self._clamp_prev_frame = 0
 end
+
 function DOFManager:save(data)
 	if next(self._queued_effects) then
 		local state = {}
@@ -30,6 +32,7 @@ function DOFManager:save(data)
 		data.DOFManager = state
 	end
 end
+
 function DOFManager:load(data)
 	local state = data.DOFManager
 	if state then
@@ -40,6 +43,7 @@ function DOFManager:load(data)
 		end
 	end
 end
+
 function DOFManager:update(t, dt)
 	self:remove_expired_effects(t, dt)
 	self._current_effect = self._sorted_effect_list[1]
@@ -71,16 +75,20 @@ function DOFManager:update(t, dt)
 		self._env_dof_enabled = true
 	end
 end
+
 function DOFManager:update_world_camera(t, dt, effect)
 	managers.worldcamera:update_dof(t, dt, effect)
 end
+
 function DOFManager:paused_update(t, dt)
 	self:update(t, dt)
 end
+
 function DOFManager:modifier_callback(interface)
 	self._modifier_output = interface:parameters()
 	return assert(self._modifier_input)
 end
+
 function DOFManager:feed_dof(near_min, near_max, far_min, far_max, clamp)
 	self._modifier_input = {}
 	self._modifier_input.near_focus_distance_min = near_min
@@ -89,13 +97,16 @@ function DOFManager:feed_dof(near_min, near_max, far_min, far_max, clamp)
 	self._modifier_input.far_focus_distance_max = far_max
 	self._modifier_input.clamp = clamp
 end
+
 function DOFManager:get_dof_parameters()
 	return self._current_effect and self._queued_effects[self._current_effect].prog_data.cur_values
 end
+
 function DOFManager:get_dof_values()
 	assert(self._modifier_output)
 	return self._modifier_output.near_focus_distance_min, self._modifier_output.near_focus_distance_max, self._modifier_output.far_focus_distance_min, self._modifier_output.far_focus_distance_max, self._modifier_output.clamp
 end
+
 function DOFManager:debug_draw_feed(near_max, near_min, far_min, far_max, clamp)
 	local vp = managers.viewport:first_active_viewport()
 	if vp and alive(vp:camera()) then
@@ -106,6 +117,7 @@ function DOFManager:debug_draw_feed(near_max, near_min, far_min, far_max, clamp)
 		Application:draw_cone(cam_pos + cam_dir * far_min, cam_pos + cam_dir * far_max, 49 * clamp + 1, 0, 1, 0)
 	end
 end
+
 function DOFManager:remove_expired_effects(t, dt)
 	local id, effect = next(self._queued_effects)
 	while id do
@@ -118,6 +130,7 @@ function DOFManager:remove_expired_effects(t, dt)
 		id, effect = next(self._queued_effects, id)
 	end
 end
+
 function DOFManager:update_effect(t, dt, id)
 	local effect = self._queued_effects[id]
 	local preset = effect.preset
@@ -134,6 +147,7 @@ function DOFManager:update_effect(t, dt, id)
 		self:calculate_current_parameters_fade_out(t, dt, effect, id)
 	end
 end
+
 function DOFManager:calculate_current_parameters_fade_in(t, dt, effect)
 	local next_eff_sort = effect.prog_data.sort_index + 1
 	local next_eff_id = self._sorted_effect_list[next_eff_sort]
@@ -152,6 +166,7 @@ function DOFManager:calculate_current_parameters_fade_in(t, dt, effect)
 	cur.clamp = math.lerp(init.clamp, effect.prog_data.clamp, eff_lerp)
 	effect.prog_data.dirty = true
 end
+
 function DOFManager:calculate_current_parameters_sustain(t, dt, effect)
 	if effect.prog_data.peak_reached then
 		effect.prog_data.dirty = nil
@@ -166,6 +181,7 @@ function DOFManager:calculate_current_parameters_sustain(t, dt, effect)
 		effect.prog_data.dirty = true
 	end
 end
+
 function DOFManager:calculate_current_parameters_fade_out(t, dt, effect, id)
 	local next_eff_sort = effect.prog_data.sort_index + 1
 	local next_eff_id = self._sorted_effect_list[next_eff_sort]
@@ -184,6 +200,7 @@ function DOFManager:calculate_current_parameters_fade_out(t, dt, effect, id)
 	cur.clamp = math.lerp(out.clamp, effect.prog_data.clamp, eff_lerp)
 	effect.prog_data.dirty = true
 end
+
 function DOFManager:play(dof_data, amplitude_multiplier)
 	self._last_id = self._last_id + 1
 	local new_data = {}
@@ -226,6 +243,7 @@ function DOFManager:play(dof_data, amplitude_multiplier)
 	self:add_to_sorted_list(self._last_id, dof_data.prio)
 	return self._last_id
 end
+
 function DOFManager:add_to_sorted_list(new_id, prio)
 	local allocated
 	for index, eff_id in ipairs(self._sorted_effect_list) do
@@ -242,6 +260,7 @@ function DOFManager:add_to_sorted_list(new_id, prio)
 		self._queued_effects[eff_id].prog_data.sort_index = index
 	end
 end
+
 function DOFManager:remove_from_sorted_list(id)
 	for index, eff_id in ipairs(self._sorted_effect_list) do
 		if eff_id == id then
@@ -253,6 +272,7 @@ function DOFManager:remove_from_sorted_list(id)
 		self._queued_effects[eff_id].prog_data.sort_index = index
 	end
 end
+
 function DOFManager:stop(id, instant)
 	local effect = self._queued_effects[id]
 	if effect then
@@ -268,6 +288,7 @@ function DOFManager:stop(id, instant)
 		end
 	end
 end
+
 function DOFManager:stop_all(instant)
 	self._queued_effects = {}
 	self._sorted_effect_list = {}
@@ -279,19 +300,24 @@ function DOFManager:stop_all(instant)
 		self:feed_dof(0, 0, 0, 0, 0)
 	end
 end
+
 function DOFManager:intern_remove_effect(id)
 	self._queued_effects[id] = nil
 	self:remove_from_sorted_list(id)
 end
+
 function DOFManager:check_dof_allowed()
 	return self._enabled
 end
+
 function DOFManager:set_enabled(state)
 	self._enabled = state
 end
+
 function DOFManager:is_effect_playing(id)
 	return id and self._queued_effects[id] and true
 end
+
 function DOFManager:from_env_mgr_set_env_dof(env_data)
 	local env_param = self._environment_parameters
 	env_param.near_min = env_data.near_focus_distance_min
@@ -300,6 +326,7 @@ function DOFManager:from_env_mgr_set_env_dof(env_data)
 	env_param.far_max = env_data.far_focus_distance_max
 	env_param.clamp = env_data.clamp
 end
+
 function DOFManager:clbk_environment_change()
 	local env_data = managers.environment:get_posteffect()
 	env_data = env_data and env_data._post_processors
@@ -317,6 +344,7 @@ function DOFManager:clbk_environment_change()
 		}
 	end
 end
+
 function DOFManager:set_effect_parameters(id, params, clamp)
 	if self._queued_effects[id] then
 		if params then

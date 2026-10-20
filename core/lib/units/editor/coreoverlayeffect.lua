@@ -1,8 +1,10 @@
 CoreOverlayEffectHubElement = CoreOverlayEffectHubElement or class(HubElement)
 OverlayEffectHubElement = OverlayEffectHubElement or class(CoreOverlayEffectHubElement)
+
 function OverlayEffectHubElement:init(...)
 	CoreOverlayEffectHubElement.init(self, ...)
 end
+
 function CoreOverlayEffectHubElement:init(unit)
 	HubElement.init(self, unit)
 	self._hed.overlay_effect = "none"
@@ -11,6 +13,7 @@ function CoreOverlayEffectHubElement:init(unit)
 	table.insert(self._save_values, "overlay_effect_fade_in")
 	table.insert(self._save_values, "overlay_effect_fade_out")
 end
+
 function CoreOverlayEffectHubElement:test_element()
 	if self._hed.overlay_effect ~= "none" then
 		local effect = clone(managers.overlay_effect:presets()[self._hed.overlay_effect])
@@ -20,9 +23,11 @@ function CoreOverlayEffectHubElement:test_element()
 		managers.overlay_effect:play_effect(effect)
 	end
 end
+
 function CoreOverlayEffectHubElement:stop_test_element()
 	managers.overlay_effect:stop_effect()
 end
+
 function CoreOverlayEffectHubElement:changed_effect()
 	if self._hed.overlay_effect == "none" then
 		self._fade_in_default:set_value("-")
@@ -35,6 +40,7 @@ function CoreOverlayEffectHubElement:changed_effect()
 		self._fade_out_default:set_value(string.format("%.2f", effect.fade_out))
 	end
 end
+
 function CoreOverlayEffectHubElement:set_option_time(data)
 	local c = data.ctrlr
 	local value = c:get_value()
@@ -45,6 +51,7 @@ function CoreOverlayEffectHubElement:set_option_time(data)
 	end
 	self._hed[data.value] = value
 end
+
 function CoreOverlayEffectHubElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

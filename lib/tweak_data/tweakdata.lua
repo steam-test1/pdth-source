@@ -14,6 +14,7 @@ require("lib/tweak_data/HudIconsTweakData")
 require("lib/tweak_data/TipsTweakData")
 TweakData = TweakData or class()
 TweakData.RELOAD = true
+
 function TweakData:set_difficulty()
 	if not Global.game_settings then
 		return
@@ -30,6 +31,7 @@ function TweakData:set_difficulty()
 		self:_set_hard()
 	end
 end
+
 function TweakData:_set_easy()
 	self.player:_set_easy()
 	self.character:_set_easy()
@@ -39,6 +41,7 @@ function TweakData:_set_easy()
 	self.experience_manager.total_objectives_finished = 750
 	self.experience_manager.civilians_killed = 15
 end
+
 function TweakData:_set_normal()
 	self.player:_set_normal()
 	self.character:_set_normal()
@@ -48,6 +51,7 @@ function TweakData:_set_normal()
 	self.experience_manager.total_objectives_finished = 1000
 	self.experience_manager.civilians_killed = 35
 end
+
 function TweakData:_set_hard()
 	self.player:_set_hard()
 	self.character:_set_hard()
@@ -57,6 +61,7 @@ function TweakData:_set_hard()
 	self.experience_manager.total_objectives_finished = 1500
 	self.experience_manager.civilians_killed = 75
 end
+
 function TweakData:_set_overkill()
 	self.player:_set_overkill()
 	self.character:_set_overkill()
@@ -66,6 +71,7 @@ function TweakData:_set_overkill()
 	self.experience_manager.total_objectives_finished = 3000
 	self.experience_manager.civilians_killed = 150
 end
+
 function TweakData:_set_overkill_145()
 	self.player:_set_overkill_145()
 	self.character:_set_overkill_145()
@@ -75,6 +81,7 @@ function TweakData:_set_overkill_145()
 	self.experience_manager.total_objectives_finished = 3000
 	self.experience_manager.civilians_killed = 550
 end
+
 function TweakData:difficulty_to_index(difficulty)
 	for i, diff in ipairs(self.difficulties) do
 		if diff == difficulty then
@@ -82,9 +89,11 @@ function TweakData:difficulty_to_index(difficulty)
 		end
 	end
 end
+
 function TweakData:index_to_difficulty(index)
 	return self.difficulties[index]
 end
+
 function TweakData:permission_to_index(permission)
 	for i, perm in ipairs(self.permissions) do
 		if perm == permission then
@@ -92,9 +101,11 @@ function TweakData:permission_to_index(permission)
 		end
 	end
 end
+
 function TweakData:index_to_permission(index)
 	return self.permissions[index]
 end
+
 function TweakData:server_state_to_index(state)
 	for i, server_state in ipairs(self.server_states) do
 		if server_state == state then
@@ -102,9 +113,11 @@ function TweakData:server_state_to_index(state)
 		end
 	end
 end
+
 function TweakData:index_to_server_state(index)
 	return self.server_states[index]
 end
+
 function TweakData:init()
 	self.hud_icons = HudIconsTweakData:new()
 	self.weapon = WeaponTweakData:new()
@@ -1768,6 +1781,7 @@ function TweakData:init()
 	self.music.hos.control = "music_hos_control_02"
 	self:set_difficulty()
 end
+
 function TweakData:_execute_reload_clbks()
 	if self._reload_clbks then
 		for key, clbk_data in pairs(self._reload_clbks) do
@@ -1777,10 +1791,12 @@ function TweakData:_execute_reload_clbks()
 		end
 	end
 end
+
 function TweakData:add_reload_callback(object, func)
 	self._reload_clbks = self._reload_clbks or {}
 	table.insert(self._reload_clbks, {clbk_object = object, func = func})
 end
+
 function TweakData:remove_reload_callback(object)
 	if self._reload_clbks then
 		for i, k in ipairs(self._reload_clbks) do
@@ -1791,6 +1807,7 @@ function TweakData:remove_reload_callback(object)
 		end
 	end
 end
+
 function TweakData:set_scale()
 	local lang_key = SystemInfo:language():key()
 	local lang_mods = {
@@ -1981,6 +1998,7 @@ function TweakData:set_scale()
 		self.scale.victory_title_multiplier = victory_title_multiplier or 1
 	end
 end
+
 function TweakData:set_menu_scale()
 	local lang_mods_def = {
 		[Idstring("german"):key()] = {
@@ -2065,6 +2083,7 @@ function TweakData:set_menu_scale()
 	self.load_level.border_pad = self.menu.border_pad
 	self.load_level.stonecold_small_logo = "guis/textures/game_small_logo"
 end
+
 function TweakData:set_hud_values()
 	local lang_mods_def = {
 		[Idstring("german"):key()] = {
@@ -2132,11 +2151,13 @@ function TweakData:set_hud_values()
 	self.hud.chatoutput_size = 14 * self.scale.small_font_multiplier
 	self.hud.prime_color = Color(1, 1, 0.65882355, 0)
 end
+
 function TweakData:resolution_changed()
 	self:set_scale()
 	self:set_menu_scale()
 	self:set_hud_values()
 end
+
 if (not tweak_data or tweak_data.RELOAD) and managers.dlc then
 	local reload = tweak_data and tweak_data.RELOAD
 	local reload_clbks = tweak_data and tweak_data._reload_clbks

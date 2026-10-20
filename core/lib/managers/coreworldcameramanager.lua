@@ -1,5 +1,6 @@
 core:import("CoreManagerBase")
 CoreWorldCameraManager = CoreWorldCameraManager or class()
+
 function CoreWorldCameraManager:init()
 	self._camera = World:create_camera()
 	self:set_default_fov(75)
@@ -31,9 +32,11 @@ function CoreWorldCameraManager:init()
 	self:_set_dof_effect()
 	self:clear()
 end
+
 function CoreWorldCameraManager:use_gui()
 	return self._use_gui
 end
+
 function CoreWorldCameraManager:_create_listener()
 	self._listener_id = managers.listener:add_listener("world_camera", self._camera)
 	self._listener_activation_id = nil
@@ -41,33 +44,43 @@ function CoreWorldCameraManager:_create_listener()
 		"world_camera"
 	})
 end
+
 function CoreWorldCameraManager:set_default_fov(default_fov)
 	self._default_fov = default_fov
 end
+
 function CoreWorldCameraManager:default_fov()
 	return self._default_fov
 end
+
 function CoreWorldCameraManager:set_fov(fov)
 	self._camera:set_fov(fov)
 end
+
 function CoreWorldCameraManager:set_default_dof(near_dof, far_dof)
 	self._default_near_dof = near_dof
 	self._default_far_dof = far_dof
 end
+
 function CoreWorldCameraManager:default_near_dof()
 	return self._default_near_dof
 end
+
 function CoreWorldCameraManager:default_far_dof()
 	return self._default_far_dof
 end
+
 function CoreWorldCameraManager:set_dof(dof)
 end
+
 function CoreWorldCameraManager:default_dof_padding()
 	return self._default_dof_padding
 end
+
 function CoreWorldCameraManager:default_dof_clamp()
 	return self._default_dof_clamp
 end
+
 function CoreWorldCameraManager:_set_dof_effect()
 	self._dof = {}
 	self._dof.update_callback = "update_world_camera"
@@ -81,6 +94,7 @@ function CoreWorldCameraManager:_set_dof_effect()
 	self._dof.fade_in = 0
 	self._dof.fade_out = 0
 end
+
 function CoreWorldCameraManager:destroy()
 	self:_destroy_listener()
 	if self._viewport then
@@ -96,6 +110,7 @@ function CoreWorldCameraManager:destroy()
 		self._camera = nil
 	end
 end
+
 function CoreWorldCameraManager:_destroy_listener()
 	if self._listener_id then
 		managers.listener:remove_listener(self._listener_id)
@@ -103,10 +118,12 @@ function CoreWorldCameraManager:_destroy_listener()
 		self._listener_id = nil
 	end
 end
+
 function CoreWorldCameraManager:stop_simulation()
 	self:_clear_callback_lists()
 	self:stop_world_camera()
 end
+
 function CoreWorldCameraManager:_clear_callback_lists()
 	self._last_world_camera_done_callback_id = {}
 	self._world_camera_done_callback_list = {}
@@ -115,14 +132,17 @@ function CoreWorldCameraManager:_clear_callback_lists()
 	self._last_sequence_camera_clip_callback_id = {}
 	self._sequence_camera_clip_callback_list = {}
 end
+
 function CoreWorldCameraManager:clear()
 	self._world_cameras = {}
 	self._world_camera_sequences = {}
 	self._current_world_camera = nil
 end
+
 function CoreWorldCameraManager:current_world_camera()
 	return self._current_world_camera
 end
+
 function CoreWorldCameraManager:save(file)
 	local worldcameras = {}
 	for name, world_camera in pairs(self._world_cameras) do
@@ -134,6 +154,7 @@ function CoreWorldCameraManager:save(file)
 	}
 	file:puts(ScriptSerializer:to_generic_xml(camera_data))
 end
+
 function CoreWorldCameraManager:load(param)
 	if not self:_old_load(param) then
 		if not param.worldcameras then
@@ -147,6 +168,7 @@ function CoreWorldCameraManager:load(param)
 		self._world_camera_sequences = param.sequences
 	end
 end
+
 function CoreWorldCameraManager:_old_load(path)
 	if type_name(path) ~= "string" then
 		return false
@@ -168,11 +190,13 @@ function CoreWorldCameraManager:_old_load(path)
 	end
 	return true
 end
+
 function CoreWorldCameraManager:update(t, dt)
 	if self._current_world_camera then
 		self._current_world_camera:update(t, dt)
 	end
 end
+
 function CoreWorldCameraManager:_set_gui_visible(visible)
 	if self._gui_visible ~= visible then
 		if visible and self._use_gui then
@@ -183,6 +207,7 @@ function CoreWorldCameraManager:_set_gui_visible(visible)
 		self._gui_visible = visible
 	end
 end
+
 function CoreWorldCameraManager:add_world_camera_done_callback(world_camera_name, func)
 	self._last_world_camera_done_callback_id[world_camera_name] = self._last_world_camera_done_callback_id[world_camera_name] or 0
 	self._last_world_camera_done_callback_id[world_camera_name] = self._last_world_camera_done_callback_id[world_camera_name] + 1
@@ -190,9 +215,11 @@ function CoreWorldCameraManager:add_world_camera_done_callback(world_camera_name
 	self._world_camera_done_callback_list[world_camera_name][self._last_world_camera_done_callback_id[world_camera_name]] = func
 	return self._last_world_camera_done_callback_id[world_camera_name]
 end
+
 function CoreWorldCameraManager:remove_world_camera_done_callback(world_camera_name, id)
 	self._world_camera_done_callback_list[world_camera_name][id] = nil
 end
+
 function CoreWorldCameraManager:add_sequence_done_callback(sequence_name, func)
 	self._last_sequence_done_callback_id[sequence_name] = self._last_sequence_done_callback_id[sequence_name] or 0
 	self._last_sequence_done_callback_id[sequence_name] = self._last_sequence_done_callback_id[sequence_name] + 1
@@ -200,9 +227,11 @@ function CoreWorldCameraManager:add_sequence_done_callback(sequence_name, func)
 	self._sequence_done_callback_list[sequence_name][self._last_sequence_done_callback_id[sequence_name]] = func
 	return self._last_sequence_done_callback_id[sequence_name]
 end
+
 function CoreWorldCameraManager:remove_sequence_done_callback(sequence_name, id)
 	self._sequence_done_callback_list[sequence_name][id] = nil
 end
+
 function CoreWorldCameraManager:add_sequence_camera_clip_callback(sequence_name, clip, func)
 	self._last_sequence_camera_clip_callback_id[sequence_name] = self._last_sequence_camera_clip_callback_id[sequence_name] or 0
 	self._last_sequence_camera_clip_callback_id[sequence_name] = self._last_sequence_camera_clip_callback_id[sequence_name] + 1
@@ -211,28 +240,35 @@ function CoreWorldCameraManager:add_sequence_camera_clip_callback(sequence_name,
 	self._sequence_camera_clip_callback_list[sequence_name][clip][self._last_sequence_camera_clip_callback_id[sequence_name]] = func
 	return self._last_sequence_camera_clip_callback_id[sequence_name]
 end
+
 function CoreWorldCameraManager:remove_sequence_camera_clip_callback(sequence_name, clip, id)
 	self._sequence_camera_clip_callback_list[sequence_name][clip][id] = nil
 end
+
 function CoreWorldCameraManager:create_world_camera(world_camera_name)
 	self._world_cameras[world_camera_name] = (rawget(_G, "WorldCamera") or rawget(_G, "CoreWorldCamera")):new(world_camera_name)
 	return self._world_cameras[world_camera_name]
 end
+
 function CoreWorldCameraManager:remove_world_camera(world_camera_name)
 	self._world_cameras[world_camera_name] = nil
 end
+
 function CoreWorldCameraManager:all_world_cameras()
 	return self._world_cameras
 end
+
 function CoreWorldCameraManager:world_camera(world_camera)
 	return self._world_cameras[world_camera]
 end
+
 function CoreWorldCameraManager:play_world_camera(world_camera_name)
 	local s = {
 		self:_camera_sequence_table(world_camera_name)
 	}
 	self:play_world_camera_sequence(nil, s)
 end
+
 function CoreWorldCameraManager:new_play_world_camera(world_camera_sequence)
 	local world_camera = self._world_cameras[world_camera_sequence.name]
 	if world_camera then
@@ -252,6 +288,7 @@ function CoreWorldCameraManager:new_play_world_camera(world_camera_sequence)
 		Application:error("WorldCamera named", world_camera_sequence.name, "did not exist.")
 	end
 end
+
 function CoreWorldCameraManager:stop_world_camera()
 	if not self._current_world_camera then
 		return
@@ -280,19 +317,24 @@ function CoreWorldCameraManager:stop_world_camera()
 		end
 	end
 end
+
 function CoreWorldCameraManager:create_world_camera_sequence(name)
 	self._world_camera_sequences[name] = {}
 	return self._world_camera_sequences[name]
 end
+
 function CoreWorldCameraManager:remove_world_camera_sequence(name)
 	self._world_camera_sequences[name] = nil
 end
+
 function CoreWorldCameraManager:all_world_camera_sequences()
 	return self._world_camera_sequences
 end
+
 function CoreWorldCameraManager:world_camera_sequence(name)
 	return self._world_camera_sequences[name]
 end
+
 function CoreWorldCameraManager:add_camera_to_sequence(name, c_name)
 	local sequence = self._world_camera_sequences[name]
 	if not sequence then
@@ -302,6 +344,7 @@ function CoreWorldCameraManager:add_camera_to_sequence(name, c_name)
 	table.insert(sequence, self:_camera_sequence_table(c_name))
 	return #sequence
 end
+
 function CoreWorldCameraManager:insert_camera_to_sequence(name, camera_sequence_table, index)
 	local sequence = self._world_camera_sequences[name]
 	if not sequence then
@@ -311,12 +354,14 @@ function CoreWorldCameraManager:insert_camera_to_sequence(name, camera_sequence_
 	table.insert(sequence, index, camera_sequence_table)
 	return #sequence
 end
+
 function CoreWorldCameraManager:remove_camera_from_sequence(name, index)
 	local sequence = self._world_camera_sequences[name]
 	local camera_sequence_table = sequence[index]
 	table.remove(sequence, index)
 	return camera_sequence_table
 end
+
 function CoreWorldCameraManager:_camera_sequence_table(name)
 	local t = {}
 	t.name = name
@@ -324,11 +369,13 @@ function CoreWorldCameraManager:_camera_sequence_table(name)
 	t.stop = 1
 	return t
 end
+
 function CoreWorldCameraManager:_break_sequence()
 	if self._current_sequence then
 		self:_sequence_done()
 	end
 end
+
 function CoreWorldCameraManager:_sequence_done()
 	self:_set_listener_enabled(false)
 	self:_reset_old_viewports()
@@ -350,6 +397,7 @@ function CoreWorldCameraManager:_sequence_done()
 		self._old_game_state_name = nil
 	end
 end
+
 function CoreWorldCameraManager:play_world_camera_sequence(name, sequence)
 	if game_state_machine:current_state_name() ~= "editor" then
 		self._old_game_state_name = game_state_machine:current_state_name()
@@ -381,12 +429,15 @@ function CoreWorldCameraManager:play_world_camera_sequence(name, sequence)
 	self._sequence_index = 1
 	self:new_play_world_camera(self._current_sequence[self._sequence_index])
 end
+
 function CoreWorldCameraManager:_use_vp()
 	self:viewport():set_active(true)
 end
+
 function CoreWorldCameraManager:_reset_old_viewports()
 	self:viewport():set_active(false)
 end
+
 function CoreWorldCameraManager:_set_listener_enabled(enabled)
 	if enabled then
 		if not self._listener_activation_id then
@@ -397,20 +448,24 @@ function CoreWorldCameraManager:_set_listener_enabled(enabled)
 		self._listener_activation_id = nil
 	end
 end
+
 function CoreWorldCameraManager:start_dof()
 	if not self._using_dof then
 		self._using_dof = true
 		self._dof_effect_id = managers.DOF:play(self._dof)
 	end
 end
+
 function CoreWorldCameraManager:stop_dof()
 	managers.DOF:stop(self._dof_effect_id)
 	self._dof_effect_id = nil
 	self._using_dof = false
 end
+
 function CoreWorldCameraManager:using_dof()
 	return self._using_dof
 end
+
 function CoreWorldCameraManager:update_dof_values(near_dof, far_dof, dof_padding, dof_clamp)
 	self._current_near_dof = near_dof
 	self._current_far_dof = far_dof
@@ -423,22 +478,29 @@ function CoreWorldCameraManager:update_dof_values(near_dof, far_dof, dof_padding
 		far_max = far_dof + dof_padding
 	}, dof_clamp)
 end
+
 function CoreWorldCameraManager:viewport()
 	return self._viewport
 end
+
 function CoreWorldCameraManager:director()
 	return self._director
 end
+
 function CoreWorldCameraManager:workspace()
 	return self._workspace
 end
+
 function CoreWorldCameraManager:camera()
 	return self._camera
 end
+
 function CoreWorldCameraManager:camera_controller()
 	return self._camera_controller
 end
+
 CoreWorldCamera = CoreWorldCamera or class()
+
 function CoreWorldCamera:init(world_camera_name)
 	self._world_camera_name = world_camera_name
 	self._points = {}
@@ -475,6 +537,7 @@ function CoreWorldCamera:init(world_camera_name)
 	self._dof_clamp = managers.worldcamera:default_dof_clamp()
 	self._curve_type = "bezier"
 end
+
 function CoreWorldCamera:save_data_table()
 	local t = {
 		name = self._world_camera_name,
@@ -492,6 +555,7 @@ function CoreWorldCamera:save_data_table()
 	}
 	return t
 end
+
 function CoreWorldCamera:load(values)
 	self._duration = values.duration
 	self._delay = values.delay
@@ -506,11 +570,13 @@ function CoreWorldCamera:load(values)
 	self._spline_metadata = values.spline_metadata
 	self:_check_loaded_data()
 end
+
 function CoreWorldCamera:_check_loaded_data()
 	for _, key in pairs(self._keys) do
 		key.roll = key.roll or 0
 	end
 end
+
 function CoreWorldCamera:old_load(node)
 	self._duration = tonumber(node:parameter("duration"))
 	self._delay = tonumber(node:parameter("delay"))
@@ -536,42 +602,55 @@ function CoreWorldCamera:old_load(node)
 		end
 	end
 end
+
 function CoreWorldCamera:duration()
 	return self._duration
 end
+
 function CoreWorldCamera:set_duration(duration)
 	self._duration = duration
 end
+
 function CoreWorldCamera:duration()
 	return self._duration
 end
+
 function CoreWorldCamera:set_delay(delay)
 	self._delay = delay
 end
+
 function CoreWorldCamera:delay()
 	return self._delay
 end
+
 function CoreWorldCamera:set_dof_padding(dof_padding)
 	self._dof_padding = dof_padding
 end
+
 function CoreWorldCamera:dof_padding()
 	return self._dof_padding
 end
+
 function CoreWorldCamera:set_dof_clamp(dof_clamp)
 	self._dof_clamp = dof_clamp
 end
+
 function CoreWorldCamera:dof_clamp()
 	return self._dof_clamp
 end
+
 function CoreWorldCamera:name()
 	return self._world_camera_name
 end
+
 function CoreWorldCamera:in_acc()
 	return self._in_acc
 end
+
 function CoreWorldCamera:out_acc()
 	return self._out_acc
 end
+
 function CoreWorldCamera:set_sine_segment_position(new_pos, segment_index, segments, ctrl_points)
 	local old_pos = segments[segment_index]
 	local offset = new_pos - old_pos
@@ -590,6 +669,7 @@ function CoreWorldCamera:set_sine_segment_position(new_pos, segment_index, segme
 		segments[segment_index] = new_pos
 	end
 end
+
 function CoreWorldCamera:set_control_point_length(len_p1, len_p2, segment_index)
 	local positions = self._positions
 	local temp_vector
@@ -610,6 +690,7 @@ function CoreWorldCamera:set_control_point_length(len_p1, len_p2, segment_index)
 		self._spline_metadata.ctrl_points[segment_index].p2 = temp_vector
 	end
 end
+
 function CoreWorldCamera:rotate_control_points(p2_p1_vec, segment_index)
 	local positions = self._positions
 	local temp_vector
@@ -630,6 +711,7 @@ function CoreWorldCamera:rotate_control_points(p2_p1_vec, segment_index)
 		self._spline_metadata.ctrl_points[segment_index].p2 = positions[segment_index] + temp_vector
 	end
 end
+
 function CoreWorldCamera:set_curve_type_bezier()
 	self._curve_type = "bezier"
 	self._spline_metadata = nil
@@ -639,6 +721,7 @@ function CoreWorldCamera:set_curve_type_bezier()
 	end
 	self._editor_random_access_data = nil
 end
+
 function CoreWorldCamera:set_curve_type_sine()
 	self._curve_type = "sine"
 	if #self._positions > 2 then
@@ -646,6 +729,7 @@ function CoreWorldCamera:set_curve_type_sine()
 	end
 	self._editor_random_access_data = nil
 end
+
 function CoreWorldCamera:in_acc_string()
 	for name, value in pairs(self._in_accelerations) do
 		if value == self._in_acc then
@@ -653,6 +737,7 @@ function CoreWorldCamera:in_acc_string()
 		end
 	end
 end
+
 function CoreWorldCamera:out_acc_string()
 	for name, value in pairs(self._out_accelerations) do
 		if value == self._out_acc then
@@ -660,12 +745,15 @@ function CoreWorldCamera:out_acc_string()
 		end
 	end
 end
+
 function CoreWorldCamera:set_in_acc(in_acc)
 	self._in_acc = self._in_accelerations[in_acc]
 end
+
 function CoreWorldCamera:set_out_acc(out_acc)
 	self._out_acc = self._out_accelerations[out_acc]
 end
+
 function CoreWorldCamera:positions_at_time_bezier(time)
 	local acc = math.bezier({
 		0,
@@ -681,6 +769,7 @@ function CoreWorldCamera:positions_at_time_bezier(time)
 	end
 	return self._positions[1], self._target_positions[1]
 end
+
 function CoreWorldCamera:update(t, dt)
 	if self._timer < self._stop_timer then
 		self._timer = self._timer + dt / self._duration
@@ -698,6 +787,7 @@ function CoreWorldCamera:update(t, dt)
 		managers.worldcamera:stop_world_camera()
 	end
 end
+
 function CoreWorldCamera:positions_at_time(s_t)
 	if self._curve_type == "sine" then
 		if not self._editor_random_access_data then
@@ -716,6 +806,7 @@ function CoreWorldCamera:positions_at_time(s_t)
 		return self:positions_at_time_bezier(s_t)
 	end
 end
+
 function CoreWorldCamera:play_to_time(s_t)
 	if self._curve_type == "sine" then
 		local smooth_time = math.bezier({
@@ -729,6 +820,7 @@ function CoreWorldCamera:play_to_time(s_t)
 		return self:positions_at_time_bezier(self._timer)
 	end
 end
+
 function CoreWorldCamera:positions_at_time_sine(spline_t)
 	local result_pos, result_look_pos
 	local positions = self._positions
@@ -783,6 +875,7 @@ function CoreWorldCamera:positions_at_time_sine(spline_t)
 	end
 	return result_pos, result_look_pos
 end
+
 function CoreWorldCamera:play_to_time_sine(s_t)
 	local result_pos, result_look_pos
 	if #self._positions > 2 then
@@ -831,6 +924,7 @@ function CoreWorldCamera:play_to_time_sine(s_t)
 	end
 	return result_pos, result_look_pos
 end
+
 function CoreWorldCamera:cam_look_vec_on_segment(perc_in_seg, seg_i)
 	local segments = self._target_positions
 	local metadata = self._spline_metadata
@@ -859,12 +953,14 @@ function CoreWorldCamera:cam_look_vec_on_segment(perc_in_seg, seg_i)
 	local wanted_pos = math.lerp(runtime_data.subseg_prev_pos, runtime_data.subseg_pos, percentage_in_subseg)
 	return wanted_pos
 end
+
 function CoreWorldCamera:position_at_time_on_segment(seg_t, pos_start, pos_end, p1, p2)
 	local ext_pos1 = math.lerp(pos_start, p2, seg_t)
 	local ext_pos2 = math.lerp(p1, pos_end, seg_t)
 	local xpo = (math.sin((seg_t * 2 - 1) * 90) + 1) * 0.5
 	return math.lerp(ext_pos1, ext_pos2, xpo)
 end
+
 function CoreWorldCamera:extract_spline_control_points(position_table, curviness, start_index, end_index)
 	local control_points = {}
 	start_index = start_index or 1
@@ -883,6 +979,7 @@ function CoreWorldCamera:extract_spline_control_points(position_table, curviness
 	end
 	return control_points
 end
+
 function CoreWorldCamera:extract_control_points_at_index(position_table, control_points, index, curviness)
 	local pos = position_table[index]
 	local segment_control_points = {}
@@ -912,6 +1009,7 @@ function CoreWorldCamera:extract_control_points_at_index(position_table, control
 	end
 	return segment_control_points
 end
+
 function CoreWorldCamera:extract_spline_metadata()
 	local nr_subseg_per_seg = 30
 	local control_points = self:extract_spline_control_points(self._positions, 0.5)
@@ -928,6 +1026,7 @@ function CoreWorldCamera:extract_spline_metadata()
 		nr_subseg_per_seg = nr_subseg_per_seg
 	}
 end
+
 function CoreWorldCamera:extract_segment_dis_markers(segment_table, control_points, nr_subsegments)
 	local segment_lengths = {}
 	local spline_length = 0
@@ -954,6 +1053,7 @@ function CoreWorldCamera:extract_segment_dis_markers(segment_table, control_poin
 	end
 	return segment_lengths, spline_length
 end
+
 function CoreWorldCamera:extract_editor_random_access_data(segment_table, control_points, nr_subsegments)
 	local subsegment_lengths = {}
 	local subsegment_positions = {}
@@ -984,6 +1084,7 @@ function CoreWorldCamera:extract_editor_random_access_data(segment_table, contro
 	end
 	return subsegment_positions, subsegment_lengths
 end
+
 function CoreWorldCamera:debug_draw_editor()
 	local positions = self._positions
 	local target_positions = self._target_positions
@@ -1041,12 +1142,15 @@ function CoreWorldCamera:debug_draw_editor()
 		end
 	end
 end
+
 function CoreWorldCamera:update_dof_values(...)
 	managers.worldcamera:update_dof_values(...)
 end
+
 function CoreWorldCamera:set_current_fov(fov)
 	managers.worldcamera:set_fov(fov)
 end
+
 function CoreWorldCamera:play(sequence_data)
 	if #self._positions == 0 then
 		return false, "Camera " .. self._world_camera_name .. " didn't have any points."
@@ -1081,11 +1185,13 @@ function CoreWorldCamera:play(sequence_data)
 	self:set_current_fov(self:value_at_time(self._timer, "fov"))
 	return true
 end
+
 function CoreWorldCamera:stop()
 	self._playing = false
 	self._bezier = nil
 	self._spline_runtime_data = nil
 end
+
 function CoreWorldCamera:bezier_function()
 	if #self._positions == 2 then
 		return math.linear_bezier
@@ -1096,10 +1202,12 @@ function CoreWorldCamera:bezier_function()
 	end
 	return nil
 end
+
 function CoreWorldCamera:update_camera(pos, t_pos)
 	managers.worldcamera:camera_controller():set_camera(pos)
 	managers.worldcamera:camera_controller():set_target(t_pos)
 end
+
 function CoreWorldCamera:add_point(pos, rot)
 	if self._curve_type == "sine" then
 		table.insert(self._positions, pos)
@@ -1126,15 +1234,18 @@ function CoreWorldCamera:add_point(pos, rot)
 		table.insert(self._target_positions, pos + rot:y() * self._target_offset)
 	end
 end
+
 function CoreWorldCamera:get_points()
 	return self._positions
 end
+
 function CoreWorldCamera:get_point(point)
 	return {
 		pos = self._positions[point],
 		t_pos = self._target_positions[point]
 	}
 end
+
 function CoreWorldCamera:delete_point(point)
 	table.remove(self._positions, point)
 	table.remove(self._target_positions, point)
@@ -1158,12 +1269,15 @@ function CoreWorldCamera:delete_point(point)
 		self:delete_editor_random_access_data()
 	end
 end
+
 function CoreWorldCamera:delete_spline_metadata()
 	self._spline_metadata = nil
 end
+
 function CoreWorldCamera:delete_editor_random_access_data()
 	self._editor_random_access_data = nil
 end
+
 function CoreWorldCamera:reset_control_points(segment_index)
 	if self._curve_type == "sine" and #self._positions > 2 then
 		local control_points = self:extract_control_points_at_index(self._positions, self._spline_metadata.ctrl_points, segment_index, 0.5)
@@ -1174,6 +1288,7 @@ function CoreWorldCamera:reset_control_points(segment_index)
 		self:delete_editor_random_access_data()
 	end
 end
+
 function CoreWorldCamera:move_point(point, pos, rot)
 	if self._curve_type == "sine" then
 		if pos then
@@ -1211,20 +1326,26 @@ function CoreWorldCamera:move_point(point, pos, rot)
 		end
 	end
 end
+
 function CoreWorldCamera:positions()
 	return self._positions
 end
+
 function CoreWorldCamera:target_positions()
 	return self._target_positions
 end
+
 function CoreWorldCamera:insert_point(index, position, rotation)
 end
+
 function CoreWorldCamera:keys()
 	return self._keys
 end
+
 function CoreWorldCamera:key(i)
 	return self._keys[i]
 end
+
 function CoreWorldCamera:next_key(time)
 	local index = 1
 	for i, key in ipairs(self._keys) do
@@ -1237,6 +1358,7 @@ function CoreWorldCamera:next_key(time)
 	end
 	return index
 end
+
 function CoreWorldCamera:prev_key(time, step)
 	local index = 1
 	for i, key in ipairs(self._keys) do
@@ -1250,6 +1372,7 @@ function CoreWorldCamera:prev_key(time, step)
 	end
 	return index
 end
+
 function CoreWorldCamera:add_key(time)
 	local index = 1
 	local fov, near_dof, far_dof, roll
@@ -1274,9 +1397,11 @@ function CoreWorldCamera:add_key(time)
 	table.insert(self._keys, index, key)
 	return index, key
 end
+
 function CoreWorldCamera:delete_key(index)
 	table.remove(self._keys, index)
 end
+
 function CoreWorldCamera:move_key(index, time)
 	if #self._keys == 1 then
 		self._keys[1].time = time
@@ -1292,6 +1417,7 @@ function CoreWorldCamera:move_key(index, time)
 		return index
 	end
 end
+
 function CoreWorldCamera:value_at_time(time, value)
 	local prev_key = self:prev_value_key(time, value)
 	local next_key = self:next_value_key(time, value)
@@ -1302,6 +1428,7 @@ function CoreWorldCamera:value_at_time(time, value)
 	local v = (next_key[value] - prev_key[value]) * mul + prev_key[value]
 	return v
 end
+
 function CoreWorldCamera:prev_value_key(time, value)
 	local index = self:prev_key(time)
 	local key = self._keys[index]
@@ -1311,6 +1438,7 @@ function CoreWorldCamera:prev_value_key(time, value)
 		return self:prev_value_key(key.time, value)
 	end
 end
+
 function CoreWorldCamera:next_value_key(time, value)
 	local index = self:next_key(time)
 	local key = self._keys[index]
@@ -1320,11 +1448,13 @@ function CoreWorldCamera:next_value_key(time, value)
 		return self:next_value_key(key.time, value)
 	end
 end
+
 function CoreWorldCamera:print_points()
 	for i = 1, 4 do
 		cat_print("debug", i, self._positions[i], self._target_positions[i])
 	end
 end
+
 function CoreWorldCamera:playing()
 	return self._playing
 end

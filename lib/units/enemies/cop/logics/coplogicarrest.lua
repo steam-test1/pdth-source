@@ -1,4 +1,5 @@
 CopLogicArrest = class(CopLogicBase)
+
 function CopLogicArrest.enter(data, new_logic_name, enter_params)
 	CopLogicBase.enter(data, new_logic_name, enter_params)
 	data.unit:brain():cancel_all_pathing_searches()
@@ -48,6 +49,7 @@ function CopLogicArrest.enter(data, new_logic_name, enter_params)
 		CopLogicAttack._chk_request_action_stand(data)
 	end
 end
+
 function CopLogicArrest.exit(data, new_logic_name, enter_params)
 	CopLogicBase.exit(data, new_logic_name, enter_params)
 	local my_data = data.internal_data
@@ -67,6 +69,7 @@ function CopLogicArrest.exit(data, new_logic_name, enter_params)
 		CopLogicBase._reset_attention(data)
 	end
 end
+
 function CopLogicArrest.queued_update(data)
 	data.t = TimerManager:game():time()
 	local my_data = data.internal_data
@@ -134,6 +137,7 @@ function CopLogicArrest.queued_update(data)
 		CopLogicBase._exit(data.unit, exit_state)
 	end
 end
+
 function CopLogicArrest._chk_request_action_turn_to_enemy(data, my_data, my_pos, enemy_pos)
 	local fwd = data.unit:movement():m_rot():y()
 	local target_vec = enemy_pos - my_pos
@@ -149,6 +153,7 @@ function CopLogicArrest._chk_request_action_turn_to_enemy(data, my_data, my_pos,
 		end
 	end
 end
+
 function CopLogicArrest._update_cover(data)
 	local my_data = data.internal_data
 	local cover_release_dis = 100
@@ -169,6 +174,7 @@ function CopLogicArrest._update_cover(data)
 		CopLogicBase.queue_task(my_data, my_data.cover_update_task_key, CopLogicArrest._update_cover, data, data.t + 3)
 	end
 end
+
 function CopLogicArrest._update_enemy_detection(data)
 	managers.groupai:state():on_unit_detection_updated(data.unit)
 	data.t = TimerManager:game():time()
@@ -243,6 +249,7 @@ function CopLogicArrest._update_enemy_detection(data)
 	my_data.focus_type = focus_type
 	CopLogicBase._report_detections(enemies)
 end
+
 function CopLogicArrest._chk_reaction_to_criminal(data, key_criminal, criminal_data)
 	local u_criminal = criminal_data.unit
 	local visible = criminal_data.verified
@@ -273,6 +280,7 @@ function CopLogicArrest._chk_reaction_to_criminal(data, key_criminal, criminal_d
 	end
 	return reaction
 end
+
 function CopLogicArrest._verify_arrest_targets(data, my_data, arrest_targets, enemies)
 	local arrest_timeout = 60
 	local group_ai = managers.groupai:state()
@@ -310,6 +318,7 @@ function CopLogicArrest._verify_arrest_targets(data, my_data, arrest_targets, en
 		end
 	end
 end
+
 function CopLogicArrest.action_complete_clbk(data, action)
 	local my_data = data.internal_data
 	local action_type = action:type()
@@ -326,6 +335,7 @@ function CopLogicArrest.action_complete_clbk(data, action)
 		my_data.gesture_arrest = nil
 	end
 end
+
 function CopLogicArrest.damage_clbk(data, damage_info)
 	CopLogicIdle.damage_clbk(data, damage_info)
 	if data.name == "arrest" then
@@ -342,9 +352,11 @@ function CopLogicArrest.damage_clbk(data, damage_info)
 		end
 	end
 end
+
 function CopLogicArrest.can_deactivate(data)
 	return false
 end
+
 function CopLogicArrest.on_detected_enemy_destroyed(data, enemy_unit)
 	local key = enemy_unit:key()
 	local my_data = data.internal_data
@@ -355,12 +367,15 @@ function CopLogicArrest.on_detected_enemy_destroyed(data, enemy_unit)
 	my_data.detected_enemies[key] = nil
 	my_data.arrest_targets[key] = nil
 end
+
 function CopLogicArrest.on_alert(...)
 	CopLogicIdle.on_alert(...)
 end
+
 function CopLogicArrest.is_available_for_assignment(data)
 	return false
 end
+
 function CopLogicArrest.on_criminal_neutralized(data, criminal_key)
 	local record = managers.groupai:state():criminal_record(criminal_key)
 	local my_data = data.internal_data
@@ -381,9 +396,11 @@ function CopLogicArrest.on_criminal_neutralized(data, criminal_key)
 		my_data.arrest_targets[criminal_key].intro_t = TimerManager:game():time()
 	end
 end
+
 function CopLogicArrest.on_intimidated(data, amount, aggressor_unit)
 	CopLogicIdle.on_intimidated(data, amount, aggressor_unit)
 end
+
 function CopLogicArrest.on_new_objective(data, old_objective)
 	CopLogicIdle.on_new_objective(data, old_objective)
 end

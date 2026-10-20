@@ -5,6 +5,7 @@ CopDamage._all_event_types = {
 	"heavy_hurt",
 	"death"
 }
+
 function CopDamage:init(unit)
 	self._unit = unit
 	local char_tweak = tweak_data.character[unit:base()._tweak_table]
@@ -31,6 +32,7 @@ function CopDamage:init(unit)
 		body:add_ray_type(Idstring("trip_mine"))
 	end
 end
+
 function CopDamage.get_damage_type(hurt_table, damage_percent)
 	local dmg = damage_percent / 100
 	if dmg < hurt_table[1] then
@@ -47,16 +49,19 @@ function CopDamage.get_damage_type(hurt_table, damage_percent)
 		return r < (dmg - hurt_table[3]) / (hurt_table[4] - hurt_table[3]) and "heavy_hurt" or "hurt"
 	end
 end
+
 function CopDamage:dodge(hipshot)
 	if self._dead or self._invulnerable or self._unit:movement():chk_action_forbidden("walk") then
 		return
 	end
 	return self._unit:brain()._current_logic.dodge(self._unit:brain()._logic_data, hipshot)
 end
+
 function CopDamage:is_head(body)
 	local head = self._head_body_name and body and body:name() == self._ids_head_body_name
 	return head
 end
+
 function CopDamage:damage_bullet(attack_data)
 	if self._dead or self._invulnerable then
 		return
@@ -140,11 +145,13 @@ function CopDamage:damage_bullet(attack_data)
 	self:_on_damage_received(attack_data)
 	return result
 end
+
 function CopDamage:_show_death_hint(type)
 	if type == "civilian" or type == "civilian_female" or type == "bank_manager" and not self._unit:base().enemy then
 		managers.hint:show_hint("hint_killing_people")
 	end
 end
+
 function CopDamage:_comment_death(unit, type)
 	if type == "tank" then
 		PlayerStandard.say_line(unit:sound(), "g30x_any")
@@ -156,6 +163,7 @@ function CopDamage:_comment_death(unit, type)
 		PlayerStandard.say_line(unit:sound(), "g31x_any")
 	end
 end
+
 function CopDamage:_AI_comment_death(unit, type)
 	if type == "tank" then
 		unit:sound():say("g30x_any", true)
@@ -167,6 +175,7 @@ function CopDamage:_AI_comment_death(unit, type)
 		unit:sound():say("g31x_any", true)
 	end
 end
+
 function CopDamage:damage_explosion(attack_data)
 	if self._dead or self._invulnerable then
 		return
@@ -230,6 +239,7 @@ function CopDamage:damage_explosion(attack_data)
 	self:_on_damage_received(attack_data)
 	return result
 end
+
 function CopDamage:damage_melee(attack_data)
 	if self._dead or self._invulnerable then
 		return
@@ -281,11 +291,13 @@ function CopDamage:damage_melee(attack_data)
 	self:_on_damage_received(attack_data)
 	return result
 end
+
 function CopDamage:get_ranged_attack_autotarget_data_fast()
 	return {
 		object = self._autotarget_data.fast
 	}
 end
+
 function CopDamage:get_ranged_attack_autotarget_data(shoot_from_pos, aim_vec)
 	local autotarget_data
 	autotarget_data = {
@@ -327,6 +339,7 @@ function CopDamage:get_ranged_attack_autotarget_data(shoot_from_pos, aim_vec)
 	end
 	return autotarget_data
 end
+
 function CopDamage:_spawn_head_gadget(params)
 	if not self._head_gear then
 		return
@@ -341,9 +354,11 @@ function CopDamage:_spawn_head_gadget(params)
 	body:push_at(body:mass(), dir * math.lerp(300, 650, math.random()), unit:position() + Vector3(math.rand(1), math.rand(1), math.rand(1)))
 	self._head_gear = false
 end
+
 function CopDamage:dead()
 	return self._dead
 end
+
 function CopDamage:die(variant)
 	if Network:is_server() then
 		local pos = self._unit:position()
@@ -371,6 +386,7 @@ function CopDamage:die(variant)
 	self._dead = true
 	self:set_mover_collision_state(false)
 end
+
 function CopDamage:set_mover_collision_state(state)
 	local change_state
 	if state then
@@ -395,10 +411,12 @@ function CopDamage:set_mover_collision_state(state)
 		end
 	end
 end
+
 function CopDamage:anim_clbk_mover_collision_state(unit, state)
 	state = state == "true" and true or false
 	self:set_mover_collision_state(state)
 end
+
 function CopDamage:drop_pickup()
 	if self._pickup then
 		local tracker = self._unit:movement():nav_tracker()
@@ -411,6 +429,7 @@ function CopDamage:drop_pickup()
 		})
 	end
 end
+
 function CopDamage:sync_damage_bullet(attacker_unit, damage_percent, i_body, hit_offset_height)
 	if self._dead then
 		return
@@ -466,6 +485,7 @@ function CopDamage:sync_damage_bullet(attacker_unit, damage_percent, i_body, hit
 	self:_send_sync_bullet_attack_result(attack_data, hit_offset_height)
 	self:_on_damage_received(attack_data)
 end
+
 function CopDamage:sync_damage_explosion(attacker_unit, damage_percent, i_body)
 	if self._dead then
 		return
@@ -506,6 +526,7 @@ function CopDamage:sync_damage_explosion(attacker_unit, damage_percent, i_body)
 	self:_send_sync_explosion_attack_result(attack_data)
 	self:_on_damage_received(attack_data)
 end
+
 function CopDamage:sync_damage_melee(attacker_unit, damage_percent, i_body, hit_offset_height)
 	if self._dead then
 		return
@@ -548,51 +569,66 @@ function CopDamage:sync_damage_melee(attacker_unit, damage_percent, i_body, hit_
 	self:_send_sync_melee_attack_result(attack_data, hit_offset_height)
 	self:_on_damage_received(attack_data)
 end
+
 function CopDamage:_send_bullet_attack_result(attack_data, attacker, damage_percent, body_index, hit_offset_height)
 	self._unit:network():send("damage_bullet", attacker, damage_percent, body_index, hit_offset_height)
 end
+
 function CopDamage:_send_explosion_attack_result(attack_data, attacker, damage_percent)
 	self._unit:network():send("damage_explosion", attacker, damage_percent, 1)
 end
+
 function CopDamage:_send_melee_attack_result(attack_data, damage_percent, hit_offset_height)
 	self._unit:network():send("damage_melee", attack_data.attacker_unit, damage_percent, 1, hit_offset_height)
 end
+
 function CopDamage:_send_sync_bullet_attack_result(attack_data, hit_offset_height)
 end
+
 function CopDamage:_send_sync_explosion_attack_result(attack_data)
 end
+
 function CopDamage:_send_sync_melee_attack_result(attack_data, hit_offset_height)
 end
+
 function CopDamage:sync_death(damage)
 	if self._dead then
 		return
 	end
 end
+
 function CopDamage:_on_damage_received(damage_info)
 	self:_call_listeners(damage_info)
 	if damage_info.result.type == "death" then
 		managers.enemy:on_enemy_died(self._unit, damage_info)
 	end
 end
+
 function CopDamage:_call_listeners(damage_info)
 	self._listener_holder:call(damage_info.result.type, self._unit, damage_info)
 end
+
 function CopDamage:add_listener(key, events, clbk)
 	events = events or self._all_event_types
 	self._listener_holder:add(key, events, clbk)
 end
+
 function CopDamage:remove_listener(key)
 	self._listener_holder:remove(key)
 end
+
 function CopDamage:set_pickup(pickup)
 	self._pickup = pickup
 end
+
 function CopDamage:pickup()
 	return self._pickup
 end
+
 function CopDamage:health_ratio()
 	return self._health_ratio
 end
+
 function CopDamage:set_invulnerable(state)
 	if state then
 		self._invulnerable = (self._invulnerable or 0) + 1
@@ -604,15 +640,19 @@ function CopDamage:set_invulnerable(state)
 		end
 	end
 end
+
 function CopDamage:print(...)
 	cat_print("cop_damage", ...)
 end
+
 function CopDamage:focus_delay_mul()
 	return 1
 end
+
 function CopDamage:shoot_pos_mid(m_pos)
 	self._spine2_obj:m_position(m_pos)
 end
+
 function CopDamage:save(data)
 	if self._health ~= self._HEALTH_INIT then
 		data.char_dmg = data.char_dmg or {}
@@ -623,6 +663,7 @@ function CopDamage:save(data)
 		data.char_dmg.invulnerable = self._invulnerable
 	end
 end
+
 function CopDamage:load(data)
 	if not data.char_dmg then
 		return

@@ -1,5 +1,6 @@
 PlayerTased = PlayerTased or class(PlayerStandard)
 PlayerTased._update_movement = PlayerBleedOut._update_movement
+
 function PlayerTased:enter(enter_data)
 	PlayerTased.super.enter(self, enter_data)
 	self._ids_tased_boost = Idstring("tased_boost")
@@ -17,10 +18,12 @@ function PlayerTased:enter(enter_data)
 	self:_interupt_action_reload()
 	self._rumble_electrified = managers.rumble:play("electrified")
 end
+
 function PlayerTased:_enter(enter_data)
 	self._unit:base():set_slot(self._unit, 2)
 	self._unit:camera():camera_unit():base():set_target_tilt(0)
 end
+
 function PlayerTased:exit(enter_data)
 	PlayerTased.super.exit(self, enter_data)
 	if self._fatal_delayed_clbk then
@@ -40,9 +43,11 @@ function PlayerTased:exit(enter_data)
 	managers.rumble:stop(self._rumble_electrified)
 	self._unit:camera():play_redirect(Idstring("idle"))
 end
+
 function PlayerTased:update(t, dt)
 	PlayerTased.super.update(self, t, dt)
 end
+
 function PlayerTased:_update_check_actions(t, dt)
 	local input = self:_get_input()
 	if t > self._next_shock then
@@ -91,6 +96,7 @@ function PlayerTased:_update_check_actions(t, dt)
 	local new_action
 	new_action = new_action or self:_check_set_upgrade(t, input)
 end
+
 function PlayerTased:_check_action_primary_attack(t, input)
 	local new_action
 	local action_forbidden = self:chk_action_forbidden("primary_attack")
@@ -169,12 +175,14 @@ function PlayerTased:_check_action_primary_attack(t, input)
 	end
 	return new_action
 end
+
 function PlayerTased:_check_action_interact(t, input)
 	if input.btn_interact_press and (not self._intimidate_t or t - self._intimidate_t > tweak_data.player.movement_state.interaction_delay) then
 		self._intimidate_t = t
 		self:call_teammate(nil, t, true, true)
 	end
 end
+
 function PlayerTased:call_teammate(line, t, no_gesture, skip_alert)
 	local voice_type, plural, prime_target = self:_get_unit_intimidation_action(true, false, false, true)
 	local interact_type, queue_name
@@ -193,6 +201,7 @@ function PlayerTased:call_teammate(line, t, no_gesture, skip_alert)
 		self:_do_action_intimidate(t, not no_gesture and interact_type or nil, queue_name, skip_alert)
 	end
 end
+
 function PlayerTased:_start_action_tased(t)
 	self:_interupt_action_running(t)
 	self:_stance_entered()
@@ -201,6 +210,7 @@ function PlayerTased:_start_action_tased(t)
 	self._unit:sound():play("tasered_loop")
 	managers.hint:show_hint("hint_been_tasered")
 end
+
 function PlayerTased:_register_revive_SO()
 	if self._SO_id or not managers.navigation:is_data_ready() then
 		return
@@ -227,14 +237,17 @@ function PlayerTased:_register_revive_SO()
 	self._SO_id = so_id
 	managers.groupai:state():add_special_objective(so_id, so_descriptor)
 end
+
 function PlayerTased:clbk_exit_to_fatal()
 	self._fatal_delayed_clbk = nil
 	managers.player:set_player_state("incapacitated")
 end
+
 function PlayerTased:clbk_exit_to_std()
 	self._recover_delayed_clbk = nil
 	managers.player:set_player_state("standard")
 end
+
 function PlayerTased:on_tase_ended()
 	if self._fatal_delayed_clbk then
 		managers.enemy:remove_delayed_clbk(self._fatal_delayed_clbk)

@@ -1,4 +1,5 @@
 MimicManager = MimicManager or class()
+
 function MimicManager:init()
 	self._mimic_map = {}
 	self._mimic_map.interaction = {}
@@ -8,6 +9,7 @@ function MimicManager:init()
 	self._mission_map = {}
 	self._call_to_arms_list = {}
 end
+
 function MimicManager:add_mimic_unit(unit, type_list)
 	local unit_key = unit:key()
 	self._unit_map[unit_key] = unit
@@ -16,6 +18,7 @@ function MimicManager:add_mimic_unit(unit, type_list)
 		self._mimic_map[key][unit_key] = unit
 	end
 end
+
 function MimicManager:activate_all()
 	for k, v in pairs(self._mimic_map.interaction) do
 		v:mimic():activate_mimic("interaction")
@@ -27,20 +30,25 @@ function MimicManager:activate_all()
 		v:mimic():activate_mimic("attack")
 	end
 end
+
 function MimicManager:request_npcs(unit, num)
 	table.insert(self._call_to_arms_list, {unit, num})
 end
+
 function MimicManager:get_mimic_map(mimic_map)
 	return self._mimic_map[mimic_map]
 end
+
 function MimicManager:receive_mimic_types(unit_key)
 	if self._unit_map[unit_key] then
 		return self._unit_map[unit_key]:mimic():receive_mimic_types()
 	end
 	return nil
 end
+
 function MimicManager:register_mission_callback(mission_condition, clbk, unit_key, mimic_type)
 end
+
 function MimicManager:update(t, dt)
 	if #self._call_to_arms_list > 0 then
 		local all_called = true

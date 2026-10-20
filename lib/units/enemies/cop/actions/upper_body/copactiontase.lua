@@ -1,6 +1,7 @@
 CopActionTase = CopActionTase or class()
 local temp_vec1 = Vector3()
 local temp_vec2 = Vector3()
+
 function CopActionTase:init(action_desc, common_data)
 	self._common_data = common_data
 	self._ext_movement = common_data.ext_movement
@@ -29,9 +30,11 @@ function CopActionTase:init(action_desc, common_data)
 	CopActionAct._create_blocks_table(self, action_desc.block_desc)
 	return true
 end
+
 function CopActionTase:expired()
 	return self._expired
 end
+
 function CopActionTase:on_attention(attention)
 	if Network:is_server() and self._attention then
 		self._attention = attention
@@ -96,10 +99,12 @@ function CopActionTase:on_attention(attention)
 		self._tasing_player = true
 	end
 end
+
 function CopActionTase:save(save_data)
 	save_data.type = "tase"
 	save_data.body_part = self._body_part
 end
+
 function CopActionTase:on_exit()
 	if self._tase_effect then
 		World:effect_manager():fade_kill(self._tase_effect)
@@ -124,6 +129,7 @@ function CopActionTase:on_exit()
 		self._common_data.unit:sound():play("tasered_3rd_stop", nil)
 	end
 end
+
 function CopActionTase:update(t)
 	if self._expired then
 		return
@@ -212,20 +218,26 @@ function CopActionTase:update(t)
 		end
 	end
 end
+
 function CopActionTase:type()
 	return "tase"
 end
+
 function CopActionTase:fire_taser()
 	self._shoot_t = 0
 end
+
 function CopActionTase:chk_block(action_type, t)
 	return CopActionAct.chk_block(self, action_type, t)
 end
+
 function CopActionTase:_upd_empty(t)
 end
+
 function CopActionTase:need_upd()
 	return true
 end
+
 function CopActionTase:get_husk_interrupt_desc()
 	local action_desc = {
 		type = "tase",

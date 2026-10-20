@@ -1,6 +1,7 @@
 core:module("CoreXml")
 core:import("CoreClass")
 core:import("CoreMath")
+
 function simple_value_string(name, value, t)
 	t = t or ""
 	local string = t
@@ -19,6 +20,7 @@ function simple_value_string(name, value, t)
 	string = string .. "<value name=\"" .. name .. "\" value=\"" .. v .. "\" type=\"" .. type .. "\"/>"
 	return string
 end
+
 function save_value_string(c, name, t, unit)
 	t = t or ""
 	local string = t
@@ -45,6 +47,7 @@ function save_value_string(c, name, t, unit)
 	string = string .. "<value name=\"" .. name .. "\" value=\"" .. v .. "\" type=\"" .. type .. "\"/>"
 	return string
 end
+
 function save_table_value_string(in_table, string, t)
 	t = t .. "\t"
 	for i, value in pairs(in_table) do
@@ -65,6 +68,7 @@ function save_table_value_string(in_table, string, t)
 	end
 	return string
 end
+
 function parse_values_node(node)
 	local t = {}
 	for node_value in node:children() do
@@ -73,6 +77,7 @@ function parse_values_node(node)
 	end
 	return t
 end
+
 function parse_value_node(node)
 	local value_name = node:parameter("name")
 	local type = node:parameter("type")

@@ -16,6 +16,7 @@ HuskPlayerInventory._index_to_weapon_list = {
 	Idstring("units/weapons/shield_pistol_npc/shield_pistol_npc"),
 	Idstring("units/weapons/sniper_rifle_npc/sniper_rifle_npc")
 }
+
 function HuskPlayerInventory:init(unit)
 	HuskPlayerInventory.super.init(self, unit)
 	self._align_places.right_hand = {
@@ -27,12 +28,15 @@ function HuskPlayerInventory:init(unit)
 		on_body = true
 	}
 end
+
 function HuskPlayerInventory:_send_equipped_weapon()
 end
+
 function HuskPlayerInventory:synch_equipped_weapon(weap_index)
 	local weapon_name = HuskPlayerInventory._index_to_weapon_list[weap_index]
 	self:add_unit_by_name(weapon_name, true, true)
 end
+
 function HuskPlayerInventory:add_unit_by_name(new_unit_name, equip, instant)
 	local new_unit = World:spawn_unit(new_unit_name, Vector3(), Rotation())
 	local setup_data = {}

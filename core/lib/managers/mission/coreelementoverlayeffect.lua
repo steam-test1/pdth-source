@@ -3,12 +3,15 @@ core:import("CoreEngineAccess")
 core:import("CoreMissionScriptElement")
 core:import("CoreTable")
 ElementOverlayEffect = ElementOverlayEffect or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementOverlayEffect:init(...)
 	ElementOverlayEffect.super.init(self, ...)
 end
+
 function ElementOverlayEffect:client_on_executed(...)
 	self:on_executed(...)
 end
+
 function ElementOverlayEffect:on_executed(instigator)
 	if not self._values.enabled then
 		return

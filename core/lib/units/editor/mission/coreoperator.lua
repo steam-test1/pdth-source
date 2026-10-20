@@ -1,8 +1,10 @@
 CoreOperatorUnitElement = CoreOperatorUnitElement or class(MissionElement)
 OperatorUnitElement = OperatorUnitElement or class(CoreOperatorUnitElement)
+
 function OperatorUnitElement:init(...)
 	OperatorUnitElement.super.init(self, ...)
 end
+
 function CoreOperatorUnitElement:init(unit)
 	CoreOperatorUnitElement.super.init(self, unit)
 	self._hed.operation = "none"
@@ -10,6 +12,7 @@ function CoreOperatorUnitElement:init(unit)
 	table.insert(self._save_values, "operation")
 	table.insert(self._save_values, "elements")
 end
+
 function CoreOperatorUnitElement:draw_links(t, dt, selected_unit, all_units)
 	CoreOperatorUnitElement.super.draw_links(self, t, dt, selected_unit)
 	for _, id in ipairs(self._hed.elements) do
@@ -26,8 +29,10 @@ function CoreOperatorUnitElement:draw_links(t, dt, selected_unit, all_units)
 		end
 	end
 end
+
 function CoreOperatorUnitElement:update_editing()
 end
+
 function CoreOperatorUnitElement:add_element()
 	local ray = managers.editor:unit_by_raycast({mask = 10, ray_type = "editor"})
 	if ray and ray.unit then
@@ -39,6 +44,7 @@ function CoreOperatorUnitElement:add_element()
 		end
 	end
 end
+
 function CoreOperatorUnitElement:remove_links(unit)
 	for _, id in ipairs(self._hed.elements) do
 		if id == unit:unit_data().unit_id then
@@ -46,9 +52,11 @@ function CoreOperatorUnitElement:remove_links(unit)
 		end
 	end
 end
+
 function CoreOperatorUnitElement:add_triggers(vc)
 	vc:add_trigger(Idstring("lmb"), callback(self, self, "add_element"))
 end
+
 function CoreOperatorUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

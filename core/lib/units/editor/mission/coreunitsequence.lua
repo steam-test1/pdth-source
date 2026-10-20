@@ -1,24 +1,30 @@
 CoreUnitSequenceUnitElement = CoreUnitSequenceUnitElement or class(MissionElement)
 UnitSequenceUnitElement = UnitSequenceUnitElement or class(CoreUnitSequenceUnitElement)
+
 function UnitSequenceUnitElement:init(...)
 	CoreUnitSequenceUnitElement.init(self, ...)
 end
+
 function CoreUnitSequenceUnitElement:init(unit)
 	MissionElement.init(self, unit)
 	self._hed.trigger_list = {}
 	table.insert(self._save_values, "trigger_list")
 end
+
 function CoreUnitSequenceUnitElement:update_unselected(...)
 	MissionElement.update_unselected(self, ...)
 end
+
 function CoreUnitSequenceUnitElement:update_selected(...)
 	MissionElement.update_selected(self, ...)
 	self:_draw_trigger_units(0, 1, 1)
 end
+
 function CoreUnitSequenceUnitElement:draw_links_unselected(...)
 	CoreUnitSequenceUnitElement.super.draw_links_unselected(self, ...)
 	self:_draw_trigger_units(0, 0.75, 0.75)
 end
+
 function CoreUnitSequenceUnitElement:_draw_trigger_units(r, g, b)
 	local trigger_data = self._unit:damage():get_editor_trigger_data()
 	if trigger_data and 0 < #trigger_data then
@@ -37,14 +43,17 @@ function CoreUnitSequenceUnitElement:_draw_trigger_units(r, g, b)
 		end
 	end
 end
+
 function CoreUnitSequenceUnitElement:new_save_values(...)
 	self:_set_trigger_list()
 	return MissionElement.new_save_values(self, ...)
 end
+
 function CoreUnitSequenceUnitElement:save_values(...)
 	self:_set_trigger_list()
 	MissionElement.save_values(self, ...)
 end
+
 function CoreUnitSequenceUnitElement:_set_trigger_list()
 	self._hed.trigger_list = {}
 	local triggers = managers.sequence:get_trigger_list(self._unit:name())
@@ -63,6 +72,7 @@ function CoreUnitSequenceUnitElement:_set_trigger_list()
 		end
 	end
 end
+
 function CoreUnitSequenceUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel
@@ -73,6 +83,7 @@ function CoreUnitSequenceUnitElement:_build_panel(panel, panel_sizer)
 	help.sizer = panel_sizer
 	self:add_help_text(help)
 end
+
 function CoreUnitSequenceUnitElement:add_to_mission_package()
 	managers.editor:add_to_world_package({
 		category = "units",

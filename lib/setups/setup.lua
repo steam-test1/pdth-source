@@ -38,6 +38,7 @@ require("lib/managers/VideoManager")
 script_data = script_data or {}
 game_state_machine = game_state_machine or nil
 Setup = Setup or class(CoreSetup.CoreSetup)
+
 function Setup:init_category_print()
 	CoreSetup.CoreSetup.init_category_print(self)
 	if Global.category_print_initialized.setup then
@@ -71,11 +72,13 @@ function Setup:init_category_print()
 	end
 	catprint_load()
 end
+
 function Setup:load_packages()
 	if not PackageManager:loaded("packages/base") then
 		PackageManager:load("packages/base")
 	end
 end
+
 function Setup:init_managers(managers)
 	Global.game_settings = Global.game_settings or {
 		level_id = managers.dlc:is_trial() and "bank_trial" or "bank",
@@ -100,15 +103,18 @@ function Setup:init_managers(managers)
 	managers.mouse_pointer = MousePointerManager:new()
 	game_state_machine = GameStateMachine:new()
 end
+
 function Setup:start_boot_loading_screen()
 	if not PackageManager:loaded("packages/boot_screen") then
 		PackageManager:load("packages/boot_screen")
 	end
 	self:_start_loading_screen()
 end
+
 function Setup:start_loading_screen()
 	self:_start_loading_screen()
 end
+
 function Setup:stop_loading_screen()
 	if Global.is_loading then
 		cat_print("loading_environment", "[LoadingEnvironment] Stop.")
@@ -119,6 +125,7 @@ function Setup:stop_loading_screen()
 		Application:stack_dump_error("[LoadingEnvironment] Tried to stop loading screen when it wasn't started.")
 	end
 end
+
 function Setup:_start_loading_screen()
 	if Global.is_loading then
 		Application:stack_dump_error("[LoadingEnvironment] Tried to start loading screen when it was already started.")
@@ -188,6 +195,7 @@ function Setup:_start_loading_screen()
 	NewLoadingEnvironment:start(setup, "LoadingEnvironmentScene", data)
 	Global.is_loading = true
 end
+
 function Setup:_setup_loading_environment()
 	local env_map = {
 		hdr_post_processor = {
@@ -300,6 +308,7 @@ function Setup:_setup_loading_environment()
 	material:set_variable(Idstring("dof_settings"), Vector3(0, 0, -2))
 	Application:destroy_viewport(dummy_vp)
 end
+
 function Setup:init_game()
 	if not Global.initialized then
 		Global.level_data = {}
@@ -311,6 +320,7 @@ function Setup:init_game()
 	self._main_thread_loading_screen_gui_visible = true
 	return game_state_machine
 end
+
 function Setup:init_finalize()
 	game_state_machine:init_finilize()
 	managers.controller:init_finalize()
@@ -321,6 +331,7 @@ function Setup:init_finalize()
 	self._framerate_cap = 130
 	Application:cap_framerate(self._framerate_cap)
 end
+
 function Setup:update(t, dt)
 	local main_t, main_dt = TimerManager:main():time(), TimerManager:main():delta_time()
 	managers.platform:update(t, dt)
@@ -333,6 +344,7 @@ function Setup:update(t, dt)
 		self._main_thread_loading_screen_gui_script:update(-1, dt)
 	end
 end
+
 function Setup:paused_update(t, dt)
 	managers.platform:paused_update(t, dt)
 	managers.system_menu:paused_update(t, dt)
@@ -340,23 +352,28 @@ function Setup:paused_update(t, dt)
 	managers.menu:update(t, dt)
 	game_state_machine:paused_update(t, dt)
 end
+
 function Setup:end_update(t, dt)
 	game_state_machine:end_update(t, dt)
 	while #self._end_frame_clbks > 0 do
 		table.remove(self._end_frame_clbks, 1)()
 	end
 end
+
 function Setup:paused_end_update(t, dt)
 	game_state_machine:end_update(t, dt)
 	while #self._end_frame_clbks > 0 do
 		table.remove(self._end_frame_clbks, 1)()
 	end
 end
+
 function Setup:end_frame(t, dt)
 end
+
 function Setup:add_end_frame_clbk(func)
 	table.insert(self._end_frame_clbks, func)
 end
+
 function Setup:destroy()
 	managers.system_menu:destroy()
 	managers.menu:destroy()
@@ -365,6 +382,7 @@ function Setup:destroy()
 		self._main_thread_loading_screen_gui_script = nil
 	end
 end
+
 function Setup:load_level(level, mission, world_setting, level_class_name, level_id)
 	managers.menu:close_all_menus()
 	Global.load_level = true
@@ -377,6 +395,7 @@ function Setup:load_level(level, mission, world_setting, level_class_name, level
 	Global.level_data.level_id = level_id
 	self:exec(level)
 end
+
 function Setup:load_start_menu()
 	managers.menu:close_all_menus()
 	managers.mission:pre_destroy()
@@ -390,18 +409,21 @@ function Setup:load_start_menu()
 	Global.level_data.level_id = nil
 	self:exec(nil)
 end
+
 function Setup:load_roaming_map()
 	Global.load_level = false
 	Global.load_start_menu = false
 	Global.load_roaming_map = true
 	self:exec(nil)
 end
+
 function Setup:exec(context)
 	if not managers.system_menu:is_active() then
 		self:set_main_thread_loading_screen_visible(true)
 	end
 	CoreSetup.CoreSetup.exec(self, context)
 end
+
 function Setup:quit()
 	CoreSetup.CoreSetup.quit(self)
 	if not managers.system_menu:is_active() then
@@ -409,6 +431,7 @@ function Setup:quit()
 		self._main_thread_loading_screen_gui_script:set_text("Exiting")
 	end
 end
+
 function Setup:restart()
 	local data = Global.level_data
 	if data.level then
@@ -417,6 +440,7 @@ function Setup:restart()
 		self:load_start_menu()
 	end
 end
+
 function Setup:block_exec()
 	if not self._main_thread_loading_screen_gui_visible then
 		self:set_main_thread_loading_screen_visible(true)
@@ -432,9 +456,11 @@ function Setup:block_exec()
 		return false
 	end
 end
+
 function Setup:block_quit()
 	return self:block_exec()
 end
+
 function Setup:set_main_thread_loading_screen_visible(visible)
 	if not self._main_thread_loading_screen_gui_visible ~= not visible then
 		cat_print("loading_environment", "[LoadingEnvironment] Main thread loading screen visible: " .. tostring(visible))

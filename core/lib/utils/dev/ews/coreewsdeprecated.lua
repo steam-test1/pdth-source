@@ -4,6 +4,7 @@ require("core/lib/utils/dev/ews/CoreXMLTextCtrl")
 require("core/lib/utils/dev/ews/CoreCommandRegistry")
 CoreEWS = CoreEWS or class()
 CoreEWS.TIP_MAX_LEN = 512
+
 function CoreEWS.image_path(file_name)
 	file_name = file_name or ""
 	local base_path = managers.database and managers.database:base_path() or Application:base_path() .. (arg_value("-assetslocation") or "../../") .. "assets\\"
@@ -13,6 +14,7 @@ function CoreEWS.image_path(file_name)
 	end
 	return path .. file_name
 end
+
 function CoreEWS.check_news(parent, category, new_only, style)
 	local news = managers.news:check_news(category, not new_only, "TEXT")
 	if news then
@@ -33,11 +35,13 @@ function CoreEWS.check_news(parent, category, new_only, style)
 	end
 	return news
 end
+
 function CoreEWS.create_small_label(parent, text)
 	local text = EWS:StaticText(parent, text, 0, "")
 	text:set_font_size(7)
 	return text
 end
+
 function CoreEWS.topdown_layout(w)
 	local q = w
 	while q and q.type_name == "EWSPanel" do
@@ -47,6 +51,7 @@ function CoreEWS.topdown_layout(w)
 		q = q:parent()
 	end
 end
+
 function CoreEWS.show_log(parent, text, caption)
 	local dialog = EWS:Dialog(parent, caption or "Log", "", Vector3(-1, -1, 0), Vector3(500, 500, 0), "CAPTION,SYSTEM_MENU,FRAME_FLOAT_ON_PARENT")
 	local box = EWS:BoxSizer("VERTICAL")
@@ -59,6 +64,7 @@ function CoreEWS.show_log(parent, text, caption)
 	text_ctrl:set_value(text)
 	dialog:show_modal()
 end
+
 function CoreEWS.show_log_file(parent, file, caption)
 	local f = File:open(file, "r")
 	if f then
@@ -68,6 +74,7 @@ function CoreEWS.show_log_file(parent, file, caption)
 		end
 	end
 end
+
 function CoreEWS.number_controller(params)
 	params.value = params.value or 0
 	params.name_proportions = params.name_proportions or 1
@@ -82,6 +89,7 @@ function CoreEWS.number_controller(params)
 	CoreEWS._connect_events(params)
 	return params.number_ctrlr, params.name_ctrlr, params
 end
+
 function CoreEWS.verify_entered_number(params)
 	local value = tonumber(params.number_ctrlr:get_value()) or 0
 	value = params.min and value < params.min and params.min or value
@@ -91,16 +99,19 @@ function CoreEWS.verify_entered_number(params)
 	params.number_ctrlr:change_value(string.format("%." .. floats .. "f", value))
 	params.number_ctrlr:set_selection(-1, -1)
 end
+
 function CoreEWS.change_entered_number(params, value)
 	local floats = params.floats or 0
 	params.value = value
 	params.number_ctrlr:change_value(string.format("%." .. floats .. "f", params.value))
 end
+
 function CoreEWS.change_slider_and_number_value(params, value)
 	params.value = value
 	params.slider_ctrlr:set_value(value * params.slider_multiplier)
 	CoreEWS.change_entered_number(params, value)
 end
+
 function CoreEWS._connect_events(params)
 	if not params.events then
 		return
@@ -109,6 +120,7 @@ function CoreEWS._connect_events(params)
 		params.number_ctrlr:connect(data.event, data.callback, params)
 	end
 end
+
 function CoreEWS.combobox(params)
 	local name = params.name
 	local panel = params.panel
@@ -150,9 +162,11 @@ function CoreEWS.combobox(params)
 	CoreEWS._connect_events(params)
 	return ctrlr, name_ctrlr, params
 end
+
 function CoreEWS._set_combobox_value(params)
 	params.value = params.ctrlr:get_value()
 end
+
 function CoreEWS.update_combobox_options(params, options)
 	params.ctrlr:clear()
 	if params.sorted then
@@ -165,10 +179,12 @@ function CoreEWS.update_combobox_options(params, options)
 		params.ctrlr:append(option)
 	end
 end
+
 function CoreEWS.change_combobox_value(params, value)
 	params.value = value
 	params.ctrlr:set_value(value)
 end
+
 function CoreEWS.slider_and_number_controller(params)
 	params.value = params.value or 0
 	params.name_proportions = params.name_proportions or 1
@@ -195,6 +211,7 @@ function CoreEWS.slider_and_number_controller(params)
 	params.sizer:add(params.ctrl_sizer, 0, 0, "EXPAND")
 	return params
 end
+
 function CoreEWS._ctrlr_tooltip(params)
 	local max = params.max
 	local min = params.min
@@ -206,10 +223,12 @@ function CoreEWS._ctrlr_tooltip(params)
 		params.tooltip = (params.tooltip or "") .. " (Below " .. string.format("%." .. params.floats .. "f", max) .. ")"
 	end
 end
+
 function CoreEWS._slider_ctrlr(params)
 	params.slider_ctrlr = EWS:Slider(params.panel, params.value * params.slider_multiplier, params.min * params.slider_multiplier, params.max * params.slider_multiplier, "", "")
 	params.slider_ctrlr:set_tool_tip(params.tooltip)
 end
+
 function CoreEWS._number_ctrlr(params)
 	params.number_ctrlr = EWS:TextCtrl(params.panel, string.format("%." .. params.floats .. "f", params.value), "", "TE_PROCESS_ENTER")
 	params.number_ctrlr:set_tool_tip(params.tooltip)
@@ -217,12 +236,14 @@ function CoreEWS._number_ctrlr(params)
 	params.number_ctrlr:connect("EVT_COMMAND_TEXT_ENTER", callback(nil, CoreEWS, "verify_entered_number"), params)
 	params.number_ctrlr:connect("EVT_KILL_FOCUS", callback(nil, CoreEWS, "verify_entered_number"), params)
 end
+
 function CoreEWS._name_ctrlr(params)
 	if params.name then
 		params.name_ctrlr = EWS:StaticText(params.panel, params.name, 0, "")
 		params.ctrl_sizer:add(params.name_ctrlr, params.name_proportions, 0, "ALIGN_CENTER_VERTICAL")
 	end
 end
+
 function CoreEWS.verify_entered_number(params)
 	local ctrlr = params.ctrlr or params.number_ctrlr
 	local value = tonumber(ctrlr:get_value()) or 0
@@ -233,19 +254,24 @@ function CoreEWS.verify_entered_number(params)
 	ctrlr:change_value(string.format("%." .. floats .. "f", value))
 	ctrlr:set_selection(-1, -1)
 end
+
 function CoreEWS.update_slider_from_number(params)
 	params.slider_ctrlr:set_value(params.value * params.slider_multiplier)
 end
+
 function CoreEWS.update_number_from_slider(params)
 	params.value = params.slider_ctrlr:get_value() / params.slider_multiplier
 	CoreEWS.change_entered_number(params, params.value)
 end
+
 function CoreEWS:CollapseBox(...)
 	return core_or_local("CoreCollapseBox", self:_remove_self(...))
 end
+
 function CoreEWS:XMLTextCtrl(...)
 	return core_or_local("XMLTextCtrl", self:_remove_self(...))
 end
+
 function CoreEWS:_remove_self(...)
 	local params = {
 		...

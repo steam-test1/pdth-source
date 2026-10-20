@@ -1,4 +1,5 @@
 GroupAITweakData = GroupAITweakData or class()
+
 function GroupAITweakData:_set_easy()
 	local is_singleplayer = Global.game_settings.single_player
 	self.difficulty_curve_points = {0.9}
@@ -29,9 +30,11 @@ function GroupAITweakData:_set_easy()
 		}
 	end
 end
+
 function GroupAITweakData:_set_normal()
 	self.difficulty_curve_points = {0.5}
 end
+
 function GroupAITweakData:_set_hard()
 	local is_singleplayer = Global.game_settings.single_player
 	self.difficulty_curve_points = {0.35}
@@ -184,6 +187,7 @@ function GroupAITweakData:_set_hard()
 		}
 	}
 end
+
 function GroupAITweakData:_set_overkill()
 	local is_singleplayer = Global.game_settings.single_player
 	self.difficulty_curve_points = {0.1}
@@ -342,6 +346,7 @@ function GroupAITweakData:_set_overkill()
 		}
 	}
 end
+
 function GroupAITweakData:_set_overkill_145()
 	local is_singleplayer = Global.game_settings.single_player
 	self.difficulty_curve_points = {0.1}
@@ -531,6 +536,7 @@ function GroupAITweakData:_set_overkill_145()
 		}
 	}
 end
+
 function GroupAITweakData:init()
 	local is_singleplayer = Global.game_settings and Global.game_settings.single_player
 	self:_create_table_structure()
@@ -972,6 +978,7 @@ function GroupAITweakData:init()
 		}
 	}
 end
+
 function GroupAITweakData:_init_chatter_data()
 	self.enemy_chatter.aggressive = {
 		radius = 600,
@@ -1062,6 +1069,7 @@ function GroupAITweakData:_init_chatter_data()
 		queue = "_tsr"
 	}
 end
+
 function GroupAITweakData:_create_table_structure()
 	self.enemy_chatter = {}
 	self.besiege = {

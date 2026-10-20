@@ -5,6 +5,7 @@ HuskServerSyncedCivilianDamage._RESULT_NAME_TABLE = {
 	"heavy_hurt",
 	"death"
 }
+
 function HuskServerSyncedCivilianDamage:sync_damage_bullet(attacker_unit, hit_offset_height, result_index)
 	if self._dead or self._fatal then
 		return
@@ -35,6 +36,7 @@ function HuskServerSyncedCivilianDamage:sync_damage_bullet(attacker_unit, hit_of
 	end
 	self:_on_damage_received(attack_data)
 end
+
 function HuskServerSyncedCivilianDamage:sync_damage_explosion(attacker_unit, result_index)
 	if self._dead or self._fatal then
 		return
@@ -65,6 +67,7 @@ function HuskServerSyncedCivilianDamage:sync_damage_explosion(attacker_unit, res
 	end
 	self:_on_damage_received(attack_data)
 end
+
 function HuskServerSyncedCivilianDamage:sync_damage_melee(attacker_unit, attacker_unit, hit_offset_height, result_index)
 	if self._dead or self._fatal then
 		return
@@ -96,6 +99,7 @@ function HuskServerSyncedCivilianDamage:sync_damage_melee(attacker_unit, attacke
 	end
 	self:_on_damage_received(attack_data)
 end
+
 function HuskServerSyncedCivilianDamage:damage_bullet(attack_data)
 	if self._dead or self._fatal then
 		return
@@ -111,6 +115,7 @@ function HuskServerSyncedCivilianDamage:damage_bullet(attack_data)
 		self._unit:network():send_to_host("damage_bullet", attacker, damage_percent, body_index, hit_offset_height)
 	end
 end
+
 function HuskServerSyncedCivilianDamage:damage_explosion(attack_data)
 	if self._dead or self._fatal then
 		return
@@ -126,6 +131,7 @@ function HuskServerSyncedCivilianDamage:damage_explosion(attack_data)
 		self._unit:network():send_to_host("damage_explosion", attacker, damage_percent, 1)
 	end
 end
+
 function HuskServerSyncedCivilianDamage:damage_melee(attack_data)
 	if self._dead or self._fatal then
 		return
@@ -141,6 +147,7 @@ function HuskServerSyncedCivilianDamage:damage_melee(attack_data)
 		self._unit:network():send_to_host("damage_melee", attacker, damage_percent, 1, hit_offset_height)
 	end
 end
+
 function HuskServerSyncedCivilianDamage:_clamp_health_percentage(health_abs)
 	local damage = math.clamp(health_abs, self._HEALTH_INIT_PRECENT, self._HEALTH_INIT)
 	local damage_percent = math.ceil(damage / self._HEALTH_INIT_PRECENT)

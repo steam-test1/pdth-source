@@ -2,6 +2,7 @@ core:module("CoreDynamicLayer")
 core:import("CoreLayer")
 core:import("CoreTable")
 DynamicLayer = DynamicLayer or class(CoreLayer.Layer)
+
 function DynamicLayer:init(owner, save_name, units_vector, slot_mask)
 	DynamicLayer.super.init(self, owner, save_name)
 	self:load_unit_map_from_vector(units_vector)
@@ -10,6 +11,7 @@ function DynamicLayer:init(owner, save_name, units_vector, slot_mask)
 	self._distance = 1000
 	self._unit_picked = false
 end
+
 function DynamicLayer:pickup_unit()
 	if self._selected_unit and not self._unit_picked then
 		self._up = self._selected_unit:rotation():z()
@@ -18,6 +20,7 @@ function DynamicLayer:pickup_unit()
 		self._unit_picked = true
 	end
 end
+
 function DynamicLayer:spawn_unit()
 	if self._selected_unit and self._unit_picked then
 		self:release_unit()
@@ -27,6 +30,7 @@ function DynamicLayer:spawn_unit()
 		self:do_spawn_unit(self._unit_name, pos, rot)
 	end
 end
+
 function DynamicLayer:do_spawn_unit(name, pos, rot)
 	local unit = DynamicLayer.super.do_spawn_unit(self, name, pos, rot)
 	if unit then
@@ -36,10 +40,12 @@ function DynamicLayer:do_spawn_unit(name, pos, rot)
 	end
 	return unit
 end
+
 function DynamicLayer:set_distance(d)
 	self._distance = math.clamp(d, 100, 4000)
 	self._ews_distance:set_value(self._distance)
 end
+
 function DynamicLayer:set_select_unit(unit)
 	if self._selected_unit and self._selected_unit == unit then
 		if not self._unit_picked then
@@ -52,12 +58,14 @@ function DynamicLayer:set_select_unit(unit)
 		DynamicLayer.super.set_select_unit(self, unit)
 	end
 end
+
 function DynamicLayer:release_unit()
 	if self._selected_unit and self._unit_picked and World:is_playing_physic_effect(self._lift_effect) then
 		World:stop_physic_effect(self._lift_effect)
 	end
 	self._unit_picked = false
 end
+
 function DynamicLayer:delete_selected_unit()
 	if self._selected_unit then
 		self:release_unit()
@@ -70,6 +78,7 @@ function DynamicLayer:delete_selected_unit()
 		end
 	end
 end
+
 function DynamicLayer:update(t, dt)
 	DynamicLayer.super.update(self, t, dt)
 	local vc = self._editor_data.virtual_controller
@@ -132,6 +141,7 @@ function DynamicLayer:update(t, dt)
 		end
 	end
 end
+
 function DynamicLayer:build_panel(notebook)
 	cat_print("editor", "DynamicLayer:build_panel")
 	self._ews_triggers = {}
@@ -150,15 +160,18 @@ function DynamicLayer:build_panel(notebook)
 	self._main_sizer:add(self._sizer, 2, 2, "LEFT,RIGHT,EXPAND")
 	return self._ews_panel
 end
+
 function DynamicLayer:update_ews_distance(slider)
 	self:set_distance(slider:get_value())
 end
+
 function DynamicLayer:deselect()
 	if self._selected_unit then
 		self:release_unit()
 	end
 	DynamicLayer.super.deselect(self)
 end
+
 function DynamicLayer:get_help(text)
 	local t = "\t"
 	local n = "\n"
@@ -171,6 +184,7 @@ function DynamicLayer:get_help(text)
 	text = text .. "Remove unit:     Press delete"
 	return text
 end
+
 function DynamicLayer:add_triggers()
 	DynamicLayer.super.add_triggers(self)
 	local vc = self._editor_data.virtual_controller
@@ -181,10 +195,12 @@ function DynamicLayer:add_triggers()
 		vc:add_trigger(Idstring(k), cb)
 	end
 end
+
 function DynamicLayer:deactivate()
 	DynamicLayer.super.deactivate(self)
 	DynamicLayer.super.deselect(self)
 end
+
 function DynamicLayer:clear_triggers()
 	self._editor_data.virtual_controller:clear_triggers()
 end

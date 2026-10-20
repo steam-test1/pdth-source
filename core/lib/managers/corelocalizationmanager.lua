@@ -2,6 +2,7 @@ core:module("CoreLocalizationManager")
 core:import("CoreClass")
 core:import("CoreEvent")
 LocalizationManager = LocalizationManager or CoreClass.class()
+
 function LocalizationManager:init()
 	Localizer:set_post_processor(CoreEvent.callback(self, self, "_localizer_post_process"))
 	self._default_macros = {}
@@ -16,18 +17,22 @@ function LocalizationManager:init()
 		self._platform = "WIN32"
 	end
 end
+
 function LocalizationManager:add_default_macro(macro, value)
 	self:set_default_macro(macro, value)
 end
+
 function LocalizationManager:set_default_macro(macro, value)
 	if not self._default_macros then
 		self._default_macros = {}
 	end
 	self._default_macros["$" .. macro .. ";"] = tostring(value)
 end
+
 function LocalizationManager:exists(string_id)
 	return Localizer:exists(Idstring(string_id))
 end
+
 function LocalizationManager:text(string_id, macros)
 	local return_string = "ERROR: " .. string_id
 	local str_id
@@ -45,6 +50,7 @@ function LocalizationManager:text(string_id, macros)
 	end
 	return return_string
 end
+
 function LocalizationManager:_localizer_post_process(string)
 	local localized_string = string
 	local macros = {}

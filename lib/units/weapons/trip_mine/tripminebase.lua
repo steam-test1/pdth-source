@@ -1,15 +1,19 @@
 TripMineBase = TripMineBase or class(UnitBase)
+
 function TripMineBase.spawn(pos, rot)
 	local unit = World:spawn_unit(Idstring("units/weapons/trip_mine/trip_mine"), pos, rot)
 	return unit
 end
+
 function TripMineBase:set_server_information(peer_id)
 	self._server_information = {owner_peer_id = peer_id}
 	managers.network:game():member(peer_id):peer():set_used_deployable(true)
 end
+
 function TripMineBase:server_information()
 	return self._server_information
 end
+
 function TripMineBase:init(unit)
 	UnitBase.init(self, unit, false)
 	self._unit = unit
@@ -22,9 +26,11 @@ function TripMineBase:init(unit)
 	self._g_laser = self._unit:get_object(Idstring("g_laser"))
 	self:_setup()
 end
+
 function TripMineBase:get_name_id()
 	return "trip_mine"
 end
+
 function TripMineBase:_setup()
 	self._slotmask = managers.slot:get_mask("trip_mine_targets")
 	self._init_length = 500
@@ -33,6 +39,7 @@ function TripMineBase:_setup()
 	self:set_active(false)
 	self._unit:sound_source():post_event("trip_mine_attach")
 end
+
 function TripMineBase:set_active(active, owner)
 	self._active = active
 	self._unit:set_extension_update_enabled(Idstring("base"), self._active)
@@ -62,12 +69,15 @@ function TripMineBase:set_active(active, owner)
 		end
 	end
 end
+
 function TripMineBase:active()
 	return self._active
 end
+
 function TripMineBase:armed()
 	return self._armed
 end
+
 function TripMineBase:_set_armed(armed)
 	self._armed = armed
 	self._g_laser:set_visibility(self._armed)
@@ -77,6 +87,7 @@ function TripMineBase:_set_armed(armed)
 	end
 	self._unit:sound_source():post_event(self._armed and "trip_mine_arm" or "trip_mine_disarm")
 end
+
 function TripMineBase:set_armed(armed)
 	if not managers.network:session() then
 		return
@@ -86,11 +97,13 @@ function TripMineBase:set_armed(armed)
 		managers.network:session():send_to_peers_synched("sync_trip_mine_set_armed", self._unit, self._armed, self._length)
 	end
 end
+
 function TripMineBase:sync_trip_mine_set_armed(armed, lenght)
 	self._length = lenght
 	self._unit:anim_set_time(self._ids_laser, lenght / self._init_length)
 	self:_set_armed(armed)
 end
+
 function TripMineBase:update(unit, t, dt)
 	self:_check_body()
 	if self._explode_timer then
@@ -122,6 +135,7 @@ function TripMineBase:update(unit, t, dt)
 		self:_check()
 	end
 end
+
 function TripMineBase:_check_body()
 	if not self._attached_data then
 		return
@@ -139,6 +153,7 @@ function TripMineBase:_check_body()
 	end
 	self._attached_data.index = (self._attached_data.index < self._attached_data.max_index and self._attached_data.index or 0) + 1
 end
+
 function TripMineBase:_check()
 	if not managers.network:session() then
 		return
@@ -153,9 +168,11 @@ function TripMineBase:_check()
 		end
 	end
 end
+
 function TripMineBase:sync_trip_mine_beep_explode()
 	self._unit:sound_source():post_event("trip_mine_beep_explode")
 end
+
 function TripMineBase:explode()
 	if not self._active then
 		return
@@ -166,6 +183,7 @@ function TripMineBase:explode()
 	col_ray.position = self._position
 	self:_explode(col_ray)
 end
+
 function TripMineBase:_explode(col_ray)
 	if not managers.network:session() then
 		return
@@ -256,6 +274,7 @@ function TripMineBase:_explode(col_ray)
 	end
 	self._unit:set_slot(0)
 end
+
 function TripMineBase:sync_trip_mine_explode(user_unit, ray_from, ray_to, damage_size, damage)
 	self:_play_sound_and_effects()
 	self._unit:set_slot(0)
@@ -279,6 +298,7 @@ function TripMineBase:sync_trip_mine_explode(user_unit, ray_from, ray_to, damage
 		end
 	end
 end
+
 function TripMineBase:_play_sound_and_effects()
 	World:effect_manager():spawn({
 		effect = Idstring("effects/particles/explosions/explosion_grenade"),
@@ -290,8 +310,10 @@ function TripMineBase:_play_sound_and_effects()
 	sound_source:post_event("trip_mine_explode")
 	managers.enemy:add_delayed_clbk("TrMiexpl", callback(TripMineBase, TripMineBase, "_dispose_of_sound", {sound_source = sound_source}), TimerManager:game():time() + 2)
 end
+
 function TripMineBase._dispose_of_sound(...)
 end
+
 function TripMineBase:_give_explosion_damage(col_ray, unit, damage)
 	local action_data = {}
 	action_data.variant = "explosion"
@@ -304,6 +326,7 @@ function TripMineBase:_give_explosion_damage(col_ray, unit, damage)
 	local defense_data = unit:character_damage():damage_explosion(action_data)
 	return defense_data
 end
+
 function TripMineBase:save(data)
 	local state = {}
 	state.armed = self._armed
@@ -311,14 +334,17 @@ function TripMineBase:save(data)
 	state.first_armed = self._first_armed
 	data.TripMineBase = state
 end
+
 function TripMineBase:load(data)
 	local state = data.TripMineBase
 	self._first_armed = state.first_armed
 	self:sync_trip_mine_set_armed(state.armed, state.length)
 end
+
 function TripMineBase:_debug_draw(from, to)
 	local brush = Draw:brush(Color.red:with_alpha(0.5))
 	brush:cylinder(from, to, 1)
 end
+
 function TripMineBase:destroy()
 end

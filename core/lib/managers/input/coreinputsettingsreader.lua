@@ -7,13 +7,16 @@ core:import("CoreInputTargetDescription")
 SettingsReader = SettingsReader or class()
 SettingsReader.db_type = "input_settings"
 SettingsReader.db_path = "settings/input"
+
 function SettingsReader:init()
 	self._layer_descriptions = {}
 	self:_read_settings()
 end
+
 function SettingsReader:layer_descriptions()
 	return self._layer_descriptions
 end
+
 function SettingsReader:_read_settings()
 	if not DB:has(SettingsReader.db_type, SettingsReader.db_path) then
 		return
@@ -22,6 +25,7 @@ function SettingsReader:_read_settings()
 	local xml_node_children = xml_node:children()
 	self:_read_children(xml_node_children)
 end
+
 function SettingsReader:_read_children(nodes)
 	self._layer_descriptions = {}
 	local layer_description_priority = 1
@@ -33,6 +37,7 @@ function SettingsReader:_read_children(nodes)
 		layer_description_priority = layer_description_priority + 1
 	end
 end
+
 function SettingsReader:_read_layer_description_children(nodes, layer_description)
 	for node in nodes, nil, nil do
 		assert(node:name() == "context")
@@ -41,6 +46,7 @@ function SettingsReader:_read_layer_description_children(nodes, layer_descriptio
 		self:_read_context_description_children(node:children(), context_description)
 	end
 end
+
 function SettingsReader:_read_context_description_children(nodes, context_description)
 	for node in nodes, nil, nil do
 		if node:name() == "input" then
@@ -54,12 +60,14 @@ function SettingsReader:_read_context_description_children(nodes, context_descri
 		end
 	end
 end
+
 function SettingsReader:_read_input(node, context_description)
 	local type_name = node:parameter("type")
 	local name = node:parameter("name")
 	local input_target_description = CoreInputTargetDescription.TargetDescription:new(name, type_name)
 	context_description:add_input_target_description(input_target_description)
 end
+
 function SettingsReader:_read_layout_descriptions_children(nodes, context_description)
 	for node in nodes, nil, nil do
 		assert(node:name() == "layout")
@@ -68,6 +76,7 @@ function SettingsReader:_read_layout_descriptions_children(nodes, context_descri
 		context_description:add_layout_description(layout_description)
 	end
 end
+
 function SettingsReader:_read_layout_description_children(nodes, context_description, layout_description)
 	for node in nodes, nil, nil do
 		assert(node:name() == "device", "Only <device> is allowed as children to <layout>. Encountered '" .. node:name() .. "'")
@@ -76,12 +85,14 @@ function SettingsReader:_read_layout_description_children(nodes, context_descrip
 		layout_description:add_device_layout_description(device_layout_description)
 	end
 end
+
 function SettingsReader:_read_device_layout_description_children(nodes, context_description, device_layout_description)
 	for node in nodes, nil, nil do
 		assert(node:name() == "bind")
 		self:_read_bind(node, context_description, device_layout_description)
 	end
 end
+
 function SettingsReader:_read_bind(node, context_description, device_layout_description)
 	local axis_name = node:parameter("axis")
 	local input_name = node:parameter("input")

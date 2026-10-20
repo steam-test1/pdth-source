@@ -4,6 +4,7 @@ core:import("CoreTable")
 core:import("CoreEws")
 require("core/lib/units/data/CoreAiEditorData")
 AiLayer = AiLayer or class(CoreStaticLayer.StaticLayer)
+
 function AiLayer:init(owner)
 	AiLayer.super.init(self, owner, "ai", {"ai"}, "ai_layer")
 	self._brush = Draw:brush()
@@ -15,6 +16,7 @@ function AiLayer:init(owner)
 	self:_init_ai_settings()
 	self._patrol_path_brush = Draw:brush()
 end
+
 function AiLayer:load(world_holder, offset)
 	AiLayer.super.load(self, world_holder, offset)
 	local ai_settings = world_holder:create_world("world", "ai_settings", offset)
@@ -25,6 +27,7 @@ function AiLayer:load(world_holder, offset)
 	self:_update_patrol_paths_list()
 	self:_update_settings()
 end
+
 function AiLayer:save(save_params)
 	AiLayer.super.save(self, save_params)
 	local file_name = "nav_manager_data"
@@ -48,11 +51,13 @@ function AiLayer:save(save_params)
 	}
 	managers.editor:add_save_data(t)
 end
+
 function AiLayer:_add_project_unit_save_data(unit, data)
 	if unit:name() == self._nav_surface_unit then
 		data.ai_editor_data = unit:ai_editor_data()
 	end
 end
+
 function AiLayer:update(t, dt)
 	AiLayer.super.update(self, t, dt)
 	if managers.navigation:is_data_ready() ~= self._graph_status then
@@ -65,9 +70,11 @@ function AiLayer:update(t, dt)
 	end
 	self:_draw(t, dt)
 end
+
 function AiLayer:external_draw(t, dt)
 	self:_draw(t, dt)
 end
+
 function AiLayer:_draw(t, dt)
 	for _, unit in ipairs(self._created_units) do
 		local selected = unit == self._selected_unit
@@ -111,6 +118,7 @@ function AiLayer:_draw(t, dt)
 	end
 	self:_draw_patrol_paths(t, dt)
 end
+
 function AiLayer:_draw_surface(unit, t, dt, a, r, g, b)
 	local rot1 = Rotation(math.sin(t * 10) * 180, 0, 0)
 	local rot2 = rot1 * Rotation(90, 0, 0)
@@ -120,11 +128,13 @@ function AiLayer:_draw_surface(unit, t, dt, a, r, g, b)
 	Application:draw_line(pos2, pos2 + rot2:y() * 400, r, g, b)
 	self._brush:quad(pos1, pos2, pos1 + rot1:y() * 400, pos2 + rot2:y() * 400)
 end
+
 function AiLayer:_draw_patrol_paths(t, dt)
 	for name, path in pairs(managers.ai_data:all_patrol_paths()) do
 		self:_draw_patrol_path(name, path, t, dt)
 	end
 end
+
 function AiLayer:_draw_patrol_path(name, path, t, dt)
 	local selected_path = name == self._current_patrol_path
 	if #path.points > 0 then
@@ -155,6 +165,7 @@ function AiLayer:_draw_patrol_path(name, path, t, dt)
 		end
 	end
 end
+
 function AiLayer:_draw_patrol_point(unit, first, last, selected_path, t, dt)
 	local selected = unit == self._selected_unit
 	local r = selected and 0 or first and 0.5 or last and 1 or 0.65
@@ -163,9 +174,11 @@ function AiLayer:_draw_patrol_point(unit, first, last, selected_path, t, dt)
 	self._patrol_path_brush:set_color(Color(r, g, b):with_alpha(selected_path and 1 or 0.25))
 	self._patrol_path_brush:sphere(unit:position(), selected_path and (first and 20 or 20) or first and 10 or 10)
 end
+
 function AiLayer:draw_patrol_path_externaly(name)
 	self:_draw_patrol_path(name, managers.ai_data:patrol_path(name))
 end
+
 function AiLayer:build_panel(notebook)
 	AiLayer.super.build_panel(self, notebook)
 	local ai_sizer = EWS:BoxSizer("VERTICAL")
@@ -238,6 +251,7 @@ function AiLayer:build_panel(notebook)
 	self._graphs = graphs
 	return self._ews_panel
 end
+
 function AiLayer:_build_ai_settings()
 	local graphs_sizer = EWS:StaticBoxSizer(self._ews_panel, "VERTICAL", "Settings")
 	local group_state = {
@@ -257,6 +271,7 @@ function AiLayer:_build_ai_settings()
 	self._ai_settings_guis.group_state = group_state
 	return graphs_sizer
 end
+
 function AiLayer:_build_ai_unit_settings()
 	local options = {}
 	for _, id_string in ipairs(managers.localization:ids("strings/atmospheric_text")) do
@@ -289,6 +304,7 @@ function AiLayer:_build_ai_unit_settings()
 	self._ai_unit_settings_guis.text = text
 	return sizer
 end
+
 function AiLayer:_build_ai_data()
 	local ai_data_sizer = EWS:StaticBoxSizer(self._ews_panel, "VERTICAL", "Ai Data")
 	local patrol_paths_sizer = EWS:StaticBoxSizer(self._ews_panel, "HORIZONTAL", "Patrol paths")
@@ -305,6 +321,7 @@ function AiLayer:_build_ai_data()
 	ai_data_sizer:add(patrol_paths_sizer, 1, 0, "EXPAND")
 	return ai_data_sizer
 end
+
 function AiLayer:_calc_graphs(params)
 	local build_type = params.build_type
 	if build_type == "all" then
@@ -340,6 +357,7 @@ function AiLayer:_calc_graphs(params)
 		end
 	end
 end
+
 function AiLayer:_graphs_done(vis_graph)
 	managers.editor:output("Navigation seqments calculated")
 	for _, unit in ipairs(self._saved_disabled_units) do
@@ -349,6 +367,7 @@ function AiLayer:_graphs_done(vis_graph)
 		self:_build_visibility_graph()
 	end
 end
+
 function AiLayer:_build_visibility_graph()
 	local all_visible = self._all_visible:get_value() and true
 	local exclude, include
@@ -365,9 +384,11 @@ function AiLayer:_build_visibility_graph()
 	local ray_lenght = self._ray_length_params.value
 	managers.navigation:build_visibility_graph(callback(self, self, "_visibility_graph_done"), all_visible, exclude, include, ray_lenght)
 end
+
 function AiLayer:_visibility_graph_done()
 	managers.editor:output("Visibility graph calculated")
 end
+
 function AiLayer:_get_build_settings(type, build_type)
 	local settings = {}
 	local units = self:_get_units(type, build_type)
@@ -389,6 +410,7 @@ function AiLayer:_get_build_settings(type, build_type)
 	end
 	return settings
 end
+
 function AiLayer:_get_units(type, build_type)
 	local unit_name = self._unit_graph_types[type]
 	local units = {}
@@ -399,6 +421,7 @@ function AiLayer:_get_units(type, build_type)
 	end
 	return units
 end
+
 function AiLayer:_toggle_debug_draw(debug)
 	local show = debug:get_value()
 	if not show then
@@ -407,6 +430,7 @@ function AiLayer:_toggle_debug_draw(debug)
 	end
 	self:_set_debug_options()
 end
+
 function AiLayer:_set_debug_options()
 	if not self._debug_draw:get_value() then
 		return
@@ -417,14 +441,17 @@ function AiLayer:_set_debug_options()
 	end
 	managers.navigation:set_debug_draw_state(options)
 end
+
 function AiLayer:_set_location()
 	self._selected_unit:ai_editor_data().location_id = self._ai_unit_settings_guis.locations.value
 	self._ai_unit_settings_guis.text:set_value(managers.localization:text(self._selected_unit:ai_editor_data().location_id))
 end
+
 function AiLayer:_set_group_state()
 	self._ai_settings.group_state = self._ai_settings_guis.group_state.value
 	managers.groupai:set_state(self._ai_settings.group_state)
 end
+
 function AiLayer:_update_settings()
 	for name, value in pairs(self._ai_settings) do
 		if self._ai_settings_guis[name] then
@@ -432,9 +459,11 @@ function AiLayer:_update_settings()
 		end
 	end
 end
+
 function AiLayer:_clear_graphs()
 	managers.navigation:clear()
 end
+
 function AiLayer:set_select_unit(unit)
 	self._ai_unit_settings_guis.locations.ctrlr:set_enabled(false)
 	if alive(unit) then
@@ -454,6 +483,7 @@ function AiLayer:set_select_unit(unit)
 		end
 	end
 end
+
 function AiLayer:_add_to_visible_exlude_filter(unit)
 	if not alive(unit) then
 		return false
@@ -487,6 +517,7 @@ function AiLayer:_add_to_visible_exlude_filter(unit)
 	end
 	return false
 end
+
 function AiLayer:_set_selection_patrol_paths_listbox(name)
 	for i = 0, self._patrol_paths_list:nr_items() - 1 do
 		if self._patrol_paths_list:get_string(i) == name then
@@ -495,6 +526,7 @@ function AiLayer:_set_selection_patrol_paths_listbox(name)
 	end
 	self:_select_patrol_path()
 end
+
 function AiLayer:_create_new_patrol_path()
 	local name = EWS:get_text_from_user(Global.frame_panel, "Enter name for the new patrol path:", "Create patrol path", "new_patrol_path", Vector3(-1, -1, 0), true)
 	if name and name ~= "" then
@@ -511,6 +543,7 @@ function AiLayer:_create_new_patrol_path()
 		end
 	end
 end
+
 function AiLayer:_current_patrol_units(name)
 	local t = {}
 	local path = managers.ai_data:patrol_path(name)
@@ -519,6 +552,7 @@ function AiLayer:_current_patrol_units(name)
 	end
 	return t
 end
+
 function AiLayer:_delete_patrol_path()
 	local name = self:_selected_patrol_path()
 	if name then
@@ -535,12 +569,14 @@ function AiLayer:_delete_patrol_path()
 		self._current_patrol_path = nil
 	end
 end
+
 function AiLayer:_update_patrol_paths_list()
 	self._patrol_paths_list:clear()
 	for name, _ in pairs(managers.ai_data:all_patrol_paths()) do
 		self._patrol_paths_list:append(name)
 	end
 end
+
 function AiLayer:_selected_patrol_path()
 	local index = self._patrol_paths_list:selected_index()
 	if index ~= -1 then
@@ -548,6 +584,7 @@ function AiLayer:_selected_patrol_path()
 	end
 	return nil
 end
+
 function AiLayer:_select_patrol_path()
 	local name = self:_selected_patrol_path()
 	if name and self._current_patrol_path ~= name then
@@ -557,6 +594,7 @@ function AiLayer:_select_patrol_path()
 		self._current_patrol_path = nil
 	end
 end
+
 function AiLayer:do_spawn_unit(name, pos, rot)
 	if Idstring(name) == self._patrol_point_unit and not self._current_patrol_path then
 		managers.editor:output("Create or select a patrol path first!")
@@ -568,6 +606,7 @@ function AiLayer:do_spawn_unit(name, pos, rot)
 	end
 	return unit
 end
+
 function AiLayer:_add_patrol_point(unit)
 	local name = self:_selected_patrol_path()
 	if not name then
@@ -575,6 +614,7 @@ function AiLayer:_add_patrol_point(unit)
 	end
 	managers.ai_data:add_patrol_point(name, unit)
 end
+
 function AiLayer:_insert()
 	if not alive(self._selected_unit) or self._selected_unit:name() ~= self._patrol_point_unit then
 		return
@@ -585,6 +625,7 @@ function AiLayer:_insert()
 	local point = table.remove(path.points)
 	table.insert(path.points, i + 1, point)
 end
+
 function AiLayer:delete_unit(unit)
 	for _, u in ipairs(self._created_units) do
 		if u:name() == self._nav_surface_unit and u ~= unit then
@@ -600,14 +641,17 @@ function AiLayer:delete_unit(unit)
 	end
 	AiLayer.super.delete_unit(self, unit)
 end
+
 function AiLayer:update_unit_settings()
 	AiLayer.super.update_unit_settings(self)
 end
+
 function AiLayer:_init_ai_settings()
 	self._ai_settings = {}
 	self._ai_settings.group_state = "empty"
 	managers.groupai:set_state(self._ai_settings.group_state)
 end
+
 function AiLayer:clear()
 	AiLayer.super.clear(self)
 	self:_init_ai_settings()
@@ -618,6 +662,7 @@ function AiLayer:clear()
 	managers.navigation:clear()
 	self._ai_unit_settings_guis.locations.ctrlr:set_enabled(false)
 end
+
 function AiLayer:add_triggers()
 	AiLayer.super.add_triggers(self)
 	local vc = self._editor_data.virtual_controller

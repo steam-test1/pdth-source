@@ -1,4 +1,5 @@
 BlurZoneUnitElement = BlurZoneUnitElement or class(MissionElement)
+
 function BlurZoneUnitElement:init(unit)
 	BlurZoneUnitElement.super.init(self, unit)
 	self._hed.mode = 0
@@ -8,6 +9,7 @@ function BlurZoneUnitElement:init(unit)
 	table.insert(self._save_values, "radius")
 	table.insert(self._save_values, "height")
 end
+
 function BlurZoneUnitElement:update_selected(t, dt, selected_unit, all_units)
 	local brush = Draw:brush()
 	brush:set_color(Color(0.15, 1, 1, 1))
@@ -19,6 +21,7 @@ function BlurZoneUnitElement:update_selected(t, dt, selected_unit, all_units)
 	brush:half_sphere(self._unit:position() + math.Z * self._hed.height, self._hed.radius, -math.Z, 2)
 	pen:half_sphere(self._unit:position() + math.Z * self._hed.height, self._hed.radius, -math.Z)
 end
+
 function BlurZoneUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

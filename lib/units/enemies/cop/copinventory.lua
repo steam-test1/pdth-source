@@ -1,5 +1,6 @@
 CopInventory = CopInventory or class(PlayerInventory)
 CopInventory._index_to_weapon_list = HuskPlayerInventory._index_to_weapon_list
+
 function CopInventory:init(unit)
 	CopInventory.super.init(self, unit)
 	self._unit = unit
@@ -19,6 +20,7 @@ function CopInventory:init(unit)
 	}
 	self._listener_id = "CopInventory" .. tostring(unit:key())
 end
+
 function CopInventory:add_unit_by_name(new_unit_name, equip)
 	local new_unit = World:spawn_unit(new_unit_name, Vector3(), Rotation())
 	self:_chk_spawn_shield(new_unit)
@@ -36,6 +38,7 @@ function CopInventory:add_unit_by_name(new_unit_name, equip)
 	new_unit:base():setup(setup_data)
 	self:add_unit(new_unit, equip)
 end
+
 function CopInventory:_chk_spawn_shield(weapon_unit)
 	if not alive(self._shield_unit) and weapon_unit:base().name_id == "shield_pistol_npc" then
 		local align_name = Idstring("a_weapon_left_front")
@@ -44,17 +47,21 @@ function CopInventory:_chk_spawn_shield(weapon_unit)
 		self._unit:link(align_name, self._shield_unit, self._shield_unit:orientation_object():name())
 	end
 end
+
 function CopInventory:add_unit(new_unit, equip)
 	CopInventory.super.add_unit(self, new_unit, equip)
 end
+
 function CopInventory:get_sync_data(sync_data)
 	MPPlayerInventory.get_sync_data(self, sync_data)
 end
+
 function CopInventory:get_weapon()
 	local selection = self._available_selections[self._equipped_selection]
 	local unit = selection and selection.unit
 	return unit
 end
+
 function CopInventory:drop_weapon()
 	local selection = self._available_selections[self._equipped_selection]
 	local unit = selection and selection.unit
@@ -65,6 +72,7 @@ function CopInventory:drop_weapon()
 		managers.game_play_central:weapon_dropped(unit)
 	end
 end
+
 function CopInventory:drop_shield()
 	if alive(self._shield_unit) then
 		self._shield_unit:unlink()
@@ -73,6 +81,7 @@ function CopInventory:drop_shield()
 		end
 	end
 end
+
 function CopInventory:destroy_all_items()
 	CopInventory.super.destroy_all_items(self)
 	if alive(self._shield_unit) then

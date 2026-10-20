@@ -1,12 +1,15 @@
 core:import("CoreSubtitlePresenter")
 DramaExt = DramaExt or class()
+
 function DramaExt:init(unit)
 	self._unit = unit
 	self._cue = nil
 end
+
 function DramaExt:name()
 	return self.character_name
 end
+
 function DramaExt:play_cue(id)
 	self._cue = managers.drama:cue(id)
 	if not self._cue then
@@ -41,6 +44,7 @@ function DramaExt:play_cue(id)
 	end
 	return duration
 end
+
 function DramaExt:stop_cue(id)
 	if self._cue then
 		if self._cue.string_id then
@@ -53,6 +57,7 @@ function DramaExt:stop_cue(id)
 		self._cue = nil
 	end
 end
+
 function DramaExt:sound_callback(instance, event_type, unit, sound_source, label, identifier, position)
 	if event_type == "end_of_event" then
 		managers.subtitle:set_visible(false)
@@ -65,6 +70,7 @@ function DramaExt:sound_callback(instance, event_type, unit, sound_source, label
 		managers.subtitle:show_subtitle(sound_source, DramaExt._subtitle_len(DramaExt, sound_source))
 	end
 end
+
 function DramaExt:_subtitle_len(id)
 	local text = managers.localization:text(id)
 	local duration = text:len() * tweak_data.dialog.DURATION_PER_CHAR

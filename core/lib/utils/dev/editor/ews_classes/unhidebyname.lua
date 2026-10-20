@@ -1,4 +1,5 @@
 UnhideByName = UnhideByName or class(CoreEditorEwsDialog)
+
 function UnhideByName:init(...)
 	CoreEditorEwsDialog.init(self, nil, "Unhide by name", "", Vector3(300, 150, 0), Vector3(350, 500, 0), "DEFAULT_DIALOG_STYLE,RESIZE_BORDER,STAY_ON_TOP", ...)
 	self:create_panel("VERTICAL")
@@ -83,6 +84,7 @@ function UnhideByName:init(...)
 	self:fill_unit_list()
 	self._dialog:set_visible(true)
 end
+
 function UnhideByName:build_continent_cbs()
 	self._continents_cbs = {}
 	local continents = managers.editor:continents()
@@ -100,57 +102,68 @@ function UnhideByName:build_continent_cbs()
 		self._continents_sizer:add(cb, 0, 2, "EXPAND,TOP")
 	end
 end
+
 function UnhideByName:on_continent_cb()
 	self:fill_unit_list()
 end
+
 function UnhideByName:on_all_layers()
 	for name, cb in pairs(self._layer_cbs) do
 		cb:set_value(true)
 	end
 	self:fill_unit_list()
 end
+
 function UnhideByName:on_none_layers()
 	for name, cb in pairs(self._layer_cbs) do
 		cb:set_value(false)
 	end
 	self:fill_unit_list()
 end
+
 function UnhideByName:on_invert_layers()
 	for name, cb in pairs(self._layer_cbs) do
 		cb:set_value(not cb:get_value())
 	end
 	self:fill_unit_list()
 end
+
 function UnhideByName:on_all_continents()
 	for name, cb in pairs(self._continents_cbs) do
 		cb:set_value(true)
 	end
 	self:fill_unit_list()
 end
+
 function UnhideByName:on_none_continents()
 	for name, cb in pairs(self._continents_cbs) do
 		cb:set_value(false)
 	end
 	self:fill_unit_list()
 end
+
 function UnhideByName:on_invert_continents()
 	for name, cb in pairs(self._continents_cbs) do
 		cb:set_value(not cb:get_value())
 	end
 	self:fill_unit_list()
 end
+
 function UnhideByName:key_cancel(ctrlr, event)
 	event:skip()
 	if EWS:name_to_key_code("K_ESCAPE") == event:key_code() then
 		self:on_cancel()
 	end
 end
+
 function UnhideByName:on_layer_cb(data)
 	self:fill_unit_list()
 end
+
 function UnhideByName:on_cancel()
 	self._dialog:set_visible(false)
 end
+
 function UnhideByName:on_unhide()
 	managers.editor:freeze_gui_lists()
 	for _, unit in ipairs(self:_selected_item_units()) do
@@ -158,6 +171,7 @@ function UnhideByName:on_unhide()
 	end
 	managers.editor:thaw_gui_lists()
 end
+
 function UnhideByName:on_delete()
 	managers.editor:freeze_gui_lists()
 	for _, unit in ipairs(self:_selected_item_units()) do
@@ -165,8 +179,10 @@ function UnhideByName:on_delete()
 	end
 	managers.editor:thaw_gui_lists()
 end
+
 function UnhideByName:on_mark_unit()
 end
+
 function UnhideByName:_selected_item_units()
 	local units = {}
 	for _, i in ipairs(self._list:selected_items()) do
@@ -175,21 +191,25 @@ function UnhideByName:_selected_item_units()
 	end
 	return units
 end
+
 function UnhideByName:_selected_item_unit()
 	local index = self._list:selected_item()
 	if index ~= -1 then
 		return self._units[self._list:get_item_data(index)]
 	end
 end
+
 function UnhideByName:select_unit(unit)
 	managers.editor:select_unit(unit)
 end
+
 function UnhideByName:hid_unit(unit)
 	local i = self._list:append_item(unit:unit_data().name_id)
 	local j = #self._units + 1
 	self._units[j] = unit
 	self._list:set_item_data(i, j)
 end
+
 function UnhideByName:unhid_unit(unit)
 	for i = 0, self._list:item_count() - 1 do
 		if self._units[self._list:get_item_data(i)] == unit then
@@ -198,6 +218,7 @@ function UnhideByName:unhid_unit(unit)
 		end
 	end
 end
+
 function UnhideByName:unit_name_changed(unit)
 	for i = 0, self._list:item_count() - 1 do
 		if self._units[self._list:get_item_data(i)] == unit then
@@ -225,9 +246,11 @@ function UnhideByName:unit_name_changed(unit)
 		end
 	end
 end
+
 function UnhideByName:update_filter()
 	self:fill_unit_list()
 end
+
 function UnhideByName:fill_unit_list()
 	self._list:delete_all_items()
 	local layers = managers.editor:layers()
@@ -250,6 +273,7 @@ function UnhideByName:fill_unit_list()
 	self._list:thaw()
 	self._list:autosize_column(0)
 end
+
 function UnhideByName:_continent_ok(unit)
 	local continent = unit:unit_data().continent
 	if not continent then
@@ -257,15 +281,19 @@ function UnhideByName:_continent_ok(unit)
 	end
 	return self._continents_cbs[continent:name()]:get_value()
 end
+
 function UnhideByName:reset()
 	self:fill_unit_list()
 end
+
 function UnhideByName:freeze()
 	self._list:freeze()
 end
+
 function UnhideByName:thaw()
 	self._list:thaw()
 end
+
 function UnhideByName:recreate()
 	for name, cb in pairs(self._continents_cbs) do
 		self._continents_sizer:detach(cb)

@@ -1,8 +1,10 @@
 CoreCounterResetUnitElement = CoreCounterResetUnitElement or class(MissionElement)
 CounterResetUnitElement = CounterResetUnitElement or class(CoreCounterResetUnitElement)
+
 function CounterResetUnitElement:init(...)
 	CoreCounterResetUnitElement.init(self, ...)
 end
+
 function CoreCounterResetUnitElement:init(unit)
 	MissionElement.init(self, unit)
 	self._hed.counter_target = 1
@@ -11,6 +13,7 @@ function CoreCounterResetUnitElement:init(unit)
 	table.insert(self._save_values, "counter_target")
 	table.insert(self._save_values, "elements")
 end
+
 function CoreCounterResetUnitElement:layer_finished(...)
 	MissionElement.layer_finished(self, ...)
 	for _, id in ipairs(self._hed.elements) do
@@ -18,6 +21,7 @@ function CoreCounterResetUnitElement:layer_finished(...)
 		table.insert(self._elements_units, unit)
 	end
 end
+
 function CoreCounterResetUnitElement:draw_links(t, dt, selected_unit)
 	MissionElement.draw_links(self, t, dt, selected_unit)
 	for _, unit in ipairs(self._elements_units) do
@@ -33,8 +37,10 @@ function CoreCounterResetUnitElement:draw_links(t, dt, selected_unit)
 		end
 	end
 end
+
 function CoreCounterResetUnitElement:update_editing()
 end
+
 function CoreCounterResetUnitElement:add_element()
 	local ray = managers.editor:unit_by_raycast({mask = 10, ray_type = "editor"})
 	if ray and ray.unit and string.find(ray.unit:name():s(), "logic_counter", 1, true) then
@@ -48,6 +54,7 @@ function CoreCounterResetUnitElement:add_element()
 		end
 	end
 end
+
 function CoreCounterResetUnitElement:remove_links(unit)
 	MissionElement.remove_links(self, unit)
 	for _, id in ipairs(self._hed.elements) do
@@ -57,9 +64,11 @@ function CoreCounterResetUnitElement:remove_links(unit)
 		end
 	end
 end
+
 function CoreCounterResetUnitElement:add_triggers(vc)
 	vc:add_trigger(Idstring("lmb"), callback(self, self, "add_element"))
 end
+
 function CoreCounterResetUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

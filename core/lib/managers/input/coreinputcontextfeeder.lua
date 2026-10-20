@@ -1,15 +1,18 @@
 core:module("CoreInputContextFeeder")
 core:import("CoreInputProvider")
 Feeder = Feeder or class()
+
 function Feeder:init(engine_controller, input_layer_descriptions)
 	self._engine_controller = engine_controller
 	self._device_type = self._engine_controller:type()
 	self._input_provider = CoreInputProvider.Provider:new(input_layer_descriptions)
 	self._previous_state = {}
 end
+
 function Feeder:input_provider()
 	return self._input_provider
 end
+
 function Feeder:update(t, dt)
 	local target_input_context = self._input_provider:context()
 	if not target_input_context then

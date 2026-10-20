@@ -1,4 +1,5 @@
 ExplosionDamageUnitElement = ExplosionDamageUnitElement or class(MissionElement)
+
 function ExplosionDamageUnitElement:init(unit)
 	ExplosionDamageUnitElement.super.init(self, unit)
 	self._hed.range = 100
@@ -6,6 +7,7 @@ function ExplosionDamageUnitElement:init(unit)
 	table.insert(self._save_values, "range")
 	table.insert(self._save_values, "damage")
 end
+
 function ExplosionDamageUnitElement:update_selected()
 	local brush = Draw:brush()
 	brush:set_color(Color(0.15, 1, 1, 1))
@@ -13,6 +15,7 @@ function ExplosionDamageUnitElement:update_selected()
 	brush:sphere(self._unit:position(), self._hed.range, 4)
 	pen:sphere(self._unit:position(), self._hed.range)
 end
+
 function ExplosionDamageUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

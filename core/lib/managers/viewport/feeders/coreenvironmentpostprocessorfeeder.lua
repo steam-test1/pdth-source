@@ -2,11 +2,14 @@ core:module("CoreEnvironmentPostProcessorFeeder")
 core:import("CoreClass")
 core:import("CoreCode")
 EnvironmentPostProcessorFeeder = EnvironmentPostProcessorFeeder or CoreClass.class()
+
 function EnvironmentPostProcessorFeeder:init()
 	self._cached_processor = {}
 end
+
 function EnvironmentPostProcessorFeeder:end_feed(nr)
 end
+
 function EnvironmentPostProcessorFeeder:processor(scene, vp, processor_name, effect_name)
 	local name = tostring(scene) .. processor_name .. effect_name
 	local proc = self._cached_processor[name]
@@ -16,6 +19,7 @@ function EnvironmentPostProcessorFeeder:processor(scene, vp, processor_name, eff
 	end
 	return proc
 end
+
 function EnvironmentPostProcessorFeeder:feed(nr, scene, vp, data, block, ...)
 	local args = {
 		...

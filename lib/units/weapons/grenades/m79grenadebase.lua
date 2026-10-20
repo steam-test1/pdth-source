@@ -1,8 +1,10 @@
 M79GrenadeBase = M79GrenadeBase or class()
+
 function M79GrenadeBase.spawn(unit_name, pos, rot)
 	local unit = World:spawn_unit(Idstring(unit_name), pos, rot)
 	return unit
 end
+
 function M79GrenadeBase:init(unit)
 	self._unit = unit
 	self._new_pos = unit:position()
@@ -11,6 +13,7 @@ function M79GrenadeBase:init(unit)
 	self._hidden = true
 	self._unit:set_visible(false)
 end
+
 function M79GrenadeBase:launch(params)
 	self._owner = params.owner
 	self._user = params.user
@@ -25,6 +28,7 @@ function M79GrenadeBase:launch(params)
 	self._next_upd_t = self._last_upd_t + self._upd_interval
 	self._auto_explode_t = self._last_upd_t + 3
 end
+
 function M79GrenadeBase:update(unit, t, dt)
 	if t > self._auto_explode_t then
 		self:_detonate()
@@ -53,6 +57,7 @@ function M79GrenadeBase:update(unit, t, dt)
 	self._last_upd_t = t
 	self._next_upd_t = t + self._upd_interval
 end
+
 function M79GrenadeBase:_upd_velocity(dt)
 	local new_vel_z = mvector3.z(self._velocity) - dt * 981
 	mvector3.set_z(self._velocity, new_vel_z)
@@ -60,9 +65,11 @@ function M79GrenadeBase:_upd_velocity(dt)
 	mvector3.multiply(self._new_pos, dt)
 	mvector3.add(self._new_pos, self._last_pos)
 end
+
 function M79GrenadeBase:_upd_position()
 	self._unit:set_position(self._new_pos)
 end
+
 function M79GrenadeBase:_chk_collision()
 	local col_ray = World:raycast("ray", self._last_pos, self._new_pos, "slot_mask", self._collision_slotmask)
 	col_ray = col_ray or World:raycast("ray", self._last_last_pos, self._new_pos, "slot_mask", self._collision_slotmask)
@@ -71,6 +78,7 @@ function M79GrenadeBase:_chk_collision()
 		return true
 	end
 end
+
 function M79GrenadeBase:_detonate()
 	if self._detonated then
 		debug_pause("[M79GrenadeBase:_detonate] grenade has already detonated", self._unit, alive(self._unit) and self._unit:slot())
@@ -99,6 +107,7 @@ function M79GrenadeBase:_detonate()
 	managers.network:session():send_to_peers_synched("m79grenade_explode_on_client", expl_pos, expl_normal, self._user, self._damage, self._range, self._curve_pow)
 	self:_detect_and_give_dmg(expl_pos)
 end
+
 function M79GrenadeBase:_detect_and_give_dmg(hit_pos)
 	local slotmask = self._collision_slotmask
 	local user_unit = self._user
@@ -232,6 +241,7 @@ function M79GrenadeBase:_detect_and_give_dmg(hit_pos)
 		weapon_unit = self._owner
 	})
 end
+
 function M79GrenadeBase._explode_on_client(position, normal, user_unit, dmg, range, curve_pow)
 	M79GrenadeBase._play_sound_and_effects(position, normal)
 	local bodies = World:find_bodies("intersect", "sphere", position, range, managers.slot:get_mask("bullet_impact_targets"))
@@ -256,6 +266,7 @@ function M79GrenadeBase._explode_on_client(position, normal, user_unit, dmg, ran
 		end
 	end
 end
+
 function M79GrenadeBase._play_sound_and_effects(position, normal)
 	local player = managers.player:player_unit()
 	if player then
@@ -310,5 +321,6 @@ function M79GrenadeBase._play_sound_and_effects(position, normal)
 	sound_source:post_event("trip_mine_explode")
 	managers.enemy:add_delayed_clbk("M79expl", callback(M79GrenadeBase, M79GrenadeBase, "_dispose_of_sound", {sound_source = sound_source}), TimerManager:game():time() + 2)
 end
+
 function M79GrenadeBase._dispose_of_sound(...)
 end

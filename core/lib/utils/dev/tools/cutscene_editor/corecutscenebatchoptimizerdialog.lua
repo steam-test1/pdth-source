@@ -37,17 +37,20 @@ commands:add({
 	label = "E&xit",
 	help = "Closes this window"
 })
+
 function CoreCutsceneBatchOptimizerDialog:init(parent_window)
 	self.__window = EWS:Frame("Batch Export to Game", Vector3(100, 500, 0), Vector3(400, 400, 0), "DEFAULT_DIALOG_STYLE,RESIZE_BORDER,FRAME_FLOAT_ON_PARENT", parent_window)
 	self.__window:set_icon(CoreEWS.image_path("film_reel_16x16.png"))
 	self.__window:set_min_size(Vector3(400, 321, 0))
 	self.__window:set_background_colour((EWS:get_system_colour("3DFACE") * 255):unpack())
 	self.__window:connect("EVT_CLOSE_WINDOW", callback(self, self, "_on_exit"))
+	
 	local function connect_command(command_id, callback_name, callback_data)
 		callback_name = callback_name or "_on_" .. string.lower(command_id)
 		callback_data = callback_data or ""
 		self.__window:connect(commands:id(command_id), "EVT_COMMAND_MENU_SELECTED", callback(self, self, callback_name), callback_data)
 	end
+	
 	connect_command("NEW_JOB_LIST")
 	connect_command("DEFAULT_JOB_LIST")
 	connect_command("OPEN_JOB_LIST")
@@ -67,6 +70,7 @@ function CoreCutsceneBatchOptimizerDialog:init(parent_window)
 	self.__window:set_status_bar_pane(0)
 	self.__window:set_visible(true)
 end
+
 function CoreCutsceneBatchOptimizerDialog:update(time, delta_time)
 	if not self.__window then
 		return true
@@ -84,6 +88,7 @@ function CoreCutsceneBatchOptimizerDialog:update(time, delta_time)
 	end
 	return false
 end
+
 function CoreCutsceneBatchOptimizerDialog:_create_menu_bar()
 	local file_menu = commands:wrap_menu(EWS:Menu(""))
 	file_menu:append_command("NEW_JOB_LIST")
@@ -97,6 +102,7 @@ function CoreCutsceneBatchOptimizerDialog:_create_menu_bar()
 	menu_bar:append(file_menu:wrapped_object(), "&File")
 	return menu_bar
 end
+
 function CoreCutsceneBatchOptimizerDialog:_create_buttons_panel(parent)
 	local panel = EWS:Panel(parent)
 	local sizer = EWS:BoxSizer("HORIZONTAL")
@@ -109,6 +115,7 @@ function CoreCutsceneBatchOptimizerDialog:_create_buttons_panel(parent)
 	sizer:add(close_button, 1, 2, "LEFT,EXPAND")
 	return panel
 end
+
 function CoreCutsceneBatchOptimizerDialog:_destroy()
 	if alive(self.__progress_dialog) then
 		self.__progress_dialog:destroy()
@@ -124,19 +131,23 @@ function CoreCutsceneBatchOptimizerDialog:_destroy()
 	self.__window = nil
 	self.__batch = nil
 end
+
 function CoreCutsceneBatchOptimizerDialog:_progress_message(project)
 	return project == nil and "Done!" or string.format("Exporting %s", project)
 end
+
 function CoreCutsceneBatchOptimizerDialog:_open_job_list(input_path)
 	local mappings = read_lua_representation_from_path(input_path)
 	self.__projects:set_mappings(mappings)
 	self.__current_job_list_path = input_path
 end
+
 function CoreCutsceneBatchOptimizerDialog:_save_job_list(output_path)
 	local mappings = self.__projects:mappings()
 	write_lua_representation_to_path(mappings, output_path)
 	self.__current_job_list_path = output_path
 end
+
 function CoreCutsceneBatchOptimizerDialog:_default_mappings_for_all_projects()
 	local project_names = managers.database:list_entries_of_type("cutscene_project")
 	local mappings = table.remap(project_entries, function(_, name)
@@ -144,17 +155,21 @@ function CoreCutsceneBatchOptimizerDialog:_default_mappings_for_all_projects()
 	end)
 	return mappings
 end
+
 function CoreCutsceneBatchOptimizerDialog:_default_optimized_cutscene_name(project_name)
 	return "optimized_" .. string.gsub(string.gsub(project_name, "^story_", ""), "^optimized_", "")
 end
+
 function CoreCutsceneBatchOptimizerDialog:_request_input_file_from_user(message, wildcard)
 	local dialog = EWS:FileDialog(self.__window, message, "", "", assert(wildcard, "Must supply a wildcard spec. Check wxWidgets docs."), "OPEN,FILE_MUST_EXIST")
 	return dialog:show_modal() and dialog:get_path() or nil
 end
+
 function CoreCutsceneBatchOptimizerDialog:_request_output_file_from_user(message, wildcard, default_file)
 	local dialog = EWS:FileDialog(self.__window, message, "", default_file or "", assert(wildcard, "Must supply a wildcard spec. Check wxWidgets docs."), "SAVE,OVERWRITE_PROMPT")
 	return dialog:show_modal() and dialog:get_path() or nil
 end
+
 function CoreCutsceneBatchOptimizerDialog:_on_export_button_clicked(sender)
 	local projects_to_export = self.__projects:mappings()
 	if not table.empty(projects_to_export) then
@@ -166,6 +181,7 @@ function CoreCutsceneBatchOptimizerDialog:_on_export_button_clicked(sender)
 		self.__progress_dialog:set_visible(true)
 	end
 end
+
 function CoreCutsceneBatchOptimizerDialog:_on_new_job_list()
 	local ok_to_proceed = self:_verify_user_intent("clearing")
 	if ok_to_proceed then
@@ -174,12 +190,14 @@ function CoreCutsceneBatchOptimizerDialog:_on_new_job_list()
 	end
 	return ok_to_proceed
 end
+
 function CoreCutsceneBatchOptimizerDialog:_on_default_job_list()
 	local ok_to_proceed = self:_on_new_job_list()
 	if ok_to_proceed then
 		self.__projects:set_mappings(self:_default_mappings_for_all_projects())
 	end
 end
+
 function CoreCutsceneBatchOptimizerDialog:_on_open_job_list()
 	local ok_to_proceed = self:_verify_user_intent("opening")
 	if ok_to_proceed then
@@ -189,6 +207,7 @@ function CoreCutsceneBatchOptimizerDialog:_on_open_job_list()
 		end
 	end
 end
+
 function CoreCutsceneBatchOptimizerDialog:_on_save_job_list()
 	if self.__current_job_list_path then
 		self:_save_job_list(self.__current_job_list_path)
@@ -197,6 +216,7 @@ function CoreCutsceneBatchOptimizerDialog:_on_save_job_list()
 		return self:_on_save_job_list_as()
 	end
 end
+
 function CoreCutsceneBatchOptimizerDialog:_on_save_job_list_as()
 	local output_path = self:_request_output_file_from_user("Save Job List", JOB_LIST_FILE_SPEC, "untitled.boj")
 	if output_path then
@@ -204,6 +224,7 @@ function CoreCutsceneBatchOptimizerDialog:_on_save_job_list_as()
 	end
 	return output_path ~= nil
 end
+
 function CoreCutsceneBatchOptimizerDialog:_on_exit()
 	local ok_to_proceed = self:_verify_user_intent("closing")
 	if ok_to_proceed then
@@ -211,6 +232,7 @@ function CoreCutsceneBatchOptimizerDialog:_on_exit()
 	end
 	return ok_to_proceed
 end
+
 function CoreCutsceneBatchOptimizerDialog:_verify_user_intent(operation)
 	if table.empty(self.__projects:mappings()) then
 		return true

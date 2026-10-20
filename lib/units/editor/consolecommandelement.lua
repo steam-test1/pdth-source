@@ -1,9 +1,11 @@
 ConsoleCommandUnitElement = ConsoleCommandUnitElement or class(MissionElement)
+
 function ConsoleCommandUnitElement:init(unit)
 	ConsoleCommandUnitElement.super.init(self, unit)
 	self._hed.cmd = ""
 	table.insert(self._save_values, "cmd")
 end
+
 function ConsoleCommandUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

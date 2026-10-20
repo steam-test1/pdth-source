@@ -1,11 +1,14 @@
 DramaManager = DramaManager or class()
+
 function DramaManager:init()
 	self._cues = {}
 	self:_load_data()
 end
+
 function DramaManager:cue(id)
 	return self._cues[id]
 end
+
 function DramaManager:_load_data()
 	local file_name = "gamedata/dramas/index"
 	local data = PackageManager:script_data(Idstring("drama_index"), file_name:id())
@@ -15,6 +18,7 @@ function DramaManager:_load_data()
 		end
 	end
 end
+
 function DramaManager:_load_drama(name)
 	local file_name = "gamedata/dramas/" .. name
 	local data = PackageManager:script_data(Idstring("drama"), file_name:id())
@@ -70,6 +74,7 @@ function DramaManager:_load_drama(name)
 		end
 	end
 end
+
 function DramaManager:_process_duration(value)
 	if not value then
 		return nil

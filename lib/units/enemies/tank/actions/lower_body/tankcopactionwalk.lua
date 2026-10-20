@@ -38,6 +38,7 @@ for pose, speeds in pairs(TankCopActionWalk._walk_anim_lengths) do
 		end
 	end
 end
+
 function TankCopActionWalk:_sanitize()
 	return CopActionWalk._sanitize(self)
 end

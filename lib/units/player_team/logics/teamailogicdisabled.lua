@@ -1,5 +1,6 @@
 require("lib/units/enemies/cop/logics/CopLogicAttack")
 TeamAILogicDisabled = class(TeamAILogicAssault)
+
 function TeamAILogicDisabled.enter(data, new_logic_name, enter_params)
 	TeamAILogicBase.enter(data, new_logic_name, enter_params)
 	data.unit:brain():cancel_all_pathing_searches()
@@ -39,6 +40,7 @@ function TeamAILogicDisabled.enter(data, new_logic_name, enter_params)
 		data.unit:brain():set_objective(nil)
 	end
 end
+
 function TeamAILogicDisabled.exit(data, new_logic_name, enter_params)
 	TeamAILogicBase.exit(data, new_logic_name, enter_params)
 	local my_data = data.internal_data
@@ -58,6 +60,7 @@ function TeamAILogicDisabled.exit(data, new_logic_name, enter_params)
 		data.unit:brain():set_update_enabled_state(true)
 	end
 end
+
 function TeamAILogicDisabled._update_enemy_detection(data)
 	data.t = TimerManager:game():time()
 	local my_data = data.internal_data
@@ -89,14 +92,17 @@ function TeamAILogicDisabled._update_enemy_detection(data)
 	TeamAILogicDisabled._upd_aim(data, my_data)
 	CopLogicBase.queue_task(my_data, my_data.detection_task_key, TeamAILogicDisabled._update_enemy_detection, data, data.t + delay)
 end
+
 function TeamAILogicDisabled.death_clbk(data, damage_info)
 	local my_data = data.internal_data
 	if my_data.focus_enemy then
 		my_data.focus_enemy = nil
 	end
 end
+
 function TeamAILogicDisabled.on_intimidated(data, amount, aggressor_unit)
 end
+
 function TeamAILogicDisabled._consider_surrender(data, my_data)
 	my_data.stay_cool_chk_t = TimerManager:game():time()
 	local my_health_ratio = data.unit:character_damage():health_ratio()
@@ -134,12 +140,15 @@ function TeamAILogicDisabled._consider_surrender(data, my_data)
 		my_data.stay_cool = false
 	end
 end
+
 function TeamAILogicDisabled.on_long_dis_interacted(data, other_unit)
 	TeamAILogicIdle.on_long_dis_interacted(data, other_unit)
 end
+
 function TeamAILogicDisabled.on_new_objective(data, old_objective)
 	TeamAILogicBase.on_new_objective(data, old_objective)
 end
+
 function TeamAILogicDisabled._upd_aim(data, my_data)
 	local shoot, aim
 	local focus_enemy = my_data.focus_enemy
@@ -193,6 +202,7 @@ function TeamAILogicDisabled._upd_aim(data, my_data)
 		my_data.firing = nil
 	end
 end
+
 function TeamAILogicDisabled.on_recovered(data, reviving_unit)
 	local my_data = data.internal_data
 	if reviving_unit and my_data.rescuer and my_data.rescuer:key() == reviving_unit:key() then
@@ -207,6 +217,7 @@ function TeamAILogicDisabled.on_recovered(data, reviving_unit)
 		CopLogicBase._exit(data.unit, "assault")
 	end
 end
+
 function TeamAILogicDisabled._register_revive_SO(data, my_data, rescue_type)
 	local followup_objective = {
 		type = "act",
@@ -267,6 +278,7 @@ function TeamAILogicDisabled._register_revive_SO(data, my_data, rescue_type)
 	managers.groupai:state():add_special_objective(so_id, so_descriptor)
 	my_data.deathguard_SO_id = PlayerBleedOut._register_deathguard_SO(data.unit)
 end
+
 function TeamAILogicDisabled._unregister_revive_SO(my_data)
 	if my_data.deathguard_SO_id then
 		PlayerBleedOut._unregister_deathguard_SO(my_data.deathguard_SO_id)
@@ -283,11 +295,13 @@ function TeamAILogicDisabled._unregister_revive_SO(my_data)
 		my_data.SO_id = nil
 	end
 end
+
 function TeamAILogicDisabled.is_available_for_assignment(data, new_objective)
 	if not new_objective then
 		return true
 	end
 end
+
 function TeamAILogicDisabled.damage_clbk(data, damage_info)
 	local my_data = data.internal_data
 	if data.unit:character_damage():need_revive() and not my_data.SO_id and not my_data.rescuer then
@@ -302,11 +316,13 @@ function TeamAILogicDisabled.damage_clbk(data, damage_info)
 	end
 	TeamAILogicIdle.damage_clbk(data, damage_info)
 end
+
 function TeamAILogicDisabled.on_revive_SO_administered(ignore_this, data, receiver_unit)
 	local my_data = data.internal_data
 	my_data.rescuer = receiver_unit
 	my_data.SO_id = nil
 end
+
 function TeamAILogicDisabled.on_revive_SO_failed(ignore_this, data)
 	local my_data = data.internal_data
 	if my_data.rescuer and (data.unit:character_damage():need_revive() or data.unit:character_damage():arrested()) and not my_data.exiting then

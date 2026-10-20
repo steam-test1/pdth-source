@@ -6,6 +6,7 @@ core:import("CoreEws")
 core:import("CoreTable")
 core:import("CoreEditorUtils")
 BrushLayer = BrushLayer or class(CoreLayer.Layer)
+
 function BrushLayer:init(owner, dont_load_unit_map)
 	BrushLayer.super.init(self, owner, "brush")
 	self._brush_names = {}
@@ -31,9 +32,11 @@ function BrushLayer:init(owner, dont_load_unit_map)
 	self._brushed_path = "core/temp/editor_temp/brushes"
 	self:load_brushes()
 end
+
 function BrushLayer:load(world_holder, offset)
 	world_holder:create_world("world", self._save_name, offset)
 end
+
 function BrushLayer:save(save_params)
 	local file_name = "massunit"
 	local t = {
@@ -45,6 +48,7 @@ function BrushLayer:save(save_params)
 	managers.editor:add_save_data(t)
 	self:_save_brushfile(save_params.dir .. "\\" .. file_name .. ".massunit")
 end
+
 function BrushLayer:_save_brushfile(path)
 	MassUnitManager:save(path)
 	managers.editor:add_to_world_package({
@@ -58,6 +62,7 @@ function BrushLayer:_save_brushfile(path)
 		})
 	end
 end
+
 function BrushLayer:reposition_all()
 	managers.editor:output("Reposition all brushes:")
 	for name, unit in pairs(self._unit_map) do
@@ -108,11 +113,13 @@ function BrushLayer:reposition_all()
 		end
 	end
 end
+
 function BrushLayer:reload()
 	for name, unit in pairs(self._unit_map) do
 		name = self:get_real_name(name)
 	end
 end
+
 function BrushLayer:clear_all()
 	local confirm = EWS:message_box(Global.frame_panel, "This will delete all brushes in this level, are you sure?", "Brush", "YES_NO,ICON_QUESTION", Vector3(-1, -1, 0))
 	if confirm == "NO" then
@@ -120,6 +127,7 @@ function BrushLayer:clear_all()
 	end
 	MassUnitManager:delete_all_units()
 end
+
 function BrushLayer:clear_unit()
 	local confirm = EWS:message_box(Global.frame_panel, "This will delete all selected brushes in this level, are you sure?", "Brush", "YES_NO,ICON_QUESTION", Vector3(-1, -1, 0))
 	if confirm == "NO" then
@@ -129,12 +137,15 @@ function BrushLayer:clear_unit()
 		MassUnitManager:delete_units(Idstring(name))
 	end
 end
+
 function BrushLayer:set_visibility(cb)
 	self._visible = cb:get_value()
 	MassUnitManager:set_visibility(self._visible)
 end
+
 function BrushLayer:select()
 end
+
 function BrushLayer:spray_units()
 	if not self._visible then
 		return
@@ -142,11 +153,13 @@ function BrushLayer:spray_units()
 	self:erase_units_release()
 	self._spraying = true
 end
+
 function BrushLayer:spray_units_release()
 	if self._spraying then
 		self._spraying = false
 	end
 end
+
 function BrushLayer:erase_units()
 	if not self._visible then
 		return
@@ -154,11 +167,13 @@ function BrushLayer:erase_units()
 	self:spray_units_release()
 	self._erasing = true
 end
+
 function BrushLayer:erase_units_release()
 	if self._erasing then
 		self._erasing = false
 	end
 end
+
 function BrushLayer:update(time, rel_time)
 	local from = self._owner:get_cursor_look_point(0)
 	local to = self._owner:get_cursor_look_point(5000)
@@ -232,6 +247,7 @@ function BrushLayer:update(time, rel_time)
 		end
 	end
 end
+
 function BrushLayer:add_brush_header(name)
 	if not self._brush_types[name] then
 		local header = BrushHeader:new()
@@ -242,6 +258,7 @@ function BrushLayer:add_brush_header(name)
 		return self._brush_types[name]
 	end
 end
+
 function BrushLayer:create_brush(ray)
 	if #self._brush_names > 0 and ray then
 		local name = self._brush_names[math.floor(1 + math.rand(#self._brush_names))]
@@ -270,6 +287,7 @@ function BrushLayer:create_brush(ray)
 		brush_type:spawn_brush(ray.position + up * self._offset, Rotation(right, at, up))
 	end
 end
+
 function BrushLayer:build_panel(notebook)
 	cat_print("editor", "BrushLayer:build_panel")
 	self._ews_panel = EWS:Panel(notebook, "", "TAB_TRAVERSAL")
@@ -364,6 +382,7 @@ function BrushLayer:build_panel(notebook)
 	remove_brush_btn:connect("EVT_COMMAND_BUTTON_CLICKED", callback(self, self, "remove_brush"), brushes)
 	return self._ews_panel
 end
+
 function BrushLayer:show_create_brush(data)
 	if #self._brush_names > 0 then
 		local name = EWS:get_text_from_user(Global.frame_panel, "Enter name for the new brush configuration:", "Create brush", "new_brush", Vector3(-1, -1, 0), true)
@@ -385,10 +404,12 @@ function BrushLayer:show_create_brush(data)
 		end
 	end
 end
+
 function BrushLayer:hide_create_brush(data)
 	data.dialog:end_modal()
 	self._cancel_dialog = data.cancel
 end
+
 function BrushLayer:remove_brush(brushes)
 	local i = brushes:selected_index()
 	if 0 <= i then
@@ -398,6 +419,7 @@ function BrushLayer:remove_brush(brushes)
 		self._brush_names = {}
 	end
 end
+
 function BrushLayer:save_brushes()
 	local f = SystemFS:open(managers.database:base_path() .. self._brushed_path .. ".xml", "w")
 	f:puts("<brushes>")
@@ -412,6 +434,7 @@ function BrushLayer:save_brushes()
 	f:close()
 	managers.database:recompile(self._brushed_path)
 end
+
 function BrushLayer:load_brushes()
 	if DB:has("xml", self._brushed_path) then
 		local node = DB:load_node("xml", self._brushed_path)
@@ -425,6 +448,7 @@ function BrushLayer:load_brushes()
 		end
 	end
 end
+
 function BrushLayer:create_slider(name, value, s_value, e_value)
 	local slider_sizer = EWS:BoxSizer("VERTICAL")
 	slider_sizer:add(EWS:StaticText(self._ews_panel, name, "", "ALIGN_LEFT"), 0, 0, "EXPAND")
@@ -445,6 +469,7 @@ function BrushLayer:create_slider(name, value, s_value, e_value)
 	slider_params.number_ctrlr:connect("EVT_KILL_FOCUS", callback(self, self, "update_slider"), {slider_params = slider_params, value = value})
 	return slider_sizer
 end
+
 function BrushLayer:set_unit_name(units)
 	self._brush_names = {}
 	local selected = units:selected_items()
@@ -457,6 +482,7 @@ function BrushLayer:set_unit_name(units)
 		self._brushes_ctrlr:deselect_index(i)
 	end
 end
+
 function BrushLayer:select_brush(data)
 	self._brush_names = {}
 	local i = data.brushes:selected_index()
@@ -467,12 +493,15 @@ function BrushLayer:select_brush(data)
 		table.insert(self._brush_names, name)
 	end
 end
+
 function BrushLayer:update_slider(data)
 	self[data.value] = data.slider_params.value
 end
+
 function BrushLayer:clear()
 	MassUnitManager:delete_all_units()
 end
+
 function BrushLayer:add_triggers()
 	local vc = self._editor_data.virtual_controller
 	vc:add_trigger(Idstring("lmb"), callback(self, self, "spray_units"))
@@ -480,6 +509,7 @@ function BrushLayer:add_triggers()
 	vc:add_trigger(Idstring("rmb"), callback(self, self, "erase_units"))
 	vc:add_release_trigger(Idstring("rmb"), callback(self, self, "erase_units_release"))
 end
+
 function BrushLayer:get_help(text)
 	local t = "\t"
 	local n = "\n"
@@ -487,14 +517,18 @@ function BrushLayer:get_help(text)
 	text = text .. "Remove brush:  Point and hold down right mouse button" .. n
 	return text
 end
+
 function BrushLayer:get_layer_name()
 	return "Props brush"
 end
+
 BrushHeader = BrushHeader or class()
+
 function BrushHeader:init()
 	self._name = ""
 	self._distance = 0
 end
+
 function BrushHeader:set_name(name)
 	self._name = name
 	if self._name then
@@ -502,6 +536,7 @@ function BrushHeader:set_name(name)
 	end
 	self:setup_brush_distance()
 end
+
 function BrushHeader:setup_brush_distance()
 	if self._name then
 		local node = CoreEngineAccess._editor_unit_data(self._name:id()):script_data()
@@ -514,9 +549,11 @@ function BrushHeader:setup_brush_distance()
 		end
 	end
 end
+
 function BrushHeader:get_spawn_dist()
 	return self._distance
 end
+
 function BrushHeader:spawn_brush(position, rotation)
 	position = position + rotation:z() * self:get_spawn_dist()
 	MassUnitManager:spawn_unit(Idstring(self._name), position, rotation)

@@ -1,9 +1,11 @@
 SpawnPlayerElement = SpawnPlayerElement or class(MissionElement)
+
 function SpawnPlayerElement:init(unit)
 	MissionElement.init(self, unit)
 	self._hed.state = managers.player:default_player_state()
 	table.insert(self._save_values, "state")
 end
+
 function SpawnPlayerElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel
@@ -27,5 +29,6 @@ function SpawnPlayerElement:_build_panel(panel, panel_sizer)
 	help.sizer = panel_sizer
 	self:add_help_text(help)
 end
+
 function SpawnPlayerElement:add_to_mission_package()
 end

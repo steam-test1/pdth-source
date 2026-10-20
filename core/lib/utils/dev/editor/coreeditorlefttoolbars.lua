@@ -1,5 +1,6 @@
 function CoreEditor:build_left_toolbar()
 	local icons_path = managers.database:base_path() .. "core\\lib\\utils\\dev\\editor\\icons\\"
+	
 	local left_upper_panel = EWS:Panel(Global.frame_panel, "", "")
 	local left_upper_panel_sizer = EWS:BoxSizer("VERTICAL")
 	left_upper_panel:set_sizer(left_upper_panel_sizer)
@@ -56,16 +57,20 @@ function CoreEditor:build_left_toolbar()
 	left_panel_sizer:add(self._left_toolbar, 0, 0, "EXPAND")
 	Global.left_toolbar_sizer:add(left_panel, 0, 0, "EXPAND")
 end
+
 function CoreEditor:show_edit_unit()
 	self:show_dialog("edit_unit", "EditUnitDialog")
 end
+
 function CoreEditor:on_open_tool(tool)
 	managers.toolhub:open(tool)
 end
+
 function CoreEditor:on_output_help()
 	local text = "\n"
 	self:output(self._current_layer:get_help(text))
 end
+
 function CoreEditor:on_list_units()
 	local units = World:find_units_quick("all")
 	local amount = {}

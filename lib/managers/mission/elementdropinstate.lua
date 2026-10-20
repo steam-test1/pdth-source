@@ -1,11 +1,14 @@
 core:import("CoreMissionScriptElement")
 ElementDropinState = ElementDropinState or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementDropinState:init(...)
 	ElementDropinState.super.init(self, ...)
 end
+
 function ElementDropinState:client_on_executed(...)
 	self:on_executed(...)
 end
+
 function ElementDropinState:on_executed(instigator)
 	if not self._values.enabled then
 		return

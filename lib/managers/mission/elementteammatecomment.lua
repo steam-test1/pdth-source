@@ -1,11 +1,14 @@
 core:import("CoreMissionScriptElement")
 ElementTeammateComment = ElementTeammateComment or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementTeammateComment:init(...)
 	ElementTeammateComment.super.init(self, ...)
 end
+
 function ElementTeammateComment:client_on_executed(...)
 	self:on_executed(...)
 end
+
 function ElementTeammateComment:on_executed(instigator)
 	if not self._values.enabled then
 		return

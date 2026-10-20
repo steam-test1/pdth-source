@@ -1,5 +1,6 @@
 core:import("CoreEditorUtils")
 EditUnitDialog = EditUnitDialog or class(CoreEditorEwsDialog)
+
 function EditUnitDialog:init(toolbar, btn)
 	CoreEditorEwsDialog.init(self, nil, "Edit Unit", "", Vector3(300, 150, 0), Vector3(360, 317, 0), "DEFAULT_DIALOG_STYLE,RESIZE_BORDER,STAY_ON_TOP")
 	self:create_panel("VERTICAL")
@@ -11,6 +12,7 @@ function EditUnitDialog:init(toolbar, btn)
 	self._panel_sizer:add(self._notebook, 1, 0, "EXPAND")
 	self._dialog_sizer:add(self._panel, 1, 0, "EXPAND")
 end
+
 function EditUnitDialog:add_page(data)
 	local name = data.name
 	local start_page = data.start_page
@@ -29,6 +31,7 @@ function EditUnitDialog:add_page(data)
 	})
 	return panel, sizer
 end
+
 function EditUnitDialog:set_enabled(unit, units)
 	for _, page in ipairs(self._pages) do
 		if page.class then
@@ -37,12 +40,14 @@ function EditUnitDialog:set_enabled(unit, units)
 		end
 	end
 end
+
 function EditUnitDialog:update(t, dt)
 	local current_page = self:_current_page()
 	if current_page then
 		current_page.class:update(t, dt)
 	end
 end
+
 function EditUnitDialog:_current_page()
 	if not self._dialog:visible() then
 		return nil
@@ -53,6 +58,7 @@ function EditUnitDialog:_current_page()
 		end
 	end
 end
+
 function EditUnitDialog:dialog_closed(data, event)
 	for _, page in ipairs(self._pages) do
 		if page.class then
@@ -61,16 +67,21 @@ function EditUnitDialog:dialog_closed(data, event)
 	end
 	event:skip()
 end
+
 EditUnitBase = EditUnitBase or class()
+
 function EditUnitBase:init()
 	self._debug = false
 	self._brush = Draw:brush()
 	self._pen = Draw:pen()
 end
+
 function EditUnitBase:update()
 end
+
 function EditUnitBase:dialog_closed()
 end
+
 function EditUnitBase:update_debug(ctrlr)
 	self._debug = ctrlr:get_value()
 end

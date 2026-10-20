@@ -1,13 +1,16 @@
 HintUnitElement = HintUnitElement or class(MissionElement)
+
 function HintUnitElement:init(unit)
 	HintUnitElement.super.init(self, unit)
 	self._hed.hint_id = "none"
 	table.insert(self._save_values, "hint_id")
 end
+
 function HintUnitElement:set_text()
 	local hint = managers.hint:hint(self._hed.hint_id)
 	self._text:set_value(hint and managers.localization:text(hint.text_id) or "none")
 end
+
 function HintUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

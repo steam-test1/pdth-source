@@ -1,8 +1,10 @@
 MenuNodeTableGui = MenuNodeTableGui or class(MenuNodeGui)
+
 function MenuNodeTableGui:init(node, layer, parameters)
 	MenuNodeTableGui.super.init(self, node, layer, parameters)
 	self:_setup_topics(node)
 end
+
 function MenuNodeTableGui:_setup_panels(node)
 	MenuNodeTableGui.super._setup_panels(self, node)
 	local safe_rect_pixels = managers.viewport:get_safe_rect_pixels()
@@ -43,9 +45,11 @@ function MenuNodeTableGui:_setup_panels(node)
 	mini_text:set_left(0)
 	self._mini_info_text = mini_text
 end
+
 function MenuNodeTableGui:set_mini_info(text)
 	self._mini_info_text:set_text(text)
 end
+
 function MenuNodeTableGui:_setup_topics(node)
 	local columns = node:columns()
 	local total_proportions = node:parameters().total_proportions
@@ -69,6 +73,7 @@ function MenuNodeTableGui:_setup_topics(node)
 		x = x + w
 	end
 end
+
 function MenuNodeTableGui:_create_menu_item(row_item)
 	if row_item.type == "column" then
 		local columns = row_item.node:columns()
@@ -269,6 +274,7 @@ function MenuNodeTableGui:_create_menu_item(row_item)
 		MenuNodeTableGui.super._create_menu_item(self, row_item)
 	end
 end
+
 function MenuNodeTableGui:_align_server_column(row_item)
 	local safe_rect = managers.viewport:get_safe_rect_pixels()
 	self:_align_item_gui_info_panel(row_item.gui_info_panel)
@@ -315,18 +321,22 @@ function MenuNodeTableGui:_align_server_column(row_item)
 	row_item.heist_briefing:set_x(0)
 	row_item.heist_briefing:set_y(tweak_data.menu.info_padding + offset * 4 + tweak_data.menu.info_padding * 2)
 end
+
 function MenuNodeTableGui:_setup_main_panel(safe_rect)
 	MenuNodeTableGui.super._setup_main_panel(self, safe_rect)
 	self._main_panel:set_shape(safe_rect.x, self._column_topics_panel:bottom(), safe_rect.width, self._main_panel:h() - self._column_topics_panel:h())
 end
+
 function MenuNodeTableGui:_set_width_and_height(safe_rect)
 	self.width = safe_rect.width
 	self.height = self._main_panel:h()
 end
+
 function MenuNodeTableGui:_setup_item_panel(safe_rect, res)
 	MenuNodeTableGui.super._setup_item_panel(self, safe_rect, res)
 	self.item_panel:set_top(0)
 end
+
 function MenuNodeTableGui:resolution_changed()
 	MenuNodeTableGui.super.resolution_changed(self)
 	local safe_rect_pixels = managers.viewport:get_safe_rect_pixels()

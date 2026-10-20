@@ -1,4 +1,5 @@
 CopLogicSecurityOnDuty = class(CopLogicIdle)
+
 function CopLogicSecurityOnDuty.enter(data, new_logic_name, enter_params)
 	CopLogicBase.enter(data, new_logic_name, enter_params)
 	local my_data = {
@@ -49,6 +50,7 @@ function CopLogicSecurityOnDuty.enter(data, new_logic_name, enter_params)
 	CopLogicBase._reset_attention(data)
 	data.unit:brain():set_update_enabled_state(false)
 end
+
 function CopLogicSecurityOnDuty.exit(data, new_logic_name, enter_params)
 	CopLogicBase.exit(data, new_logic_name, enter_params)
 	local my_data = data.internal_data
@@ -60,6 +62,7 @@ function CopLogicSecurityOnDuty.exit(data, new_logic_name, enter_params)
 	end
 	data.unit:brain():set_update_enabled_state(true)
 end
+
 function CopLogicSecurityOnDuty._update_enemy_detection(data)
 	managers.groupai:state():on_unit_detection_updated(data.unit)
 	data.t = TimerManager:game():time()
@@ -91,6 +94,7 @@ function CopLogicSecurityOnDuty._update_enemy_detection(data)
 	end
 	CopLogicBase._report_detections(my_data.detected_enemies)
 end
+
 function CopLogicSecurityOnDuty._react_to_suspects(data, my_data)
 	if my_data.turning or data.unit:movement():chk_action_forbidden("walk") then
 		return
@@ -164,6 +168,7 @@ function CopLogicSecurityOnDuty._react_to_suspects(data, my_data)
 		end
 	end
 end
+
 function CopLogicSecurityOnDuty._turn_by_spin(data, my_data, spin)
 	local new_action_data = {
 		type = "turn",

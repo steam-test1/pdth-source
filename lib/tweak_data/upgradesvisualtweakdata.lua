@@ -1,4 +1,5 @@
 UpgradesVisualTweakData = UpgradesVisualTweakData or class()
+
 function UpgradesVisualTweakData:init()
 	self.upgrade = {}
 	self.upgrade.c45 = {

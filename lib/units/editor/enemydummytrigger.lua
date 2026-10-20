@@ -1,4 +1,5 @@
 EnemyDummyTriggerUnitElement = EnemyDummyTriggerUnitElement or class(MissionElement)
+
 function EnemyDummyTriggerUnitElement:init(unit)
 	MissionElement.init(self, unit)
 	self._hed.event = "death"
@@ -6,6 +7,7 @@ function EnemyDummyTriggerUnitElement:init(unit)
 	table.insert(self._save_values, "event")
 	table.insert(self._save_values, "elements")
 end
+
 function EnemyDummyTriggerUnitElement:draw_links(t, dt, selected_unit, all_units)
 	MissionElement.draw_links(self, t, dt, selected_unit)
 	for _, id in ipairs(self._hed.elements) do
@@ -22,8 +24,10 @@ function EnemyDummyTriggerUnitElement:draw_links(t, dt, selected_unit, all_units
 		end
 	end
 end
+
 function EnemyDummyTriggerUnitElement:update_editing()
 end
+
 function EnemyDummyTriggerUnitElement:add_element()
 	local ray = managers.editor:unit_by_raycast({mask = 10, ray_type = "editor"})
 	if ray and ray.unit and self:_correct_unit(ray.unit:name():s()) then
@@ -35,6 +39,7 @@ function EnemyDummyTriggerUnitElement:add_element()
 		end
 	end
 end
+
 function EnemyDummyTriggerUnitElement:_correct_unit(u_name)
 	local names = {
 		"ai_spawn_enemy",
@@ -50,6 +55,7 @@ function EnemyDummyTriggerUnitElement:_correct_unit(u_name)
 	end
 	return false
 end
+
 function EnemyDummyTriggerUnitElement:remove_links(unit)
 	for _, id in ipairs(self._hed.elements) do
 		if id == unit:unit_data().unit_id then
@@ -57,9 +63,11 @@ function EnemyDummyTriggerUnitElement:remove_links(unit)
 		end
 	end
 end
+
 function EnemyDummyTriggerUnitElement:add_triggers(vc)
 	vc:add_trigger(Idstring("lmb"), callback(self, self, "add_element"))
 end
+
 function EnemyDummyTriggerUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

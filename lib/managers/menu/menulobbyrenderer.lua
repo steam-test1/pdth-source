@@ -3,10 +3,12 @@ require("lib/managers/menu/MenuNodeGui")
 require("lib/managers/menu/renderers/MenuNodeTableGui")
 require("lib/managers/menu/renderers/MenuNodeStatsGui")
 MenuLobbyRenderer = MenuLobbyRenderer or class(CoreMenuRenderer.Renderer)
+
 function MenuLobbyRenderer:init(logic, ...)
 	MenuLobbyRenderer.super.init(self, logic, ...)
 	self._sound_source = SoundDevice:create_source("MenuLobbyRenderer")
 end
+
 function MenuLobbyRenderer:show_node(node)
 	local gui_class = MenuNodeGui
 	if node:parameters().gui_class then
@@ -23,6 +25,7 @@ function MenuLobbyRenderer:show_node(node)
 	}
 	MenuLobbyRenderer.super.show_node(self, node, parameters)
 end
+
 local mugshots = {
 	random = "mugshot_random",
 	undecided = "mugshot_unassigned",
@@ -45,6 +48,7 @@ local mugshot_stencil = {
 	russian = {"bg_dallas", 65},
 	spanish = {"bg_chains", 60}
 }
+
 function MenuLobbyRenderer:open(...)
 	MenuLobbyRenderer.super.open(self, ...)
 	local safe_rect_pixels = managers.viewport:get_safe_rect_pixels()
@@ -386,17 +390,20 @@ function MenuLobbyRenderer:open(...)
 	MenuRenderer.setup_frames_and_logo(self)
 	self:_layout_menu_bg()
 end
+
 function MenuLobbyRenderer:_entered_menu()
 	local is_server = Network:is_server()
 	local local_peer = managers.network:session():local_peer()
 	managers.network:game():on_entered_lobby()
 	self:on_request_lobby_slot_reply()
 end
+
 function MenuLobbyRenderer:close(...)
 	self:set_choose_character_enabled(true)
 	managers.video:remove_video(self._level_video)
 	MenuLobbyRenderer.super.close(self, ...)
 end
+
 function MenuLobbyRenderer:update_level_id(level_id)
 	if self._level_id == (level_id or Global.game_settings.level_id) then
 		return
@@ -406,6 +413,7 @@ function MenuLobbyRenderer:update_level_id(level_id)
 	managers.network:session():send_to_peers("lobby_sync_update_level_id", level_id_index)
 	self:_update_level_id(level_id)
 end
+
 function MenuLobbyRenderer:sync_update_level_id(level_id)
 	if self._level_id == level_id then
 		return
@@ -413,6 +421,7 @@ function MenuLobbyRenderer:sync_update_level_id(level_id)
 	Global.game_settings.level_id = level_id
 	self:_update_level_id(level_id)
 end
+
 function MenuLobbyRenderer:_update_level_id(level_id)
 	print(">>>>>>>>>>>>> function MenuLobbyRenderer:_update_level_id( level_id )", level_id, self._level_id)
 	Application:stack_dump()
@@ -423,18 +432,22 @@ function MenuLobbyRenderer:_update_level_id(level_id)
 	managers.video:add_video(self._level_video)
 	self._level_text:set_text(string.upper("" .. managers.localization:text(level_data.name_id)))
 end
+
 function MenuLobbyRenderer:update_difficulty()
 	local difficulty = Global.game_settings.difficulty
 	managers.network:session():send_to_peers_loaded("lobby_sync_update_difficulty", difficulty)
 	self:_update_difficulty(difficulty)
 end
+
 function MenuLobbyRenderer:sync_update_difficulty(difficulty)
 	Global.game_settings.difficulty = difficulty
 	self:_update_difficulty(difficulty)
 end
+
 function MenuLobbyRenderer:_update_difficulty(difficulty)
 	self._difficulty_text:set_text(string.upper(managers.localization:text("menu_difficulty_" .. difficulty)))
 end
+
 function MenuLobbyRenderer:set_slot_joining(peer, peer_id)
 	local slot = self._player_slots[peer_id]
 	if not alive(slot.name) then
@@ -447,6 +460,7 @@ function MenuLobbyRenderer:set_slot_joining(peer, peer_id)
 	slot.status:set_text(string.upper(managers.localization:text("menu_waiting_is_joining")))
 	slot.peer_id = peer_id
 end
+
 function MenuLobbyRenderer:set_slot_ready(peer, peer_id)
 	local slot = self._player_slots[peer_id]
 	if not slot then
@@ -455,6 +469,7 @@ function MenuLobbyRenderer:set_slot_ready(peer, peer_id)
 	print("[MenuLobbyRenderer:set_slot_ready]")
 	slot.status:set_text(string.upper(managers.localization:text("menu_waiting_is_ready")))
 end
+
 function MenuLobbyRenderer:set_dropin_progress(peer_id, progress_percentage)
 	local slot = self._player_slots[peer_id]
 	if not slot then
@@ -464,6 +479,7 @@ function MenuLobbyRenderer:set_dropin_progress(peer_id, progress_percentage)
 		slot.status:set_text(string.upper(managers.localization:text("menu_waiting_is_joining")) .. " " .. tostring(progress_percentage) .. "%")
 	end
 end
+
 function MenuLobbyRenderer:set_slot_not_ready(peer, peer_id)
 	local slot = self._player_slots[peer_id]
 	if not slot then
@@ -472,6 +488,7 @@ function MenuLobbyRenderer:set_slot_not_ready(peer, peer_id)
 	print("[MenuLobbyRenderer:set_slot_not_ready]")
 	slot.status:set_text(string.upper(managers.localization:text("menu_waiting_is_not_ready")))
 end
+
 function MenuLobbyRenderer:set_player_slots_kit(slot)
 	local peer_id = self._player_slots[slot].peer_id
 	for i = 1, PlayerManager.WEAPON_SLOTS do
@@ -491,6 +508,7 @@ function MenuLobbyRenderer:set_player_slots_kit(slot)
 		self:set_kit_selection(peer_id, "crew_bonus", crew_bonus, 1)
 	end
 end
+
 function MenuLobbyRenderer:set_kit_selection(peer_id, category, id, slot)
 	local player_slot = self:get_player_slot_by_peer_id(peer_id)
 	if not player_slot or not alive(player_slot.name) then
@@ -510,6 +528,7 @@ function MenuLobbyRenderer:set_kit_selection(peer_id, category, id, slot)
 	local kit_slot = player_slot.kit_slots[slot]
 	kit_slot:set_image(icon, texture_rect[1], texture_rect[2], texture_rect[3], texture_rect[4])
 end
+
 function MenuLobbyRenderer:set_slot_voice(peer, peer_id, active)
 	local slot = self._player_slots[peer_id]
 	if not slot then
@@ -517,6 +536,7 @@ function MenuLobbyRenderer:set_slot_voice(peer, peer_id, active)
 	end
 	slot.voice:set_visible(active)
 end
+
 function MenuLobbyRenderer:_set_player_slot(nr, params)
 	local my_slot = params.peer_id == managers.network:session():local_peer():id()
 	local slot = self._player_slots[nr]
@@ -550,6 +570,7 @@ function MenuLobbyRenderer:_set_player_slot(nr, params)
 		print("slot.join_msg_shown", slot.join_msg_shown)
 	end
 end
+
 function MenuLobbyRenderer:remove_player_slot_by_peer_id(peer, reason)
 	if not self._player_slots then
 		return
@@ -593,6 +614,7 @@ function MenuLobbyRenderer:remove_player_slot_by_peer_id(peer, reason)
 		end
 	end
 end
+
 function MenuLobbyRenderer:set_character(id, character)
 	local slot = self._player_slots[id]
 	slot.character:set_text(string.upper(managers.localization:text("debug_" .. character)))
@@ -613,6 +635,7 @@ function MenuLobbyRenderer:set_character(id, character)
 		managers.menu:active_menu().renderer:set_stencil_align("manual", mugshot_stencil[character][2])
 	end
 end
+
 function MenuLobbyRenderer:set_choose_character_enabled(enabled)
 	for _, node in ipairs(self._logic._node_stack) do
 		for _, item in ipairs(node:items()) do
@@ -623,6 +646,7 @@ function MenuLobbyRenderer:set_choose_character_enabled(enabled)
 		end
 	end
 end
+
 function MenuLobbyRenderer:set_server_state(state)
 	local s = ""
 	if state == "loading" then
@@ -633,6 +657,7 @@ function MenuLobbyRenderer:set_server_state(state)
 	local msg = managers.localization:text("menu_lobby_messenger_title") .. managers.localization:text("menu_lobby_message_server_is_loading")
 	self:sync_chat_message(msg, 1)
 end
+
 function MenuLobbyRenderer:on_request_lobby_slot_reply()
 	local local_peer = managers.network:session():local_peer()
 	local local_peer_id = local_peer:id()
@@ -649,6 +674,7 @@ function MenuLobbyRenderer:on_request_lobby_slot_reply()
 	})
 	managers.network:session():send_to_peers_loaded("lobby_info", local_peer_id, level, character, mask_set, progress[1], progress[2], progress[3], progress[4] or -1)
 end
+
 function MenuLobbyRenderer:get_player_slot_by_peer_id(id)
 	for _, slot in ipairs(self._player_slots) do
 		if slot.peer_id and slot.peer_id == id then
@@ -657,6 +683,7 @@ function MenuLobbyRenderer:get_player_slot_by_peer_id(id)
 	end
 	return self._player_slots[id]
 end
+
 function MenuLobbyRenderer:get_player_slot_nr_by_peer_id(id)
 	for i, slot in ipairs(self._player_slots) do
 		if slot.peer_id and slot.peer_id == id then
@@ -665,6 +692,7 @@ function MenuLobbyRenderer:get_player_slot_nr_by_peer_id(id)
 	end
 	return nil
 end
+
 function MenuLobbyRenderer:sync_chat_message(message, id)
 	for _, node_gui in ipairs(self._node_gui_stack) do
 		local row_item_chat = node_gui:row_item_by_name("chat")
@@ -675,9 +703,11 @@ function MenuLobbyRenderer:sync_chat_message(message, id)
 	end
 	return false
 end
+
 function MenuLobbyRenderer:update(t, dt)
 	MenuLobbyRenderer.super.update(self, t, dt)
 end
+
 function MenuLobbyRenderer:highlight_item(item, ...)
 	MenuLobbyRenderer.super.highlight_item(self, item, ...)
 	local character = managers.network:session():local_peer():character()
@@ -685,6 +715,7 @@ function MenuLobbyRenderer:highlight_item(item, ...)
 	managers.menu:active_menu().renderer:set_stencil_align("manual", mugshot_stencil[character][2])
 	self:post_event("highlight")
 end
+
 function MenuLobbyRenderer:trigger_item(item)
 	MenuRenderer.super.trigger_item(self, item)
 	if item and item:parameters().sound ~= "false" then
@@ -705,13 +736,16 @@ function MenuLobbyRenderer:trigger_item(item)
 		end
 	end
 end
+
 function MenuLobbyRenderer:post_event(event)
 	self._sound_source:post_event(event)
 end
+
 function MenuLobbyRenderer:navigate_back()
 	MenuLobbyRenderer.super.navigate_back(self)
 	self:post_event("menu_exit")
 end
+
 function MenuLobbyRenderer:resolution_changed(...)
 	MenuLobbyRenderer.super.resolution_changed(self, ...)
 	local safe_rect_pixels = managers.viewport:get_safe_rect_pixels()
@@ -720,6 +754,7 @@ function MenuLobbyRenderer:resolution_changed(...)
 	self:_layout_video()
 	self:_layout_menu_bg()
 end
+
 function MenuLobbyRenderer:_layout_menu_bg()
 	local res = RenderSettings.resolution
 	local safe_rect_pixels = managers.viewport:get_safe_rect_pixels()
@@ -728,6 +763,7 @@ function MenuLobbyRenderer:_layout_menu_bg()
 	self:set_stencil_align(self._menu_stencil_align, self._menu_stencil_align_percent)
 	MenuRenderer.layout_frames_and_logo(self)
 end
+
 function MenuLobbyRenderer:_layout_slot_progress_panel(slot, progress)
 	print("MenuLobbyRenderer:_layout_slot_progress_panel()", slot, progress)
 	local h = 16
@@ -765,6 +801,7 @@ function MenuLobbyRenderer:_layout_slot_progress_panel(slot, progress)
 	slot.p_sup:set_w(slot.params and slot.p_sup_bg:w() * (progress[3] / 49) or slot.p_sup:w())
 	slot.p_tec:set_w(slot.params and slot.p_sup_bg:w() * ((progress[4] or 0) / 49) or slot.p_tec:w())
 end
+
 function MenuLobbyRenderer:_layout_info_panel()
 	local res = RenderSettings.resolution
 	local safe_rect = managers.viewport:get_safe_rect_pixels()
@@ -852,6 +889,7 @@ function MenuLobbyRenderer:_layout_info_panel()
 		end
 	end
 end
+
 function MenuLobbyRenderer:_layout_video()
 	if self._level_video then
 		local w = self._gui_info_panel:w()
@@ -861,15 +899,19 @@ function MenuLobbyRenderer:_layout_video()
 		self._level_video:set_center_x(self._gui_info_panel:w() / 2)
 	end
 end
+
 function MenuLobbyRenderer:set_bg_visible(visible)
 	self._menu_bg:set_visible(visible)
 end
+
 function MenuLobbyRenderer:set_stencil_image(image)
 	MenuRenderer.set_stencil_image(self, image)
 end
+
 function MenuLobbyRenderer:refresh_theme()
 	MenuRenderer.refresh_theme(self)
 end
+
 function MenuLobbyRenderer:set_stencil_align(align, percent)
 	if not self._menu_stencil then
 		return
@@ -909,6 +951,7 @@ function MenuLobbyRenderer:set_stencil_align(align, percent)
 		self._menu_stencil:set_left(res.x * percent - y * m * percent)
 	end
 end
+
 function MenuLobbyRenderer:current_menu_text(topic_id)
 	local ids = {}
 	for i, node_gui in ipairs(self._node_gui_stack) do

@@ -1,4 +1,5 @@
 ChristmasPresentBase = ChristmasPresentBase or class(UnitBase)
+
 function ChristmasPresentBase:init(unit)
 	UnitBase.init(self, unit, false)
 	self._unit = unit
@@ -7,6 +8,7 @@ function ChristmasPresentBase:init(unit)
 		self._unit:set_slot(0)
 	end
 end
+
 function ChristmasPresentBase:take_money(unit)
 	managers.challenges:set_flag("take_christmas_present")
 	local params = {}
@@ -18,7 +20,9 @@ function ChristmasPresentBase:take_money(unit)
 	Network:detach_unit(self._unit)
 	self._unit:set_slot(0)
 end
+
 function ChristmasPresentBase:update(unit, t, dt)
 end
+
 function ChristmasPresentBase:destroy()
 end

@@ -1,4 +1,5 @@
 HudIconsTweakData = HudIconsTweakData or class()
+
 function HudIconsTweakData:init()
 	self.fallback = {
 		texture = "guis/textures/hud_icons",
@@ -2086,6 +2087,7 @@ function HudIconsTweakData:init()
 		}
 	}
 end
+
 function HudIconsTweakData:get_icon_data(icon_id, default_rect)
 	local icon = tweak_data.hud_icons[icon_id] and tweak_data.hud_icons[icon_id].texture or icon_id
 	local texture_rect = tweak_data.hud_icons[icon_id] and tweak_data.hud_icons[icon_id].texture_rect or default_rect or {

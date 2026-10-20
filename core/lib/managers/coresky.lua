@@ -1,17 +1,22 @@
 CoreSky = CoreSky or class()
+
 function CoreSky:init()
 	self._params = {}
 	self._name = "default"
 end
+
 function CoreSky:set_name(name)
 	self._name = name
 end
+
 function CoreSky:set_value(key, value)
 	self._params[key] = value
 end
+
 function CoreSky:value(key)
 	return self._params[key]
 end
+
 function CoreSky:parse(xml_node)
 	self._params = {}
 	for child in xml_node:children() do
@@ -30,6 +35,7 @@ function CoreSky:parse(xml_node)
 		end
 	end
 end
+
 function CoreSky:copy(from)
 	for key, value in pairs(from._params) do
 		if type(value) == "string" then
@@ -42,6 +48,7 @@ function CoreSky:copy(from)
 	end
 	self._name = from._name
 end
+
 function CoreSky:interpolate(target, with, scale)
 	local invscale = 1 - scale
 	for key, value in pairs(with._params) do
@@ -55,6 +62,7 @@ function CoreSky:interpolate(target, with, scale)
 	end
 	self._name = with._name
 end
+
 function CoreSky:database_lookup(str)
 	local i = string.find(str, "#")
 	local db_key = string.sub(str, 1, i - 1)

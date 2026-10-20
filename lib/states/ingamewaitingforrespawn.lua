@@ -6,12 +6,14 @@ IngameWaitingForRespawnState.GUI_SPECTATOR = Idstring("guis/spectator_mode")
 IngameWaitingForRespawnState.PLAYER_HUD = Idstring("guis/player_hud")
 IngameWaitingForRespawnState.XP_HUD = Idstring("guis/experience_hud")
 IngameWaitingForRespawnState.PLAYER_INFO_HUD = Idstring("guis/player_info_hud")
+
 function IngameWaitingForRespawnState:init(game_state_machine)
 	GameState.init(self, "ingame_waiting_for_respawn", game_state_machine)
 	self._slotmask = managers.slot:get_mask("world_geometry")
 	self._fwd = Vector3(1, 0, 0)
 	self._up_offset = math.UP * 80
 end
+
 function IngameWaitingForRespawnState:_setup_controller()
 	self._controller = managers.controller:create_controller("waiting_for_respawn", managers.controller:get_default_wrapper_index(), false)
 	self._next_player_cb = callback(self, self, "cb_next_player")
@@ -22,6 +24,7 @@ function IngameWaitingForRespawnState:_setup_controller()
 	self._controller:add_trigger("secondary_attack", self._next_player_cb)
 	self._controller:set_enabled(true)
 end
+
 function IngameWaitingForRespawnState:_clear_controller()
 	if self._controller then
 		self._controller:remove_trigger("left", self._prev_player_cb)
@@ -33,11 +36,13 @@ function IngameWaitingForRespawnState:_clear_controller()
 		self._controller = nil
 	end
 end
+
 function IngameWaitingForRespawnState:set_controller_enabled(enabled)
 	if self._controller then
 		self._controller:set_enabled(enabled)
 	end
 end
+
 function IngameWaitingForRespawnState:_setup_camera()
 	self._camera_object = World:create_camera()
 	self._camera_object:set_near_range(3)
@@ -48,12 +53,14 @@ function IngameWaitingForRespawnState:_setup_camera()
 	self._viewport:set_environment(managers.environment_area:default_environment())
 	self._viewport:set_active(true)
 end
+
 function IngameWaitingForRespawnState:_clear_camera()
 	self._viewport:destroy()
 	self._viewport = nil
 	World:delete_camera(self._camera_object)
 	self._camera_object = nil
 end
+
 function IngameWaitingForRespawnState:_setup_sound_listener()
 	self._listener_id = managers.listener:add_listener("spectator_camera", self._camera_object, self._camera_object, nil, false)
 	managers.listener:add_set("spectator_camera", {
@@ -66,12 +73,14 @@ function IngameWaitingForRespawnState:_setup_sound_listener()
 		primary = true
 	})
 end
+
 function IngameWaitingForRespawnState:_clear_sound_listener()
 	managers.sound_environment:remove_check_object(self._sound_check_object)
 	managers.listener:remove_listener(self._listener_id)
 	managers.listener:remove_set("spectator_camera")
 	self._listener_id = nil
 end
+
 function IngameWaitingForRespawnState:_create_spectator_data()
 	local all_teammates = managers.groupai:state():all_char_criminals()
 	local teammate_list = {}
@@ -84,6 +93,7 @@ function IngameWaitingForRespawnState:_create_spectator_data()
 		watch_u_key = teammate_list[1]
 	}
 end
+
 function IngameWaitingForRespawnState:_begin_game_enter_transition()
 	if self._ready_to_spawn_t then
 		return
@@ -94,6 +104,7 @@ function IngameWaitingForRespawnState:_begin_game_enter_transition()
 	self._fade_in_overlay_eff_id = managers.overlay_effect:play_effect(overlay_effect_desc)
 	self._ready_to_spawn_t = TimerManager:game():time() + fade_in_duration
 end
+
 function IngameWaitingForRespawnState.request_player_spawn(peer_to_spawn)
 	if Network:is_client() then
 		local peer_id = managers.network:session():local_peer():id()
@@ -123,6 +134,7 @@ function IngameWaitingForRespawnState.request_player_spawn(peer_to_spawn)
 		end
 	end
 end
+
 function IngameWaitingForRespawnState:update(t, dt)
 	if self._player_state_change_needed and not alive(managers.player:player_unit()) then
 		self._player_state_change_needed = nil
@@ -193,6 +205,7 @@ function IngameWaitingForRespawnState:update(t, dt)
 	end
 	self:_upd_watch(t, dt)
 end
+
 function IngameWaitingForRespawnState:_upd_watch(t, dt)
 	self:_refresh_teammate_list()
 	if self._spectator_data.watch_u_key then
@@ -238,6 +251,7 @@ function IngameWaitingForRespawnState:_upd_watch(t, dt)
 		managers.hud:show(self.GUI_SPECTATOR_FULLSCREEN)
 	end
 end
+
 function IngameWaitingForRespawnState:at_enter()
 	managers.overlay_effect:play_effect(tweak_data.overlay_effects.fade_in)
 	self:_setup_camera()
@@ -281,6 +295,7 @@ function IngameWaitingForRespawnState:at_enter()
 		self:trade_death(respawn_delay, hostages_killed)
 	end
 end
+
 function IngameWaitingForRespawnState:at_exit()
 	managers.hud:hide(self.GUI_SPECTATOR)
 	managers.hud:hide(PlayerBase.XP_HUD)
@@ -296,6 +311,7 @@ function IngameWaitingForRespawnState:at_exit()
 	self._ready_to_spawn_t = nil
 	self._fade_in_overlay_eff_id = nil
 end
+
 function IngameWaitingForRespawnState:_refresh_teammate_list()
 	local all_teammates = self._spectator_data.teammate_records
 	local teammate_list = self._spectator_data.teammate_list
@@ -331,6 +347,7 @@ function IngameWaitingForRespawnState:_refresh_teammate_list()
 		self._spectator_data.watch_u_key = teammate_list[math.clamp(lost_teammate_at_i, 1, #teammate_list)]
 	end
 end
+
 function IngameWaitingForRespawnState:_get_teammate_index_by_unit_key(u_key)
 	for i_key, test_u_key in ipairs(self._spectator_data.teammate_list) do
 		if test_u_key == u_key then
@@ -338,6 +355,7 @@ function IngameWaitingForRespawnState:_get_teammate_index_by_unit_key(u_key)
 		end
 	end
 end
+
 function IngameWaitingForRespawnState:cb_next_player()
 	self:_refresh_teammate_list()
 	local watch_u_key = self._spectator_data.watch_u_key
@@ -355,6 +373,7 @@ function IngameWaitingForRespawnState:cb_next_player()
 	self:_upd_hud_watch_character_name()
 	self._dis_curr = nil
 end
+
 function IngameWaitingForRespawnState:cb_prev_player()
 	self:_refresh_teammate_list()
 	local watch_u_key = self._spectator_data.watch_u_key
@@ -372,6 +391,7 @@ function IngameWaitingForRespawnState:cb_prev_player()
 	self:_upd_hud_watch_character_name()
 	self._dis_curr = nil
 end
+
 function IngameWaitingForRespawnState:_upd_hud_watch_character_name()
 	local new_text
 	if self._spectator_data.watch_u_key then
@@ -381,6 +401,7 @@ function IngameWaitingForRespawnState:_upd_hud_watch_character_name()
 	end
 	managers.hud:script(self.GUI_SPECTATOR).text_title:set_text(string.upper(new_text))
 end
+
 function IngameWaitingForRespawnState:trade_death(respawn_delay, hostages_killed)
 	managers.hud:script(self.GUI_SPECTATOR).trade_text1:set_visible(false)
 	self._respawn_delay = managers.trade:respawn_delay_by_name(managers.criminals:local_character_name())
@@ -406,9 +427,11 @@ function IngameWaitingForRespawnState:trade_death(respawn_delay, hostages_killed
 		end
 	end
 end
+
 function IngameWaitingForRespawnState:finish_trade()
 	self:_begin_game_enter_transition()
 end
+
 function IngameWaitingForRespawnState:begin_trade()
 	managers.hud:script(self.GUI_SPECTATOR).trade_text1:set_text(string.upper(managers.localization:text("menu_spectator_being_traded")))
 	managers.hud:script(self.GUI_SPECTATOR).trade_text1:set_visible(true)
@@ -427,15 +450,19 @@ function IngameWaitingForRespawnState:begin_trade()
 	end
 	self._play_too_long_line_t = Application:time() + 60
 end
+
 function IngameWaitingForRespawnState:cancel_trade()
 	managers.hud:script(self.GUI_SPECTATOR).trade_text1:set_visible(false)
 end
+
 function IngameWaitingForRespawnState:on_server_left()
 	IngameCleanState.on_server_left(self)
 end
+
 function IngameWaitingForRespawnState:on_kicked()
 	IngameCleanState.on_kicked(self)
 end
+
 function IngameWaitingForRespawnState:on_disconnected()
 	IngameCleanState.on_disconnected(self)
 end

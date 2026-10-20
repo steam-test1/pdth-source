@@ -3,6 +3,7 @@ core:import("CoreClass")
 core:import("CoreEvent")
 core:import("CoreFloatSpinCtrl")
 Vector3SpinCtrl = Vector3SpinCtrl or CoreClass.mixin(CoreClass.class(), CoreEvent.BasicEventHandling)
+
 function Vector3SpinCtrl:init(parent, min, max, step, value, name, dec, style)
 	assert(parent)
 	self._min = min or Vector3(0, 0, 0)
@@ -33,25 +34,31 @@ function Vector3SpinCtrl:init(parent, min, max, step, value, name, dec, style)
 	end
 	self._panel:set_sizer(box)
 end
+
 function Vector3SpinCtrl:window()
 	return self._panel
 end
+
 function Vector3SpinCtrl:get_value()
 	return Vector3(self._x:get_value(), self._y:get_value(), self._z:get_value())
 end
+
 function Vector3SpinCtrl:set_value(value)
 	self._x:set_value(value.x)
 	self._y:set_value(value.y)
 	self._z:set_value(value.z)
 end
+
 function Vector3SpinCtrl:change_value(value)
 	self._x:change_value(value.x)
 	self._y:change_value(value.y)
 	self._z:change_value(value.z)
 end
+
 function Vector3SpinCtrl:_updated()
 	self:_send_event("EVT_VECTOR3_SPIN_CTRL_UPDATED", self:get_value())
 end
+
 function Vector3SpinCtrl:_enter()
 	self:_send_event("EVT_VECTOR3_SPIN_CTRL_ENTER", self:get_value())
 end

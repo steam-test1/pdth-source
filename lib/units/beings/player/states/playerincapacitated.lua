@@ -1,9 +1,11 @@
 PlayerIncapacitated = PlayerIncapacitated or class(PlayerStandard)
 PlayerIncapacitated._update_movement = PlayerBleedOut._update_movement
+
 function PlayerIncapacitated:init(unit)
 	PlayerIncapacitated.super.init(self, unit)
 	self._ids_tased_exit = Idstring("tased_exit")
 end
+
 function PlayerIncapacitated:enter(enter_data)
 	PlayerIncapacitated.super.enter(self, enter_data)
 	self._revive_SO_data = {
@@ -23,8 +25,10 @@ function PlayerIncapacitated:enter(enter_data)
 	end
 	managers.groupai:state():report_criminal_downed(self._unit)
 end
+
 function PlayerIncapacitated:_enter(enter_data)
 end
+
 function PlayerIncapacitated:exit(new_state_name)
 	PlayerIncapacitated.super.exit(self, new_state_name)
 	self:_end_action_incapacitated(Application:time())
@@ -34,9 +38,11 @@ function PlayerIncapacitated:exit(new_state_name)
 		equip_weapon = self._reequip_weapon
 	}
 end
+
 function PlayerIncapacitated:update(t, dt)
 	PlayerIncapacitated.super.update(self, t, dt)
 end
+
 function PlayerIncapacitated:_update_check_actions(t, dt)
 	local input = self:_get_input()
 	if t > self._next_shock then
@@ -64,12 +70,14 @@ function PlayerIncapacitated:_update_check_actions(t, dt)
 	new_action = new_action or self:_check_set_upgrade(t, input)
 	self:_check_action_interact(t, input)
 end
+
 function PlayerIncapacitated:_check_action_interact(t, input)
 	if input.btn_interact_press and (not self._intimidate_t or t - self._intimidate_t > tweak_data.player.movement_state.interaction_delay) then
 		self._intimidate_t = t
 		PlayerArrested.call_teammate(self, "f11", t, true, true)
 	end
 end
+
 function PlayerIncapacitated:_start_action_incapacitated(t)
 	self:_interupt_action_running(t)
 	self._ducking = true
@@ -80,6 +88,7 @@ function PlayerIncapacitated:_start_action_incapacitated(t)
 	self._unit:camera():play_redirect(self._ids_tased_exit)
 	self._unit:camera()._camera_unit:base():animate_fov(75)
 end
+
 function PlayerIncapacitated:_end_action_incapacitated(t)
 	if not self:_can_stand() then
 		return
@@ -90,9 +99,11 @@ function PlayerIncapacitated:_end_action_incapacitated(t)
 	self._unit:kill_mover()
 	self._unit:activate_mover(Idstring("stand"))
 end
+
 function PlayerIncapacitated:pre_destroy(unit)
 	PlayerBleedOut._unregister_revive_SO(self)
 end
+
 function PlayerIncapacitated:destroy(unit)
 	PlayerBleedOut._unregister_revive_SO(self)
 	managers.environment_controller:set_taser_value(1)

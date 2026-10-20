@@ -7,6 +7,7 @@ INVALID_COLOR = {
 	128
 }
 FloatSpinCtrl = FloatSpinCtrl or CoreClass.mixin(CoreClass.class(), CoreEvent.BasicEventHandling)
+
 function FloatSpinCtrl:init(parent, min, max, step, value, dec, style)
 	assert(parent)
 	self._min = min or 0
@@ -32,20 +33,25 @@ function FloatSpinCtrl:init(parent, min, max, step, value, dec, style)
 	self._bg_color = self._text:background_colour()
 	self:_update_text()
 end
+
 function FloatSpinCtrl:window()
 	return self._panel
 end
+
 function FloatSpinCtrl:get_value()
 	return self._value
 end
+
 function FloatSpinCtrl:set_value(value)
 	self._value = math.clamp(value, self._min, self._max)
 	self:_update_text(true)
 end
+
 function FloatSpinCtrl:change_value(value)
 	self._value = math.clamp(value, self._min, self._max)
 	self:_update_text()
 end
+
 function FloatSpinCtrl:_btn_up_cb()
 	self._value = math.clamp(self._value + self._step, self._min, self._max)
 	self:_set_valid(true)
@@ -53,6 +59,7 @@ function FloatSpinCtrl:_btn_up_cb()
 	self:_send_event("EVT_FLOAT_SPIN_CTRL_SCROLL_UP", self:get_value())
 	self:_send_event("EVT_FLOAT_SPIN_CTRL_UPDATED", self:get_value())
 end
+
 function FloatSpinCtrl:_btn_down_cb()
 	self._value = math.clamp(self._value - self._step, self._min, self._max)
 	self:_set_valid(true)
@@ -60,6 +67,7 @@ function FloatSpinCtrl:_btn_down_cb()
 	self:_send_event("EVT_FLOAT_SPIN_CTRL_SCROLL_DOWN", self:get_value())
 	self:_send_event("EVT_FLOAT_SPIN_CTRL_UPDATED", self:get_value())
 end
+
 function FloatSpinCtrl:_text_update_cb(data, event)
 	local value = tonumber(event:get_string())
 	if value and value >= self._min and value <= self._max then
@@ -71,6 +79,7 @@ function FloatSpinCtrl:_text_update_cb(data, event)
 		self:_set_valid(false)
 	end
 end
+
 function FloatSpinCtrl:_text_enter_cb(data, event)
 	self._value = math.clamp(tonumber(event:get_string()) or 0, self._min, self._max)
 	self:_set_valid(true)
@@ -78,6 +87,7 @@ function FloatSpinCtrl:_text_enter_cb(data, event)
 	self:_send_event("EVT_FLOAT_SPIN_CTRL_ENTER", self:get_value())
 	self:_send_event("EVT_FLOAT_SPIN_CTRL_UPDATED", self:get_value())
 end
+
 function FloatSpinCtrl:_update_text(send_event)
 	local str = string.format("%0." .. tostring(self._dec) .. "f", self._value)
 	if send_event then
@@ -86,6 +96,7 @@ function FloatSpinCtrl:_update_text(send_event)
 		self._text:change_value(str)
 	end
 end
+
 function FloatSpinCtrl:_set_valid(valid)
 	if self._use_colors then
 		if valid then
@@ -96,6 +107,7 @@ function FloatSpinCtrl:_set_valid(valid)
 		self._text:refresh()
 	end
 end
+
 function FloatSpinCtrl:_add_style(style)
 	self._sp_style = self._sp_style and self._sp_style .. "," .. style or style
 end

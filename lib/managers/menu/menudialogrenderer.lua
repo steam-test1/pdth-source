@@ -1,8 +1,10 @@
 require("lib/managers/menu/MenuDialogNodeGui")
 MenuDialogRenderer = MenuDialogRenderer or class(MenuRenderer)
+
 function MenuDialogRenderer:init(logic)
 	MenuRenderer.init(self, logic)
 end
+
 function MenuDialogRenderer:show_node(node)
 	local layer = self._base_layer
 	local previous_node_gui = self:active_node_gui()
@@ -20,6 +22,7 @@ function MenuDialogRenderer:show_node(node)
 	self:_flash_background(0.2)
 	self:disable_input(0.2)
 end
+
 function MenuDialogRenderer:update(t, dt)
 	MenuRenderer.update(self, t, dt)
 end

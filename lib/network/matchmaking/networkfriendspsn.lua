@@ -1,4 +1,5 @@
 NetworkFriendsPSN = NetworkFriendsPSN or class()
+
 function NetworkFriendsPSN:init()
 	cat_print("lobby", "friends = NetworkFriendsPSN")
 	self._friends = {}
@@ -13,11 +14,13 @@ function NetworkFriendsPSN:init()
 	end)
 	PSN:update_async_friends(true, 20)
 end
+
 function NetworkFriendsPSN:destroy()
 	PSN:set_matchmaking_callback("friends_updated", function()
 	end)
 	PSN:update_async_friends(false, 20)
 end
+
 function NetworkFriendsPSN:set_visible(set)
 	if set == true then
 		PSN:update_async_friends(true, 5)
@@ -25,6 +28,7 @@ function NetworkFriendsPSN:set_visible(set)
 		PSN:update_async_friends(true, 20)
 	end
 end
+
 function NetworkFriendsPSN:call_callback(func, ...)
 	if self._callback[func] then
 		self._callback[func](...)
@@ -32,11 +36,13 @@ function NetworkFriendsPSN:call_callback(func, ...)
 		Application:error("Callback", func, "is not registred.")
 	end
 end
+
 function NetworkFriendsPSN:call_silent_callback(func, ...)
 	if self._callback[func] then
 		self._callback[func](...)
 	end
 end
+
 function NetworkFriendsPSN:get_friends_list()
 	do return self._friends end
 	local npids = {}
@@ -46,6 +52,7 @@ function NetworkFriendsPSN:get_friends_list()
 	end
 	return npids
 end
+
 function NetworkFriendsPSN:get_npid_friends_list()
 	local npids = {}
 	local friends = PSN:get_list_friends()
@@ -59,6 +66,7 @@ function NetworkFriendsPSN:get_npid_friends_list()
 	end
 	return npids
 end
+
 function NetworkFriendsPSN:get_friends()
 	cat_print("lobby", "NetworkFriendsPSN:get_friends()")
 	if not self._updated_list_friends then
@@ -96,28 +104,38 @@ function NetworkFriendsPSN:get_friends()
 		self:call_callback("get_friends_done", self._friends)
 	end
 end
+
 function NetworkFriendsPSN:register_callback(event, callback)
 	self._callback[event] = callback
 end
+
 function NetworkFriendsPSN:send_friend_request(nickname)
 end
+
 function NetworkFriendsPSN:remove_friend(id)
 end
+
 function NetworkFriendsPSN:has_builtin_screen()
 	return false
 end
+
 function NetworkFriendsPSN:accept_friend_request(player_id)
 end
+
 function NetworkFriendsPSN:ignore_friend_request(player_id)
 end
+
 function NetworkFriendsPSN:num_pending_friend_requests()
 	return 0
 end
+
 function NetworkFriendsPSN:debug_update(t, dt)
 end
+
 function NetworkFriendsPSN:psn_disconnected()
 	self._updated_list_friends = false
 end
+
 function NetworkFriendsPSN:psn_update_friends()
 	local friends = PSN:get_list_friends() or {}
 	if 0 <= #friends then
@@ -146,6 +164,7 @@ function NetworkFriendsPSN:psn_update_friends()
 		end
 	end
 end
+
 function NetworkFriendsPSN:is_friend(id)
 	local friends = PSN:get_list_friends()
 	if not friends then
@@ -158,12 +177,14 @@ function NetworkFriendsPSN:is_friend(id)
 	end
 	return false
 end
+
 function NetworkFriendsPSN:_fill_li_friends_map(friends)
 	self._last_info.friends_map = {}
 	for k, v in pairs(friends) do
 		self._last_info.friends_map[tostring(v.friend)] = true
 	end
 end
+
 function NetworkFriendsPSN:_fill_li_friends_status_map(friends)
 	self._last_info.friends_status_map = {}
 	for k, v in pairs(friends) do
@@ -174,6 +195,7 @@ function NetworkFriendsPSN:_fill_li_friends_status_map(friends)
 		self._last_info.friends_status_map[tostring(v.friend)] = v.status * info_mod
 	end
 end
+
 function NetworkFriendsPSN:_count_online(friends)
 	local name = managers.network.account:player_id()
 	local status_changed = false

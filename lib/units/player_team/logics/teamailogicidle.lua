@@ -4,6 +4,7 @@ local tmp_vec1 = Vector3()
 local tmp_vec2 = Vector3()
 local tmp_vec3 = Vector3()
 TeamAILogicIdle = TeamAILogicIdle or class(TeamAILogicBase)
+
 function TeamAILogicIdle.enter(data, new_logic_name, enter_params)
 	TeamAILogicBase.enter(data, new_logic_name, enter_params)
 	local my_data = {
@@ -108,6 +109,7 @@ function TeamAILogicIdle.enter(data, new_logic_name, enter_params)
 		end
 	end
 end
+
 function TeamAILogicIdle.exit(data, new_logic_name, enter_params)
 	TeamAILogicBase.exit(data, new_logic_name, enter_params)
 	local my_data = data.internal_data
@@ -156,6 +158,7 @@ function TeamAILogicIdle.exit(data, new_logic_name, enter_params)
 		rsrv_pos.move_dest = nil
 	end
 end
+
 function TeamAILogicIdle.update(data)
 	local my_data = data.internal_data
 	CopLogicIdle._upd_pathing(data, my_data)
@@ -181,6 +184,7 @@ function TeamAILogicIdle.update(data)
 		managers.groupai:state():on_criminal_jobless(data.unit)
 	end
 end
+
 function TeamAILogicIdle._detect_enemies(data, my_data)
 	local delay = 1
 	local enemies = managers.enemy:all_enemies()
@@ -247,9 +251,11 @@ function TeamAILogicIdle._detect_enemies(data, my_data)
 	end
 	return delay
 end
+
 function TeamAILogicIdle.on_detected_enemy_destroyed(data, enemy_unit)
 	TeamAILogicIdle.on_cop_neutralized(data, enemy_unit:key())
 end
+
 function TeamAILogicIdle.on_cop_neutralized(data, cop_key)
 	local my_data = data.internal_data
 	my_data.detected_enemies[cop_key] = nil
@@ -261,6 +267,7 @@ function TeamAILogicIdle.on_cop_neutralized(data, cop_key)
 		end
 	end
 end
+
 function TeamAILogicIdle.damage_clbk(data, damage_info)
 	local enemy = damage_info.attacker_unit
 	local my_data = data.internal_data
@@ -289,6 +296,7 @@ function TeamAILogicIdle.damage_clbk(data, damage_info)
 		CopLogicBase._exit(data.unit, "disabled")
 	end
 end
+
 function TeamAILogicIdle.on_objective_unit_damaged(data, unit, attacker_unit)
 	if attacker_unit ~= nil then
 		TeamAILogicIdle.on_alert(data, {
@@ -299,6 +307,7 @@ function TeamAILogicIdle.on_objective_unit_damaged(data, unit, attacker_unit)
 		})
 	end
 end
+
 function TeamAILogicIdle.on_alert(data, alert_data)
 	local enemy = alert_data[4]
 	local my_data = data.internal_data
@@ -316,6 +325,7 @@ function TeamAILogicIdle.on_alert(data, alert_data)
 	end
 	my_data.alert_t = t
 end
+
 function TeamAILogicIdle.on_long_dis_interacted(data, other_unit)
 	local objective_type, objective_action, interrupt
 	if other_unit:base().is_local_player then
@@ -393,6 +403,7 @@ function TeamAILogicIdle.on_long_dis_interacted(data, other_unit)
 	end
 	data.unit:brain():set_objective(objective)
 end
+
 function TeamAILogicIdle.on_new_objective(data, old_objective)
 	local new_objective = data.objective
 	TeamAILogicBase.on_new_objective(data, old_objective)
@@ -414,6 +425,7 @@ function TeamAILogicIdle.on_new_objective(data, old_objective)
 		old_objective.fail_clbk()
 	end
 end
+
 function TeamAILogicIdle._update_enemy_detection(data)
 	data.t = TimerManager:game():time()
 	local my_data = data.internal_data
@@ -487,10 +499,12 @@ function TeamAILogicIdle._update_enemy_detection(data)
 	end
 	CopLogicBase.queue_task(my_data, my_data.detection_task_key, TeamAILogicIdle._update_enemy_detection, data, data.t + delay)
 end
+
 function TeamAILogicIdle.find_civilian_to_intimidate(criminal, max_angle, max_dis)
 	local best_civ = TeamAILogicIdle._find_intimidateable_civilians(criminal, false, max_angle, max_dis)
 	return best_civ
 end
+
 function TeamAILogicIdle._find_intimidateable_civilians(criminal, use_default_shout_shape, max_angle, max_dis)
 	local head_pos = criminal:movement():m_head_pos()
 	local look_vec = criminal:movement():m_rot():y()
@@ -536,6 +550,7 @@ function TeamAILogicIdle._find_intimidateable_civilians(criminal, use_default_sh
 	end
 	return best_civ, highest_wgt, intimidateable_civilians
 end
+
 function TeamAILogicIdle.intimidate_civilians(data, criminal, play_sound, play_action, primary_target)
 	local best_civ, highest_wgt, intimidateable_civilians = TeamAILogicIdle._find_intimidateable_civilians(criminal, true)
 	local plural = false
@@ -584,6 +599,7 @@ function TeamAILogicIdle.intimidate_civilians(data, criminal, play_sound, play_a
 	end
 	return primary_target or best_civ
 end
+
 function TeamAILogicIdle.action_complete_clbk(data, action)
 	local my_data = data.internal_data
 	local action_type = action:type()
@@ -626,6 +642,7 @@ function TeamAILogicIdle.action_complete_clbk(data, action)
 		end
 	end
 end
+
 function TeamAILogicIdle.is_available_for_assignment(data, new_objective)
 	if data.internal_data.exiting then
 		return
@@ -646,6 +663,7 @@ function TeamAILogicIdle.is_available_for_assignment(data, new_objective)
 	end
 	return true
 end
+
 function TeamAILogicIdle.is_obstructed_strict(data, objective)
 	local my_data = data.internal_data
 	if my_data.focus_enemy then
@@ -661,6 +679,7 @@ function TeamAILogicIdle.is_obstructed_strict(data, objective)
 	end
 	return false
 end
+
 function TeamAILogicIdle.clbk_heat(data)
 	local inventory = data.unit:inventory()
 	if not inventory:is_selection_available(2) then
@@ -673,12 +692,14 @@ function TeamAILogicIdle.clbk_heat(data)
 		inventory:add_unit_by_name(Idstring("units/weapons/mp5_npc/mp5_npc"), false, false)
 	end
 end
+
 function TeamAILogicIdle.dodge(data)
 	local my_data = data.internal_data
 	if (not my_data.performing_act_objective or my_data.performing_act_objective.interrupt_on == "contact") and not data.unit:movement():chk_action_forbidden("walk") then
 		return TeamAILogicIdle.try_dodge(data)
 	end
 end
+
 function TeamAILogicIdle.try_dodge(data)
 	local action_data = CopActionDodge.try_dodge(data.unit, 2)
 	if action_data then
@@ -686,6 +707,7 @@ function TeamAILogicIdle.try_dodge(data)
 	end
 	return nil
 end
+
 function TeamAILogicIdle.clbk_revive_complete(ignore_this, data)
 	local my_data = data.internal_data
 	CopLogicBase.on_delayed_clbk(my_data, my_data.revive_complete_clbk_id)
@@ -708,6 +730,7 @@ function TeamAILogicIdle.clbk_revive_complete(ignore_this, data)
 		managers.groupai:state():on_criminal_objective_failed(data.unit, my_data.performing_act_objective)
 	end
 end
+
 function TeamAILogicIdle._calculate_should_relocate(data, my_data, objective)
 	if my_data.relocation_pathing then
 		return
@@ -719,6 +742,7 @@ function TeamAILogicIdle._calculate_should_relocate(data, my_data, objective)
 	my_data.should_relocate = false
 	my_data.relocate_chk_t = data.t + (data.unit:movement():cool() and 3 or 6)
 end
+
 function TeamAILogicIdle._check_should_relocate(data, my_data, objective)
 	if data.pathing_results then
 		local path = data.pathing_results[my_data.relocation_search_id]
@@ -745,9 +769,11 @@ function TeamAILogicIdle._check_should_relocate(data, my_data, objective)
 		end
 	end
 end
+
 function TeamAILogicIdle.is_obstructed(data, objective)
 	return CopLogicAttack.is_obstructed(data, objective)
 end
+
 function TeamAILogicIdle._chk_is_enemy_nearly_visible(data, focus_enemy)
 	local my_data = data.internal_data
 	local nearly_visible

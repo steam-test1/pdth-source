@@ -1,5 +1,6 @@
 PlayerManager = PlayerManager or class()
 PlayerManager.WEAPON_SLOTS = 3
+
 function PlayerManager:init()
 	self._player_name = Idstring("units/multiplayer/mp_fps_mover/mp_fps_mover")
 	self._players = {}
@@ -53,6 +54,7 @@ function PlayerManager:init()
 	self._current_sync_state = self._DEFAULT_STATE
 	self:_setup()
 end
+
 function PlayerManager:_setup()
 	self._equipment = {
 		selections = {},
@@ -88,9 +90,11 @@ function PlayerManager:_setup()
 	Global.player_manager.synced_equipment_possession = {}
 	self._global = Global.player_manager
 end
+
 function PlayerManager:_setup_rules()
 	self._rules = {no_run = 0}
 end
+
 function PlayerManager:aquire_default_upgrades()
 	managers.upgrades:aquire_default("beretta92")
 	managers.upgrades:aquire_default("m4")
@@ -107,6 +111,7 @@ function PlayerManager:aquire_default_upgrades()
 		end
 	end
 end
+
 function PlayerManager:update_kit_to_peer(peer)
 	local peer_id = managers.network:session():local_peer():id()
 	for i = 1, PlayerManager.WEAPON_SLOTS do
@@ -126,6 +131,7 @@ function PlayerManager:update_kit_to_peer(peer)
 		peer:send_after_load("set_kit_selection", peer_id, "crew_bonus", self:crew_bonus_in_slot(1), 1)
 	end
 end
+
 function PlayerManager:update_crew_bonus_to_peers()
 	local upgrade = self:crew_bonus_in_slot(1)
 	if upgrade then
@@ -136,6 +142,7 @@ function PlayerManager:update_crew_bonus_to_peers()
 		end
 	end
 end
+
 function PlayerManager:update_crew_bonus_to_peer(peer)
 	local upgrade = self:crew_bonus_in_slot(1)
 	if upgrade then
@@ -146,6 +153,7 @@ function PlayerManager:update_crew_bonus_to_peer(peer)
 		end
 	end
 end
+
 function PlayerManager:set_crew_bonus(peer_id, upgrade, level)
 	local member = managers.network:game():member(peer_id)
 	local state = member:unit() and member:unit():movement():current_state_name() or false
@@ -170,6 +178,7 @@ function PlayerManager:set_crew_bonus(peer_id, upgrade, level)
 		managers.hud:set_mugshot_crewbonus(member:unit():unit_data().mugshot_id, tweak_data.upgrades.definitions[upgrade].icon)
 	end
 end
+
 function PlayerManager:remove_crew_bonus(peer_id)
 	local upgrade
 	for i, data in ipairs(self._global.synced_bonuses) do
@@ -181,6 +190,7 @@ function PlayerManager:remove_crew_bonus(peer_id)
 		end
 	end
 end
+
 function PlayerManager:_crew_bonus_consequence(upgrade)
 	local player = self:player_unit()
 	if not player then
@@ -194,6 +204,7 @@ function PlayerManager:_crew_bonus_consequence(upgrade)
 		self:spread_multiplier()
 	end
 end
+
 function PlayerManager:update_crew_bonus_enabled(peer_id, state)
 	for _, data in ipairs(self._global.synced_bonuses) do
 		if data.peer_id == peer_id then
@@ -203,6 +214,7 @@ function PlayerManager:update_crew_bonus_enabled(peer_id, state)
 		end
 	end
 end
+
 function PlayerManager:get_crew_bonus_by_peer(peer_id)
 	for _, data in ipairs(self._global.synced_bonuses) do
 		if data.peer_id == peer_id then
@@ -211,16 +223,21 @@ function PlayerManager:get_crew_bonus_by_peer(peer_id)
 	end
 	return nil
 end
+
 function PlayerManager:update(t, dt)
 end
+
 function PlayerManager:add_listener(key, events, clbk)
 	self._listener_holder:add(key, events, clbk)
 end
+
 function PlayerManager:remove_listener(key)
 	self._listener_holder:remove(key)
 end
+
 function PlayerManager:preload()
 end
+
 function PlayerManager:_internal_load()
 	local player = self:player_unit()
 	if not player then
@@ -271,6 +288,7 @@ function PlayerManager:_internal_load()
 		table.delete(self._global.default_kit.crew_bonus_slots, "welcome_to_the_gang")
 	end
 end
+
 function PlayerManager:_add_level_equipment(player)
 	local id = Global.running_simulation and managers.editor:layer("Level Settings"):get_setting("simulation_level_id")
 	id = id ~= "none" and id or nil
@@ -286,12 +304,15 @@ function PlayerManager:_add_level_equipment(player)
 		self:add_equipment({equipment = eq, silent = true})
 	end
 end
+
 function PlayerManager:nr_players()
 	return self._nr_players
 end
+
 function PlayerManager:set_nr_players(nr)
 	self._nr_players = nr
 end
+
 function PlayerManager:player_id(unit)
 	local id = self._last_id
 	for k, player in ipairs(self._players) do
@@ -301,6 +322,7 @@ function PlayerManager:player_id(unit)
 	end
 	return id
 end
+
 function PlayerManager:setup_viewports()
 	local configs = self._viewport_configs[self._last_id]
 	if configs then
@@ -311,6 +333,7 @@ function PlayerManager:setup_viewports()
 		Application:error("Unsupported number of players: " .. tostring(self._last_id))
 	end
 end
+
 function PlayerManager:player_states()
 	local ret = {}
 	for k, _ in pairs(self._player_states) do
@@ -318,12 +341,15 @@ function PlayerManager:player_states()
 	end
 	return ret
 end
+
 function PlayerManager:current_state()
 	return self._current_state
 end
+
 function PlayerManager:default_player_state()
 	return self._DEFAULT_STATE
 end
+
 function PlayerManager:set_player_state(state)
 	state = state or self._current_state
 	if state == self._current_state then
@@ -342,6 +368,7 @@ function PlayerManager:set_player_state(state)
 		managers.groupai:state():calm_ai()
 	end
 end
+
 function PlayerManager:spawn_players(position, rotation, state)
 	for var = 1, self._nr_players do
 		self._last_id = var
@@ -350,12 +377,14 @@ function PlayerManager:spawn_players(position, rotation, state)
 	self:_flush_item_queue(self._last_id, self._players[self._last_id])
 	return self._players[1]
 end
+
 function PlayerManager:spawned_player(id, unit)
 	self._players[id] = unit
 	self:setup_viewports()
 	self:_internal_load()
 	self:_change_player_state()
 end
+
 function PlayerManager:_change_player_state()
 	local unit = self:player_unit()
 	if not unit then
@@ -365,26 +394,32 @@ function PlayerManager:_change_player_state()
 	game_state_machine:change_state_by_name(self._player_states[self._current_state])
 	unit:movement():change_state(self._current_state)
 end
+
 function PlayerManager:player_destroyed(id)
 	self._players[id] = nil
 	self._respawn = true
 end
+
 function PlayerManager:players()
 	return self._players
 end
+
 function PlayerManager:player_unit_name()
 	return self._player_name
 end
+
 function PlayerManager:player_unit(id)
 	local p_id = id or 1
 	return self._players[p_id]
 end
+
 function PlayerManager:warp_to(pos, rot, id)
 	local player = self._players[id or 1]
 	if alive(player) then
 		player:movement():warp_to(pos, rot)
 	end
 end
+
 function PlayerManager:aquire_weapon(upgrade, id)
 	if self._global.weapons[id] then
 		return
@@ -399,6 +434,7 @@ function PlayerManager:aquire_weapon(upgrade, id)
 		player:inventory():add_unit_by_name(upgrade.unit_name, false)
 	end
 end
+
 function PlayerManager:aquire_equipment(upgrade, id)
 	if self._global.equipment[id] then
 		return
@@ -416,6 +452,7 @@ function PlayerManager:aquire_equipment(upgrade, id)
 		self:add_equipment({equipment = id})
 	end
 end
+
 function PlayerManager:aquire_upgrade(upgrade)
 	self._global.upgrades[upgrade.category] = self._global.upgrades[upgrade.category] or {}
 	self._global.upgrades[upgrade.category][upgrade.upgrade] = upgrade.value
@@ -427,6 +464,7 @@ function PlayerManager:aquire_upgrade(upgrade)
 		self[upgrade.upgrade](self, value)
 	end
 end
+
 function PlayerManager:aquire_incremental_upgrade(upgrade)
 	self._global.upgrades[upgrade.category] = self._global.upgrades[upgrade.category] or {}
 	local val = self._global.upgrades[upgrade.category][upgrade.upgrade]
@@ -436,6 +474,7 @@ function PlayerManager:aquire_incremental_upgrade(upgrade)
 		self[upgrade.upgrade](self, value)
 	end
 end
+
 function PlayerManager:upgrade_value(category, upgrade, default)
 	if not self._global.upgrades[category] then
 		return default or 0
@@ -447,6 +486,7 @@ function PlayerManager:upgrade_value(category, upgrade, default)
 	local value = tweak_data.upgrades.values[category][upgrade][level]
 	return value
 end
+
 function PlayerManager:upgrade_level(category, upgrade, default)
 	if not self._global.upgrades[category] then
 		return default or 0
@@ -457,9 +497,11 @@ function PlayerManager:upgrade_level(category, upgrade, default)
 	local level = self._global.upgrades[category][upgrade]
 	return level
 end
+
 function PlayerManager:upgrade_value_by_level(category, upgrade, level, default)
 	return tweak_data.upgrades.values[category][upgrade][level] or default or 0
 end
+
 function PlayerManager:equipped_upgrade_value(equipped, category, upgrade)
 	if not self:has_category_upgrade(category, upgrade) then
 		return 0
@@ -469,6 +511,7 @@ function PlayerManager:equipped_upgrade_value(equipped, category, upgrade)
 	end
 	return self:upgrade_value(category, upgrade)
 end
+
 function PlayerManager:synced_crew_bonus_upgrade_value(upgrade, default, ignore_enabled)
 	local level = 0
 	for _, data in ipairs(self._global.synced_bonuses) do
@@ -481,6 +524,7 @@ function PlayerManager:synced_crew_bonus_upgrade_value(upgrade, default, ignore_
 	end
 	return self:upgrade_value_by_level("crew_bonus", upgrade, level)
 end
+
 function PlayerManager:has_category_upgrade(category, upgrade)
 	if not self._global.upgrades[category] then
 		return false
@@ -490,12 +534,14 @@ function PlayerManager:has_category_upgrade(category, upgrade)
 	end
 	return true
 end
+
 function PlayerManager:body_armor_value()
 	if not self:has_category_upgrade("player", "body_armor") then
 		return 0
 	end
 	return self:upgrade_value("player", "body_armor")
 end
+
 function PlayerManager:thick_skin_value()
 	if not self:has_category_upgrade("player", "thick_skin") then
 		return 0
@@ -505,6 +551,7 @@ function PlayerManager:thick_skin_value()
 	end
 	return self:upgrade_value("player", "thick_skin")
 end
+
 function PlayerManager:toolset_value()
 	if not self:has_category_upgrade("player", "toolset") then
 		return 1
@@ -514,6 +561,7 @@ function PlayerManager:toolset_value()
 	end
 	return self:upgrade_value("player", "toolset")
 end
+
 function PlayerManager:inspect_current_upgrades()
 	for name, upgrades in pairs(self._global.upgrades) do
 		print("Weapon " .. name .. ":")
@@ -523,12 +571,14 @@ function PlayerManager:inspect_current_upgrades()
 		print("\n")
 	end
 end
+
 function PlayerManager:spread_multiplier()
 	if not alive(self:player_unit()) then
 		return
 	end
 	self:player_unit():movement()._current_state:_update_crosshair_offset()
 end
+
 function PlayerManager:weapon_upgrade_progress(weapon_id)
 	local current = 0
 	local total = 0
@@ -542,6 +592,7 @@ function PlayerManager:weapon_upgrade_progress(weapon_id)
 	end
 	return current, total
 end
+
 function PlayerManager:crewbonus_upgrade_progress(bonus_id)
 	local current = 0
 	local total = 0
@@ -551,6 +602,7 @@ function PlayerManager:crewbonus_upgrade_progress(bonus_id)
 	total = #tweak_data.upgrades.values.crew_bonus[bonus_id]
 	return current, total
 end
+
 function PlayerManager:equipment_upgrade_progress(equipment_id)
 	local current = 0
 	local total = 0
@@ -578,12 +630,15 @@ function PlayerManager:equipment_upgrade_progress(equipment_id)
 	end
 	return current, total
 end
+
 function PlayerManager:has_weapon(name)
 	return managers.player._global.weapons[name]
 end
+
 function PlayerManager:has_aquired_equipment(name)
 	return managers.player._global.equipment[name]
 end
+
 function PlayerManager:availible_weapons(slot)
 	local weapons = {}
 	for name, _ in pairs(managers.player._global.weapons) do
@@ -593,6 +648,7 @@ function PlayerManager:availible_weapons(slot)
 	end
 	return weapons
 end
+
 function PlayerManager:weapon_in_slot(slot)
 	local weapon = self._global.kit.weapon_slots[slot]
 	if self._global.weapons[weapon] then
@@ -601,6 +657,7 @@ function PlayerManager:weapon_in_slot(slot)
 	local weapon = self._global.default_kit.weapon_slots[slot]
 	return self._global.weapons[weapon] and weapon
 end
+
 function PlayerManager:availible_equipment(slot)
 	local equipment = {}
 	for name, _ in pairs(self._global.equipment) do
@@ -610,6 +667,7 @@ function PlayerManager:availible_equipment(slot)
 	end
 	return equipment
 end
+
 function PlayerManager:equipment_in_slot(slot)
 	local equipment = self._global.kit.equipment_slots[slot]
 	if self._global.equipment[equipment] then
@@ -618,6 +676,7 @@ function PlayerManager:equipment_in_slot(slot)
 	local equipment = self._global.default_kit.equipment_slots[slot]
 	return self._global.equipment[equipment] and equipment
 end
+
 function PlayerManager:availible_crew_bonuses(slot)
 	if not self._global.upgrades.crew_bonus then
 		return {}
@@ -630,6 +689,7 @@ function PlayerManager:availible_crew_bonuses(slot)
 	end
 	return bonuses
 end
+
 function PlayerManager:crew_bonus_in_slot(slot)
 	if Global.experience_manager.level <= 5 and slot == 1 then
 		return "welcome_to_the_gang"
@@ -641,6 +701,7 @@ function PlayerManager:crew_bonus_in_slot(slot)
 	local crew_bonus = self._global.default_kit.crew_bonus_slots[slot]
 	return self._global.upgrades.crew_bonus[crew_bonus] and crew_bonus
 end
+
 function PlayerManager:toggle_player_rule(rule)
 	self._rules[rule] = not self._rules[rule]
 	if rule == "no_run" and self._rules[rule] then
@@ -650,6 +711,7 @@ function PlayerManager:toggle_player_rule(rule)
 		end
 	end
 end
+
 function PlayerManager:set_player_rule(rule, value)
 	self._rules[rule] = self._rules[rule] + (value and 1 or -1)
 	if rule == "no_run" and self:get_player_rule(rule) then
@@ -659,9 +721,11 @@ function PlayerManager:set_player_rule(rule, value)
 		end
 	end
 end
+
 function PlayerManager:get_player_rule(rule)
 	return self._rules[rule] > 0
 end
+
 function PlayerManager:add_equipment_possession(peer_id, equipment)
 	self._global.synced_equipment_possession[peer_id] = self._global.synced_equipment_possession[peer_id] or {}
 	if self._global.synced_equipment_possession[peer_id][equipment] then
@@ -673,6 +737,7 @@ function PlayerManager:add_equipment_possession(peer_id, equipment)
 		managers.hud:add_mugshot_equipment(unit:unit_data().mugshot_id, equipment)
 	end
 end
+
 function PlayerManager:remove_equipment_possession(peer_id, equipment)
 	if not self._global.synced_equipment_possession[peer_id] then
 		return
@@ -684,9 +749,11 @@ function PlayerManager:remove_equipment_possession(peer_id, equipment)
 	end
 	managers.hud:remove_mugshot_equipment(unit:unit_data().mugshot_id, equipment)
 end
+
 function PlayerManager:get_synced_equipment_possession(peer_id)
 	return self._global.synced_equipment_possession[peer_id]
 end
+
 function PlayerManager:update_equipment_possession_to_peer(peer)
 	local peer_id = managers.network:session():local_peer():id()
 	if self._global.synced_equipment_possession[peer_id] then
@@ -695,6 +762,7 @@ function PlayerManager:update_equipment_possession_to_peer(peer)
 		end
 	end
 end
+
 function PlayerManager:peer_dropped_out(peer)
 	local peer_id = peer:id()
 	if Network:is_server() and self._global.synced_equipment_possession[peer_id] then
@@ -720,6 +788,7 @@ function PlayerManager:peer_dropped_out(peer)
 	end
 	self._global.synced_equipment_possession[peer_id] = nil
 end
+
 function PlayerManager:add_equipment(params)
 	if tweak_data.equipments[params.equipment or params.name] then
 		self:_add_equipment(params)
@@ -731,6 +800,7 @@ function PlayerManager:add_equipment(params)
 	end
 	Application:error("No equipment or special equipment named", params.equipment or params.name)
 end
+
 function PlayerManager:_add_equipment(params)
 	if self:has_equipment(params.equipment) then
 		print("Allready have equipment", params.equipment)
@@ -752,6 +822,7 @@ function PlayerManager:_add_equipment(params)
 	managers.hud:add_item({amount = amount, icon = icon})
 	self:add_equipment_amount(equipment, amount)
 end
+
 function PlayerManager:add_equipment_amount(equipment, amount)
 	local data, index = self:equipment_data_by_name(equipment)
 	if data then
@@ -759,6 +830,7 @@ function PlayerManager:add_equipment_amount(equipment, amount)
 		managers.hud:set_item_amount(index, data.amount)
 	end
 end
+
 function PlayerManager:equipment_data_by_name(equipment)
 	for i, equipments in ipairs(self._equipment.selections) do
 		if equipments.equipment == equipment then
@@ -767,6 +839,7 @@ function PlayerManager:equipment_data_by_name(equipment)
 	end
 	return nil
 end
+
 function PlayerManager:has_equipment(equipment)
 	for i, equipments in ipairs(self._equipment.selections) do
 		if equipments.equipment == equipment then
@@ -775,6 +848,7 @@ function PlayerManager:has_equipment(equipment)
 	end
 	return false
 end
+
 function PlayerManager:select_next_item()
 	if not self._equipment.selected_index then
 		return
@@ -782,6 +856,7 @@ function PlayerManager:select_next_item()
 	self._equipment.selected_index = self._equipment.selected_index + 1 <= #self._equipment.selections and self._equipment.selected_index + 1 or 1
 	managers.hud:set_next_item_selected()
 end
+
 function PlayerManager:select_previous_item()
 	if not self._equipment.selected_index then
 		return
@@ -789,12 +864,14 @@ function PlayerManager:select_previous_item()
 	self._equipment.selected_index = 1 <= self._equipment.selected_index - 1 and self._equipment.selected_index - 1 or #self._equipment.selections
 	managers.hud:set_previous_item_selected()
 end
+
 function PlayerManager:clear_equipment()
 	for i, equipment in ipairs(self._equipment.selections) do
 		equipment.amount = 0
 		managers.hud:set_item_amount(i, equipment.amount)
 	end
 end
+
 function PlayerManager:from_server_equipment_place_result(selected_index, unit)
 	if alive(unit) then
 		unit:equipment():from_server_sentry_gun_place_result(selected_index ~= 0)
@@ -806,6 +883,7 @@ function PlayerManager:from_server_equipment_place_result(selected_index, unit)
 	equipment.amount = equipment.amount - 1
 	managers.hud:set_item_amount(self._equipment.selected_index, equipment.amount)
 end
+
 function PlayerManager:use_selected_equipment(unit)
 	local equipment = self._equipment.selections[self._equipment.selected_index]
 	if not equipment or equipment.amount == 0 then
@@ -827,6 +905,7 @@ function PlayerManager:use_selected_equipment(unit)
 		redirect = redirect
 	}
 end
+
 function PlayerManager:add_special(params)
 	local name = params.equipment or params.name
 	if not tweak_data.equipments.specials[name] then
@@ -881,6 +960,7 @@ function PlayerManager:add_special(params)
 		self:set_player_rule(equipment.player_rule, true)
 	end
 end
+
 function PlayerManager:_equipped_upgrade_value(equipment)
 	if not equipment.extra_quantity then
 		return 0
@@ -890,9 +970,11 @@ function PlayerManager:_equipped_upgrade_value(equipment)
 	local upgrade = equipment.extra_quantity.upgrade
 	return self:equipped_upgrade_value(equipped_upgrade, category, upgrade)
 end
+
 function PlayerManager:has_special_equipment(name)
 	return self._equipment.specials[name]
 end
+
 function PlayerManager:can_pickup_equipment(name)
 	if self._equipment.specials[name] then
 		if self._equipment.specials[name].amount then
@@ -904,6 +986,7 @@ function PlayerManager:can_pickup_equipment(name)
 	end
 	return true
 end
+
 function PlayerManager:remove_special(name)
 	if not self._equipment.specials[name] then
 		return
@@ -926,18 +1009,21 @@ function PlayerManager:remove_special(name)
 		end
 	end
 end
+
 function PlayerManager:change_player_look(new_look)
 	self._player_mesh_suffix = new_look
 	for _, unit in pairs(managers.groupai:state():all_char_criminals()) do
 		unit.unit:movement():set_character_anim_variables()
 	end
 end
+
 function PlayerManager:save(data)
 	local state = {
 		kit = self._global.kit
 	}
 	data.PlayerManager = state
 end
+
 function PlayerManager:load(data)
 	self:aquire_default_upgrades()
 	local state = data.PlayerManager
@@ -946,8 +1032,10 @@ function PlayerManager:load(data)
 		self:_verify_loaded_data()
 	end
 end
+
 function PlayerManager:_verify_loaded_data()
 end
+
 function PlayerManager:sync_save(data)
 	local state = {
 		current_sync_state = self._current_sync_state,
@@ -955,6 +1043,7 @@ function PlayerManager:sync_save(data)
 	}
 	data.PlayerManager = state
 end
+
 function PlayerManager:sync_load(data)
 	local state = data.PlayerManager
 	if state then
@@ -962,9 +1051,11 @@ function PlayerManager:sync_load(data)
 		self:change_player_look(state.player_mesh_suffix)
 	end
 end
+
 function PlayerManager:on_simulation_started()
 	self._respawn = false
 end
+
 function PlayerManager:reset()
 	if managers.hud then
 		managers.hud:clear_items()
@@ -975,6 +1066,7 @@ function PlayerManager:reset()
 	self:_setup_rules()
 	self:aquire_default_upgrades()
 end
+
 function PlayerManager:add_item(player_index, slot_name, item)
 	local player = self:player_unit(player_index)
 	if alive(player) then
@@ -983,6 +1075,7 @@ function PlayerManager:add_item(player_index, slot_name, item)
 		self:_set_item_queue(player_index, slot_name, item)
 	end
 end
+
 function PlayerManager:remove_item(player_index, slot_name)
 	local player = self:player_unit(player_index)
 	if alive(player) then
@@ -991,11 +1084,13 @@ function PlayerManager:remove_item(player_index, slot_name)
 		self:_set_item_queue(player_index, slot_name, false)
 	end
 end
+
 function PlayerManager:_set_item_queue(player_index, slot_name, item)
 	self._queued_item_map = self._queued_item_map or {}
 	self._queued_item_map[player_index] = self._queued_item_map[player_index] or {}
 	self._queued_item_map[player_index][slot_name] = item
 end
+
 function PlayerManager:_flush_item_queue(player_index, player)
 	if self._queued_item_map then
 		queued_player_item_map = self._queued_item_map[player_index]
@@ -1010,6 +1105,7 @@ function PlayerManager:_flush_item_queue(player_index, player)
 		end
 	end
 end
+
 function PlayerManager:on_peer_synch_request(peer)
 	self:player_unit():network():synch_to_peer(peer)
 end

@@ -1,8 +1,10 @@
 core:import("CoreMissionScriptElement")
 ElementGameDirection = ElementGameDirection or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementGameDirection:init(...)
 	ElementGameDirection.super.init(self, ...)
 end
+
 function ElementGameDirection:on_executed(instigator)
 	if not self._values.enabled then
 		return

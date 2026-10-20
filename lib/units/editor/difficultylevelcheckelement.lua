@@ -1,9 +1,11 @@
 DifficultyLevelCheckElement = DifficultyLevelCheckElement or class(MissionElement)
+
 function DifficultyLevelCheckElement:init(unit)
 	DifficultyLevelCheckElement.super.init(self, unit)
 	self._hed.difficulty = "easy"
 	table.insert(self._save_values, "difficulty")
 end
+
 function DifficultyLevelCheckElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

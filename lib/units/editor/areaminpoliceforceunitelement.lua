@@ -1,9 +1,11 @@
 AreaMinPoliceForceUnitElement = AreaMinPoliceForceUnitElement or class(MissionElement)
+
 function AreaMinPoliceForceUnitElement:init(unit)
 	AreaMinPoliceForceUnitElement.super.init(self, unit)
 	self._hed.amount = 1
 	table.insert(self._save_values, "amount")
 end
+
 function AreaMinPoliceForceUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

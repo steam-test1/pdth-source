@@ -1,4 +1,5 @@
 CoreEnvEditor = CoreEnvEditor or class()
+
 function CoreEnvEditor:create_interface()
 	self:add_post_processors_param("hdr_post_processor", "tone_mapping", "$template_mix", DummyWidget:new(""))
 	local gui = self:add_post_processors_param("fog_processor", "fog", "start_color", EnvEdColorBox:new(self, self:get_tab("Post Processor"), "Color"))
@@ -103,6 +104,7 @@ function CoreEnvEditor:create_interface()
 		self:add_gui_element(gui, "Flare", "Plane " .. num_str)
 	end
 end
+
 function CoreEnvEditor:create_simple_interface()
 	local gui = self:add_post_processors_param("hdr_post_processor", "tone_mapping", "$template_mix", EnvironmentEditorEnvMixer:new(self, self:get_tab("Global Illumination"), "Mix"))
 	self:add_gui_element(gui, "Global Illumination", "Template")

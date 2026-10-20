@@ -1,7 +1,9 @@
 SyncUnitData = SyncUnitData or class()
+
 function SyncUnitData:init(unit)
 	self._unit = unit
 end
+
 function SyncUnitData:save(data)
 	local state = {
 		lights = {}
@@ -24,6 +26,7 @@ function SyncUnitData:save(data)
 	state.projection_light = self._unit:unit_data().projection_light
 	data.SyncUnitData = state
 end
+
 function SyncUnitData:load(data)
 	local state = data.SyncUnitData
 	self._unit:unit_data().unit_id = self._unit:editor_id()

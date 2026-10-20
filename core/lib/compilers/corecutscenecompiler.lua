@@ -3,6 +3,7 @@ require("core/lib/compilers/CoreCutsceneOptimizer")
 require("core/lib/utils/dev/tools/cutscene_editor/CoreCutsceneEditorProject")
 require("core/lib/utils/dev/tools/cutscene_editor/CoreCutsceneFootage")
 CoreCutsceneCompiler = CoreCutsceneCompiler or class()
+
 function CoreCutsceneCompiler:compile(file, dest, force_recompile)
 	if file.type ~= "cutscene" then
 		return false
@@ -26,6 +27,7 @@ function CoreCutsceneCompiler:compile(file, dest, force_recompile)
 	end
 	return true
 end
+
 function CoreCutsceneCompiler:_load_project(path)
 	if managers.database:has(path) then
 		local project = CoreCutsceneEditorProject:new()
@@ -34,6 +36,7 @@ function CoreCutsceneCompiler:_load_project(path)
 	end
 	return nil
 end
+
 function CoreCutsceneCompiler:_create_optimizer_for_project(project)
 	local optimizer = CoreCutsceneOptimizer:new()
 	optimizer:set_compression_enabled("win32", project:export_type() == "in_game_use")
@@ -54,6 +57,7 @@ function CoreCutsceneCompiler:_create_optimizer_for_project(project)
 	end
 	return optimizer
 end
+
 function CoreCutsceneCompiler:_create_clip(clip_descriptor)
 	local cutscene = managers.cutscene:get_cutscene(clip_descriptor.cutscene)
 	local footage = assert(CoreCutsceneFootage:new(cutscene), "Cutscene \"" .. clip_descriptor.cutscene .. "\" does not exist.")

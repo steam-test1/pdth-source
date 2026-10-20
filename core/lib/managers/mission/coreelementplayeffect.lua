@@ -3,6 +3,7 @@ core:import("CoreEngineAccess")
 core:import("CoreMissionScriptElement")
 ElementPlayEffect = ElementPlayEffect or class(CoreMissionScriptElement.MissionScriptElement)
 ElementPlayEffect.IDS_EFFECT = Idstring("effect")
+
 function ElementPlayEffect:init(...)
 	ElementPlayEffect.super.init(self, ...)
 	if Application:editor() then
@@ -13,9 +14,11 @@ function ElementPlayEffect:init(...)
 		end
 	end
 end
+
 function ElementPlayEffect:client_on_executed(...)
 	self:on_executed(...)
 end
+
 function ElementPlayEffect:on_executed(instigator)
 	if not self._values.enabled then
 		return
@@ -23,6 +26,7 @@ function ElementPlayEffect:on_executed(instigator)
 	self:play_effect()
 	ElementPlayEffect.super.on_executed(self, instigator)
 end
+
 function ElementPlayEffect:play_effect()
 	if self._values.effect ~= "none" then
 		local params = {}
@@ -37,19 +41,25 @@ function ElementPlayEffect:play_effect()
 		managers.editor:output_error("Cant spawn effect named \"none\" [" .. self._editor_name .. "]")
 	end
 end
+
 function ElementPlayEffect:kill()
 	managers.environment_effects:kill_mission_effect(self._id)
 end
+
 function ElementPlayEffect:fade_kill()
 	managers.environment_effects:fade_kill_mission_effect(self._id)
 end
+
 ElementStopEffect = ElementStopEffect or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementStopEffect:init(...)
 	ElementStopEffect.super.init(self, ...)
 end
+
 function ElementStopEffect:client_on_executed(...)
 	self:on_executed(...)
 end
+
 function ElementStopEffect:on_executed(instigator)
 	if not self._values.enabled then
 		return

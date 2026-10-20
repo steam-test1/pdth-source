@@ -13,14 +13,17 @@ CoreUnitCallbackCutsceneKey:attribute_affects("method", "arguments")
 CoreUnitCallbackCutsceneKey.control_for_unit_name = CoreCutsceneKeyBase.standard_combo_box_control
 CoreUnitCallbackCutsceneKey.control_for_extension = CoreCutsceneKeyBase.standard_combo_box_control
 CoreUnitCallbackCutsceneKey.control_for_method = CoreCutsceneKeyBase.standard_combo_box_control
+
 function CoreUnitCallbackCutsceneKey:__tostring()
 	return "Call " .. self:unit_name() .. ":" .. self:extension() .. "():" .. self:method() .. "(" .. self:arguments_string() .. ")"
 end
+
 function CoreUnitCallbackCutsceneKey:arguments_string()
 	return string.join(", ", table.collect(self._method_params and self._method_params[self:method()] or {}, function(p)
 		return p:inspect()
 	end))
 end
+
 function CoreUnitCallbackCutsceneKey:load(key_node, loading_class)
 	self.super.load(self, key_node, loading_class)
 	self._method_params = {}
@@ -34,6 +37,7 @@ function CoreUnitCallbackCutsceneKey:load(key_node, loading_class)
 		self._method_params[self:method()] = params
 	end
 end
+
 function CoreUnitCallbackCutsceneKey:_save_under(parent_node)
 	local key_node = self.super._save_under(self, parent_node)
 	for _, param in ipairs(self._method_params and self._method_params[self:method()] or {}) do
@@ -43,27 +47,33 @@ function CoreUnitCallbackCutsceneKey:_save_under(parent_node)
 	end
 	return key_node
 end
+
 function CoreUnitCallbackCutsceneKey:play(player, undo, fast_forward)
 	if self:enabled() then
 		local method_name = undo and "undo_" .. self:method() or self:method()
 		self:_invoke_if_exists(method_name, player)
 	end
 end
+
 function CoreUnitCallbackCutsceneKey:skip(player)
 	if self:enabled() then
 		self:_invoke_if_exists("skip_" .. self:method(), player)
 	end
 end
+
 function CoreUnitCallbackCutsceneKey:is_valid_unit_name(unit_name)
 	return self.super.is_valid_unit_name(self, unit_name) and not table.empty(self:_unit_extension_info(unit_name))
 end
+
 function CoreUnitCallbackCutsceneKey:is_valid_extension(extension)
 	local methods = self:_unit_extension_info(self:unit_name())[extension]
 	return methods and not table.empty(methods)
 end
+
 function CoreUnitCallbackCutsceneKey:is_valid_method(method)
 	return method ~= nil and not string.begins(method, "undo_") and not string.begins(method, "skip_")
 end
+
 function CoreUnitCallbackCutsceneKey:refresh_control_for_extension(control)
 	control:freeze()
 	control:clear()
@@ -84,6 +94,7 @@ function CoreUnitCallbackCutsceneKey:refresh_control_for_extension(control)
 	end
 	control:thaw()
 end
+
 function CoreUnitCallbackCutsceneKey:refresh_control_for_method(control)
 	control:freeze()
 	control:clear()
@@ -102,6 +113,7 @@ function CoreUnitCallbackCutsceneKey:refresh_control_for_method(control)
 	end
 	control:thaw()
 end
+
 function CoreUnitCallbackCutsceneKey:refresh_control_for_arguments(panel)
 	panel:freeze()
 	panel:destroy_children()
@@ -151,10 +163,12 @@ function CoreUnitCallbackCutsceneKey:refresh_control_for_arguments(panel)
 	panel:set_sizer(panel_sizer)
 	panel:thaw()
 end
+
 function CoreUnitCallbackCutsceneKey:control_for_arguments(parent_frame, callback_func)
 	local panel = EWS:Panel(parent_frame)
 	return panel
 end
+
 function CoreUnitCallbackCutsceneKey:_invoke_if_exists(method_name, player)
 	local extension = self:_unit_extension(self:unit_name(), self:extension(), true)
 	if not extension then
@@ -182,6 +196,7 @@ function CoreUnitCallbackCutsceneKey:_invoke_if_exists(method_name, player)
 	end
 	func(extension, table.unpack_sparse(param_values))
 end
+
 function CoreUnitCallbackCutsceneKey:_param_with_name(param_name)
 	assert(self:is_valid_method(self:method()), "Method \"" .. self:method() .. "\" is invalid.")
 	local params = self._method_params and self._method_params[self:method()]
@@ -200,20 +215,25 @@ function CoreUnitCallbackCutsceneKey:_param_with_name(param_name)
 	end
 	return param
 end
+
 CoreUnitCallbackCutsceneKeyParam = CoreUnitCallbackCutsceneKeyParam or class()
+
 function CoreUnitCallbackCutsceneKeyParam:__tostring()
 	return tostring(self.name) .. "=" .. tostring(self:inspect())
 end
+
 function CoreUnitCallbackCutsceneKeyParam:init()
 	self.value_type = "nil"
 	self.name = "nil"
 	self.string_value = ""
 end
+
 function CoreUnitCallbackCutsceneKeyParam:load(param_node)
 	self.value_type = param_node:name()
 	self.name = param_node:parameter("name")
 	self.string_value = param_node:parameter("value")
 end
+
 function CoreUnitCallbackCutsceneKeyParam:value(cutscene_key)
 	if not self:is_nil() then
 		if self.value_type == "string" then
@@ -228,12 +248,15 @@ function CoreUnitCallbackCutsceneKeyParam:value(cutscene_key)
 	end
 	return nil
 end
+
 function CoreUnitCallbackCutsceneKeyParam:is_nil()
 	return self.value_type == "nil"
 end
+
 function CoreUnitCallbackCutsceneKeyParam:inspect()
 	return self.string_value
 end
+
 function CoreUnitCallbackCutsceneKeyParam:_save_under(parent_node)
 	local param_node = parent_node:make_child(self.value_type)
 	param_node:set_parameter("name", tostring(self.name))

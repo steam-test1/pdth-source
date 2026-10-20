@@ -1,10 +1,12 @@
 MenuNodeCreditsGui = MenuNodeCreditsGui or class(MenuNodeGui)
 MenuNodeCreditsGui.PATH = "gamedata/"
 MenuNodeCreditsGui.FILE_EXTENSION = "credits"
+
 function MenuNodeCreditsGui:init(node, layer, parameters)
 	MenuNodeCreditsGui.super.init(self, node, layer, parameters)
 	self:_build_credits_panel(node._parameters.credits_file)
 end
+
 function MenuNodeCreditsGui:_build_credits_panel(file)
 	local lang_key = SystemInfo:language():key()
 	local files = {
@@ -143,6 +145,7 @@ function MenuNodeCreditsGui:_build_credits_panel(file)
 		end
 	end
 	self._credits_panel:set_height(ypos + 50)
+	
 	local function scroll_func(o)
 		local y = o:top()
 		local speed = 50 * global_scale
@@ -162,23 +165,30 @@ function MenuNodeCreditsGui:_build_credits_panel(file)
 			end
 		end
 	end
+	
 	self._credits_panel_thread = self._credits_panel:animate(scroll_func)
 end
+
 function MenuNodeCreditsGui:_setup_panels(node)
 	MenuNodeCreditsGui.super._setup_panels(self, node)
 end
+
 function MenuNodeCreditsGui:_create_menu_item(row_item)
 	MenuNodeCreditsGui.super._create_menu_item(self, row_item)
 end
+
 function MenuNodeCreditsGui:_setup_main_panel(safe_rect)
 	MenuNodeCreditsGui.super._setup_main_panel(self, safe_rect)
 end
+
 function MenuNodeCreditsGui:_setup_item_panel(safe_rect, res)
 	MenuNodeCreditsGui.super._setup_item_panel(self, safe_rect, res)
 end
+
 function MenuNodeCreditsGui:resolution_changed()
 	MenuNodeCreditsGui.super.resolution_changed(self)
 end
+
 function MenuNodeCreditsGui:close(...)
 	self._credits_panel:stop(self._credits_panel_thread)
 	self._clipping_panel:parent():remove(self._clipping_panel)

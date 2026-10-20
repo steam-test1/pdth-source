@@ -1,7 +1,9 @@
 MousePointerManager = MousePointerManager or class()
+
 function MousePointerManager:init()
 	self:_setup()
 end
+
 function MousePointerManager:_setup()
 	self._mouse_callbacks = {}
 	self._id = 0
@@ -28,11 +30,13 @@ function MousePointerManager:_setup()
 	})
 	self._ws:hide()
 end
+
 function MousePointerManager:get_id()
 	local id = "mouse_pointer_id" .. tostring(self._id)
 	self._id = self._id + 1
 	return id
 end
+
 function MousePointerManager:use_mouse(params)
 	if managers.controller:get_default_wrapper_type() ~= "pc" then
 		return
@@ -40,6 +44,7 @@ function MousePointerManager:use_mouse(params)
 	table.insert(self._mouse_callbacks, params)
 	self:_activate()
 end
+
 function MousePointerManager:remove_mouse(id)
 	if managers.controller:get_default_wrapper_type() ~= "pc" then
 		return
@@ -61,6 +66,7 @@ function MousePointerManager:remove_mouse(id)
 		self:_deactivate()
 	end
 end
+
 function MousePointerManager:_activate()
 	if self._active then
 		return
@@ -73,6 +79,7 @@ function MousePointerManager:_activate()
 	self._mouse:mouse_release(callback(self, self, "_mouse_release"))
 	self._mouse:mouse_click(callback(self, self, "_mouse_click"))
 end
+
 function MousePointerManager:_deactivate()
 	self._active = false
 	self._ws:hide()
@@ -81,30 +88,36 @@ function MousePointerManager:_deactivate()
 	self._mouse:mouse_release(nil)
 	self._mouse:mouse_click(nil)
 end
+
 function MousePointerManager:_mouse_move(o, x, y)
 	o:set_position(x, y)
 	if self._mouse_callbacks[#self._mouse_callbacks] and self._mouse_callbacks[#self._mouse_callbacks].mouse_move then
 		self._mouse_callbacks[#self._mouse_callbacks].mouse_move(o, x, y)
 	end
 end
+
 function MousePointerManager:_mouse_press(o, button, x, y)
 	if self._mouse_callbacks[#self._mouse_callbacks] and self._mouse_callbacks[#self._mouse_callbacks].mouse_press then
 		self._mouse_callbacks[#self._mouse_callbacks].mouse_press(o, button, x, y)
 	end
 end
+
 function MousePointerManager:_mouse_release(o, button, x, y)
 	if self._mouse_callbacks[#self._mouse_callbacks] and self._mouse_callbacks[#self._mouse_callbacks].mouse_release then
 		self._mouse_callbacks[#self._mouse_callbacks].mouse_release(o, button, x, y)
 	end
 end
+
 function MousePointerManager:_mouse_click(o, button, x, y)
 	if self._mouse_callbacks[#self._mouse_callbacks] and self._mouse_callbacks[#self._mouse_callbacks].mouse_click then
 		self._mouse_callbacks[#self._mouse_callbacks].mouse_click(o, button, x, y)
 	end
 end
+
 function MousePointerManager:mouse()
 	return self._mouse
 end
+
 function MousePointerManager:world_position()
 	return self._mouse:world_position()
 end

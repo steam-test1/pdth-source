@@ -1,13 +1,16 @@
 CoreDebugUnitElement = CoreDebugUnitElement or class(MissionElement)
 DebugUnitElement = DebugUnitElement or class(CoreDebugUnitElement)
+
 function DebugUnitElement:init(...)
 	CoreDebugUnitElement.init(self, ...)
 end
+
 function CoreDebugUnitElement:init(unit)
 	MissionElement.init(self, unit)
 	self._hed.debug_string = "none"
 	table.insert(self._save_values, "debug_string")
 end
+
 function CoreDebugUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

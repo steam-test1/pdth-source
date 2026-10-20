@@ -18,6 +18,7 @@ PlayerStandard.IDS_IDLE = Idstring("idle")
 PlayerStandard.IDS_USE = Idstring("use")
 PlayerStandard.IDS_RECOIL = Idstring("recoil")
 PlayerStandard.IDS_RECOIL_STEELSIGHT = Idstring("recoil_steelsight")
+
 function PlayerStandard:init(unit)
 	PlayerMovementState.init(self, unit)
 	self._tweak_data = tweak_data.player.movement_state.standard
@@ -46,6 +47,7 @@ function PlayerStandard:init(unit)
 	self._last_sent_pos_t = 0
 	self._ext_inventory:add_listener("PlayerStandard", {"add", "equip"}, callback(self, self, "inventory_clbk_listener"))
 end
+
 function PlayerStandard:enter(enter_data)
 	PlayerMovementState.enter(self, enter_data)
 	tweak_data:add_reload_callback(self, self.tweak_data_clbk_reload)
@@ -87,6 +89,7 @@ function PlayerStandard:enter(enter_data)
 	self._last_sent_pos_t = enter_data and enter_data.last_sent_pos_t or TimerManager:game():time()
 	self._last_sent_pos = enter_data and enter_data.last_sent_pos or mvector3.copy(self._pos)
 end
+
 function PlayerStandard:_enter(enter_data)
 	self._unit:base():set_slot(self._unit, 2)
 	if Network:is_server() and self._ext_movement:nav_tracker() then
@@ -108,6 +111,7 @@ function PlayerStandard:_enter(enter_data)
 	end
 	self._ext_inventory:set_mask_visibility(true)
 end
+
 function PlayerStandard:exit(new_state_name)
 	PlayerMovementState.exit(self)
 	tweak_data:remove_reload_callback(self)
@@ -142,6 +146,7 @@ function PlayerStandard:exit(new_state_name)
 	self._ducking = false
 	return exit_data
 end
+
 function PlayerStandard:update(t, dt)
 	PlayerMovementState.update(self, t, dt)
 	self:_calculate_standard_variables(t, dt)
@@ -151,10 +156,13 @@ function PlayerStandard:update(t, dt)
 	self:_upd_nav_data()
 	managers.hud:_update_crosshair_offset(t, dt)
 end
+
 function PlayerStandard:in_air()
 	return self._in_air
 end
+
 local temp_vec1 = Vector3()
+
 function PlayerStandard:_upd_nav_data()
 	if mvec3_dis_sq(self._m_pos, self._pos) > 1 then
 		if self._ext_movement:nav_tracker() then
@@ -181,6 +189,7 @@ function PlayerStandard:_upd_nav_data()
 		self._ext_movement:set_m_pos(self._pos)
 	end
 end
+
 function PlayerStandard:_calculate_standard_variables(t, dt)
 	self._gnd_ray = nil
 	self._gnd_ray_chk = nil
@@ -208,10 +217,12 @@ function PlayerStandard:_calculate_standard_variables(t, dt)
 	self._setting_hold_to_run = managers.user:get_setting("hold_to_run")
 	self._setting_hold_to_duck = managers.user:get_setting("hold_to_duck")
 end
+
 local tmp_ground_from_vec = Vector3()
 local tmp_ground_to_vec = Vector3()
 local up_offset_vec = math.UP * 30
 local down_offset_vec = math.UP * -40
+
 function PlayerStandard:_update_ground_ray()
 	local hips_pos = tmp_ground_from_vec
 	local down_pos = tmp_ground_to_vec
@@ -222,6 +233,7 @@ function PlayerStandard:_update_ground_ray()
 	self._gnd_ray = World:raycast("ray", hips_pos, down_pos, "slot_mask", self._slotmask_gnd_ray, "ray_type", "body mover", "sphere_cast_radius", 29, "report")
 	self._gnd_ray_chk = true
 end
+
 function PlayerStandard:_update_fwd_ray()
 	if self._in_steelsight then
 		local from = self._unit:movement():m_head_pos()
@@ -231,7 +243,9 @@ function PlayerStandard:_update_fwd_ray()
 		managers.environment_controller:set_dof_distance(math.max(0, (self._fwd_ray and self._fwd_ray.distance or 4000) - 200))
 	end
 end
+
 local win32 = SystemInfo:platform() == Idstring("WIN32")
+
 function PlayerStandard:_get_input(t, dt)
 	local pressed = self._controller:get_any_input_pressed()
 	local released = self._controller:get_any_input_released()
@@ -277,6 +291,7 @@ function PlayerStandard:_get_input(t, dt)
 	end
 	return input
 end
+
 function PlayerStandard:_update_check_actions(t, dt)
 	local input = self:_get_input()
 	self._stick_move = self._controller:get_input_axis("move")
@@ -442,9 +457,11 @@ function PlayerStandard:_update_check_actions(t, dt)
 	end
 	self:_find_pickups(t)
 end
+
 local mvec_pos_new = Vector3()
 local mvec_achieved_walk_vel = Vector3()
 local mvec_move_dir_normalized = Vector3()
+
 function PlayerStandard:_update_movement(t, dt)
 	local anim_data = self._unit:anim_data()
 	local pos_new
@@ -526,6 +543,7 @@ function PlayerStandard:_update_movement(t, dt)
 		end
 	end
 end
+
 function PlayerStandard:_get_walk_headbob()
 	if self._in_steelsight then
 		return 0
@@ -538,6 +556,7 @@ function PlayerStandard:_get_walk_headbob()
 	end
 	return 0.025
 end
+
 function PlayerStandard:_update_foley(t, input)
 	if not self._gnd_ray then
 		if not self._in_air then
@@ -575,6 +594,7 @@ function PlayerStandard:_update_foley(t, input)
 	end
 	self:_check_step(t)
 end
+
 function PlayerStandard:_check_step(t)
 	if self._in_air then
 		return
@@ -586,6 +606,7 @@ function PlayerStandard:_check_step(t)
 		self._unit:base():anim_data_clbk_footstep()
 	end
 end
+
 function PlayerStandard:_update_crosshair_offset(t)
 	if not alive(self._equipped_unit) then
 		return
@@ -605,6 +626,7 @@ function PlayerStandard:_update_crosshair_offset(t)
 		managers.hud:set_crosshair_offset(tweak_data.weapon[name_id].crosshair[self._ducking and "crouching" or "standing"].offset * spread_multiplier)
 	end
 end
+
 function PlayerStandard:_stance_entered(unequipped)
 	local head_stance = self._ducking and tweak_data.player.stances.default.crouched.head or tweak_data.player.stances.default.standard.head
 	local weapon_id
@@ -618,6 +640,7 @@ function PlayerStandard:_stance_entered(unequipped)
 	self._camera_unit:base():clbk_stance_entered(misc_attribs.shoulders, head_stance, misc_attribs.vel_overshot, new_fov, misc_attribs.shakers, duration_multiplier)
 	managers.menu:set_mouse_sensitivity(self._in_steelsight and stances.steelsight.zoom_fov)
 end
+
 function PlayerStandard:_get_max_walk_speed(t)
 	if self._in_steelsight then
 		return self._tweak_data.movement.speed.STEELSIGHT_MAX
@@ -630,6 +653,7 @@ function PlayerStandard:_get_max_walk_speed(t)
 	end
 	return self._running and self._tweak_data.movement.speed.RUNNING_MAX or self._tweak_data.movement.speed.STANDARD_MAX
 end
+
 function PlayerStandard:_start_action_steelsight(t)
 	if self:_changing_weapon() or self:_is_reloading() or self:_interacting() or self._melee_expire_t or self._use_item_expire_t then
 		self._steelsight_wanted = true
@@ -643,6 +667,7 @@ function PlayerStandard:_start_action_steelsight(t)
 	self:_interupt_action_running(t)
 	self._equipped_unit:base():play_tweak_data_sound("enter_steelsight")
 end
+
 function PlayerStandard:_end_action_steelsight(t)
 	self._in_steelsight = false
 	managers.environment_controller:set_dof_distance()
@@ -650,12 +675,14 @@ function PlayerStandard:_end_action_steelsight(t)
 	self:_update_crosshair_offset()
 	self._equipped_unit:base():play_tweak_data_sound("leave_steelsight")
 end
+
 function PlayerStandard:_interupt_action_steelsight(t)
 	self._steelsight_wanted = false
 	if self._in_steelsight then
 		self:_end_action_steelsight(t)
 	end
 end
+
 function PlayerStandard:_start_action_running(t)
 	if not self._move_dir then
 		self._running_wanted = true
@@ -681,17 +708,20 @@ function PlayerStandard:_start_action_running(t)
 	self:_interupt_action_steelsight(t)
 	self:_interupt_action_ducking(t)
 end
+
 function PlayerStandard:_end_action_running(t)
 	if not self._end_running_expire_t then
 		self._end_running_expire_t = t + 0.4
 		self._unit:camera():play_redirect(self.IDS_STOP_RUNNING)
 	end
 end
+
 function PlayerStandard:_interupt_action_running(t)
 	if self._running and not self._end_running_expire_t then
 		self:_end_action_running(t)
 	end
 end
+
 function PlayerStandard:_start_action_ducking(t)
 	if self:_interacting() then
 		return
@@ -705,6 +735,7 @@ function PlayerStandard:_start_action_ducking(t)
 	self._unit:activate_mover(PlayerStandard.MOVER_DUCK, velocity)
 	self._ext_network:send("set_pose", 2)
 end
+
 function PlayerStandard:_end_action_ducking(t)
 	if not self:_can_stand() then
 		return
@@ -717,11 +748,13 @@ function PlayerStandard:_end_action_ducking(t)
 	self._unit:activate_mover(PlayerStandard.MOVER_STAND, velocity)
 	self._ext_network:send("set_pose", 1)
 end
+
 function PlayerStandard:_interupt_action_ducking(t)
 	if self._ducking then
 		self:_end_action_ducking(t)
 	end
 end
+
 function PlayerStandard:_can_stand()
 	local offset = 50
 	local radius = 30
@@ -735,6 +768,7 @@ function PlayerStandard:_can_stand()
 	end
 	return true
 end
+
 function PlayerStandard:_check_action_interact(t, input)
 	local new_action, timer, interact_object
 	local interaction_wanted = input.btn_interact_press
@@ -757,6 +791,7 @@ function PlayerStandard:_check_action_interact(t, input)
 	end
 	return new_action
 end
+
 function PlayerStandard:_start_action_interact(t, input, timer, interact_object)
 	self:_interupt_action_reload(t)
 	self:_interupt_action_steelsight(t)
@@ -767,6 +802,7 @@ function PlayerStandard:_start_action_interact(t, input, timer, interact_object)
 	self._equipped_unit:base():tweak_data_anim_play("unequip")
 	managers.hud:show_interaction_bar(0, timer)
 end
+
 function PlayerStandard:_interupt_action_interact(t, input)
 	if self._interact_expire_t then
 		self._interact_expire_t = nil
@@ -781,13 +817,16 @@ function PlayerStandard:_interupt_action_interact(t, input)
 		self._equipped_unit:base():tweak_data_anim_stop("unequip")
 	end
 end
+
 function PlayerStandard:_end_action_interact()
 	managers.interaction:end_action_interact(self._unit)
 	self:_interupt_action_interact()
 end
+
 function PlayerStandard:_interacting()
 	return self._interact_expire_t
 end
+
 function PlayerStandard:_check_action_melee(t, input)
 	local new_action
 	local action_wanted = input.btn_melee_press
@@ -840,9 +879,11 @@ function PlayerStandard:_check_action_melee(t, input)
 	end
 	return new_action
 end
+
 function PlayerStandard:_interupt_action_melee(t)
 	self._melee_expire_t = nil
 end
+
 function PlayerStandard:_check_action_reload(t, input)
 	local new_action
 	local action_wanted = input.btn_reload_press
@@ -855,6 +896,7 @@ function PlayerStandard:_check_action_reload(t, input)
 	end
 	return new_action
 end
+
 function PlayerStandard:_check_use_item(t, input)
 	local new_action
 	local action_wanted = input.btn_use_item_press
@@ -876,9 +918,11 @@ function PlayerStandard:_check_use_item(t, input)
 	end
 	return new_action
 end
+
 function PlayerStandard:_interupt_action_use_item(t)
 	self._use_item_expire_t = nil
 end
+
 function PlayerStandard:_check_set_upgrade(t, input)
 	if not self._unit:base():stats_screen_visible() then
 		return
@@ -904,6 +948,7 @@ function PlayerStandard:_check_set_upgrade(t, input)
 	end
 	return new_action
 end
+
 function PlayerStandard:_check_change_weapon(t, input)
 	local new_action
 	local action_wanted = input.btn_next_weapon_press or input.btn_previous_weapon_press
@@ -927,6 +972,7 @@ function PlayerStandard:_check_change_weapon(t, input)
 	end
 	return new_action
 end
+
 function PlayerStandard:_add_unit_to_char_table(char_table, unit, unit_type, interaction_dist, interaction_through_walls, tight_area, priority, my_head_pos, cam_fwd)
 	if unit:unit_data().disable_shout and not unit:brain():interaction_voice() then
 		return
@@ -959,6 +1005,7 @@ function PlayerStandard:_add_unit_to_char_table(char_table, unit, unit_type, int
 		end
 	end
 end
+
 function PlayerStandard:_get_interaction_target(char_table, my_head_pos, cam_fwd)
 	local prime_target
 	local ray = World:raycast("ray", my_head_pos, my_head_pos + cam_fwd * 100 * 100, "slot_mask", self._slotmask_long_distance_interaction)
@@ -982,6 +1029,7 @@ function PlayerStandard:_get_interaction_target(char_table, my_head_pos, cam_fwd
 	end
 	return prime_target
 end
+
 function PlayerStandard:_get_intimidation_action(prime_target, char_table)
 	local voice_type, new_action, plural
 	local unit_type_enemy = 0
@@ -1065,6 +1113,7 @@ function PlayerStandard:_get_intimidation_action(prime_target, char_table)
 	end
 	return voice_type, plural, prime_target
 end
+
 function PlayerStandard:_get_unit_intimidation_action(intimidate_enemies, intimidate_civilians, intimidate_teammates, only_special_enemies)
 	local char_table = {}
 	local unit_type_enemy = 0
@@ -1104,6 +1153,7 @@ function PlayerStandard:_get_unit_intimidation_action(intimidate_enemies, intimi
 	local prime_target = self:_get_interaction_target(char_table, my_head_pos, cam_fwd)
 	return self:_get_intimidation_action(prime_target, char_table)
 end
+
 function PlayerStandard:_start_action_intimidate(t)
 	if not self._intimidate_t or t - self._intimidate_t > tweak_data.player.movement_state.interaction_delay then
 		local voice_type, plural, prime_target = self:_get_unit_intimidation_action(true, true, true)
@@ -1179,6 +1229,7 @@ function PlayerStandard:_start_action_intimidate(t)
 		self:_do_action_intimidate(t, interact_type, sound_name, skip_alert)
 	end
 end
+
 function PlayerStandard:_do_action_intimidate(t, interact_type, sound_name, skip_alert)
 	if sound_name then
 		self._intimidate_t = t
@@ -1188,6 +1239,7 @@ function PlayerStandard:_do_action_intimidate(t, interact_type, sound_name, skip
 		end
 	end
 end
+
 function PlayerStandard:say_line(sound_name, skip_alert)
 	self._unit:sound():say(sound_name, true)
 	skip_alert = skip_alert or managers.groupai:state():whisper_mode()
@@ -1201,6 +1253,7 @@ function PlayerStandard:say_line(sound_name, skip_alert)
 		managers.groupai:state():propagate_alert(new_alert)
 	end
 end
+
 function PlayerStandard:_play_distance_interact_redirect(t, variant)
 	managers.network:session():send_to_peers("play_distance_interact_redirect", self._unit, variant)
 	if self._in_steelsight then
@@ -1217,9 +1270,11 @@ function PlayerStandard:_play_distance_interact_redirect(t, variant)
 	end
 	self._unit:camera():play_redirect(Idstring(variant))
 end
+
 function PlayerStandard:_break_intimidate_redirect(t)
 	self._unit:camera():play_redirect(self.IDS_IDLE)
 end
+
 function PlayerStandard:_play_interact_redirect(t)
 	if self._shooting or not self._equipped_unit:base():start_shooting_allowed() then
 		return
@@ -1232,9 +1287,11 @@ function PlayerStandard:_play_interact_redirect(t)
 	end
 	self._unit:camera():play_redirect(self.IDS_USE)
 end
+
 function PlayerStandard:_break_interact_redirect(t)
 	self._unit:camera():play_redirect(self.IDS_IDLE)
 end
+
 function PlayerStandard:_check_action_equip(t, input)
 	local new_action
 	local selection_wanted = input.btn_primary_choice
@@ -1250,6 +1307,7 @@ function PlayerStandard:_check_action_equip(t, input)
 	end
 	return new_action
 end
+
 function PlayerStandard:_check_action_jump(t, input)
 	local new_action
 	local action_wanted = input.btn_jump_press
@@ -1274,6 +1332,7 @@ function PlayerStandard:_check_action_jump(t, input)
 	end
 	return new_action
 end
+
 function PlayerStandard:_start_action_jump(t, action_start_data)
 	self:_interupt_action_running(t)
 	self._jump_t = t
@@ -1288,9 +1347,11 @@ function PlayerStandard:_start_action_jump(t, action_start_data)
 	end
 	self._unit:mover():set_velocity(jump_vec)
 end
+
 function PlayerStandard:shooting()
 	return self._shooting
 end
+
 function PlayerStandard:_check_action_primary_attack(t, input)
 	local new_action
 	local action_wanted = input.btn_primary_attack_state
@@ -1379,6 +1440,7 @@ function PlayerStandard:_check_action_primary_attack(t, input)
 	end
 	return new_action
 end
+
 function PlayerStandard:_start_action_reload_enter(t)
 	if self._equipped_unit:base():can_reload() then
 		self:_interupt_action_steelsight(t)
@@ -1392,6 +1454,7 @@ function PlayerStandard:_start_action_reload_enter(t)
 		self:_start_action_reload(t)
 	end
 end
+
 function PlayerStandard:_start_action_reload(t)
 	if self._equipped_unit:base():can_reload() then
 		self._equipped_unit:base():tweak_data_anim_stop("fire")
@@ -1415,6 +1478,7 @@ function PlayerStandard:_start_action_reload(t)
 		end
 	end
 end
+
 function PlayerStandard:_interupt_action_reload(t)
 	if self:_is_reloading() then
 		self._equipped_unit:base():tweak_data_anim_stop("reload")
@@ -1425,9 +1489,11 @@ function PlayerStandard:_interupt_action_reload(t)
 	self._reload_expire_t = nil
 	self._reload_exit_expire_t = nil
 end
+
 function PlayerStandard:_is_reloading()
 	return self._reload_expire_t or self._reload_enter_expire_t or self._reload_exit_expire_t
 end
+
 function PlayerStandard:_start_action_unequip_weapon(t, data)
 	self._equipped_unit:base():tweak_data_anim_play("unequip")
 	local tweak_data = self._equipped_unit:base():weapon_tweak_data()
@@ -1438,6 +1504,7 @@ function PlayerStandard:_start_action_unequip_weapon(t, data)
 	self:_interupt_action_reload(t)
 	self:_interupt_action_steelsight(t)
 end
+
 function PlayerStandard:_start_action_equip_weapon(t)
 	if self._change_weapon_data.next then
 		self._ext_inventory:equip_next(false)
@@ -1451,9 +1518,11 @@ function PlayerStandard:_start_action_equip_weapon(t)
 	self._unit:camera():play_redirect(self.IDS_EQUIP)
 	managers.upgrades:setup_current_weapon()
 end
+
 function PlayerStandard:_changing_weapon()
 	return self._unequip_weapon_expire_t or self._equip_weapon_expire_t
 end
+
 function PlayerStandard:_find_pickups(t)
 	local pickups = World:find_units_quick("sphere", self._unit:movement():m_pos(), 200, self._slotmask_pickups)
 	for _, pickup in ipairs(pickups) do
@@ -1465,10 +1534,13 @@ function PlayerStandard:_find_pickups(t)
 		end
 	end
 end
+
 function PlayerStandard:get_melee_damage_result(attack_data)
 end
+
 function PlayerStandard:get_bullet_damage_result(attack_data)
 end
+
 function PlayerStandard:_get_dir_str_from_vec(fwd, dir_vec)
 	local att_dir_spin = dir_vec:to_polar_with_reference(fwd, math.UP).spin
 	local abs_spin = math.abs(att_dir_spin)
@@ -1482,6 +1554,7 @@ function PlayerStandard:_get_dir_str_from_vec(fwd, dir_vec)
 		return "left"
 	end
 end
+
 function PlayerStandard:inventory_clbk_listener(unit, event)
 	if event == "add" then
 		local data = self._ext_inventory:get_latest_addition_hud_data()
@@ -1502,6 +1575,7 @@ function PlayerStandard:inventory_clbk_listener(unit, event)
 		self:_stance_entered()
 	end
 end
+
 function PlayerStandard:save(data)
 	if self._ducking then
 		data.pose = 2
@@ -1509,12 +1583,14 @@ function PlayerStandard:save(data)
 		data.pose = 1
 	end
 end
+
 function PlayerStandard:destroy()
 	if self._pos_reservation then
 		managers.navigation:unreserve_pos(self._pos_reservation)
 		self._pos_reservation = nil
 	end
 end
+
 function PlayerStandard:tweak_data_clbk_reload()
 	self._tweak_data = tweak_data.player.movement_state.standard
 end

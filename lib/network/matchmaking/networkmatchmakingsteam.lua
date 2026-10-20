@@ -1,6 +1,7 @@
 NetworkMatchMakingSTEAM = NetworkMatchMakingSTEAM or class()
 NetworkMatchMakingSTEAM.OPEN_SLOTS = 4
 NetworkMatchMakingSTEAM._BUILD_SEARCH_INTEREST_KEY = "1.21.0"
+
 function NetworkMatchMakingSTEAM:init()
 	cat_print("lobby", "matchmake = NetworkMatchMakingSTEAM")
 	self._callback_map = {}
@@ -8,9 +9,11 @@ function NetworkMatchMakingSTEAM:init()
 	self._difficulty_filter = 0
 	self._try_re_enter_lobby = nil
 end
+
 function NetworkMatchMakingSTEAM:register_callback(event, callback)
 	self._callback_map[event] = callback
 end
+
 function NetworkMatchMakingSTEAM:_call_callback(name, ...)
 	if self._callback_map[name] then
 		return self._callback_map[name](...)
@@ -18,15 +21,18 @@ function NetworkMatchMakingSTEAM:_call_callback(name, ...)
 		Application:error("Callback " .. name .. " not found.")
 	end
 end
+
 function NetworkMatchMakingSTEAM:_has_callback(name)
 	if self._callback_map[name] then
 		return true
 	end
 	return false
 end
+
 function NetworkMatchMakingSTEAM:destroy_game()
 	self:leave_game()
 end
+
 function NetworkMatchMakingSTEAM:_load_globals()
 	if Global.steam and Global.steam.match then
 		self.lobby_handler = Global.steam.match.lobby_handler
@@ -39,6 +45,7 @@ function NetworkMatchMakingSTEAM:_load_globals()
 		Global.steam.match = nil
 	end
 end
+
 function NetworkMatchMakingSTEAM:_save_globals()
 	if not Global.steam then
 		Global.steam = {}
@@ -49,6 +56,7 @@ function NetworkMatchMakingSTEAM:_save_globals()
 	Global.steam.match.try_re_enter_lobby = self._try_re_enter_lobby
 	Global.steam.match.server_rpc = self._server_rpc
 end
+
 function NetworkMatchMakingSTEAM:update()
 	Steam:update()
 	if self._try_re_enter_lobby then
@@ -61,6 +69,7 @@ function NetworkMatchMakingSTEAM:update()
 			if self._try_re_enter_lobby == "open" then
 				self._try_re_enter_lobby = "joining"
 				Application:error("RE-ENTERING LOBBY", self.lobby_handler:id())
+				
 				local function _join_lobby_result_f(result, handler)
 					if result == "success" then
 						Application:error("SUCCESS!")
@@ -71,12 +80,14 @@ function NetworkMatchMakingSTEAM:update()
 					self._server_rpc:re_open_lobby_request(false)
 					self._try_re_enter_lobby = nil
 				end
+				
 				Steam:join_lobby(self.lobby_handler:id(), _join_lobby_result_f)
 			else
 			end
 		end
 	end
 end
+
 function NetworkMatchMakingSTEAM:leave_game()
 	self._server_rpc = nil
 	if self.lobby_handler then
@@ -88,11 +99,13 @@ function NetworkMatchMakingSTEAM:leave_game()
 	end
 	print("NetworkMatchMakingSTEAM:leave_game()")
 end
+
 function NetworkMatchMakingSTEAM:get_friends_lobbies()
 	local lobbies = {}
 	local num_updated_lobbies = 0
 	local empty = function()
 	end
+	
 	local function f(updated_lobby)
 		updated_lobby:setup_callback(empty)
 		print("NetworkMatchMakingSTEAM:get_friends_lobbies f")
@@ -121,6 +134,7 @@ function NetworkMatchMakingSTEAM:get_friends_lobbies()
 			self:_call_callback("search_lobby", info)
 		end
 	end
+	
 	if Steam:friends() then
 		for _, friend in ipairs(Steam:friends()) do
 			local lobby = friend:lobby()
@@ -147,21 +161,27 @@ function NetworkMatchMakingSTEAM:get_friends_lobbies()
 		end
 	end
 end
+
 function NetworkMatchMakingSTEAM:search_friends_only()
 	return self._search_friends_only
 end
+
 function NetworkMatchMakingSTEAM:distance_filter()
 	return self._distance_filter
 end
+
 function NetworkMatchMakingSTEAM:set_distance_filter(filter)
 	self._distance_filter = filter
 end
+
 function NetworkMatchMakingSTEAM:difficulty_filter()
 	return self._difficulty_filter
 end
+
 function NetworkMatchMakingSTEAM:set_difficulty_filter(filter)
 	self._difficulty_filter = filter
 end
+
 function NetworkMatchMakingSTEAM:search_lobby(friends_only)
 	self._search_friends_only = friends_only
 	if not self:_has_callback("search_lobby") then
@@ -173,6 +193,7 @@ function NetworkMatchMakingSTEAM:search_lobby(friends_only)
 	else
 		local function refresh_lobby()
 			local lobbies = self.browser:lobbies()
+			
 			local info = {
 				room_list = {},
 				attribute_list = {}
@@ -196,6 +217,7 @@ function NetworkMatchMakingSTEAM:search_lobby(friends_only)
 			end
 			self:_call_callback("search_lobby", info)
 		end
+		
 		self.browser = LobbyBrowser(refresh_lobby, refresh_lobby)
 		local interest_keys = {
 			"owner_id",
@@ -220,13 +242,16 @@ function NetworkMatchMakingSTEAM:search_lobby(friends_only)
 		end
 	end
 end
+
 function NetworkMatchMakingSTEAM:search_lobby_done()
 	managers.system_menu:close("find_server")
 	self.browser = nil
 end
+
 function NetworkMatchMakingSTEAM:game_owner_name()
 	return managers.network.matchmake.lobby_handler:get_lobby_data("owner_name")
 end
+
 function NetworkMatchMakingSTEAM:is_server_ok(friends_only, room, attributes_numbers)
 	local permission = tweak_data:index_to_permission(attributes_numbers[3])
 	print("MenuSTEAMHostBrowser:_is_server_ok ", attributes_numbers[3], permission)
@@ -244,11 +269,13 @@ function NetworkMatchMakingSTEAM:is_server_ok(friends_only, room, attributes_num
 	end
 	return true
 end
+
 function NetworkMatchMakingSTEAM:join_server_with_check(room_id)
 	managers.menu:show_joining_lobby_dialog()
 	local lobby = Steam:lobby(room_id)
 	local empty = function()
 	end
+	
 	local function f()
 		print("[NetworkMatchMakingSTEAM:join_server_with_check f]")
 		lobby:setup_callback(empty)
@@ -285,6 +312,7 @@ function NetworkMatchMakingSTEAM:join_server_with_check(room_id)
 			self:search_lobby(self:search_friends_only())
 		end
 	end
+	
 	lobby:setup_callback(f)
 	if lobby:key_value("state") == "value_pending" then
 		print("NetworkMatchMakingSTEAM:join_server_with_check value_pending")
@@ -293,6 +321,7 @@ function NetworkMatchMakingSTEAM:join_server_with_check(room_id)
 		f()
 	end
 end
+
 function NetworkMatchMakingSTEAM._on_member_left(steam_id, status)
 	if not managers.network:session() then
 		return
@@ -307,6 +336,7 @@ function NetworkMatchMakingSTEAM._on_member_left(steam_id, status)
 	end
 	managers.network:session():on_peer_left_lobby(peer)
 end
+
 function NetworkMatchMakingSTEAM._on_memberstatus_change(memberstatus)
 	print("[NetworkMatchMakingSTEAM._on_memberstatus_change]", memberstatus)
 	local user, status = unpack(string.split(memberstatus, ":"))
@@ -314,16 +344,20 @@ function NetworkMatchMakingSTEAM._on_memberstatus_change(memberstatus)
 		NetworkMatchMakingSTEAM._on_member_left(user, status)
 	end
 end
+
 function NetworkMatchMakingSTEAM._on_data_update(...)
 	print("[NetworkMatchMakingSTEAM._on_data_update]", ...)
 end
+
 function NetworkMatchMakingSTEAM._on_chat_message(...)
 	print("[NetworkMatchMakingSTEAM._on_chat_message]", ...)
 end
+
 function NetworkMatchMakingSTEAM:join_server(room_id, skip_showing_dialog, owner_ip)
 	if not skip_showing_dialog then
 		managers.menu:show_joining_lobby_dialog()
 	end
+	
 	local function f(result, handler)
 		print("[NetworkMatchMakingSTEAM:join_server:f]", result, handler)
 		managers.system_menu:close("join_server")
@@ -399,13 +433,17 @@ function NetworkMatchMakingSTEAM:join_server(room_id, skip_showing_dialog, owner
 			self:search_lobby(self:search_friends_only())
 		end
 	end
+	
 	Steam:join_lobby(room_id, f)
 end
+
 function NetworkMatchMakingSTEAM:send_join_invite(friend)
 end
+
 function NetworkMatchMakingSTEAM:set_server_attributes(settings)
 	self:set_attributes(settings)
 end
+
 function NetworkMatchMakingSTEAM:create_lobby(settings)
 	self._num_players = nil
 	local dialog_data = {}
@@ -414,6 +452,7 @@ function NetworkMatchMakingSTEAM:create_lobby(settings)
 	dialog_data.id = "create_lobby"
 	dialog_data.no_buttons = true
 	managers.system_menu:show(dialog_data)
+	
 	local function f(result, handler)
 		print("Create lobby callback!!", result, handler)
 		if result == "success" then
@@ -439,8 +478,10 @@ function NetworkMatchMakingSTEAM:create_lobby(settings)
 			managers.system_menu:show(dialog_data)
 		end
 	end
+	
 	return Steam:create_lobby(f, NetworkMatchMakingSTEAM.OPEN_SLOTS, "invisible")
 end
+
 function NetworkMatchMakingSTEAM:set_num_players(num)
 	print("NetworkMatchMakingSTEAM:set_num_players", num)
 	self._num_players = num
@@ -449,6 +490,7 @@ function NetworkMatchMakingSTEAM:set_num_players(num)
 		self.lobby_handler:set_lobby_data(self._lobby_attributes)
 	end
 end
+
 function NetworkMatchMakingSTEAM:set_server_state(state)
 	if self._lobby_attributes then
 		local state_id = tweak_data:server_state_to_index(state)
@@ -461,15 +503,18 @@ function NetworkMatchMakingSTEAM:set_server_state(state)
 		end
 	end
 end
+
 function NetworkMatchMakingSTEAM:set_server_joinable(state)
 	print("[NetworkMatchMakingSTEAM:set_server_joinable]", state)
 	if self.lobby_handler then
 		self.lobby_handler:set_joinable(state)
 	end
 end
+
 function NetworkMatchMakingSTEAM:server_state_name()
 	return tweak_data:index_to_server_state(self._lobby_attributes.state)
 end
+
 function NetworkMatchMakingSTEAM:set_attributes(settings)
 	if not self.lobby_handler then
 		return
@@ -500,6 +545,7 @@ function NetworkMatchMakingSTEAM:set_attributes(settings)
 	self.lobby_handler:set_lobby_data(lobby_attributes)
 	self.lobby_handler:set_lobby_type(permissions[settings.numbers[3]])
 end
+
 function NetworkMatchMakingSTEAM:_lobby_to_numbers(lobby)
 	return {
 		tonumber(lobby:key_value("level")),
@@ -511,6 +557,7 @@ function NetworkMatchMakingSTEAM:_lobby_to_numbers(lobby)
 		tonumber(lobby:key_value("min_level"))
 	}
 end
+
 function NetworkMatchMakingSTEAM:from_host_lobby_re_opened(status)
 	print("[NetworkMatchMakingSTEAM::from_host_lobby_re_opened]", self._try_re_enter_lobby, status)
 	if self._try_re_enter_lobby == "asked" then

@@ -1,9 +1,11 @@
 DialogueUnitElement = DialogueUnitElement or class(MissionElement)
+
 function DialogueUnitElement:init(unit)
 	DialogueUnitElement.super.init(self, unit)
 	self._hed.dialogue = "none"
 	table.insert(self._save_values, "dialogue")
 end
+
 function DialogueUnitElement:test_element()
 	if self._hed.dialogue == "none" then
 		return
@@ -17,11 +19,13 @@ function DialogueUnitElement:test_element()
 	managers.editor:set_wanted_mute(false)
 	managers.editor:set_listener_enabled(true)
 end
+
 function DialogueUnitElement:stop_test_element()
 	managers.dialog:quit_dialog()
 	managers.editor:set_wanted_mute(true)
 	managers.editor:set_listener_enabled(false)
 end
+
 function DialogueUnitElement:select_dialog_btn()
 	local dialog = SelectNameModal:new("Select dialogue", managers.dialog:conversation_names())
 	if dialog:cancelled() then
@@ -32,6 +36,7 @@ function DialogueUnitElement:select_dialog_btn()
 		CoreEws.change_combobox_value(self._dialogue_params, self._hed.dialogue)
 	end
 end
+
 function DialogueUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

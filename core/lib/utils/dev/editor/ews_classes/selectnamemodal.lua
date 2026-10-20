@@ -1,4 +1,5 @@
 SelectNameModal = SelectNameModal or class(CoreEditorEwsDialog)
+
 function SelectNameModal:init(name, assets_list, ...)
 	Global.world_editor = Global.world_editor or {}
 	Global.world_editor.filter = Global.world_editor.filter or ""
@@ -34,10 +35,13 @@ function SelectNameModal:init(name, assets_list, ...)
 	self._dialog:set_visible(true)
 	self:show_modal()
 end
+
 function SelectNameModal:_on_mark_assett()
 end
+
 function SelectNameModal:_on_select_asset()
 end
+
 function SelectNameModal:_build_buttons(panel, sizer)
 	local select_btn = EWS:Button(panel, "Select", "", "BU_BOTTOM")
 	sizer:add(select_btn, 0, 2, "RIGHT,LEFT")
@@ -48,23 +52,29 @@ function SelectNameModal:_build_buttons(panel, sizer)
 	cancel_btn:connect("EVT_COMMAND_BUTTON_CLICKED", callback(self, self, "on_cancel"), "")
 	cancel_btn:connect("EVT_KEY_DOWN", callback(self, self, "key_cancel"), "")
 end
+
 function SelectNameModal:_on_select_asset()
 	self._cancelled = false
 	self._dialog:end_modal("hello")
 end
+
 function SelectNameModal:on_cancel()
 	self._dialog:end_modal("hello")
 end
+
 function SelectNameModal:selected_assets()
 	return self:_selected_item_assets()
 end
+
 function SelectNameModal:update_filter()
 	Global.world_editor.filter = self._filter:get_value()
 	self:fill_asset_list()
 end
+
 function SelectNameModal:cancelled()
 	return self._cancelled
 end
+
 function SelectNameModal:fill_asset_list()
 	self._list:delete_all_items()
 	local filter = self._filter:get_value()
@@ -82,20 +92,24 @@ function SelectNameModal:fill_asset_list()
 	self._list:thaw()
 	self._list:autosize_column(0)
 end
+
 function SelectNameModal:key_delete(ctrlr, event)
 	event:skip()
 	if EWS:name_to_key_code("K_DELETE") == event:key_code() then
 		self:_on_delete()
 	end
 end
+
 function SelectNameModal:key_cancel(ctrlr, event)
 	event:skip()
 	if EWS:name_to_key_code("K_ESCAPE") == event:key_code() then
 		self:on_cancel()
 	end
 end
+
 function SelectNameModal:_on_delete()
 end
+
 function SelectNameModal:_selected_item_assets()
 	local assets = {}
 	for _, i in ipairs(self._list:selected_items()) do

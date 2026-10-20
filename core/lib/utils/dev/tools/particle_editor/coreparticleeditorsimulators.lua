@@ -1,4 +1,5 @@
 CoreParticleEditorSimulators = CoreParticleEditorSimulators or class()
+
 function CoreParticleEditorSimulators:create_velocityintegrator()
 	local simulator = CoreEffectStackMember:new("velocityintegrator", "simulator", "Velocity Integrator")
 	simulator:set_description("Adds velocity * dt to position.")
@@ -12,6 +13,7 @@ local - local positions are modified.]]
 	simulator:add_property(p)
 	return simulator
 end
+
 function CoreParticleEditorSimulators:create_trail()
 	local simulator = CoreEffectStackMember:new("trail", "simulator", "Trail")
 	simulator:set_description("Copies position and orientation to buffer")
@@ -25,6 +27,7 @@ If set to distance, particle positions and rotations are copied when distance ex
 	simulator:add_property(p)
 	return simulator
 end
+
 function CoreParticleEditorSimulators:create_scaledvelocityintegrator()
 	local simulator = CoreEffectStackMember:new("scaledvelocityintegrator", "simulator", "Velocity Integrator (scaled)")
 	simulator:set_description("Adds velocity * dt * scale to position. Scale is determined by a key curve.")
@@ -46,6 +49,7 @@ local - local positions are modified.]]
 	simulator:add_property(scale_keys)
 	return simulator
 end
+
 function CoreParticleEditorSimulators:create_eventtick()
 	local simulator = CoreEffectStackMember:new("eventtick", "simulator", "Event Tick")
 	simulator:set_description("Triggers an event for every particle position at a set frequency.")
@@ -55,6 +59,7 @@ function CoreParticleEditorSimulators:create_eventtick()
 	simulator:add_property(CoreEffectProperty:new("use_rotation", "boolean", "false", "If set, particle rotation will be read and included in event"))
 	return simulator
 end
+
 function CoreParticleEditorSimulators:create_particleworldcollision()
 	local simulator = CoreEffectStackMember:new("particleworldcollision", "simulator", "Particle <-> World Collision")
 	simulator:set_description("Simulates collisions between particles with a fixed radius and a slice of the world.")
@@ -62,11 +67,13 @@ function CoreParticleEditorSimulators:create_particleworldcollision()
 	simulator:add_property(CoreEffectProperty:new("elasticity", "percentage", "0.5", "Elasticity of collisions"))
 	return simulator
 end
+
 function CoreParticleEditorSimulators:create_anglevelocityintegrator()
 	local simulator = CoreEffectStackMember:new("anglevelocityintegrator", "simulator", "Angle Velocity Integrator")
 	simulator:set_description("Adds angle velocity * dt to angle.")
 	return simulator
 end
+
 function CoreParticleEditorSimulators:create_planecollision()
 	local simulator = CoreEffectStackMember:new("planecollision", "simulator", "Plane Collision")
 	simulator:set_description("Simulates collision with a plane with set origin and normal. Parameters are runtime modifiable by script.")
@@ -100,6 +107,7 @@ This is a value between 0 and 1 describing amount of velocity particles should r
 	simulator:add_property(CoreEffectProperty:new("event_threshold_velocity", "float", "100", help))
 	return simulator
 end
+
 function CoreParticleEditorSimulators:create_constantacceleration()
 	local simulator = CoreEffectStackMember:new("constantacceleration", "simulator", "Constant Acceleration")
 	simulator:set_description("Accelerates particles with a set acceleration. If this value must be runtime modifiable, use variableacceleration.")
@@ -121,6 +129,7 @@ Coordinates are in centimeters/s^2.]]
 	simulator:add_property(CoreEffectProperty:new("acceleration", "vector3", "0 0 -982", help))
 	return simulator
 end
+
 function CoreParticleEditorSimulators:create_windacceleration()
 	local simulator = CoreEffectStackMember:new("windacceleration", "simulator", "Wind Acceleration")
 	simulator:set_description("Accelerates particles with global wind.")
@@ -134,6 +143,7 @@ The default value is that of a regulation size ping pong ball.]]
 	simulator:add_property(CoreEffectProperty:new("mass", "float", "0.0027", help))
 	return simulator
 end
+
 function CoreParticleEditorSimulators:create_intervalrandomvelocity()
 	local simulator = CoreEffectStackMember:new("intervalrandomvelocity", "simulator", "Interval Random Velocity")
 	simulator:set_description("Randomly changes velocity of particles at a set interval.")
@@ -156,6 +166,7 @@ Coordinates are in cm/s.]]
 	simulator:add_property(CoreEffectProperty:new("frequency", "float", "0.5", "Frequency at which velocities will be reassigned (hz)"))
 	return simulator
 end
+
 function CoreParticleEditorSimulators:create_variableacceleration()
 	local simulator = CoreEffectStackMember:new("variableacceleration", "simulator", "Variable Acceleration")
 	simulator:set_description([[
@@ -183,6 +194,7 @@ Acceleration is runtime modifiable by script by referencing effect/atom name/sim
 	simulator:add_property(CoreEffectProperty:new("acceleration", "vector3", "0 0 -982", help))
 	return simulator
 end
+
 function CoreParticleEditorSimulators:create_variablesize()
 	local simulator = CoreEffectStackMember:new("variablesize", "simulator", "Variable Size")
 	simulator:set_description("Continously writes a set size to the size channel. The size may be changed runtime by the script.")
@@ -196,6 +208,7 @@ Size is runtime modifiable by script by referencing effect/atom name/simulator n
 	simulator:add_property(CoreEffectProperty:new("size", "vector2", "100 100", help))
 	return simulator
 end
+
 function CoreParticleEditorSimulators:create_variableopacity()
 	local simulator = CoreEffectStackMember:new("variableopacity", "simulator", "Variable Opacity")
 	simulator:set_description("Continously writes a set opacity to the opacity channel. The opacity may be changed runtime by the script.")
@@ -208,6 +221,7 @@ Opacity is runtime modifiable by script by referencing effect/atom name/simulato
 	simulator:add_property(CoreEffectProperty:new("opacity", "float", "255", help))
 	return simulator
 end
+
 function CoreParticleEditorSimulators:create_rotationbyvelocity()
 	local simulator = CoreEffectStackMember:new("rotationbyvelocity", "simulator", "Rotation By Velocity")
 	simulator:set_description([[
@@ -217,6 +231,7 @@ The rotation is not done instantly but with a lerp at a set angular velocity.]])
 	simulator:add_property(CoreEffectProperty:new("velocity", "float", "360", help))
 	return simulator
 end
+
 function CoreParticleEditorSimulators:create_teleporter()
 	local simulator = CoreEffectStackMember:new("teleporter", "simulator", "Teleporter")
 	simulator:set_description([[
@@ -367,11 +382,13 @@ random - initializes with a random rotation]]
 	simulator:add_property(rotation_variant)
 	return simulator
 end
+
 function CoreParticleEditorSimulators:create_ager()
 	local simulator = CoreEffectStackMember:new("ager", "simulator", "Ager")
 	simulator:set_description("Adds timestep to age channel.")
 	return simulator
 end
+
 function CoreParticleEditorSimulators:create_particleparticlecollision()
 	local simulator = CoreEffectStackMember:new("particleparticlecollision", "simulator", "Particle <-> Particle Collision")
 	simulator:set_description([[
@@ -388,6 +405,7 @@ This is a value between 0 and 1 determining how much velocity particle retains a
 	simulator:add_property(CoreEffectProperty:new("event_threshold_velocity", "float", "100", help))
 	return simulator
 end
+
 function CoreParticleEditorSimulators:create_worldtransform()
 	local simulator = CoreEffectStackMember:new("worldtransform", "simulator", "Local -> World Transform")
 	simulator:set_description("Transforms local positions (and optionally rotations) to world coordinates.")

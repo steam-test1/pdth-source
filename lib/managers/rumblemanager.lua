@@ -2,11 +2,13 @@ core:module("RumbleManager")
 core:import("CoreRumbleManager")
 core:import("CoreClass")
 RumbleManager = RumbleManager or class(CoreRumbleManager.RumbleManager)
+
 function RumbleManager:init()
 	RumbleManager.super.init(self)
 	_G.tweak_data:add_reload_callback(self, callback(self, self, "setup_preset_rumbles"))
 	self:setup_preset_rumbles()
 end
+
 function RumbleManager:setup_preset_rumbles()
 	self:add_preset_rumbles("weapon_fire", {
 		engine = "both",
@@ -79,4 +81,5 @@ function RumbleManager:setup_preset_rumbles()
 		cumulative = true
 	})
 end
+
 CoreClass.override_class(CoreRumbleManager.RumbleManager, RumbleManager)

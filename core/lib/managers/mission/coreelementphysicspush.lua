@@ -2,9 +2,11 @@ core:module("CoreElementPhysicsPush")
 core:import("CoreMissionScriptElement")
 ElementPhysicsPush = ElementPhysicsPush or class(CoreMissionScriptElement.MissionScriptElement)
 ElementPhysicsPush.IDS_EFFECT = Idstring("core/physic_effects/hubelement_push")
+
 function ElementPhysicsPush:client_on_executed(...)
 	self:on_executed(...)
 end
+
 function ElementPhysicsPush:on_executed(instigator)
 	if not self._values.enabled then
 		return

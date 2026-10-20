@@ -1,11 +1,14 @@
 core:import("CoreMissionScriptElement")
 ElementFlashlight = ElementFlashlight or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementFlashlight:init(...)
 	ElementFlashlight.super.init(self, ...)
 end
+
 function ElementFlashlight:client_on_executed(...)
 	self:on_executed(...)
 end
+
 function ElementFlashlight:on_executed(instigator)
 	if not self._values.enabled then
 		return

@@ -9,6 +9,7 @@ BaseNetworkSession._NAT_KEEP_ALIVE_INTERVAL = 15
 BaseNetworkSession._NAT_TIMEOUT = 30
 BaseNetworkSession._KEEP_ALIVE_INTERVAL = 1
 BaseNetworkSession.MATCHMAKING_SERVER_IP_ADDRESSES = {}
+
 function BaseNetworkSession:init()
 	print("[BaseNetworkSession:init]")
 	self._matchmaking_server_rpcs = {}
@@ -37,6 +38,7 @@ function BaseNetworkSession:init()
 	self._matchmaking_server = nil
 	self._matchmaking_server_expire_t = 0
 end
+
 function BaseNetworkSession:load(data)
 	for peer_id, peer_data in pairs(data.peers) do
 		self._peers[peer_id] = NetworkPeer:new()
@@ -67,6 +69,7 @@ function BaseNetworkSession:load(data)
 		self._matchmaking_server_expire_t = TimerManager:wall_running():time() + self._NAT_TIMEOUT
 	end
 end
+
 function BaseNetworkSession:save(data)
 	if self._server_peer then
 		data.server_peer = self._server_peer:id()
@@ -101,9 +104,11 @@ function BaseNetworkSession:save(data)
 	data.matchmaking_server = self._matchmaking_server
 	self:_flush_soft_remove_peers()
 end
+
 function BaseNetworkSession:server_peer()
 	return self._server_peer
 end
+
 function BaseNetworkSession:peer(peer_id)
 	local peer = self._peers[peer_id]
 	if peer then
@@ -112,9 +117,11 @@ function BaseNetworkSession:peer(peer_id)
 		return self._local_peer
 	end
 end
+
 function BaseNetworkSession:peers()
 	return self._peers
 end
+
 function BaseNetworkSession:peer_by_ip(ip)
 	for peer_id, peer in pairs(self._peers) do
 		if peer:ip() == ip then
@@ -125,6 +132,7 @@ function BaseNetworkSession:peer_by_ip(ip)
 		return self._local_peer
 	end
 end
+
 function BaseNetworkSession:peer_by_name(name)
 	for peer_id, peer in pairs(self._peers) do
 		if peer:name() == name then
@@ -132,6 +140,7 @@ function BaseNetworkSession:peer_by_name(name)
 		end
 	end
 end
+
 function BaseNetworkSession:peer_by_user_id(user_id)
 	if type(user_id) ~= "string" then
 		print("peer_by_user_id converting to string", user_id, tostring(user_id))
@@ -146,12 +155,15 @@ function BaseNetworkSession:peer_by_user_id(user_id)
 		return self._local_peer
 	end
 end
+
 function BaseNetworkSession:local_peer()
 	return self._local_peer
 end
+
 function BaseNetworkSession:is_kicked(peer_name)
 	return self._kicked_list[peer_name]
 end
+
 function BaseNetworkSession:add_peer(name, rpc, in_lobby, loading, synched, id, mask_set, user_id)
 	cat_print("multiplayer_base", " BaseNetworkSession:add_peer", name, rpc, in_lobby, loading, synched, id, mask_set, user_id)
 	local peer = NetworkPeer:new(name, rpc, id, loading, synched, in_lobby, mask_set, user_id)
@@ -169,6 +181,7 @@ function BaseNetworkSession:add_peer(name, rpc, in_lobby, loading, synched, id, 
 	end
 	return id, peer
 end
+
 function BaseNetworkSession:remove_peer(peer, peer_id, reason)
 	print("[BaseNetworkSession:remove_peer]", inspect(peer), peer_id, reason)
 	Application:stack_dump()
@@ -184,6 +197,7 @@ function BaseNetworkSession:remove_peer(peer, peer_id, reason)
 	end
 	managers.network:game():on_peer_removed(peer, peer_id, reason)
 end
+
 function BaseNetworkSession:_soft_remove_peer(peer)
 	self._soft_remove_peers = self._soft_remove_peers or {}
 	self._soft_remove_peers[peer:rpc():ip_at_index(0)] = {
@@ -191,11 +205,13 @@ function BaseNetworkSession:_soft_remove_peer(peer)
 		expire_t = TimerManager:wall_running():time() + 1.5
 	}
 end
+
 function BaseNetworkSession:on_peer_left_lobby(peer)
 	if peer:id() == 1 and self:is_client() and self._cb_find_game then
 		self:on_join_request_timed_out()
 	end
 end
+
 function BaseNetworkSession:on_peer_left(peer, peer_id)
 	cat_print("multiplayer_base", "[BaseNetworkSession:on_peer_left] Peer Left", peer_id, peer:name(), peer:ip())
 	Application:stack_dump()
@@ -216,6 +232,7 @@ function BaseNetworkSession:on_peer_left(peer, peer_id)
 		end
 	end
 end
+
 function BaseNetworkSession:on_peer_lost(peer, peer_id)
 	cat_print("multiplayer_base", "[BaseNetworkSession:on_peer_lost] Peer Lost", peer_id, peer:name(), peer:ip())
 	Application:stack_dump()
@@ -243,6 +260,7 @@ function BaseNetworkSession:on_peer_lost(peer, peer_id)
 		self._matchmaking_server:match_stat_p2p_con_lost(peer:rpc():protocol_at_index(0) == "TCP_IP" and 1 or 2)
 	end
 end
+
 function BaseNetworkSession:on_peer_kicked(peer, peer_id)
 	if peer ~= self._local_peer then
 		local ident = SystemInfo:platform() == Idstring("WIN32") and peer:user_id() or peer:name()
@@ -264,6 +282,7 @@ function BaseNetworkSession:on_peer_kicked(peer, peer_id)
 		end
 	end
 end
+
 function BaseNetworkSession:on_remove_dead_peer(peer, peer_id)
 	if peer ~= self._local_peer then
 		self:remove_peer(peer, peer_id, "removed_dead")
@@ -284,15 +303,18 @@ function BaseNetworkSession:on_remove_dead_peer(peer, peer_id)
 		end
 	end
 end
+
 function BaseNetworkSession:_local_peer_in_lobby()
 	return self._local_peer:in_lobby() and game_state_machine:current_state_name() ~= "ingame_lobby_menu"
 end
+
 function BaseNetworkSession:update_skip_one()
 	self.update = nil
 	local wall_time = TimerManager:wall_running():time()
 	self._timeout_chk_t = wall_time + self.TIMEOUT_CHK_INTERVAL
 	self._alive_send_t = 0
 end
+
 function BaseNetworkSession:update()
 	local wall_run_t = TimerManager:wall_running():time()
 	if wall_run_t > self._timeout_chk_t then
@@ -309,13 +331,16 @@ function BaseNetworkSession:update()
 	self:_update_matchmaking_server_connection(wall_run_t)
 	self:_upd_send_peer_alive_checks(wall_run_t)
 end
+
 function BaseNetworkSession:end_update()
 end
+
 function BaseNetworkSession:send_to_peers(...)
 	for peer_id, peer in pairs(self._peers) do
 		peer:send(...)
 	end
 end
+
 function BaseNetworkSession:send_to_peers_except(id, ...)
 	for peer_id, peer in pairs(self._peers) do
 		if peer_id ~= id then
@@ -323,11 +348,13 @@ function BaseNetworkSession:send_to_peers_except(id, ...)
 		end
 	end
 end
+
 function BaseNetworkSession:send_to_peers_synched(...)
 	for peer_id, peer in pairs(self._peers) do
 		peer:send_queued_sync(...)
 	end
 end
+
 function BaseNetworkSession:send_to_peers_synched_except(id, ...)
 	for peer_id, peer in pairs(self._peers) do
 		if peer_id ~= id then
@@ -335,11 +362,13 @@ function BaseNetworkSession:send_to_peers_synched_except(id, ...)
 		end
 	end
 end
+
 function BaseNetworkSession:send_to_peers_loaded(...)
 	for peer_id, peer in pairs(self._peers) do
 		peer:send_after_load(...)
 	end
 end
+
 function BaseNetworkSession:send_to_peers_loaded_except(id, ...)
 	for peer_id, peer in pairs(self._peers) do
 		if peer_id ~= id then
@@ -347,23 +376,28 @@ function BaseNetworkSession:send_to_peers_loaded_except(id, ...)
 		end
 	end
 end
+
 function BaseNetworkSession:send_to_peer(peer, ...)
 	peer:send(...)
 end
+
 function BaseNetworkSession:send_to_peer_synched(peer, ...)
 	peer:send_queued_sync(...)
 end
+
 function BaseNetworkSession:_load_level(...)
 	self._local_peer:set_loading(true)
 	Network:set_multiplayer(true)
 	setup:load_level(...)
 	self._load_wait_timeout_t = TimerManager:wall_running():time() + self._LOAD_WAIT_TIME
 end
+
 function BaseNetworkSession:debug_list_peers()
 	for i, peer in pairs(self._peers) do
 		cat_print("multiplayer_base", "Peer", i, peer:connection_info())
 	end
 end
+
 function BaseNetworkSession:clbk_network_send(target_rpc, post_send)
 	local target_ip = target_rpc:ip_at_index(0)
 	if post_send then
@@ -404,6 +438,7 @@ function BaseNetworkSession:clbk_network_send(target_rpc, post_send)
 		end
 	end
 end
+
 function BaseNetworkSession:is_ready_to_close()
 	if self._load_wait_timeout_t and TimerManager:wall_running():time() > self._load_wait_timeout_t then
 		return true
@@ -430,9 +465,11 @@ function BaseNetworkSession:is_ready_to_close()
 	end
 	return true
 end
+
 function BaseNetworkSession:closing()
 	return self._closing
 end
+
 function BaseNetworkSession:prepare_to_close()
 	print("[BaseNetworkSession:prepare_to_close]")
 	self._closing = true
@@ -442,6 +479,7 @@ function BaseNetworkSession:prepare_to_close()
 		self._matchmaking_server:from_client_close_connection()
 	end
 end
+
 function BaseNetworkSession:set_peer_loading_state(peer, state)
 	print("[BaseNetworkSession:set_peer_loading_state]", peer:id(), state)
 	peer:set_loading(state)
@@ -454,6 +492,7 @@ function BaseNetworkSession:set_peer_loading_state(peer, state)
 		peer:flush_overwriteable_msgs()
 	end
 end
+
 function BaseNetworkSession:upd_trash_connections(wall_t)
 	if self._trash_connections then
 		for ip, info in pairs(self._trash_connections) do
@@ -489,6 +528,7 @@ function BaseNetworkSession:upd_trash_connections(wall_t)
 		end
 	end
 end
+
 function BaseNetworkSession:add_connection_to_trash(rpc)
 	local wanted_ip = rpc:ip_at_index(0)
 	self._trash_connections = self._trash_connections or {}
@@ -500,6 +540,7 @@ function BaseNetworkSession:add_connection_to_trash(rpc)
 		}
 	end
 end
+
 function BaseNetworkSession:remove_connection_from_trash(rpc)
 	local wanted_ip = rpc:ip_at_index(0)
 	if self._trash_connections then
@@ -512,6 +553,7 @@ function BaseNetworkSession:remove_connection_from_trash(rpc)
 		end
 	end
 end
+
 function BaseNetworkSession:remove_connection_from_soft_remove_peers(rpc)
 	if self._soft_remove_peers and self._soft_remove_peers[rpc:ip_at_index(0)] then
 		self._soft_remove_peers[rpc:ip_at_index(0)] = nil
@@ -520,6 +562,7 @@ function BaseNetworkSession:remove_connection_from_soft_remove_peers(rpc)
 		end
 	end
 end
+
 function BaseNetworkSession:chk_send_local_player_ready()
 	local state = self._local_peer:waiting_for_player_ready()
 	for peer_id, peer in pairs(self._peers) do
@@ -528,12 +571,14 @@ function BaseNetworkSession:chk_send_local_player_ready()
 		end
 	end
 end
+
 function BaseNetworkSession:destroy()
 	if self._dropin_complete_event_manager_id then
 		EventManager:unregister_listener(self._dropin_complete_event_manager_id)
 		self._dropin_complete_event_manager_id = nil
 	end
 end
+
 function BaseNetworkSession:_flush_soft_remove_peers()
 	if self._soft_remove_peers then
 		for ip, peer_remove_info in pairs(self._soft_remove_peers) do
@@ -543,6 +588,7 @@ function BaseNetworkSession:_flush_soft_remove_peers()
 	end
 	self._soft_remove_peers = nil
 end
+
 function BaseNetworkSession:on_load_complete()
 	print("[BaseNetworkSession:on_load_complete]")
 	self._local_peer:set_loading(false)
@@ -552,6 +598,7 @@ function BaseNetworkSession:on_load_complete()
 		end
 	end
 end
+
 function BaseNetworkSession:chk_send_connection_established(name, user_id)
 	local peer
 	if SystemInfo:platform() == Idstring("PS3") then
@@ -597,6 +644,7 @@ function BaseNetworkSession:chk_send_connection_established(name, user_id)
 		self._server_peer:send("connection_established", peer:id())
 	end
 end
+
 function BaseNetworkSession:on_ask_IP_reply(my_ip_address, sender)
 	print("[BaseNetworkSession:on_ask_IP_reply] my_ip_address", my_ip_address, "self._my_external_IP", self._my_external_IP, "sender", sender:ip_at_index(0))
 	if not self._my_external_IP then
@@ -607,6 +655,7 @@ function BaseNetworkSession:on_ask_IP_reply(my_ip_address, sender)
 		self:set_matchmaking_server(sender)
 	end
 end
+
 function BaseNetworkSession:_update_matchmaking_server_connection(wall_run_t)
 	if wall_run_t > self._next_NAT_keep_alive_t then
 		if self._matchmaking_server then
@@ -632,9 +681,11 @@ function BaseNetworkSession:_update_matchmaking_server_connection(wall_run_t)
 		self._next_NAT_keep_alive_t = wall_run_t + self._NAT_KEEP_ALIVE_INTERVAL
 	end
 end
+
 function BaseNetworkSession:get_my_external_IP()
 	return self._my_external_IP or Global.my_external_IP
 end
+
 function BaseNetworkSession:on_from_server_NAT_keep_alive(sender)
 	if not self._matchmaking_server then
 		self:set_matchmaking_server(sender)
@@ -644,6 +695,7 @@ function BaseNetworkSession:on_from_server_NAT_keep_alive(sender)
 	end
 	self._matchmaking_server_expire_t = TimerManager:wall_running():time() + self._NAT_TIMEOUT
 end
+
 function BaseNetworkSession:set_matchmaking_server(rpc)
 	if self._matchmaking_server then
 		if rpc and self._matchmaking_server:ip_at_index(0) == sender:ip_at_index(0) then
@@ -663,6 +715,7 @@ function BaseNetworkSession:set_matchmaking_server(rpc)
 		self._next_NAT_keep_alive_t = nil
 	end
 end
+
 function BaseNetworkSession:_upd_send_peer_alive_checks(wall_run_t)
 	if self._closing or wall_run_t < self._alive_send_t then
 		return

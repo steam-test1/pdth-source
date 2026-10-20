@@ -1,4 +1,5 @@
 SetOutlineElement = SetOutlineElement or class(MissionElement)
+
 function SetOutlineElement:init(unit)
 	SetOutlineElement.super.init(self, unit)
 	self._hed.elements = {}
@@ -6,6 +7,7 @@ function SetOutlineElement:init(unit)
 	table.insert(self._save_values, "elements")
 	table.insert(self._save_values, "set_outline")
 end
+
 function SetOutlineElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel
@@ -18,11 +20,14 @@ function SetOutlineElement:_build_panel(panel, panel_sizer)
 	})
 	panel_sizer:add(set_outline, 0, 0, "EXPAND")
 end
+
 function SetOutlineElement:draw_links(t, dt, selected_unit, all_units)
 	MissionElement.draw_links(self, t, dt, selected_unit, all_units)
 end
+
 function SetOutlineElement:update_editing()
 end
+
 function SetOutlineElement:update_selected(t, dt, selected_unit, all_units)
 	for _, id in ipairs(self._hed.elements) do
 		local unit = all_units[id]
@@ -38,6 +43,7 @@ function SetOutlineElement:update_selected(t, dt, selected_unit, all_units)
 		end
 	end
 end
+
 function SetOutlineElement:add_element()
 	local ray = managers.editor:unit_by_raycast({mask = 10, ray_type = "editor"})
 	if ray and ray.unit and (string.find(ray.unit:name():s(), "ai_spawn_enemy", 1, true) or string.find(ray.unit:name():s(), "ai_spawn_civilian", 1, true)) then
@@ -49,6 +55,7 @@ function SetOutlineElement:add_element()
 		end
 	end
 end
+
 function SetOutlineElement:remove_links(unit)
 	for _, id in ipairs(self._hed.elements) do
 		if id == unit:unit_data().unit_id then
@@ -56,6 +63,7 @@ function SetOutlineElement:remove_links(unit)
 		end
 	end
 end
+
 function SetOutlineElement:add_triggers(vc)
 	vc:add_trigger(Idstring("lmb"), callback(self, self, "add_element"))
 end

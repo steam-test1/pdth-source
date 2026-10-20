@@ -8,13 +8,16 @@ local EMPTY_WORKSHEET_XML2 = [[
   </Table>
  </Worksheet> ]]
 Worksheet = Worksheet or CoreClass.class()
+
 function Worksheet:init(name)
 	self._name = name
 	self._rows = {}
 end
+
 function Worksheet:add_row(row)
 	table.insert(self._rows, row)
 end
+
 function Worksheet:to_xml(f)
 	f:write(string.format(EMPTY_WORKSHEET_XML1, self._name))
 	for _, r in ipairs(self._rows) do

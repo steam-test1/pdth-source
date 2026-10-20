@@ -1,14 +1,17 @@
 require("lib/network/matchmaking/NetworkAccount")
 NetworkAccountPSN = NetworkAccountPSN or class(NetworkAccount)
+
 function NetworkAccountPSN:init()
 	NetworkAccount.init(self)
 end
+
 function NetworkAccountPSN:signin_state()
 	if PSN:is_online() == true then
 		return "signed in"
 	end
 	return "not signed in"
 end
+
 function NetworkAccountPSN:local_signin_state()
 	if not PSN:cable_connected() then
 		return false
@@ -22,9 +25,11 @@ function NetworkAccountPSN:local_signin_state()
 	end
 	return true
 end
+
 function NetworkAccountPSN:show_signin_ui()
 	PSN:display_online_connection()
 end
+
 function NetworkAccountPSN:username_id()
 	local online_name = PSN:get_npid_user()
 	if online_name then
@@ -37,6 +42,7 @@ function NetworkAccountPSN:username_id()
 	end
 	return managers.localization:text("menu_mp_player")
 end
+
 function NetworkAccountPSN:player_id()
 	if PSN:get_npid_user() == nil then
 		local n = PSN:get_localinfo()
@@ -48,12 +54,15 @@ function NetworkAccountPSN:player_id()
 	end
 	return PSN:get_npid_user()
 end
+
 function NetworkAccountPSN:is_connected()
 	return true
 end
+
 function NetworkAccountPSN:lan_connection()
 	return PSN:cable_connected()
 end
+
 function NetworkAccountPSN:_lan_ip()
 	local l = PSN:get_lan_info()
 	if l and l.lan_ip then
@@ -61,21 +70,26 @@ function NetworkAccountPSN:_lan_ip()
 	end
 	return "player_lan"
 end
+
 function NetworkAccountPSN:has_mask(mask)
 	return false
 end
+
 function NetworkAccountPSN:achievements_fetched()
 	self._achievements_fetched = true
 	self:_check_for_unawarded_achievements()
 end
+
 function NetworkAccountPSN:challenges_loaded()
 	self._challenges_loaded = true
 	self:_check_for_unawarded_achievements()
 end
+
 function NetworkAccountPSN:experience_loaded()
 	self._experience_loaded = true
 	self:_check_for_unawarded_achievements()
 end
+
 function NetworkAccountPSN:_check_for_unawarded_achievements()
 	if not (self._achievements_fetched and self._challenges_loaded) or not self._experience_loaded then
 		return

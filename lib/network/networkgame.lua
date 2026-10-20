@@ -1,15 +1,18 @@
 require("lib/network/NetworkMember")
 require("lib/network/handlers/UnitNetworkHandler")
 NetworkGame = NetworkGame or class()
+
 function NetworkGame:init()
 	self._members = {}
 	self._spawn_point_beanbag = nil
 	self._dropin_pause_info = {}
 	self._old_players = {}
 end
+
 function NetworkGame:on_network_started()
 	managers.network:register_handler("unit", UnitNetworkHandler)
 end
+
 function NetworkGame:on_network_stopped()
 	for k, v in pairs(self._members) do
 		self:on_drop_in_pause_request_received(k, nil, false)
@@ -19,6 +22,7 @@ function NetworkGame:on_network_stopped()
 		self:on_drop_in_pause_request_received(managers.network:session():local_peer():id(), nil, false)
 	end
 end
+
 function NetworkGame:load(game_data)
 	if managers.network:session():is_client() then
 		Network:set_client(managers.network:session():server_peer():rpc())
@@ -34,6 +38,7 @@ function NetworkGame:load(game_data)
 		end
 	end
 end
+
 function NetworkGame:save()
 	Global.network_game = {
 		members = {}
@@ -43,16 +48,19 @@ function NetworkGame:save()
 	end
 	Global.local_member = nil
 end
+
 function NetworkGame:on_server_session_created()
 	if Network:multiplayer() then
 		Network:set_server()
 	end
 end
+
 function NetworkGame:on_new_host(host_peer)
 	if Network:multiplayer() and Network:is_client() then
 		Network:set_client(host_peer:rpc())
 	end
 end
+
 function NetworkGame:on_entered_lobby()
 	local local_peer = managers.network:session():local_peer()
 	local id = local_peer:id()
@@ -62,6 +70,7 @@ function NetworkGame:on_entered_lobby()
 	local_peer:set_in_lobby(true)
 	cat_print("multiplayer_base", "NetworkGame:on_entered_lobby", local_peer, id)
 end
+
 function NetworkGame:on_peer_entered_lobby(peer_id)
 	cat_print("multiplayer_base", "[NetworkGame:on_peer_entered_lobby]", peer_id)
 	local peer = managers.network:session():peer(peer_id)
@@ -70,6 +79,7 @@ function NetworkGame:on_peer_entered_lobby(peer_id)
 		Global.local_member:sync_lobby_data(peer)
 	end
 end
+
 function NetworkGame:on_load_complete()
 	local local_peer = managers.network:session():local_peer()
 	local_peer:set_synched(true)
@@ -88,6 +98,7 @@ function NetworkGame:on_load_complete()
 		PSN:set_online_callback(callback(self, self, "ps3_disconnect"))
 	end
 end
+
 function NetworkGame:psn_disconnected()
 	if Global.game_settings.single_player then
 		return
@@ -97,6 +108,7 @@ function NetworkGame:psn_disconnected()
 	end
 	managers.network.voice_chat:destroy_voice(true)
 end
+
 function NetworkGame:steam_disconnected()
 	if Global.game_settings.single_player then
 		return
@@ -106,6 +118,7 @@ function NetworkGame:steam_disconnected()
 	end
 	managers.network.voice_chat:destroy_voice(true)
 end
+
 function NetworkGame:ps3_disconnect(connected)
 	print("NetworkGame ps3_disconnect", connected)
 	if Global.game_settings.single_player then
@@ -118,6 +131,7 @@ function NetworkGame:ps3_disconnect(connected)
 		managers.network.voice_chat:destroy_voice(true)
 	end
 end
+
 function NetworkGame:on_peer_added(peer, peer_id)
 	cat_print("multiplayer_base", "NetworkGame:on_peer_added", peer, peer_id)
 	self._members[peer_id] = NetworkMember:new(peer)
@@ -129,6 +143,7 @@ function NetworkGame:on_peer_added(peer, peer_id)
 		managers.network.matchmake:set_num_players(table.size(self._members))
 	end
 end
+
 function NetworkGame:on_peer_request_character(peer_id, character)
 	if Global.game_settings.single_player then
 		local peer = managers.network:session():peer(peer_id)
@@ -165,6 +180,7 @@ function NetworkGame:on_peer_request_character(peer_id, character)
 	end
 	managers.network:session():send_to_peers("request_character_response", peer_id, character)
 end
+
 function NetworkGame:on_peer_sync_complete(peer, peer_id)
 	cat_print("multiplayer_base", "[NetworkGame:on_peer_sync_complete]", peer_id)
 	if not Global.local_member then
@@ -194,6 +210,7 @@ function NetworkGame:on_peer_sync_complete(peer, peer_id)
 		self:check_start_game_intro()
 	end
 end
+
 function NetworkGame:on_set_member_ready(peer_id, ready)
 	print("[NetworkGame:on_set_member_ready]", peer_id, ready)
 	local peer = managers.network:session():peer(peer_id)
@@ -209,6 +226,7 @@ function NetworkGame:on_set_member_ready(peer_id, ready)
 		self:check_start_game_intro()
 	end
 end
+
 function NetworkGame:check_start_game_intro()
 	if not managers.network:session():chk_all_handshakes_complete() then
 		print("[NetworkGame:check_start_game_intro] handshakes incomplete")
@@ -232,6 +250,7 @@ function NetworkGame:check_start_game_intro()
 		game_state_machine:current_state():start_game_intro()
 	end
 end
+
 function NetworkGame:on_statistics_recieved(peer_id, peer_kills, peer_specials_kills, peer_head_shots, accuracy, downs)
 	local peer = managers.network:session():peer(peer_id)
 	peer:set_statistics(peer_kills, peer_specials_kills, peer_head_shots, accuracy, downs)
@@ -287,6 +306,7 @@ function NetworkGame:on_statistics_recieved(peer_id, peer_kills, peer_specials_k
 	end
 	managers.network:session():send_to_peers("sync_statistics_result", best_killer.peer_id, best_killer.score, best_special_killer.peer_id, best_special_killer.score, best_accuracy.peer_id, best_accuracy.score, most_downs.peer_id, most_downs.score, total_kills, total_specials_kills, total_head_shots, group_accuracy, group_downs)
 end
+
 function NetworkGame:on_peer_removed(peer, peer_id, reason)
 	if self._members[peer_id] then
 		if managers.hud then
@@ -376,6 +396,7 @@ function NetworkGame:on_peer_removed(peer, peer_id, reason)
 		end
 	end
 end
+
 function NetworkGame:_has_client(peer)
 	for i = 0, Network:clients():num_peers() - 1 do
 		if Network:clients():ip_at_index(i) == peer:ip() then
@@ -384,6 +405,7 @@ function NetworkGame:_has_client(peer)
 	end
 	return false
 end
+
 function NetworkGame:on_peer_loading(peer, state)
 	cat_print("multiplayer_base", "[NetworkGame:on_peer_loading]", inspect(peer), state)
 	if Network:is_server() and not state then
@@ -403,6 +425,7 @@ function NetworkGame:on_peer_loading(peer, state)
 		end
 	end
 end
+
 function NetworkGame:spawn_players(is_drop_in)
 	if not managers.network:has_spawn_points() then
 		return
@@ -434,26 +457,32 @@ function NetworkGame:spawn_players(is_drop_in)
 	end
 	managers.groupai:state():fill_criminal_team_with_AI(is_drop_in)
 end
+
 function NetworkGame:assign_character_name(peer_id)
 	if Network:is_server() then
 		return self._members[peer_id]:assign_character_name()
 	end
 end
+
 function NetworkGame:spawn_dropin_player(peer_id)
 	if Network:is_server() then
 		managers.achievment:set_script_data("cant_touch_fail", true)
 		self._members[peer_id]:spawn_unit(0, true)
 	end
 end
+
 function NetworkGame:member(id)
 	return self._members[id]
 end
+
 function NetworkGame:all_members()
 	return self._members
 end
+
 function NetworkGame:amount_of_members()
 	return table.size(self._members)
 end
+
 function NetworkGame:amount_of_alive_players()
 	local i = 0
 	for _, member in pairs(self._members) do
@@ -461,9 +490,11 @@ function NetworkGame:amount_of_alive_players()
 	end
 	return i
 end
+
 function NetworkGame:member_peer(peer)
 	return self._members[peer:id()]
 end
+
 function NetworkGame:member_from_unit(unit)
 	local wanted_key = unit:key()
 	for _, member in pairs(self._members) do
@@ -473,6 +504,7 @@ function NetworkGame:member_from_unit(unit)
 		end
 	end
 end
+
 function NetworkGame:unit_from_peer_id(peer_id)
 	for _, member in pairs(self._members) do
 		if member:peer():id() == peer_id then
@@ -480,6 +512,7 @@ function NetworkGame:unit_from_peer_id(peer_id)
 		end
 	end
 end
+
 function NetworkGame:_create_spawn_point_beanbag()
 	local spawn_points = managers.network._spawn_points
 	local spawn_point_ids = {}
@@ -496,6 +529,7 @@ function NetworkGame:_create_spawn_point_beanbag()
 	end
 	self._next_i_spawn_point = 1
 end
+
 function NetworkGame:_get_next_spawn_point_id()
 	local id = self._spawn_point_beanbag[self._next_i_spawn_point]
 	if self._next_i_spawn_point == #self._spawn_point_beanbag then
@@ -505,16 +539,19 @@ function NetworkGame:_get_next_spawn_point_id()
 	end
 	return id
 end
+
 function NetworkGame:get_next_spawn_point()
 	local id = self:_get_next_spawn_point_id()
 	return managers.network:spawn_point(id)
 end
+
 function NetworkGame:spawn_member_by_id(peer_id, spawn_point_id, is_drop_in)
 	local member = self._members[peer_id]
 	if member then
 		return member:spawn_unit(spawn_point_id, is_drop_in)
 	end
 end
+
 function NetworkGame:on_drop_in_pause_request_received(peer_id, nickname, state)
 	print("[NetworkGame:on_drop_in_pause_request_received]", peer_id, nickname, state)
 	local status_changed = false
@@ -558,6 +595,7 @@ function NetworkGame:on_drop_in_pause_request_received(peer_id, nickname, state)
 		end
 	end
 end
+
 function NetworkGame:on_dropin_progress_received(dropin_peer_id, progress_percentage)
 	local peer = managers.network:session():peer(dropin_peer_id)
 	if peer:synched() then

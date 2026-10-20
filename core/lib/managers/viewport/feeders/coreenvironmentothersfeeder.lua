@@ -4,10 +4,13 @@ core:import("CoreCode")
 core:import("CoreApp")
 core:import("CoreEngineAccess")
 EnvironmentOthersFeeder = EnvironmentOthersFeeder or CoreClass.class()
+
 function EnvironmentOthersFeeder:init()
 end
+
 function EnvironmentOthersFeeder:end_feed(nr)
 end
+
 function EnvironmentOthersFeeder:feed(nr, scene, vp, data, block, ...)
 	local args = {
 		...

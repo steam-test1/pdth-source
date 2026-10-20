@@ -1,11 +1,14 @@
 core:import("CoreMissionScriptElement")
 ElementCharacterOutline = ElementCharacterOutline or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementCharacterOutline:init(...)
 	ElementCharacterOutline.super.init(self, ...)
 end
+
 function ElementCharacterOutline:client_on_executed(...)
 	self:on_executed(...)
 end
+
 function ElementCharacterOutline:on_executed(instigator)
 	if not self._values.enabled then
 		return

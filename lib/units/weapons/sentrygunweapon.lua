@@ -1,4 +1,5 @@
 SentryGunWeapon = SentryGunWeapon or class()
+
 function SentryGunWeapon:init(unit)
 	self._unit = unit
 	self._timer = TimerManager:game()
@@ -45,13 +46,16 @@ function SentryGunWeapon:init(unit)
 		self._ammo_ratio = 1
 	end
 end
+
 function SentryGunWeapon:set_ammo(amount)
 	self._ammo_total = amount
 	self._ammo_max = math.max(self._ammo_max, amount)
 end
+
 function SentryGunWeapon:sync_ammo(ammo_ratio)
 	self._ammo_ratio = ammo_ratio * self._ammo_sync_resolution * 100
 end
+
 function SentryGunWeapon:start_autofire()
 	if self._shooting then
 		return
@@ -61,6 +65,7 @@ function SentryGunWeapon:start_autofire()
 	self._shooting = true
 	self._fire_start_t = self._timer:time()
 end
+
 function SentryGunWeapon:stop_autofire()
 	if not self._shooting then
 		return
@@ -74,6 +79,7 @@ function SentryGunWeapon:stop_autofire()
 	end
 	self._shooting = nil
 end
+
 function SentryGunWeapon:trigger_held(blanks, expend_ammo)
 	local fired
 	if self._next_fire_allowed <= self._timer:time() then
@@ -85,6 +91,7 @@ function SentryGunWeapon:trigger_held(blanks, expend_ammo)
 	end
 	return fired
 end
+
 function SentryGunWeapon:fire(blanks, expend_ammo)
 	if expend_ammo then
 		if self._ammo_total <= 0 then
@@ -109,7 +116,9 @@ function SentryGunWeapon:fire(blanks, expend_ammo)
 	end
 	return ray_res
 end
+
 local mvec_to = Vector3()
+
 function SentryGunWeapon:_fire_raycast(from_pos, direction, shoot_player)
 	local result = {}
 	local hit_unit
@@ -133,9 +142,11 @@ function SentryGunWeapon:_fire_raycast(from_pos, direction, shoot_player)
 	end
 	return result
 end
+
 function SentryGunWeapon:_sound_autofire_start()
 	self._autofire_sound_event = self._unit:sound_source():post_event("turret_fire")
 end
+
 function SentryGunWeapon:_sound_autofire_end()
 	if self._autofire_sound_event then
 		self._autofire_sound_event:stop()
@@ -143,6 +154,7 @@ function SentryGunWeapon:_sound_autofire_end()
 	end
 	self._unit:sound_source():post_event("turret_fire_end")
 end
+
 function SentryGunWeapon:_sound_autofire_end_empty()
 	if self._autofire_sound_event then
 		self._autofire_sound_event:stop()
@@ -150,6 +162,7 @@ function SentryGunWeapon:_sound_autofire_end_empty()
 	end
 	self._unit:sound_source():post_event("turret_ammo_depleted")
 end
+
 function SentryGunWeapon:_sound_autofire_end_cooldown()
 	if self._autofire_sound_event then
 		self._autofire_sound_event:stop()
@@ -158,6 +171,7 @@ function SentryGunWeapon:_sound_autofire_end_cooldown()
 	self._unit:sound_source():post_event("turret_fire_end")
 	self._unit:sound_source():post_event("turret_cooldown")
 end
+
 function SentryGunWeapon:_spawn_trail_effect(direction, col_ray)
 	self._effect_align[self._interleaving_fire]:m_position(self._trail_effect_table.position)
 	mvector3.set(self._trail_effect_table.normal, direction)
@@ -166,6 +180,7 @@ function SentryGunWeapon:_spawn_trail_effect(direction, col_ray)
 		World:effect_manager():set_remaining_lifetime(trail, math.clamp((col_ray.distance - 600) / 10000, 0, col_ray.distance))
 	end
 end
+
 function SentryGunWeapon:out_of_ammo()
 	if self._ammo_total then
 		return self._ammo_total == 0

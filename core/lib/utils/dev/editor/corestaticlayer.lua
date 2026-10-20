@@ -5,6 +5,7 @@ core:import("CoreInput")
 core:import("CoreEws")
 core:import("CoreTable")
 StaticLayer = StaticLayer or class(CoreLayer.Layer)
+
 function StaticLayer:init(owner, save_name, units_vector, slot_mask)
 	StaticLayer.super.init(self, owner, save_name)
 	self:load_unit_map_from_vector(units_vector)
@@ -25,12 +26,14 @@ function StaticLayer:init(owner, save_name, units_vector, slot_mask)
 	self._position_as_slot_mask = self._slot_mask
 	self._ews_triggers = {}
 end
+
 function StaticLayer:clone_unit()
 	if self:ctrl() then
 		self:clone()
 		self:cloned_group()
 	end
 end
+
 function StaticLayer:clone()
 	managers.editor:freeze_gui_lists()
 	if self._selected_unit and not self:condition() then
@@ -55,11 +58,13 @@ function StaticLayer:clone()
 	managers.editor:thaw_gui_lists()
 	self:_cloning_done()
 end
+
 function StaticLayer:spawn_unit()
 	if not self._grab and not self:condition() then
 		self:do_spawn_unit(self._unit_name)
 	end
 end
+
 function StaticLayer:do_spawn_unit(name, pos, rot)
 	local unit = StaticLayer.super.do_spawn_unit(self, name, pos, rot)
 	if unit then
@@ -68,6 +73,7 @@ function StaticLayer:do_spawn_unit(name, pos, rot)
 	end
 	return unit
 end
+
 function StaticLayer:set_bodies_keyframed(unit)
 	local bodies = unit:num_bodies()
 	for i = 0, bodies - 1 do
@@ -80,6 +86,7 @@ function StaticLayer:set_bodies_keyframed(unit)
 		body:set_keyframed()
 	end
 end
+
 function StaticLayer:use_grab_info()
 	StaticLayer.super.use_grab_info(self)
 	if self._grab then
@@ -88,6 +95,7 @@ function StaticLayer:use_grab_info()
 		self:set_unit_rotations(self._grab_info:rotation() * self._selected_unit:rotation():inverse())
 	end
 end
+
 function StaticLayer:set_unit_positions(pos)
 	if not self._grab then
 		managers.editor:set_grid_altitude(pos.z)
@@ -101,11 +109,13 @@ function StaticLayer:set_unit_positions(pos)
 	reference:set_position(pos)
 	reference:unit_data().world_pos = pos
 end
+
 function StaticLayer:set_unit_position(unit, pos, rot)
 	local new_pos = pos + unit:unit_data().local_pos:rotate_with(rot)
 	unit:set_position(new_pos)
 	unit:unit_data().world_pos = new_pos
 end
+
 function StaticLayer:set_unit_rotations(rot)
 	local reference = self._selected_unit
 	local rot = rot * reference:rotation()
@@ -117,10 +127,12 @@ function StaticLayer:set_unit_rotations(rot)
 		end
 	end
 end
+
 function StaticLayer:set_unit_rotation(unit, rot)
 	local rot = rot * unit:unit_data().local_rot
 	unit:set_rotation(rot)
 end
+
 function StaticLayer:move_unit(btn, pressed)
 	if self._selected_unit then
 		self._grab = true
@@ -130,6 +142,7 @@ function StaticLayer:move_unit(btn, pressed)
 		end
 	end
 end
+
 function StaticLayer:rotate_unit(btn, pressed)
 	if self._selected_unit and not self:condition() then
 		local rot_axis
@@ -157,6 +170,7 @@ function StaticLayer:rotate_unit(btn, pressed)
 		self:set_unit_rotations(rot)
 	end
 end
+
 function StaticLayer:position_as()
 	if self._selected_unit and not self:condition() then
 		local data = {
@@ -171,6 +185,7 @@ function StaticLayer:position_as()
 		end
 	end
 end
+
 function StaticLayer:set_select_unit(unit)
 	StaticLayer.super.set_select_unit(self, unit)
 	if unit then
@@ -180,6 +195,7 @@ function StaticLayer:set_select_unit(unit)
 		managers.editor:set_grid_altitude(self._selected_unit:position().z)
 	end
 end
+
 function StaticLayer:release_unit()
 	self._grab = false
 	self._offset_move_vec = Vector3(0, 0, 0)
@@ -187,6 +203,7 @@ function StaticLayer:release_unit()
 		managers.editor:set_grid_altitude(self._selected_unit:position().z)
 	end
 end
+
 function StaticLayer:delete_selected_unit(btn, pressed)
 	managers.editor:freeze_gui_lists()
 	if self._selected_unit and not self:condition() then
@@ -201,6 +218,7 @@ function StaticLayer:delete_selected_unit(btn, pressed)
 	end
 	managers.editor:thaw_gui_lists()
 end
+
 function StaticLayer:create_marker(marker)
 	if self._selected_unit then
 		marker:set_pos(self._selected_unit:position())
@@ -208,18 +226,21 @@ function StaticLayer:create_marker(marker)
 		return true
 	end
 end
+
 function StaticLayer:use_marker(marker)
 	if self._selected_unit then
 		self:set_unit_positions(marker._pos)
 		self:set_unit_rotations(marker._rot * self._selected_unit:rotation():inverse())
 	end
 end
+
 function StaticLayer:reset_rotation()
 	if self._selected_unit then
 		local yaw = not self:shift() and self._selected_unit:rotation():yaw() or 0
 		self:set_unit_rotations(Rotation(yaw, 0, 0) * self._selected_unit:rotation():inverse())
 	end
 end
+
 function StaticLayer:update(t, dt)
 	self:draw_units(t, dt)
 	self:draw_rotation(t, dt)
@@ -257,6 +278,7 @@ function StaticLayer:update(t, dt)
 	self:update_move_triggers(t, dt)
 	self:update_rotate_triggers(t, dt)
 end
+
 function StaticLayer:draw_marker(t, dt)
 	if not managers.editor:layer_draw_marker() then
 		return
@@ -275,6 +297,7 @@ function StaticLayer:draw_marker(t, dt)
 		Application:draw_sphere(self._current_pos, self._marker_sphere_size, 0, 1, 0)
 	end
 end
+
 function StaticLayer:update_move_triggers(t, dt)
 	if not (alive(self._selected_unit) and self._editor_data.keyboard_available) or self:condition() then
 		return
@@ -301,6 +324,7 @@ function StaticLayer:update_move_triggers(t, dt)
 		self:set_unit_positions(self._selected_unit:position() + mov_vec * self:grid_size())
 	end
 end
+
 function StaticLayer:update_rotate_triggers(t, dt)
 	if not (alive(self._selected_unit) and self._editor_data.keyboard_available) or self:condition() then
 		return
@@ -329,6 +353,7 @@ function StaticLayer:update_rotate_triggers(t, dt)
 		self:set_unit_rotations(rot)
 	end
 end
+
 function StaticLayer:draw_rotation(t, dt)
 	if not alive(self._selected_unit) then
 		return
@@ -340,6 +365,7 @@ function StaticLayer:draw_rotation(t, dt)
 		Application:draw_rotation(p_rot, Rotation(0, 0, 0))
 	end
 end
+
 function StaticLayer:draw_units(t, dt)
 	if self._selected_units then
 		for _, unit in ipairs(self._selected_units) do
@@ -354,6 +380,7 @@ function StaticLayer:draw_units(t, dt)
 	Application:draw_rotation(self._selected_unit:position(), self._selected_unit:rotation())
 	Application:draw(self._selected_unit, 0, 1, 0)
 end
+
 function StaticLayer:build_panel(notebook)
 	cat_print("editor", "StaticLayer:build_panel")
 	self._ews_panel = EWS:ScrolledWindow(notebook, "", "VSCROLL")
@@ -373,14 +400,17 @@ function StaticLayer:build_panel(notebook)
 	self._main_sizer:add(self._sizer, 1, 0, "EXPAND")
 	return self._ews_panel
 end
+
 function StaticLayer:build_btn_toolbar()
 end
+
 function StaticLayer:add_btns_to_toolbar()
 	self._btn_toolbar:add_tool("HIDE_ALL", "Hide All", CoreEws.image_path("world_editor\\layer_hide_all_16x16.png"), "Hide All")
 	self._btn_toolbar:connect("HIDE_ALL", "EVT_COMMAND_MENU_SELECTED", callback(self, self, "hide_all"), nil)
 	self._btn_toolbar:add_tool("UNHIDE_ALL", "Unhide All", CoreEws.image_path("world_editor\\layer_unhide_all_16x16.png"), "Unhide All")
 	self._btn_toolbar:connect("UNHIDE_ALL", "EVT_COMMAND_MENU_SELECTED", callback(self, self, "unhide_all"), nil)
 end
+
 function StaticLayer:get_help(text)
 	local t = "\t"
 	local n = "\n"
@@ -402,9 +432,11 @@ function StaticLayer:get_help(text)
 	text = text .. "Hide / Unide:       Ctrl+J will hide the selected units, CTRL+SHIFT+J will unide all hidden units" .. n
 	return text
 end
+
 function StaticLayer:deactivate()
 	StaticLayer.super.deactivate(self)
 end
+
 function StaticLayer:add_triggers()
 	StaticLayer.super.add_triggers(self)
 	local vc = self._editor_data.virtual_controller

@@ -1,6 +1,7 @@
 function set_widget_help(widget, help_text)
 	widget:set_tool_tip(help_text)
 end
+
 function set_widget_box_help(widget, help_header, help_text, view)
 	local on_enter = function(t, evt)
 		t:set_own_font_weight("FONTWEIGHT_BOLD")
@@ -24,6 +25,7 @@ function set_widget_box_help(widget, help_header, help_text, view)
 		help_text
 	})
 end
+
 function base_path(n)
 	local bs = n:reverse():find("\\")
 	if bs then
@@ -32,6 +34,7 @@ function base_path(n)
 		return n
 	end
 end
+
 function dir_name(n)
 	local bs = n:reverse():find("\\")
 	if bs then

@@ -1,23 +1,29 @@
 CoreExecuteInOtherMissionUnitElement = CoreExecuteInOtherMissionUnitElement or class(MissionElement)
 ExecuteInOtherMissionUnitElement = ExecuteInOtherMissionUnitElement or class(CoreExecuteInOtherMissionUnitElement)
+
 function ExecuteInOtherMissionUnitElement:init(...)
 	CoreExecuteInOtherMissionUnitElement.init(self, ...)
 end
+
 function CoreExecuteInOtherMissionUnitElement:init(unit)
 	MissionElement.init(self, unit)
 end
+
 function CoreExecuteInOtherMissionUnitElement:selected()
 	MissionElement.selected(self)
 end
+
 function CoreExecuteInOtherMissionUnitElement:add_unit_list_btn()
 	local function f(unit)
 		return unit:type() == Idstring("mission_element") and unit ~= self._unit
 	end
+	
 	local dialog = SelectUnitByNameModal:new("Add other mission unit", f)
 	for _, unit in ipairs(dialog:selected_units()) do
 		self:add_on_executed(unit)
 	end
 end
+
 function CoreExecuteInOtherMissionUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

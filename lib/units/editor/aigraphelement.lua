@@ -1,4 +1,5 @@
 AIGraphUnitElement = AIGraphUnitElement or class(MissionElement)
+
 function AIGraphUnitElement:init(unit)
 	EnemyPreferedRemoveUnitElement.super.init(self, unit)
 	self._hed.graph_ids = {}
@@ -6,11 +7,14 @@ function AIGraphUnitElement:init(unit)
 	table.insert(self._save_values, "graph_ids")
 	table.insert(self._save_values, "operation")
 end
+
 function AIGraphUnitElement:draw_links(t, dt, selected_unit, all_units)
 	EnemyPreferedRemoveUnitElement.super.draw_links(self, t, dt, selected_unit)
 end
+
 function AIGraphUnitElement:update_editing()
 end
+
 function AIGraphUnitElement:_get_unit(id)
 	for _, unit in ipairs(managers.editor:layer("Ai"):created_units()) do
 		if unit:unit_data().unit_id == id then
@@ -19,6 +23,7 @@ function AIGraphUnitElement:_get_unit(id)
 	end
 	return
 end
+
 function AIGraphUnitElement:update_selected(t, dt)
 	managers.editor:layer("Ai"):external_draw(t, dt)
 	for _, unit in ipairs(managers.editor:layer("Ai"):created_units()) do
@@ -35,6 +40,7 @@ function AIGraphUnitElement:update_selected(t, dt)
 		end
 	end
 end
+
 function AIGraphUnitElement:update_unselected()
 	for _, id in ipairs(self._hed.graph_ids) do
 		local unit = self:_get_unit(id)
@@ -43,12 +49,14 @@ function AIGraphUnitElement:update_unselected()
 		end
 	end
 end
+
 function AIGraphUnitElement:_add_element()
 	local ray = managers.editor:unit_by_raycast({mask = 19, ray_type = "editor"})
 	if ray and ray.unit and string.find(ray.unit:name():s(), "nav_surface", 1, true) then
 		self:_add_or_remove_graph(ray.unit:unit_data().unit_id)
 	end
 end
+
 function AIGraphUnitElement:_add_or_remove_graph(id)
 	if table.contains(self._hed.graph_ids, id) then
 		table.delete(self._hed.graph_ids, id)
@@ -56,6 +64,7 @@ function AIGraphUnitElement:_add_or_remove_graph(id)
 		table.insert(self._hed.graph_ids, id)
 	end
 end
+
 function AIGraphUnitElement:add_unit_list_btn()
 	local f = function(unit)
 		return unit:type() == Idstring("ai")
@@ -65,6 +74,7 @@ function AIGraphUnitElement:add_unit_list_btn()
 		self:_add_or_remove_graph(unit:unit_data().unit_id)
 	end
 end
+
 function AIGraphUnitElement:remove_links(unit)
 	for _, id in ipairs(self._hed.graph_ids) do
 		if id == unit:unit_data().unit_id then
@@ -72,9 +82,11 @@ function AIGraphUnitElement:remove_links(unit)
 		end
 	end
 end
+
 function AIGraphUnitElement:add_triggers(vc)
 	vc:add_trigger(Idstring("lmb"), callback(self, self, "_add_element"))
 end
+
 function AIGraphUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

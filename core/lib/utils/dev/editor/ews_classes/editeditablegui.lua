@@ -1,6 +1,7 @@
 core:import("CoreEditorUtils")
 core:import("CoreEws")
 EditUnitEditableGui = EditUnitEditableGui or class(EditUnitBase)
+
 function EditUnitEditableGui:init(editor)
 	local panel, sizer = (editor or managers.editor):add_unit_edit_page({name = "Gui Text", class = self})
 	self._panel = panel
@@ -40,6 +41,7 @@ function EditUnitEditableGui:init(editor)
 	panel:layout()
 	panel:set_enabled(false)
 end
+
 function EditUnitEditableGui:show_color_dialog()
 	local colordlg = EWS:ColourDialog(Global.frame, true, self._ctrls.color_button:background_colour() / 255)
 	if colordlg:show_modal() then
@@ -51,6 +53,7 @@ function EditUnitEditableGui:show_color_dialog()
 		end
 	end
 end
+
 function EditUnitEditableGui:update_gui_text(gui_text)
 	if self._no_event then
 		return
@@ -61,6 +64,7 @@ function EditUnitEditableGui:update_gui_text(gui_text)
 		end
 	end
 end
+
 function EditUnitEditableGui:update_font_size(font_size)
 	if self._no_event then
 		return
@@ -71,6 +75,7 @@ function EditUnitEditableGui:update_font_size(font_size)
 		end
 	end
 end
+
 function EditUnitEditableGui:is_editable(unit, units)
 	if alive(unit) and unit:editable_gui() then
 		self._ctrls.unit = unit

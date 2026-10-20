@@ -1,8 +1,10 @@
 require("lib/states/GameState")
 IngameBleedOutState = IngameBleedOutState or class(IngamePlayerBaseState)
+
 function IngameBleedOutState:init(game_state_machine)
 	IngameBleedOutState.super.init(self, "ingame_bleed_out", game_state_machine)
 end
+
 function IngameBleedOutState:update(t, dt)
 	local player = managers.player:player_unit()
 	if not alive(player) then
@@ -19,6 +21,7 @@ function IngameBleedOutState:update(t, dt)
 		player:base():set_slot(player, 0)
 	end
 end
+
 function IngameBleedOutState:at_enter()
 	local players = managers.player:players()
 	for k, player in ipairs(players) do
@@ -39,6 +42,7 @@ function IngameBleedOutState:at_enter()
 	managers.hud:show(PlayerBase.PLAYER_INFO_HUD_FULLSCREEN)
 	managers.hud:show(PlayerBase.PLAYER_DOWNED_HUD)
 end
+
 function IngameBleedOutState:at_exit()
 	managers.challenges:reset("exit_bleed_out")
 	local player = managers.player:player_unit()
@@ -50,12 +54,15 @@ function IngameBleedOutState:at_exit()
 	managers.hud:hide(PlayerBase.PLAYER_INFO_HUD_FULLSCREEN)
 	managers.hud:hide(PlayerBase.PLAYER_DOWNED_HUD)
 end
+
 function IngameBleedOutState:on_server_left()
 	IngameCleanState.on_server_left(self)
 end
+
 function IngameBleedOutState:on_kicked()
 	IngameCleanState.on_kicked(self)
 end
+
 function IngameBleedOutState:on_disconnected()
 	IngameCleanState.on_disconnected(self)
 end

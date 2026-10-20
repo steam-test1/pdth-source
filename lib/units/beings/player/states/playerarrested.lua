@@ -1,9 +1,11 @@
 PlayerArrested = PlayerArrested or class(PlayerStandard)
+
 function PlayerArrested:init(unit)
 	PlayerArrested.super.init(self, unit)
 	self._ids_escape = Idstring("escape")
 	self._ids_cuffed = Idstring("cuffed")
 end
+
 function PlayerArrested:enter(enter_data)
 	PlayerArrested.super.enter(self, enter_data)
 	self._revive_SO_data = {
@@ -26,8 +28,10 @@ function PlayerArrested:enter(enter_data)
 	self._unit:character_damage():set_invulnerable(true)
 	PlayerStandard.say_line(self, "s20x_sin")
 end
+
 function PlayerArrested:_enter(enter_data)
 end
+
 function PlayerArrested:exit(new_state_name)
 	PlayerArrested.super.exit(self, new_state_name)
 	self._unit:character_damage():set_invulnerable(false)
@@ -45,9 +49,11 @@ function PlayerArrested:exit(new_state_name)
 		return exit_data
 	end
 end
+
 function PlayerArrested:update(t, dt)
 	PlayerArrested.super.update(self, t, dt)
 end
+
 function PlayerArrested:_update_check_actions(t, dt)
 	local input = self:_get_input()
 	if input.btn_stats_screen_press then
@@ -74,6 +80,7 @@ function PlayerArrested:_update_check_actions(t, dt)
 	local new_action = self:_check_action_interact(t, input)
 	new_action = new_action or self:_check_set_upgrade(t, input)
 end
+
 function PlayerArrested:_check_action_interact(t, input)
 	local new_action
 	local interaction_wanted = input.btn_interact_press
@@ -90,12 +97,14 @@ function PlayerArrested:_check_action_interact(t, input)
 	end
 	return new_action
 end
+
 function PlayerArrested:_start_action_distance_interact(t)
 	if not self._intimidate_t or t - self._intimidate_t > tweak_data.player.movement_state.interaction_delay then
 		self._intimidate_t = t
 		self:call_teammate("f13", t, true, true)
 	end
 end
+
 function PlayerArrested:call_teammate(line, t, no_gesture, skip_alert)
 	local voice_type, plural, prime_target = self:_get_unit_intimidation_action(true, false, true, true)
 	local interact_type, queue_name
@@ -118,8 +127,10 @@ function PlayerArrested:call_teammate(line, t, no_gesture, skip_alert)
 		self:_do_action_intimidate(t, not no_gesture and interact_type or nil, queue_name, skip_alert)
 	end
 end
+
 function PlayerArrested:_update_movement(t, dt)
 end
+
 function PlayerArrested:_start_action_handcuffed(t)
 	self:_interupt_action_running(t)
 	self._ducking = true
@@ -129,6 +140,7 @@ function PlayerArrested:_start_action_handcuffed(t)
 	self._unit:character_damage()._arrested = true
 	self._unit:activate_mover(Idstring("duck"))
 end
+
 function PlayerArrested:_end_action_handcuffed(t)
 	if not self:_can_stand() then
 		return
@@ -140,9 +152,11 @@ function PlayerArrested:_end_action_handcuffed(t)
 	self._unit:character_damage()._arrested = nil
 	self._unit:activate_mover(Idstring("stand"))
 end
+
 function PlayerArrested:pre_destroy(unit)
 	PlayerBleedOut._unregister_revive_SO(self)
 end
+
 function PlayerArrested:destroy()
 	PlayerBleedOut._unregister_revive_SO(self)
 end

@@ -1,5 +1,6 @@
 require("lib/network/matchmaking/NetworkGroupLobby")
 NetworkGroupLobbyPSN = NetworkGroupLobbyPSN or class(NetworkGroupLobby)
+
 function NetworkGroupLobbyPSN:init()
 	NetworkGroupLobby.init(self)
 	cat_print("lobby", "group = NetworkGroupLobbyPSN")
@@ -12,21 +13,26 @@ function NetworkGroupLobbyPSN:init()
 	self._is_server_var = false
 	self._is_client_var = false
 	self._callback_map = {}
+	
 	local function f(...)
 		self:_custom_message_cb(...)
 	end
+	
 	PSN:set_matchmaking_callback("custom_message", f)
 	self._time_to_leave = nil
 	self:_load_globals()
 end
+
 function NetworkGroupLobbyPSN:_session_destroyed_cb(room_id)
 	cat_print("lobby", "NetworkGroupLobbyPSN:_session_destroyed_cb")
 	if room_id == self._room_id then
 		self:leave_group_lobby_cb()
 	end
 end
+
 function NetworkGroupLobbyPSN:destroy()
 end
+
 function NetworkGroupLobbyPSN:update(time)
 	if self._time_to_leave and TimerManager:wall():time() > self._time_to_leave then
 		self._time_to_leave = nil
@@ -37,6 +43,7 @@ function NetworkGroupLobbyPSN:update(time)
 		self:leave_group_lobby_cb("join_failed")
 	end
 end
+
 function NetworkGroupLobbyPSN:create_group_lobby()
 	cat_print("lobby", "NetworkGroupLobbyPSN:create_group_lobby()")
 	self._players = {}
@@ -47,6 +54,7 @@ function NetworkGroupLobbyPSN:create_group_lobby()
 	PSN:set_matchmaking_callback("session_created", session_created)
 	PSN:create_session(0, world_list[1].world_id, 0, self.OPEN_SLOTS, 0)
 end
+
 function NetworkGroupLobbyPSN:join_group_lobby(room_info)
 	self:_is_server(false)
 	self:_is_client(true)
@@ -57,13 +65,16 @@ function NetworkGroupLobbyPSN:join_group_lobby(room_info)
 		end
 	end
 	self._room_id = room_info.room_id
+	
 	local function f(...)
 		self:_join_invite(...)
 	end
+	
 	PSN:set_matchmaking_callback("connection_etablished", f)
 	self._try_time = TimerManager:wall():time() + 30
 	PSN:join_session(self._room_id)
 end
+
 function NetworkGroupLobbyPSN:send_go_to_lobby()
 	if self:_is_server() then
 		for k, v in pairs(self._players) do
@@ -73,6 +84,7 @@ function NetworkGroupLobbyPSN:send_go_to_lobby()
 		end
 	end
 end
+
 function NetworkGroupLobbyPSN:go_to_lobby()
 	if self._callback_map.go_to_lobby then
 		self:_call_callback("go_to_lobby")
@@ -80,6 +92,7 @@ function NetworkGroupLobbyPSN:go_to_lobby()
 		self:leave_group_lobby()
 	end
 end
+
 function NetworkGroupLobbyPSN:send_return_group_lobby()
 	local playerid = managers.network.account:player_id()
 	cat_print("lobby", "Now telling server that im back and ready. My playerid is: ", tostring(playerid))
@@ -95,6 +108,7 @@ function NetworkGroupLobbyPSN:send_return_group_lobby()
 		end
 	end
 end
+
 function NetworkGroupLobbyPSN:_handle_returned_players()
 	if #self._returned_players ~= 0 and self._callback_map.player_returned then
 		cat_print("lobby", "We now have a return callback so now handling players")
@@ -114,6 +128,7 @@ function NetworkGroupLobbyPSN:_handle_returned_players()
 		self._returned_players = {}
 	end
 end
+
 function NetworkGroupLobbyPSN:return_group_lobby(playerid, sender)
 	cat_print("lobby", "Client reports that it has returned to group lobby. ", tostring(playerid))
 	table.insert(self._returned_players, playerid)
@@ -123,6 +138,7 @@ function NetworkGroupLobbyPSN:return_group_lobby(playerid, sender)
 		cat_print("lobby", "No player_returned callback so save these returns for later")
 	end
 end
+
 function NetworkGroupLobbyPSN:lobby_return_answer(answer, sender)
 	cat_print("lobby", "Group leader tell us lobby_return_answer. ", tostring(answer), tostring(self._server_rpc))
 	if answer == "yes" then
@@ -136,6 +152,7 @@ function NetworkGroupLobbyPSN:lobby_return_answer(answer, sender)
 		self:leave_group_lobby()
 	end
 end
+
 function NetworkGroupLobbyPSN:find(playerid)
 	for k, v in pairs(self._players) do
 		if tostring(v.playerid) == tostring(playerid) then
@@ -144,6 +161,7 @@ function NetworkGroupLobbyPSN:find(playerid)
 	end
 	return nil, nil
 end
+
 function NetworkGroupLobbyPSN:leave_group_lobby(instant)
 	if self:_is_server() and #self._players == 0 then
 		self:leave_group_lobby_cb()
@@ -165,6 +183,7 @@ function NetworkGroupLobbyPSN:leave_group_lobby(instant)
 		self:leave_group_lobby_cb()
 	end
 end
+
 function NetworkGroupLobbyPSN:leave_group_lobby_cb(error_callback)
 	if self._room_id then
 		managers.network.voice_chat:close_session()
@@ -185,6 +204,7 @@ function NetworkGroupLobbyPSN:leave_group_lobby_cb(error_callback)
 	end
 	self:_call_callback(error_callback or "left_group")
 end
+
 function NetworkGroupLobbyPSN:set_join_enabled(enabled)
 	self._join_enable = enabled
 	if enabled and not managers.network.systemlink:is_lan() then
@@ -193,6 +213,7 @@ function NetworkGroupLobbyPSN:set_join_enabled(enabled)
 		managers.platform:set_presence("MPLobby_no_invite")
 	end
 end
+
 function NetworkGroupLobbyPSN:send_group_lobby_invite(network_friend)
 	if self._room_id == nil then
 		return false
@@ -219,6 +240,7 @@ function NetworkGroupLobbyPSN:send_group_lobby_invite(network_friend)
 	end
 	return false
 end
+
 function NetworkGroupLobbyPSN:kick_player(player_id, timeout)
 	local v, k, rpc
 	k, v = self:find(player_id)
@@ -228,11 +250,13 @@ function NetworkGroupLobbyPSN:kick_player(player_id, timeout)
 	end
 	self:_unregister_player(player_id, false, rpc)
 end
+
 function NetworkGroupLobbyPSN:accept_group_lobby_invite(room, accept)
 	if accept == true then
 		self:_call_callback("accepted_group_lobby_invite", room)
 	end
 end
+
 function NetworkGroupLobbyPSN:send_game_id(id, private, created)
 	if created and created == true then
 		for k, v in pairs(self._players) do
@@ -243,14 +267,18 @@ function NetworkGroupLobbyPSN:send_game_id(id, private, created)
 		v.rpc:psn_send_mm_id(PSN:convert_sessionid_to_string(id), private)
 	end
 end
+
 function NetworkGroupLobbyPSN:register_callback(event, callback)
 	self._callback_map[event] = callback
 end
+
 function NetworkGroupLobbyPSN:start_game()
 	self:_call_callback("game_started")
 end
+
 function NetworkGroupLobbyPSN:end_game()
 end
+
 function NetworkGroupLobbyPSN:ingame_start_game()
 	if self._server_rpc then
 		for k, v in pairs(self._players) do
@@ -261,6 +289,7 @@ function NetworkGroupLobbyPSN:ingame_start_game()
 		end
 	end
 end
+
 function NetworkGroupLobbyPSN:say(message)
 	if self:_is_server() then
 		for k, v in pairs(self._players) do
@@ -268,6 +297,7 @@ function NetworkGroupLobbyPSN:say(message)
 		end
 	end
 end
+
 function NetworkGroupLobbyPSN:membervoted(player, votes)
 	if self:_is_server() then
 		for k, v in pairs(self._players) do
@@ -275,18 +305,22 @@ function NetworkGroupLobbyPSN:membervoted(player, votes)
 		end
 	end
 end
+
 function NetworkGroupLobbyPSN:is_group_leader()
 	return self:_is_server() == true
 end
+
 function NetworkGroupLobbyPSN:has_pending_invite()
 	return false
 end
+
 function NetworkGroupLobbyPSN:is_in_group()
 	if self._inlobby then
 		return true
 	end
 	return false
 end
+
 function NetworkGroupLobbyPSN:num_group_players()
 	local x = 0
 	for k, v in pairs(self._players) do
@@ -294,18 +328,22 @@ function NetworkGroupLobbyPSN:num_group_players()
 	end
 	return x
 end
+
 function NetworkGroupLobbyPSN:get_group_players()
 	return self._players
 end
+
 function NetworkGroupLobbyPSN:is_full()
 	if #self._players == self.OPEN_SLOTS - 1 then
 		return true
 	end
 	return false
 end
+
 function NetworkGroupLobbyPSN:get_leader_rpc()
 	return self._server_rpc
 end
+
 function NetworkGroupLobbyPSN:get_members_rpcs()
 	local rpcs = {}
 	for _, v in pairs(self._players) do
@@ -317,6 +355,7 @@ function NetworkGroupLobbyPSN:get_members_rpcs()
 	end
 	return rpcs
 end
+
 function NetworkGroupLobbyPSN:resync_screen()
 	managers.network:bind_port()
 	if self:is_group_leader() then
@@ -343,9 +382,11 @@ function NetworkGroupLobbyPSN:resync_screen()
 		self:_call_callback("player_joined", playerinfo)
 	end
 end
+
 function NetworkGroupLobbyPSN:room_id()
 	return self._room_id
 end
+
 function NetworkGroupLobbyPSN:_load_globals()
 	if Global.psn and Global.psn.group then
 		self._room_id = Global.psn.group.room_id
@@ -358,6 +399,7 @@ function NetworkGroupLobbyPSN:_load_globals()
 		Global.psn.group = nil
 	end
 end
+
 function NetworkGroupLobbyPSN:_save_global()
 	if not Global.psn then
 		Global.psn = {}
@@ -371,6 +413,7 @@ function NetworkGroupLobbyPSN:_save_global()
 	Global.psn.group.server_rpc = self._server_rpc
 	Global.psn.group._returned_players = self._returned_players
 end
+
 function NetworkGroupLobbyPSN:_call_callback(name, ...)
 	if self._callback_map[name] then
 		return self._callback_map[name](...)
@@ -378,6 +421,7 @@ function NetworkGroupLobbyPSN:_call_callback(name, ...)
 		Application:error("Callback " .. name .. " not found.")
 	end
 end
+
 function NetworkGroupLobbyPSN:_is_server(set)
 	if set == true or set == false then
 		self._is_server_var = set
@@ -385,6 +429,7 @@ function NetworkGroupLobbyPSN:_is_server(set)
 		return self._is_server_var
 	end
 end
+
 function NetworkGroupLobbyPSN:_is_client(set)
 	if set == true or set == false then
 		self._is_client_var = set
@@ -392,15 +437,18 @@ function NetworkGroupLobbyPSN:_is_client(set)
 		return self._is_client_var
 	end
 end
+
 function NetworkGroupLobbyPSN:_custom_message_cb(message)
 	if message.custom_table and message.custom_table.join_invite and self._join_enable then
 		self._invite_id = message.custom_table.invite_id
 		self:_call_callback("receive_group_lobby_invite", message, message.sender)
 	end
 end
+
 function NetworkGroupLobbyPSN:_recv_game_id(id, private)
 	self:_call_callback("receive_game_id", id, private)
 end
+
 function NetworkGroupLobbyPSN:_created_group_lobby(room_id)
 	if not room_id then
 		self:_call_callback("create_group_failed")
@@ -425,11 +473,13 @@ function NetworkGroupLobbyPSN:_created_group_lobby(room_id)
 	playerinfo.rpc = Network:self("TCP_IP")
 	self:_call_callback("player_joined", playerinfo)
 end
+
 function NetworkGroupLobbyPSN:_clear_psn_callback(cb)
 	local f = function()
 	end
 	PSN:set_matchmaking_callback(cb, f)
 end
+
 function NetworkGroupLobbyPSN:_join_invite(info)
 	if info.room_id == self._room_id and info.user_id == info.owner_id then
 		self:_clear_psn_callback("connection_etablished")
@@ -445,6 +495,7 @@ function NetworkGroupLobbyPSN:_join_invite(info)
 		self._server_rpc:psn_grp_hello(self._invite_id)
 	end
 end
+
 function NetworkGroupLobbyPSN:_server_alive(server)
 	if self._server_rpc and self._server_rpc:ip_at_index(0) == server:ip_at_index(0) then
 		self._try_time = nil
@@ -454,6 +505,7 @@ function NetworkGroupLobbyPSN:_server_alive(server)
 		self._try_time = TimerManager:wall():time() + 10
 	end
 end
+
 function NetworkGroupLobbyPSN:_register_player(name, pnid, group, rpc, is_server)
 	if #self._players + 1 >= self.OPEN_SLOTS then
 		return
@@ -495,6 +547,7 @@ function NetworkGroupLobbyPSN:_register_player(name, pnid, group, rpc, is_server
 	playerinfo.rpc = rpc
 	self:_call_callback("player_joined", playerinfo)
 end
+
 function NetworkGroupLobbyPSN:_unregister_player(pnid, is_server, rpc)
 	if self:_is_client() and is_server == true then
 		self:leave_group_lobby_cb()
@@ -522,6 +575,7 @@ function NetworkGroupLobbyPSN:_unregister_player(pnid, is_server, rpc)
 		reason = "went home to mama"
 	})
 end
+
 function NetworkGroupLobbyPSN:_in_list(id)
 	for k, v in pairs(self._players) do
 		if tostring(v.pnid) == tostring(id) then
@@ -530,10 +584,12 @@ function NetworkGroupLobbyPSN:_in_list(id)
 	end
 	return false
 end
+
 function NetworkGroupLobbyPSN:_server_timed_out(rpc)
 	NetworkGroupLobby._server_timed_out(self, rpc)
 	self:_unregister_player(nil, true, rpc)
 end
+
 function NetworkGroupLobbyPSN:_client_timed_out(rpc)
 	for k, v in pairs(self._players) do
 		if v.rpc and v.rpc:ip_at_index(0) == rpc:ip_at_index(0) then
@@ -542,6 +598,7 @@ function NetworkGroupLobbyPSN:_client_timed_out(rpc)
 		end
 	end
 end
+
 function NetworkGroupLobbyPSN:leaving_game()
 	if self:_is_server() then
 		self:leave_group_lobby(true)

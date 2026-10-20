@@ -1,13 +1,16 @@
 CoreLogicChanceUnitElement = CoreLogicChanceUnitElement or class(MissionElement)
 LogicChanceUnitElement = LogicChanceUnitElement or class(CoreLogicChanceUnitElement)
+
 function LogicChanceUnitElement:init(...)
 	CoreLogicChanceUnitElement.init(self, ...)
 end
+
 function CoreLogicChanceUnitElement:init(unit)
 	MissionElement.init(self, unit)
 	self._hed.chance = 100
 	table.insert(self._save_values, "chance")
 end
+
 function CoreLogicChanceUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel
@@ -28,11 +31,14 @@ function CoreLogicChanceUnitElement:_build_panel(panel, panel_sizer)
 	chance:connect("EVT_COMMAND_TEXT_ENTER", callback(self, self, "set_element_data"), {ctrlr = chance, value = "chance"})
 	chance:connect("EVT_KILL_FOCUS", callback(self, self, "set_element_data"), {ctrlr = chance, value = "chance"})
 end
+
 CoreLogicChanceOperatorUnitElement = CoreLogicChanceOperatorUnitElement or class(MissionElement)
 LogicChanceOperatorUnitElement = LogicChanceOperatorUnitElement or class(CoreLogicChanceOperatorUnitElement)
+
 function LogicChanceOperatorUnitElement:init(...)
 	LogicChanceOperatorUnitElement.super.init(self, ...)
 end
+
 function CoreLogicChanceOperatorUnitElement:init(unit)
 	CoreLogicChanceOperatorUnitElement.super.init(self, unit)
 	self._hed.operation = "none"
@@ -42,6 +48,7 @@ function CoreLogicChanceOperatorUnitElement:init(unit)
 	table.insert(self._save_values, "chance")
 	table.insert(self._save_values, "elements")
 end
+
 function CoreLogicChanceOperatorUnitElement:draw_links(t, dt, selected_unit, all_units)
 	CoreLogicChanceOperatorUnitElement.super.draw_links(self, t, dt, selected_unit)
 	for _, id in ipairs(self._hed.elements) do
@@ -58,8 +65,10 @@ function CoreLogicChanceOperatorUnitElement:draw_links(t, dt, selected_unit, all
 		end
 	end
 end
+
 function CoreLogicChanceOperatorUnitElement:update_editing()
 end
+
 function CoreLogicChanceOperatorUnitElement:add_element()
 	local ray = managers.editor:unit_by_raycast({mask = 10, ray_type = "editor"})
 	if ray and ray.unit and ray.unit:name() == Idstring("core/units/mission_elements/logic_chance/logic_chance") then
@@ -71,6 +80,7 @@ function CoreLogicChanceOperatorUnitElement:add_element()
 		end
 	end
 end
+
 function CoreLogicChanceOperatorUnitElement:remove_links(unit)
 	for _, id in ipairs(self._hed.elements) do
 		if id == unit:unit_data().unit_id then
@@ -78,9 +88,11 @@ function CoreLogicChanceOperatorUnitElement:remove_links(unit)
 		end
 	end
 end
+
 function CoreLogicChanceOperatorUnitElement:add_triggers(vc)
 	vc:add_trigger(Idstring("lmb"), callback(self, self, "add_element"))
 end
+
 function CoreLogicChanceOperatorUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel
@@ -126,11 +138,14 @@ function CoreLogicChanceOperatorUnitElement:_build_panel(panel, panel_sizer)
 	help.sizer = panel_sizer
 	self:add_help_text(help)
 end
+
 CoreLogicChanceTriggerUnitElement = CoreLogicChanceTriggerUnitElement or class(MissionElement)
 LogicChanceTriggerUnitElement = LogicChanceTriggerUnitElement or class(CoreLogicChanceTriggerUnitElement)
+
 function LogicChanceTriggerUnitElement:init(...)
 	LogicChanceTriggerUnitElement.super.init(self, ...)
 end
+
 function CoreLogicChanceTriggerUnitElement:init(unit)
 	CoreLogicChanceTriggerUnitElement.super.init(self, unit)
 	self._hed.outcome = "fail"
@@ -138,6 +153,7 @@ function CoreLogicChanceTriggerUnitElement:init(unit)
 	table.insert(self._save_values, "outcome")
 	table.insert(self._save_values, "elements")
 end
+
 function CoreLogicChanceTriggerUnitElement:draw_links(t, dt, selected_unit, all_units)
 	CoreLogicChanceTriggerUnitElement.super.draw_links(self, t, dt, selected_unit)
 	for _, id in ipairs(self._hed.elements) do
@@ -154,8 +170,10 @@ function CoreLogicChanceTriggerUnitElement:draw_links(t, dt, selected_unit, all_
 		end
 	end
 end
+
 function CoreLogicChanceTriggerUnitElement:update_editing()
 end
+
 function CoreLogicChanceTriggerUnitElement:add_element()
 	local ray = managers.editor:unit_by_raycast({mask = 10, ray_type = "editor"})
 	if ray and ray.unit and ray.unit:name() == Idstring("core/units/mission_elements/logic_chance/logic_chance") then
@@ -167,6 +185,7 @@ function CoreLogicChanceTriggerUnitElement:add_element()
 		end
 	end
 end
+
 function CoreLogicChanceTriggerUnitElement:remove_links(unit)
 	for _, id in ipairs(self._hed.elements) do
 		if id == unit:unit_data().unit_id then
@@ -174,9 +193,11 @@ function CoreLogicChanceTriggerUnitElement:remove_links(unit)
 		end
 	end
 end
+
 function CoreLogicChanceTriggerUnitElement:add_triggers(vc)
 	vc:add_trigger(Idstring("lmb"), callback(self, self, "add_element"))
 end
+
 function CoreLogicChanceTriggerUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

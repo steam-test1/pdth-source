@@ -1,17 +1,22 @@
 HostStateBase = HostStateBase or class()
+
 function HostStateBase:enter(data, enter_params)
 end
+
 function HostStateBase:exit(data, name, enter_params)
 end
+
 function HostStateBase:_has_peer_left_PSN(peer_name)
 	if SystemInfo:platform() == Idstring("PS3") and managers.network.matchmake:check_peer_join_request_remove(peer_name) then
 		print("this CLIENT has left us from PSN, ignore his request", peer_name)
 		return
 	end
 end
+
 function HostStateBase:_is_in_server_state()
 	return managers.network:game() and Network:is_server()
 end
+
 function HostStateBase:_introduce_new_peer_to_old_peers(data, new_peer)
 	local new_peer_id = new_peer:id()
 	for old_pid, old_peer in pairs(data.peers) do
@@ -26,6 +31,7 @@ function HostStateBase:_introduce_new_peer_to_old_peers(data, new_peer)
 		end
 	end
 end
+
 function HostStateBase:_introduce_old_peers_to_new_peer(data, new_peer)
 	local new_peer_id = new_peer:id()
 	for old_pid, old_peer in pairs(data.peers) do
@@ -40,6 +46,7 @@ function HostStateBase:_introduce_old_peers_to_new_peer(data, new_peer)
 		end
 	end
 end
+
 function HostStateBase:_chk_mutual_connection_established(data, peer, introduced_peer_id)
 	local introduced_peer = data.peers[introduced_peer_id]
 	if introduced_peer:handshakes()[peer:id()] == true then
@@ -50,6 +57,7 @@ function HostStateBase:_chk_mutual_connection_established(data, peer, introduced
 	end
 	return false
 end
+
 function HostStateBase:on_handshake_confirmation(data, peer, introduced_peer_id)
 	cat_print("multiplayer_base", "[HostStateBase:on_handshake_confirmation]", inspect(peer), peer:id(), introduced_peer_id)
 	local has_mutual_connection
@@ -67,12 +75,14 @@ function HostStateBase:on_handshake_confirmation(data, peer, introduced_peer_id)
 	end
 	managers.network:game():check_start_game_intro()
 end
+
 function HostStateBase:_is_kicked(data, peer_name, peer_rpc)
 	local ident = SystemInfo:platform() == Idstring("WIN32") and peer_rpc:ip_at_index(0) or peer_name
 	if data.kicked_list[ident] then
 		return true
 	end
 end
+
 function HostStateBase:_chk_peer_owns_current_dlc(data, peer_dlcs)
 	local requires_dlc = tweak_data.levels[Global.game_settings.level_id].dlc
 	if requires_dlc then
@@ -85,6 +95,7 @@ function HostStateBase:_chk_peer_owns_current_dlc(data, peer_dlcs)
 	end
 	return false
 end
+
 function HostStateBase:on_peer_finished_loading(data, peer)
 	print("[HostStateBase:on_peer_finished_loading]", inspect(peer))
 	if not next(peer:handshakes()) then
@@ -92,9 +103,11 @@ function HostStateBase:on_peer_finished_loading(data, peer)
 		self:_introduce_old_peers_to_new_peer(data, peer)
 	end
 end
+
 function HostStateBase:on_load_level(data)
 	data.wants_to_load_level = true
 end
+
 function HostStateBase:is_joinable(data)
 	return false
 end

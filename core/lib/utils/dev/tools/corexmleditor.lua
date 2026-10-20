@@ -1,13 +1,16 @@
 CoreXMLEditor = CoreXMLEditor or class()
+
 function CoreXMLEditor:init()
 	self._active_database = ProjectDatabase
 	self._current_prop = {}
 	self:create_main_frame()
 	self:check_news(true)
 end
+
 function CoreXMLEditor:on_check_news()
 	self:check_news()
 end
+
 function CoreXMLEditor:check_news(new_only)
 	local news
 	if new_only then
@@ -27,6 +30,7 @@ function CoreXMLEditor:check_news(new_only)
 		EWS:MessageDialog(self._main_frame_table._main_frame, str, "New Features!", "OK,ICON_INFORMATION"):show_modal()
 	end
 end
+
 function CoreXMLEditor:check_open()
 	if open_editor then
 		local frame = EWS:Frame("", Vector3(0, 0, 0), Vector3(0, 0, 0), "")
@@ -39,6 +43,7 @@ function CoreXMLEditor:check_open()
 	end
 	return false
 end
+
 function CoreXMLEditor:create_main_frame()
 	self._main_frame_table = {}
 	self._main_frame_table._main_frame = EWS:Frame("XML Editor", Vector3(-1, -1, 0), Vector3(1000, 800, 0), "FRAME_FLOAT_ON_PARENT,DEFAULT_FRAME_STYLE", Global.frame)
@@ -82,6 +87,7 @@ function CoreXMLEditor:create_main_frame()
 	self._compile_error_dialog = EWS:MessageDialog(self._main_frame_table._main_frame, "Could not compile XML!", "Error", "OK,ICON_ERROR")
 	self._new_dialog = CoreXMLEditorNewDialog:new(self._main_frame_table._main_frame)
 end
+
 function CoreXMLEditor:on_set_db(data, event)
 	self._db_menu:set_checked("DB_PROJECT", false)
 	self._db_menu:set_checked("DB_CORE", false)
@@ -92,6 +98,7 @@ function CoreXMLEditor:on_set_db(data, event)
 	self._current_entry = nil
 	self._current_prop = {}
 end
+
 function CoreXMLEditor:on_new()
 	if self._main_frame_table._edit_text_ctrl:get_value() ~= "" and self._save_prev_dialog:show_modal() == "ID_YES" then
 		self:on_save()
@@ -102,9 +109,11 @@ function CoreXMLEditor:on_new()
 	self._current_prop = {}
 	self:update_title()
 end
+
 function CoreXMLEditor:on_open()
 	self._browse = CoreDBDialog:new("", self, self.openfile, self._active_database)
 end
+
 function CoreXMLEditor:on_save()
 	if not self._current_node or not self._current_entry then
 		self:on_save_as()
@@ -121,6 +130,7 @@ function CoreXMLEditor:on_save()
 		self._compile_error_dialog:show_modal()
 	end
 end
+
 function CoreXMLEditor:on_save_as()
 	local test_node = Node("new_node")
 	if test_node:try_read_xml(self._main_frame_table._edit_text_ctrl:get_value()) then
@@ -142,6 +152,7 @@ function CoreXMLEditor:on_save_as()
 		self._compile_error_dialog:show_modal()
 	end
 end
+
 function CoreXMLEditor:openfile()
 	local node = self._active_database:load_node(self._browse:get_value())
 	if node then
@@ -159,6 +170,7 @@ function CoreXMLEditor:openfile()
 		end
 	end
 end
+
 function CoreXMLEditor:update_title()
 	if self._current_entry and self._current_entry:valid() then
 		self._main_frame_table._main_frame:set_title(self._current_entry:name() .. " - XML Editor")
@@ -166,6 +178,7 @@ function CoreXMLEditor:update_title()
 		self._main_frame_table._main_frame:set_title("XML Editor")
 	end
 end
+
 function CoreXMLEditor:update(t, dt)
 	if self._browse and self._browse:update(t, dt) then
 		self._main_frame_table._main_frame:set_focus()
@@ -173,15 +186,18 @@ function CoreXMLEditor:update(t, dt)
 	else
 	end
 end
+
 function CoreXMLEditor:set_position(newpos)
 	if self._main_frame_table and self._main_frame_table._main_frame then
 		self._main_frame_table._main_frame:set_position(newpos)
 	end
 end
+
 function CoreXMLEditor:on_close()
 	self:close()
 	managers.toolhub:close("XML Editor")
 end
+
 function CoreXMLEditor:destroy()
 	if self._main_frame_table and alive(self._main_frame_table._main_frame) then
 		self._main_frame_table._main_frame:destroy()
@@ -192,6 +208,7 @@ function CoreXMLEditor:destroy()
 		self._browse = nil
 	end
 end
+
 function CoreXMLEditor:close()
 	if self._main_frame_table and self._main_frame_table._main_frame then
 		self._main_frame_table._main_frame:destroy()
@@ -202,7 +219,9 @@ function CoreXMLEditor:close()
 		self._browse = nil
 	end
 end
+
 CoreXMLEditorNewDialog = CoreXMLEditorNewDialog or class()
+
 function CoreXMLEditorNewDialog:init(p)
 	self._dialog = EWS:Dialog(p, "Create New Entry", "", Vector3(-1, -1, 0), Vector3(200, 86, 0), "CAPTION,SYSTEM_MENU")
 	local box = EWS:BoxSizer("VERTICAL")
@@ -224,6 +243,7 @@ function CoreXMLEditorNewDialog:init(p)
 	box:add(button_box, 0, 0, "EXPAND")
 	self._dialog:set_sizer(box)
 end
+
 function CoreXMLEditorNewDialog:show_modal()
 	self._type_text_ctrl:set_value("[type]")
 	self._name_text_ctrl:set_value("[name]")
@@ -235,17 +255,20 @@ function CoreXMLEditorNewDialog:show_modal()
 	end
 	return self._return_val
 end
+
 function CoreXMLEditorNewDialog:on_set_button()
 	self._done = true
 	self._type = self._type_text_ctrl:get_value()
 	self._name = self._name_text_ctrl:get_value()
 	self._dialog:end_modal("")
 end
+
 function CoreXMLEditorNewDialog:on_cancel_button()
 	self._done = true
 	self._return_val = false
 	self._dialog:end_modal("")
 end
+
 function CoreXMLEditorNewDialog:get_value()
 	return self._type, self._name
 end

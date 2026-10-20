@@ -1,16 +1,20 @@
 require("core/lib/utils/dev/ews/CoreFilteredTreePanel")
 CoreAnimationStateTreePanel = CoreAnimationStateTreePanel or class(CoreFilteredTreePanel)
+
 function CoreAnimationStateTreePanel:init(parent_frame, unit)
 	self.super.init(self, parent_frame)
 	self:set_unit(unit)
 end
+
 function CoreAnimationStateTreePanel:unit()
 	return self._unit
 end
+
 function CoreAnimationStateTreePanel:set_unit(unit)
 	self._unit = unit
 	self:_refresh_tree()
 end
+
 function CoreAnimationStateTreePanel:_refresh_tree()
 	self:_tree_control():freeze()
 	self:_tree_control():clear()

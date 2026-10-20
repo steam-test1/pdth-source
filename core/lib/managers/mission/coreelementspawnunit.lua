@@ -2,10 +2,12 @@ core:module("CoreElementSpawnUnit")
 core:import("CoreMissionScriptElement")
 core:import("CoreUnit")
 ElementSpawnUnit = ElementSpawnUnit or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementSpawnUnit:init(...)
 	ElementSpawnUnit.super.init(self, ...)
 	self._units = {}
 end
+
 function ElementSpawnUnit:client_on_executed(...)
 	if self._values.unit_name ~= "none" then
 		local network_sync = PackageManager:unit_data(self._values.unit_name:id()):network_sync()
@@ -15,6 +17,7 @@ function ElementSpawnUnit:client_on_executed(...)
 	end
 	self:on_executed(...)
 end
+
 function ElementSpawnUnit:on_executed(instigator)
 	if not self._values.enabled then
 		return
@@ -30,9 +33,11 @@ function ElementSpawnUnit:on_executed(instigator)
 	end
 	ElementSpawnUnit.super.on_executed(self, instigator)
 end
+
 function ElementSpawnUnit:units()
 	return self._units
 end
+
 function ElementSpawnUnit:delete_units()
 	for _, unit in ipairs(self._units) do
 		unit:set_slot(0)

@@ -1,4 +1,5 @@
 SelectGroupByName = SelectGroupByName or class(CoreEditorEwsDialog)
+
 function SelectGroupByName:init(...)
 	CoreEditorEwsDialog.init(self, nil, "Select group by name", "", Vector3(300, 150, 0), Vector3(350, 500, 0), "DEFAULT_DIALOG_STYLE,RESIZE_BORDER,STAY_ON_TOP", ...)
 	self:create_panel("VERTICAL")
@@ -40,18 +41,21 @@ function SelectGroupByName:init(...)
 	self:fill_group_list()
 	self._dialog:set_visible(true)
 end
+
 function SelectGroupByName:key_delete(ctrlr, event)
 	event:skip()
 	if EWS:name_to_key_code("K_DELETE") == event:key_code() then
 		self:on_delete()
 	end
 end
+
 function SelectGroupByName:key_cancel(ctrlr, event)
 	event:skip()
 	if EWS:name_to_key_code("K_ESCAPE") == event:key_code() then
 		self:on_cancel()
 	end
 end
+
 function SelectGroupByName:on_delete()
 	managers.editor:freeze_gui_lists()
 	local groups = self:_selected_item_groups()
@@ -62,14 +66,17 @@ function SelectGroupByName:on_delete()
 	end
 	managers.editor:thaw_gui_lists()
 end
+
 function SelectGroupByName:on_mark_group()
 end
+
 function SelectGroupByName:on_ungroup()
 	local groups = self:_selected_item_groups()
 	for _, group in ipairs(groups) do
 		managers.editor:remove_group(group:name())
 	end
 end
+
 function SelectGroupByName:on_select_group()
 	local group = self:_selected_item_group()
 	if not group then
@@ -81,6 +88,7 @@ function SelectGroupByName:on_select_group()
 	managers.editor:select_group(group)
 	managers.editor:thaw_gui_lists()
 end
+
 function SelectGroupByName:_selected_item_groups()
 	local groups = {}
 	for _, i in ipairs(self._list:selected_items()) do
@@ -89,12 +97,14 @@ function SelectGroupByName:_selected_item_groups()
 	end
 	return groups
 end
+
 function SelectGroupByName:_selected_item_group()
 	local index = self._list:selected_item()
 	if index ~= -1 then
 		return self._groups[self._list:get_item_data(index)]
 	end
 end
+
 function SelectGroupByName:group_removed(group)
 	for i = 0, self._list:item_count() - 1 do
 		if self._groups[self._list:get_item_data(i)] == group then
@@ -103,12 +113,14 @@ function SelectGroupByName:group_removed(group)
 		end
 	end
 end
+
 function SelectGroupByName:group_created(group)
 	local i = self._list:append_item(group:name())
 	local j = #self._groups + 1
 	self._groups[j] = group
 	self._list:set_item_data(i, j)
 end
+
 function SelectGroupByName:group_selected(group)
 	for _, i in ipairs(self._list:selected_items()) do
 		self._list:set_item_selected(i, false)
@@ -121,9 +133,11 @@ function SelectGroupByName:group_selected(group)
 		end
 	end
 end
+
 function SelectGroupByName:update_filter()
 	self:fill_group_list()
 end
+
 function SelectGroupByName:fill_group_list()
 	self._list:delete_all_items()
 	local groups = managers.editor:groups():groups()
@@ -142,12 +156,15 @@ function SelectGroupByName:fill_group_list()
 	self._list:thaw()
 	self._list:autosize_column(0)
 end
+
 function SelectGroupByName:reset()
 	self:fill_group_list()
 end
+
 function SelectGroupByName:freeze()
 	self._list:freeze()
 end
+
 function SelectGroupByName:thaw()
 	self._list:thaw()
 end

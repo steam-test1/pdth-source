@@ -1,4 +1,5 @@
 core:module("CoreLogic")
+
 function toboolean(value)
 	if type(value) == "string" then
 		return value == "true"
@@ -6,6 +7,7 @@ function toboolean(value)
 		return value == 1
 	end
 end
+
 function iff(t, a, b)
 	if t then
 		return a

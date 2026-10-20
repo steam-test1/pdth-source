@@ -2,12 +2,14 @@ TimelineManager = TimelineManager or class()
 TimelineManager.PATH = "gamedata/timeline"
 TimelineManager.FILE_EXTENSION = "timeline"
 TimelineManager.FULL_PATH = TimelineManager.PATH .. "." .. TimelineManager.FILE_EXTENSION
+
 function TimelineManager:init()
 	if not Global.timeline_manager then
 		self:setup()
 	end
 	self._load_done_callback = callback(self, self, "load_game_callback")
 end
+
 function TimelineManager:init_finalize()
 	if Global.timeline_manager.init_load_savefile then
 		managers.savefile:load_game(managers.savefile:current_game_cache_slot(), true)
@@ -18,6 +20,7 @@ function TimelineManager:init_finalize()
 		self:_set_init_save_savefile(false)
 	end
 end
+
 function TimelineManager:setup()
 	Global.timeline_manager = {
 		init_load_savefile = nil,
@@ -34,9 +37,11 @@ function TimelineManager:setup()
 		end
 	end
 end
+
 function TimelineManager:event_list()
 	return Global.timeline_manager.event_list
 end
+
 function TimelineManager:event_ids()
 	local t = {}
 	for _, event in ipairs(Global.timeline_manager.event_list) do
@@ -45,26 +50,32 @@ function TimelineManager:event_ids()
 	table.sort(t)
 	return t
 end
+
 function TimelineManager:load_game(slot)
 	managers.savefile:add_load_done_callback(self._load_done_callback)
 	managers.savefile:load_game(slot, false)
 end
+
 function TimelineManager:load_game_callback()
 	managers.savefile:remove_load_done_callback(self._load_done_callback)
 	self:jump(self._event_id, self._checkpoint_index, true, false, self._level, self._mission, self._world_setting, self._level_class_name)
 end
+
 function TimelineManager:debug_level_jump(level, mission, world_setting, level_class_name)
 	Global.timeline_manager.current_event_id = nil
 	self._event_id = nil
 	self._checkpoint_index = nil
 	self:jump(nil, nil, false, false, level, mission, world_setting, level_class_name)
 end
+
 function TimelineManager:level_jump(level, mission, world_setting, level_class_name)
 	self:jump(nil, nil, false, false, level, mission, world_setting, level_class_name)
 end
+
 function TimelineManager:return_to_timeline()
 	self:jump(self._event_id, self._checkpoint_index, false, false, nil, nil, nil, nil)
 end
+
 function TimelineManager:jump(event_id, checkpoint_index, is_loading, load_debug_data, level, mission, world_setting, level_class_name)
 	cat_print("timeline_manager", "[TimelineManager] Jump in timeline. Event id: " .. tostring(event_id) .. ", Checkpoint index: " .. tostring(checkpoint_index) .. ", Level: " .. tostring(level) .. ", Mission: " .. tostring(mission) .. ", class: " .. tostring(level_class_name))
 	self._level = level
@@ -112,6 +123,7 @@ function TimelineManager:jump(event_id, checkpoint_index, is_loading, load_debug
 		self:_set_init_save_savefile(not is_loading)
 	end
 end
+
 function TimelineManager:activate_next_event()
 	local event_data = Global.timeline_manager.event_map[self._event_id]
 	if not event_data then
@@ -127,6 +139,7 @@ function TimelineManager:activate_next_event()
 		end
 	end
 end
+
 function TimelineManager:checkpoint_reached(event_id, next_checkpoint_index)
 	if event_id then
 		Application:error("Checkpoint reached on a debug level. Make sure it exists in \"" .. tostring(self.FULL_PATH) .. "\" if you want it to trigger events and checkpoints.")
@@ -149,6 +162,7 @@ function TimelineManager:checkpoint_reached(event_id, next_checkpoint_index)
 		end
 	end
 end
+
 function TimelineManager:restart()
 	if Application:editor() then
 		return
@@ -162,6 +176,7 @@ function TimelineManager:restart()
 		setup:load_start_menu()
 	end
 end
+
 function TimelineManager:get_name(event_id, checkpoint_index)
 	event_id = event_id or self._event_id
 	checkpoint_index = checkpoint_index or self._checkpoint_index
@@ -176,6 +191,7 @@ function TimelineManager:get_name(event_id, checkpoint_index)
 		})
 	end
 end
+
 function TimelineManager:get_description(event_id, checkpoint_index)
 	event_id = event_id or self._event_id
 	checkpoint_index = checkpoint_index or self._checkpoint_index
@@ -188,6 +204,7 @@ function TimelineManager:get_description(event_id, checkpoint_index)
 		return managers.localization:text("debug_level_description")
 	end
 end
+
 function TimelineManager:_parse_event(node)
 	local id = node.id
 	local index = #Global.timeline_manager.event_list + 1
@@ -247,6 +264,7 @@ function TimelineManager:_parse_event(node)
 	end
 	return id, data
 end
+
 function TimelineManager:_parse_checkpoint(node)
 	local data = {
 		mission = node.mission,
@@ -256,6 +274,7 @@ function TimelineManager:_parse_checkpoint(node)
 	}
 	return data
 end
+
 function TimelineManager:_parse_debug_dynamic_data(node, event_index)
 	local data = {}
 	for _, child_node in ipairs(node) do
@@ -279,6 +298,7 @@ function TimelineManager:_parse_debug_dynamic_data(node, event_index)
 	end
 	return data
 end
+
 function TimelineManager:_load_debug_dynamic_data(event_index)
 	local inventory_map = {}
 	for index = 1, event_index do
@@ -329,6 +349,7 @@ function TimelineManager:_load_debug_dynamic_data(event_index)
 		end
 	end
 end
+
 function TimelineManager:save(data)
 	local state = {
 		event_id = self._event_id,
@@ -340,6 +361,7 @@ function TimelineManager:save(data)
 	}
 	data.TimelineManager = state
 end
+
 function TimelineManager:load(data)
 	local state = data.TimelineManager
 	if state then
@@ -351,12 +373,14 @@ function TimelineManager:load(data)
 		self._level_class_name = state.level_class_name
 	end
 end
+
 function TimelineManager:_set_init_load_savefile(init_load_savefile)
 	if not Global.timeline_manager.init_load_savefile ~= not init_load_savefile then
 		Global.timeline_manager.init_load_savefile = init_load_savefile
 		cat_print("timeline_manager", "[TimelineManager] Will load savefile at init: " .. tostring(init_load_savefile))
 	end
 end
+
 function TimelineManager:_set_init_save_savefile(init_save_savefile)
 	if not Global.timeline_manager.init_save_savefile ~= not init_save_savefile then
 		Global.timeline_manager.init_save_savefile = init_save_savefile

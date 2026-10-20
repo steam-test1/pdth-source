@@ -60,6 +60,7 @@ local material_translation_map = {
 	[tostring(Idstring("units/characters/civilians/hospital_bill"):key())] = "units/characters/civilians/hospital_bill_contour",
 	[tostring(Idstring("units/characters/civilians/hospital_bill_contour"):key())] = "units/characters/civilians/hospital_bill"
 }
+
 function CopBase:init(unit)
 	UnitBase.init(self, unit, false)
 	self._unit = unit
@@ -68,6 +69,7 @@ function CopBase:init(unit)
 	self._foot_obj_map.right = self._unit:get_object(Idstring("RightToeBase"))
 	self._foot_obj_map.left = self._unit:get_object(Idstring("LeftToeBase"))
 end
+
 function CopBase:post_init()
 	self._ext_movement = self._unit:movement()
 	self:set_anim_lod(1)
@@ -77,6 +79,7 @@ function CopBase:post_init()
 	managers.enemy:register_enemy(self._unit)
 	self._allow_invisible = true
 end
+
 function CopBase:default_weapon_name()
 	local default_weapon_id = self._default_weapon_id
 	local weap_ids = tweak_data.character.weap_ids
@@ -86,15 +89,19 @@ function CopBase:default_weapon_name()
 		end
 	end
 end
+
 function CopBase:visibility_state()
 	return self._visibility_state
 end
+
 function CopBase:lod_stage()
 	return self._lod_stage
 end
+
 function CopBase:set_allow_invisible(allow)
 	self._allow_invisible = allow
 end
+
 function CopBase:set_visibility_state(stage)
 	local state = stage and true
 	if not state and not self._allow_invisible then
@@ -133,12 +140,15 @@ function CopBase:set_visibility_state(stage)
 	self._lod_stage = stage
 	self:chk_freeze_anims()
 end
+
 function CopBase:set_anim_lod(stage)
 	self._unit:set_animation_lod(unpack(self._anim_lods[stage]))
 end
+
 function CopBase:on_death_exit()
 	self._unit:set_animations_enabled(false)
 end
+
 function CopBase:chk_freeze_anims()
 	if (not self._lod_stage or self._lod_stage > 1) and self._unit:anim_data().can_freeze then
 		if not self._anims_frozen then
@@ -152,6 +162,7 @@ function CopBase:chk_freeze_anims()
 		self._ext_movement:on_anim_freeze(false)
 	end
 end
+
 function CopBase:anim_act_clbk(unit, anim_act, nav_link)
 	if nav_link then
 		unit:movement():on_anim_act_clbk(anim_act)
@@ -159,6 +170,7 @@ function CopBase:anim_act_clbk(unit, anim_act, nav_link)
 		unit:unit_data().mission_element:event(anim_act, unit)
 	end
 end
+
 function CopBase:save(data)
 	if self._contour_state then
 		data.base_contour_on = true
@@ -167,6 +179,7 @@ function CopBase:save(data)
 		data.is_hostage_trade = true
 	end
 end
+
 function CopBase:load(data)
 	if data.base_contour_on then
 		self._contour_on_clbk_id = "clbk_set_contour_on" .. tostring(self._unit:key())
@@ -176,6 +189,7 @@ function CopBase:load(data)
 		CopLogicTrade.hostage_trade(self._unit, true)
 	end
 end
+
 function CopBase:clbk_set_contour_on(data)
 	if not self._contour_on_clbk_id or not alive(self._unit) then
 		return
@@ -183,9 +197,11 @@ function CopBase:clbk_set_contour_on(data)
 	self._contour_on_clbk_id = nil
 	self:set_contour(self._unit, true)
 end
+
 local ids_materials = Idstring("material")
 local ids_contour_color = Idstring("contour_color")
 local ids_contour_opacity = Idstring("contour_opacity")
+
 function CopBase:set_contour(state)
 	if not alive(self._unit) then
 		return
@@ -221,6 +237,7 @@ function CopBase:set_contour(state)
 	end
 	self._contour_state = state
 end
+
 function CopBase:swap_material_config()
 	local new_material = material_translation_map[tostring(self._unit:material_config():key())]
 	if new_material then
@@ -233,6 +250,7 @@ function CopBase:swap_material_config()
 		Application:stack_dump()
 	end
 end
+
 function CopBase:pre_destroy(unit)
 	if unit:unit_data().secret_assignment_id and alive(unit) then
 		managers.secret_assignment:unregister_unit(unit)

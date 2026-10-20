@@ -11,6 +11,7 @@ ControllerWrapperGamepad.IDS_RANGE = Idstring("range")
 ControllerWrapperGamepad.IDS_BUTTON = Idstring("button")
 ControllerWrapperGamepad.IDS_DIRECTION = Idstring("direction")
 ControllerWrapperGamepad.IDS_ROTATION = Idstring("rotation")
+
 function ControllerWrapperGamepad:init(manager, id, name, controller, setup, debug, skip_virtual_controller)
 	local func_map = {}
 	func_map.up = callback(self, self, "virtual_connect_up")
@@ -27,6 +28,7 @@ function ControllerWrapperGamepad:init(manager, id, name, controller, setup, deb
 		mouse = Input:mouse()
 	}, "gamepad", setup, debug, skip_virtual_controller, {gamepad = func_map})
 end
+
 function ControllerWrapperGamepad:virtual_connect_up(controller_id, controller, input_name, connection_name, connection)
 	if controller:has_axis(self.IDS_POV_0) then
 		self._virtual_controller:connect(controller, self.IDS_AXIS, self.IDS_POV_0, 1, self.IDS_RANGE, 0, -1, self.IDS_BUTTON, Idstring(connection_name))
@@ -35,6 +37,7 @@ function ControllerWrapperGamepad:virtual_connect_up(controller_id, controller, 
 		self:virtual_connect2(controller_id, controller, input_name, connection_name, connection)
 	end
 end
+
 function ControllerWrapperGamepad:virtual_connect_down(controller_id, controller, input_name, connection_name, connection)
 	if controller:has_axis(self.IDS_POV_0) then
 		self._virtual_controller:connect(controller, self.IDS_AXIS, self.IDS_POV_0, 1, self.IDS_RANGE, 0, 1, self.IDS_BUTTON, Idstring(connection_name))
@@ -43,6 +46,7 @@ function ControllerWrapperGamepad:virtual_connect_down(controller_id, controller
 		self:virtual_connect2(controller_id, controller, input_name, connection_name, connection)
 	end
 end
+
 function ControllerWrapperGamepad:virtual_connect_right(controller_id, controller, input_name, connection_name, connection)
 	if controller:has_axis(self.IDS_POV_0) then
 		self._virtual_controller:connect(controller, self.IDS_AXIS, self.IDS_POV_0, 0, self.IDS_RANGE, 0, 1, self.IDS_BUTTON, Idstring(connection_name))
@@ -51,6 +55,7 @@ function ControllerWrapperGamepad:virtual_connect_right(controller_id, controlle
 		self:virtual_connect2(controller_id, controller, input_name, connection_name, connection)
 	end
 end
+
 function ControllerWrapperGamepad:virtual_connect_left(controller_id, controller, input_name, connection_name, connection)
 	if controller:has_axis(self.IDS_POV_0) then
 		self._virtual_controller:connect(controller, self.IDS_AXIS, self.IDS_POV_0, 0, self.IDS_RANGE, 0, -1, self.IDS_BUTTON, Idstring(connection_name))
@@ -59,6 +64,7 @@ function ControllerWrapperGamepad:virtual_connect_left(controller_id, controller
 		self:virtual_connect2(controller_id, controller, input_name, connection_name, connection)
 	end
 end
+
 function ControllerWrapperGamepad:virtual_connect_confirm(controller_id, controller, input_name, connection_name, connection)
 	if controller:has_button(2) then
 		self:virtual_connect2(controller_id, controller, 2, connection_name, connection)
@@ -67,6 +73,7 @@ function ControllerWrapperGamepad:virtual_connect_confirm(controller_id, control
 		self:virtual_connect2(controller_id, controller, input_name, connection_name, connection)
 	end
 end
+
 function ControllerWrapperGamepad:virtual_connect_cancel(controller_id, controller, input_name, connection_name, connection)
 	if controller:has_button(1) then
 		self:virtual_connect2(controller_id, controller, 1, connection_name, connection)
@@ -75,6 +82,7 @@ function ControllerWrapperGamepad:virtual_connect_cancel(controller_id, controll
 		self:virtual_connect2(controller_id, controller, input_name, connection_name, connection)
 	end
 end
+
 function ControllerWrapperGamepad:virtual_connect_axis1(controller_id, controller, input_name, connection_name, connection)
 	input_name = "direction"
 	if not controller:has_axis(self.IDS_DIRECTION) then
@@ -88,6 +96,7 @@ function ControllerWrapperGamepad:virtual_connect_axis1(controller_id, controlle
 	end
 	self:virtual_connect2(controller_id, controller, input_name, connection_name, connection)
 end
+
 function ControllerWrapperGamepad:virtual_connect_axis2(controller_id, controller, input_name, connection_name, connection)
 	input_name = "rotation"
 	if not controller:has_axis(self.IDS_ROTATION) then
@@ -101,6 +110,7 @@ function ControllerWrapperGamepad:virtual_connect_axis2(controller_id, controlle
 	end
 	self:virtual_connect2(controller_id, controller, input_name, connection_name, connection)
 end
+
 function ControllerWrapperGamepad:virtual_connect2(controller_id, controller, input_name, connection_name, connection)
 	if connection:get_connect_src_type() == "axis" then
 		if not controller:has_axis(Idstring(input_name)) then
@@ -116,9 +126,11 @@ function ControllerWrapperGamepad:virtual_connect2(controller_id, controller, in
 	end
 	ControllerWrapperGamepad.super.virtual_connect2(self, controller_id, controller, input_name, connection_name, connection)
 end
+
 function ControllerWrapperGamepad:get_fallback_axis(controller_id, controller, input_name, connection_name, connection)
 	return "mouse", Input:mouse(), "mouse", connection_name, connection
 end
+
 function ControllerWrapperGamepad:get_fallback_button(controller_id, controller, input_name, connection_name, connection)
 	controller = Input:keyboard()
 	if input_name == "cancel" then
@@ -128,6 +140,7 @@ function ControllerWrapperGamepad:get_fallback_button(controller_id, controller,
 	end
 	return "keyboard", controller, input_name, connection_name, connection
 end
+
 function ControllerWrapperGamepad:get_input_axis(connection_name)
 	local cache = ControllerWrapperGamepad.super.get_input_axis(self, connection_name)
 	if connection_name == "look" then

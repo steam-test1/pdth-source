@@ -8,6 +8,7 @@ local HIGHLIGHTED = Vector3(0.8, 0.8, 1)
 local PERCENT, SECONDS, PLAIN = 0, 1, 2
 local DEFAULT_FORMAT = PERCENT
 LuaProfilerGridBox = LuaProfilerGridBox or CoreClass.class()
+
 function LuaProfilerGridBox:init(...)
 	local args = CoreKeywordArguments.KeywordArguments:new(...)
 	self._ews_parent = args:mandatory_object("parent")
@@ -36,11 +37,13 @@ function LuaProfilerGridBox:init(...)
 	self.box_sizer:add(self._listctrl, 1, 0, "EXPAND")
 	self.panel:set_sizer(self.box_sizer)
 end
+
 function LuaProfilerGridBox:set_treeview(...)
 	self._treeview = parse_kwargs({
 		...
 	}, "table:treeview")
 end
+
 function LuaProfilerGridBox:destroy()
 	self._lpd = nil
 	self._item2fnid = {}
@@ -49,6 +52,7 @@ function LuaProfilerGridBox:destroy()
 	self._listctrl = nil
 	self._treeview = nil
 end
+
 function LuaProfilerGridBox:set_profilerdata(...)
 	self._lpd, self._displayformat = parse_kwargs({
 		...
@@ -69,6 +73,7 @@ function LuaProfilerGridBox:set_profilerdata(...)
 	end
 	self:_redraw()
 end
+
 function LuaProfilerGridBox:set_displayformat(...)
 	self._displayformat = parse_kwargs({
 		...
@@ -88,6 +93,7 @@ function LuaProfilerGridBox:set_displayformat(...)
 		end
 	end
 end
+
 function LuaProfilerGridBox:_redraw()
 	if self._lpd ~= nil then
 		self:_sort_funcnodes()
@@ -120,6 +126,7 @@ function LuaProfilerGridBox:_redraw()
 		end
 	end
 end
+
 function LuaProfilerGridBox:_sort_funcnodes()
 	local convert
 	if self._sortcolumn == 1 then
@@ -167,6 +174,7 @@ function LuaProfilerGridBox:_sort_funcnodes()
 			end
 		end
 	end
+	
 	function sort(fn1, fn2)
 		if self._sortreverse then
 			return convert(fn1) > convert(fn2)
@@ -174,8 +182,10 @@ function LuaProfilerGridBox:_sort_funcnodes()
 			return convert(fn1) < convert(fn2)
 		end
 	end
+	
 	table.sort(self._item2fnid, sort)
 end
+
 function LuaProfilerGridBox:deselect_and_highlight(...)
 	local fnid = parse_kwargs({
 		...
@@ -183,6 +193,7 @@ function LuaProfilerGridBox:deselect_and_highlight(...)
 	self._listctrl:set_item_selected(self._listctrl:selected_item(), false)
 	self:_highlight(fnid)
 end
+
 function LuaProfilerGridBox:_highlight(fnid)
 	self._highlightedfuncnode = fnid
 	for i, fnid_ in ipairs(self._item2fnid) do
@@ -193,6 +204,7 @@ function LuaProfilerGridBox:_highlight(fnid)
 		end
 	end
 end
+
 function LuaProfilerGridBox:_on_select()
 	local i = self._listctrl:selected_item()
 	self._treeview:deselect_and_highlight({
@@ -200,12 +212,14 @@ function LuaProfilerGridBox:_on_select()
 	})
 	self:_highlight(self._item2fnid[i + 1])
 end
+
 function LuaProfilerGridBox:_on_activate()
 	local i = self._listctrl:selected_item()
 	self._treeview:deselect_and_expand({
 		fnid = self._item2fnid[i + 1]
 	})
 end
+
 function LuaProfilerGridBox:_on_column(id, f)
 	local column = f:get_column() + 1
 	if column == self._sortcolumn then

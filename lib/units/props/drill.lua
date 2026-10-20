@@ -2,6 +2,7 @@ Drill = Drill or class(UnitBase)
 Drill.active_drills = Drill.active_drills or 0
 Drill.jammed_drills = Drill.jammed_drills or 0
 Drill._drill_remind_clbk_id = "_drill_remind_clbk"
+
 function Drill:init(unit)
 	Drill.super.init(self, unit, false)
 	self._unit = unit
@@ -11,8 +12,10 @@ function Drill:init(unit)
 	self._use_effect = true
 	self._active_effect_name = "effects/particles/equipment/vault_drill/drill_active"
 end
+
 function Drill:update(unit, t, dt)
 end
+
 function Drill:start()
 	self:_start_drill_effect()
 	if not self.started then
@@ -20,9 +23,11 @@ function Drill:start()
 		Drill.active_drills = Drill.active_drills + 1
 	end
 end
+
 function Drill:stop()
 	self:set_jammed(false)
 end
+
 function Drill:done()
 	self:set_jammed(false)
 	self:_kill_drill_effect()
@@ -31,6 +36,7 @@ function Drill:done()
 		Drill.active_drills = Drill.active_drills - 1
 	end
 end
+
 function Drill:_start_drill_effect()
 	if self._drill_effect then
 		return
@@ -42,6 +48,7 @@ function Drill:_start_drill_effect()
 		self._drill_effect = World:effect_manager():spawn(params)
 	end
 end
+
 function Drill:_kill_drill_effect()
 	if not self._drill_effect then
 		return
@@ -51,6 +58,7 @@ function Drill:_kill_drill_effect()
 	end
 	self._drill_effect = nil
 end
+
 function Drill:_kill_jammed_effect()
 	if not self._jammed_effect then
 		return
@@ -60,6 +68,7 @@ function Drill:_kill_jammed_effect()
 	end
 	self._jammed_effect = nil
 end
+
 function Drill:set_jammed(jammed)
 	if (self._jammed or false) == (jammed or false) then
 		return
@@ -83,6 +92,7 @@ function Drill:set_jammed(jammed)
 	end
 	self:_change_num_jammed_drills(self._jammed and 1 or -1)
 end
+
 function Drill:_change_num_jammed_drills(d)
 	Drill.jammed_drills = Drill.jammed_drills + d
 	if Drill.jammed_drills > 0 and not Drill._drll_remind_clbk then
@@ -94,6 +104,7 @@ function Drill:_change_num_jammed_drills(d)
 		Drill._drll_remind_clbk = nil
 	end
 end
+
 function Drill:_drill_remind_clbk()
 	if not self.is_hacking_device then
 		local suffix = Drill.active_drills > 1 and "plu" or "sin"
@@ -107,6 +118,7 @@ function Drill:_drill_remind_clbk()
 	end
 	managers.enemy:add_delayed_clbk(Drill._drill_remind_clbk_id, Drill._drll_remind_clbk, Application:time() + 45)
 end
+
 function Drill:set_powered(powered)
 	if (self._powered or false) == (powered or false) then
 		return
@@ -121,6 +133,7 @@ function Drill:set_powered(powered)
 		end
 	end
 end
+
 function Drill:destroy()
 	self:_kill_jammed_effect()
 	self:_kill_drill_effect()

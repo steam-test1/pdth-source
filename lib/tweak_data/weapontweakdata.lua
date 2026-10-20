@@ -1,4 +1,5 @@
 WeaponTweakData = WeaponTweakData or class()
+
 function WeaponTweakData:init()
 	self:_create_table_structure()
 	self:_init_data_player_weapons()
@@ -20,6 +21,7 @@ function WeaponTweakData:init()
 	self:_init_data_sentry_gun_npc()
 	self:_precalculate_values()
 end
+
 function WeaponTweakData:_init_data_c45_npc()
 	self.c45_npc.sounds.prefix = "c45_npc"
 	self.c45_npc.use_data.selection_index = 1
@@ -31,6 +33,7 @@ function WeaponTweakData:_init_data_c45_npc()
 	self.c45_npc.hud_icon = self.c45.hud_icon
 	self.c45_npc.alert_size = 2500
 end
+
 function WeaponTweakData:_init_data_beretta92_npc()
 	self.beretta92_npc.sounds.prefix = "beretta_npc"
 	self.beretta92_npc.use_data.selection_index = 1
@@ -42,6 +45,7 @@ function WeaponTweakData:_init_data_beretta92_npc()
 	self.beretta92_npc.hud_icon = self.beretta92.hud_icon
 	self.beretta92_npc.alert_size = 300
 end
+
 function WeaponTweakData:_init_data_glock_18_npc()
 	self.glock_18_npc.sounds.prefix = "stryk_npc"
 	self.glock_18_npc.use_data.selection_index = 1
@@ -53,6 +57,7 @@ function WeaponTweakData:_init_data_glock_18_npc()
 	self.glock_18_npc.hud_icon = self.glock.hud_icon
 	self.glock_18_npc.alert_size = 2500
 end
+
 function WeaponTweakData:_init_data_raging_bull_npc()
 	self.raging_bull_npc.sounds.prefix = "ragingbull_npc"
 	self.raging_bull_npc.use_data.selection_index = 1
@@ -64,6 +69,7 @@ function WeaponTweakData:_init_data_raging_bull_npc()
 	self.raging_bull_npc.hud_icon = self.raging_bull.hud_icon
 	self.raging_bull_npc.alert_size = 5000
 end
+
 function WeaponTweakData:_init_data_m4_npc()
 	self.m4_npc.sounds.prefix = "m4_npc"
 	self.m4_npc.use_data.selection_index = 2
@@ -76,6 +82,7 @@ function WeaponTweakData:_init_data_m4_npc()
 	self.m4_npc.hud_icon = self.test_raycast_weapon.hud_icon
 	self.m4_npc.alert_size = 5000
 end
+
 function WeaponTweakData:_init_data_ak47_npc()
 	self.ak47_npc.sounds.prefix = "ak47_npc"
 	self.ak47_npc.use_data.selection_index = 2
@@ -88,6 +95,7 @@ function WeaponTweakData:_init_data_ak47_npc()
 	self.ak47_npc.hud_icon = self.test_raycast_weapon.hud_icon
 	self.ak47_npc.alert_size = 5000
 end
+
 function WeaponTweakData:_init_data_m14_npc()
 	self.m14_npc.sounds.prefix = "m14_npc"
 	self.m14_npc.use_data.selection_index = 2
@@ -100,6 +108,7 @@ function WeaponTweakData:_init_data_m14_npc()
 	self.m14_npc.hud_icon = self.m14.hud_icon
 	self.m14_npc.alert_size = 5000
 end
+
 function WeaponTweakData:_init_data_r870_npc()
 	self.r870_npc.sounds.prefix = "remington_npc"
 	self.r870_npc.use_data.selection_index = 3
@@ -111,6 +120,7 @@ function WeaponTweakData:_init_data_r870_npc()
 	self.r870_npc.hud_icon = self.r870_shotgun.hud_icon
 	self.r870_npc.alert_size = 4500
 end
+
 function WeaponTweakData:_init_data_m79_npc()
 	self.m79_npc.sounds.prefix = "gl_npc"
 	self.m79_npc.use_data.selection_index = 3
@@ -122,6 +132,7 @@ function WeaponTweakData:_init_data_m79_npc()
 	self.m79_npc.hud_icon = self.m79.hud_icon
 	self.m79_npc.alert_size = 1000
 end
+
 function WeaponTweakData:_init_data_mossberg_npc()
 	self.mossberg_npc.sounds.prefix = "mossberg_npc"
 	self.mossberg_npc.use_data.selection_index = 3
@@ -133,6 +144,7 @@ function WeaponTweakData:_init_data_mossberg_npc()
 	self.mossberg_npc.hud_icon = self.mossberg.hud_icon
 	self.mossberg_npc.alert_size = 3000
 end
+
 function WeaponTweakData:_init_data_mp5_npc()
 	self.mp5_npc.sounds.prefix = "mp5_npc"
 	self.mp5_npc.use_data.selection_index = 4
@@ -145,6 +157,7 @@ function WeaponTweakData:_init_data_mp5_npc()
 	self.mp5_npc.hud_icon = self.mp5.hud_icon
 	self.mp5_npc.alert_size = 2500
 end
+
 function WeaponTweakData:_init_data_mac11_npc()
 	self.mac11_npc.sounds.prefix = "mp5_npc"
 	self.mac11_npc.use_data.selection_index = 4
@@ -157,6 +170,7 @@ function WeaponTweakData:_init_data_mac11_npc()
 	self.mac11_npc.hud_icon = self.mac11.hud_icon
 	self.mac11_npc.alert_size = 1000
 end
+
 function WeaponTweakData:_init_data_hk21_npc()
 	self.hk21_npc.sounds.prefix = "b21_npc"
 	self.hk21_npc.use_data.selection_index = 2
@@ -169,6 +183,7 @@ function WeaponTweakData:_init_data_hk21_npc()
 	self.hk21_npc.hud_icon = self.hk21.hud_icon
 	self.hk21_npc.alert_size = 5000
 end
+
 function WeaponTweakData:_init_data_shield_pistol_npc()
 	self.shield_pistol_npc.sounds.prefix = "mp5_npc"
 	self.shield_pistol_npc.use_data.selection_index = 1
@@ -181,6 +196,7 @@ function WeaponTweakData:_init_data_shield_pistol_npc()
 	self.shield_pistol_npc.hold = "shield"
 	self.shield_pistol_npc.hud_icon = self.hk21.hud_icon
 end
+
 function WeaponTweakData:_init_data_sniper_rifle_npc()
 	self.sniper_rifle_npc.sounds.prefix = "sniper_npc"
 	self.sniper_rifle_npc.use_data.selection_index = 2
@@ -192,6 +208,7 @@ function WeaponTweakData:_init_data_sniper_rifle_npc()
 	self.sniper_rifle_npc.hold = "rifle"
 	self.sniper_rifle_npc.hud_icon = self.test_raycast_weapon.hud_icon
 end
+
 function WeaponTweakData:_init_data_sentry_gun_npc()
 	self.sentry_gun.name_id = "debug_sentry_gun"
 	self.sentry_gun.DAMAGE = 0.5
@@ -217,6 +234,7 @@ function WeaponTweakData:_init_data_sentry_gun_npc()
 	self.sentry_gun.challenges.group = "sentry_gun"
 	self.sentry_gun.challenges.weapon = "sentry_gun"
 end
+
 function WeaponTweakData:_init_data_player_weapons()
 	local autohit_rifle_default, autohit_pistol_default, autohit_shotgun_default
 	if SystemInfo:platform() == Idstring("WIN32") then
@@ -1170,6 +1188,7 @@ function WeaponTweakData:_init_data_player_weapons()
 	self.ak47.challenges.weapon = "ak47"
 	self.ak47.alert_size = 5000
 end
+
 function WeaponTweakData:_create_table_structure()
 	self.c45_npc = {
 		usage = "beretta92",
@@ -1260,6 +1279,7 @@ function WeaponTweakData:_create_table_structure()
 		auto = {}
 	}
 end
+
 function WeaponTweakData:_precalculate_values()
 	self.m4_npc.AMMO_MAX = self.m4_npc.CLIP_AMMO_MAX * self.m4_npc.NR_CLIPS_MAX
 	self.m14_npc.AMMO_MAX = self.m14_npc.CLIP_AMMO_MAX * self.m14_npc.NR_CLIPS_MAX

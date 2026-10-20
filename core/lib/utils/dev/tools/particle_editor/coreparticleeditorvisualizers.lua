@@ -1,4 +1,5 @@
 CoreParticleEditorVisualizers = CoreParticleEditorVisualizers or class()
+
 function CoreParticleEditorVisualizers:create_billboard()
 	local visualizer = CoreEffectStackMember:new("billboard", "visualizer", "Billboard")
 	visualizer:set_description("Visualizes particles using quads with different alignment and blending schemes and a set texture")
@@ -277,6 +278,7 @@ channel - read from channel]]
 	visualizer:add_property(p)
 	return visualizer
 end
+
 function CoreParticleEditorVisualizers:create_trail()
 	local visualizer = CoreEffectStackMember:new("trail", "visualizer", "Trail")
 	visualizer:set_description("Visualizes particles using quads with different alignment and blending schemes and a set texture")
@@ -432,6 +434,7 @@ channel - read from channel]]
 	visualizer:add_property(p)
 	return visualizer
 end
+
 function CoreParticleEditorVisualizers:create_light()
 	local visualizer = CoreEffectStackMember:new("light", "visualizer", "Light")
 	visualizer:set_description("Visualizes particles using lights with positions aligned to the particles")
@@ -490,6 +493,7 @@ channel - read from channel]]
 	visualizer:add_property(p)
 	return visualizer
 end
+
 function CoreParticleEditorVisualizers:create_model()
 	local visualizer = CoreEffectStackMember:new("model", "visualizer", "Model")
 	visualizer:set_description("Visualizes particles using models picked from a unit")

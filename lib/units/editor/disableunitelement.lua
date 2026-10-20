@@ -1,10 +1,12 @@
 DisableUnitUnitElement = DisableUnitUnitElement or class(MissionElement)
+
 function DisableUnitUnitElement:init(unit)
 	DisableUnitUnitElement.super.init(self, unit)
 	self._units = {}
 	self._hed.unit_ids = {}
 	table.insert(self._save_values, "unit_ids")
 end
+
 function DisableUnitUnitElement:layer_finished()
 	MissionElement.layer_finished(self)
 	for _, id in pairs(self._hed.unit_ids) do
@@ -14,11 +16,13 @@ function DisableUnitUnitElement:layer_finished()
 		end
 	end
 end
+
 function DisableUnitUnitElement:load_unit(unit)
 	if unit then
 		self._units[unit:unit_data().unit_id] = unit
 	end
 end
+
 function DisableUnitUnitElement:update_selected()
 	for id, unit in pairs(self._units) do
 		if not alive(unit) then
@@ -37,6 +41,7 @@ function DisableUnitUnitElement:update_selected()
 		end
 	end
 end
+
 function DisableUnitUnitElement:update_unselected(t, dt, selected_unit, all_units)
 	for id, unit in pairs(self._units) do
 		if not alive(unit) then
@@ -45,6 +50,7 @@ function DisableUnitUnitElement:update_unselected(t, dt, selected_unit, all_unit
 		end
 	end
 end
+
 function DisableUnitUnitElement:draw_links_unselected(...)
 	DisableUnitUnitElement.super.draw_links_unselected(self, ...)
 	for id, unit in pairs(self._units) do
@@ -59,6 +65,7 @@ function DisableUnitUnitElement:draw_links_unselected(...)
 		Application:draw(unit, 0.5, 0, 0)
 	end
 end
+
 function DisableUnitUnitElement:update_editing()
 	local ray = managers.editor:unit_by_raycast({
 		sample = true,
@@ -69,6 +76,7 @@ function DisableUnitUnitElement:update_editing()
 		Application:draw(ray.unit, 0, 1, 0)
 	end
 end
+
 function DisableUnitUnitElement:select_unit()
 	local ray = managers.editor:unit_by_raycast({
 		sample = true,
@@ -86,9 +94,11 @@ function DisableUnitUnitElement:select_unit()
 		end
 	end
 end
+
 function DisableUnitUnitElement:add_triggers(vc)
 	vc:add_trigger(Idstring("lmb"), callback(self, self, "select_unit"))
 end
+
 function DisableUnitUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

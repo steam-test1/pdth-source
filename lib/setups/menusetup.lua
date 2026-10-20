@@ -6,18 +6,21 @@ require("lib/managers/ChallengesManager")
 require("lib/managers/StatisticsManager")
 MenuSetup = MenuSetup or class(Setup)
 MenuSetup.IS_START_MENU = true
+
 function MenuSetup:load_packages()
 	Setup.load_packages(self)
 	if not PackageManager:loaded("packages/start_menu") then
 		PackageManager:load("packages/start_menu")
 	end
 end
+
 function MenuSetup:unload_packages()
 	Setup.unload_packages(self)
 	if not Global.load_start_menu and PackageManager:loaded("packages/start_menu") then
 		PackageManager:unload("packages/start_menu")
 	end
 end
+
 function MenuSetup:init_game()
 	local gsm = Setup.init_game(self)
 	if not Application:editor() then
@@ -74,6 +77,7 @@ function MenuSetup:init_game()
 	end
 	return gsm
 end
+
 function MenuSetup:init_managers(managers)
 	Setup.init_managers(self, managers)
 	managers.money = MoneyManager:new()
@@ -81,6 +85,7 @@ function MenuSetup:init_managers(managers)
 	managers.statistics = StatisticsManager:new()
 	managers.network = NetworkManager:new("NetworkGame")
 end
+
 function MenuSetup:init_finalize()
 	Setup.init_finalize(self)
 	if managers.network:session() then
@@ -90,6 +95,7 @@ function MenuSetup:init_finalize()
 		self.update = self.update_wait_for_savegame_info
 	end
 end
+
 function MenuSetup:update_wait_for_savegame_info(t, dt)
 	managers.savefile:update(t, dt)
 	if managers.savefile:fetch_savegame_hdd_space_required() then
@@ -102,20 +108,25 @@ function MenuSetup:update_wait_for_savegame_info(t, dt)
 		self.update = nil
 	end
 end
+
 function MenuSetup:update(t, dt)
 	Setup.update(self, t, dt)
 	managers.network:update(t, dt)
 end
+
 function MenuSetup:paused_update(t, dt)
 	Setup.paused_update(self, t, dt)
 	managers.network:update(t, dt)
 end
+
 function MenuSetup:end_update(t, dt)
 	Setup.end_update(self, t, dt)
 	managers.network:end_update()
 end
+
 function MenuSetup:paused_end_update(t, dt)
 	Setup.paused_end_update(self, t, dt)
 	managers.network:end_update()
 end
+
 return MenuSetup

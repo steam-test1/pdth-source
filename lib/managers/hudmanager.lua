@@ -20,6 +20,7 @@ HUDManager.ASSAULT_DIALOGS = {
 	"gen_ban_b12"
 }
 core:import("CoreEvent")
+
 function HUDManager:init()
 	self._component_map = {}
 	local safe_rect_pixels = managers.viewport:get_safe_rect_pixels()
@@ -57,22 +58,29 @@ function HUDManager:init()
 	self:_init_player_hud_values()
 	self._chatinput_changed_callback_handler = CoreEvent.CallbackEventHandler:new()
 end
+
 function HUDManager:saferect_w()
 	return self._saferect:width()
 end
+
 function HUDManager:saferect_h()
 	return self._saferect:height()
 end
+
 function HUDManager:add_chatinput_changed_callback(callback_func)
 	self._chatinput_changed_callback_handler:add(callback_func)
 end
+
 function HUDManager:remove_chatinput_changed_callback(callback_func)
 	self._chatinput_changed_callback_handler:remove(callback_func)
 end
+
 function HUDManager:controller_mod_changed()
 	self:_selected_item_icon_text()
 end
+
 local is_PS3 = SystemInfo:platform() == Idstring("PS3")
+
 function HUDManager:_selected_item_icon_text()
 	local hud = self:script(PlayerBase.PLAYER_HUD)
 	if not hud then
@@ -89,6 +97,7 @@ function HUDManager:_selected_item_icon_text()
 	hud.selected_item_icon:set_size(w, h)
 	self:set_item_selected()
 end
+
 function HUDManager:init_finalize()
 	if not self:exists(self.ANNOUNCEMENT_HUD_FULLSCREEN) then
 		self:load_hud(self.ANNOUNCEMENT_HUD_FULLSCREEN, true, false, false, {})
@@ -98,10 +107,12 @@ function HUDManager:init_finalize()
 		managers.hud:load_hud(self.WAITING_FOR_PLAYERS_SAFERECT, false, true, true, {})
 	end
 end
+
 function HUDManager:set_safe_rect(rect)
 	self._saferect_size = rect
 	self._saferect:set_screen(rect.w, rect.h, rect.x, rect.y, RenderSettings.resolution.x)
 end
+
 function HUDManager:load_hud(name, visible, using_collision, using_saferect, mutex_list, bounding_box_list)
 	if self._component_map[name:key()] then
 		Application:error("ERROR! Component " .. tostring(name) .. " have already been loaded!")
@@ -167,6 +178,7 @@ function HUDManager:load_hud(name, visible, using_collision, using_saferect, mut
 	end
 	self:layout(name)
 end
+
 function HUDManager:layout(name)
 	local panel = self:script(name).panel
 	if not panel:has_script() then
@@ -179,15 +191,18 @@ function HUDManager:layout(name)
 		end
 	end
 end
+
 function HUDManager:delete(name)
 	self._component_map[name:key()] = nil
 end
+
 function HUDManager:set_disabled()
 	self._disabled = true
 	for name, gui in pairs(self._component_map) do
 		self:hide(gui.idstring)
 	end
 end
+
 function HUDManager:reload_player_hud()
 	local name = PlayerBase.PLAYER_HUD
 	local recreate = self._component_map[name:key()]
@@ -200,6 +215,7 @@ function HUDManager:reload_player_hud()
 		self:_player_hud_layout()
 	end
 end
+
 function HUDManager:reload_all()
 	self:reload()
 	for name, gui in pairs(clone(self._component_map)) do
@@ -212,9 +228,11 @@ function HUDManager:reload_all()
 		end
 	end
 end
+
 function HUDManager:reload()
 	self:_recompile(managers.database:root_path() .. "assets\\guis\\")
 end
+
 function HUDManager:_recompile(dir)
 	local source_files = self:_source_files(dir)
 	local t = {
@@ -233,6 +251,7 @@ function HUDManager:_recompile(dir)
 		PackageManager:reload(managers.database:entry_type(file):id(), managers.database:entry_path(file):id())
 	end
 end
+
 function HUDManager:_source_files(dir)
 	local files = {}
 	local entry_path = managers.database:entry_path(dir) .. "/"
@@ -246,6 +265,7 @@ function HUDManager:_source_files(dir)
 	end
 	return files
 end
+
 function HUDManager:panel(name)
 	if not self._component_map[name:key()] then
 		Application:error("ERROR! Component " .. tostring(name) .. " isn't loaded!")
@@ -253,10 +273,12 @@ function HUDManager:panel(name)
 		return self._component_map[name:key()].panel
 	end
 end
+
 function HUDManager:alive(name)
 	local component = self._component_map[name:key()]
 	return component and alive(component.panel)
 end
+
 function HUDManager:script(name)
 	local component = self._component_map[name:key()]
 	if component and alive(component.panel) then
@@ -264,9 +286,11 @@ function HUDManager:script(name)
 	else
 	end
 end
+
 function HUDManager:exists(name)
 	return not not self._component_map[name:key()]
 end
+
 function HUDManager:show(name)
 	if self._disabled then
 		return
@@ -284,6 +308,7 @@ function HUDManager:show(name)
 		Application:error("ERROR! Component " .. tostring(name) .. " isn't loaded!")
 	end
 end
+
 function HUDManager:hide(name)
 	local component = self._component_map[name:key()]
 	if component and alive(component.panel) then
@@ -292,6 +317,7 @@ function HUDManager:hide(name)
 		Application:error("ERROR! Component " .. tostring(name) .. " isn't loaded!")
 	end
 end
+
 function HUDManager:visible(name)
 	if self._component_map[name:key()] then
 		return self._component_map[name:key()].panel:visible()
@@ -299,6 +325,7 @@ function HUDManager:visible(name)
 		Application:error("ERROR! Component " .. tostring(name) .. " isn't loaded!")
 	end
 end
+
 function HUDManager:_collision(rect1_map, rect2_map)
 	if rect1_map.x1 >= rect2_map.x2 then
 		return false
@@ -314,6 +341,7 @@ function HUDManager:_collision(rect1_map, rect2_map)
 	end
 	return true
 end
+
 function HUDManager:_inside(rect1_map, rect2_map)
 	if rect1_map.x1 < rect2_map.x1 or rect1_map.x1 > rect2_map.x2 then
 		return false
@@ -329,6 +357,7 @@ function HUDManager:_inside(rect1_map, rect2_map)
 	end
 	return true
 end
+
 function HUDManager:_collision_rects(rect1_list, rect2_list)
 	for _, rc1_map in pairs(rect1_list) do
 		for _, rc2_map in pairs(rect2_list) do
@@ -339,6 +368,7 @@ function HUDManager:_collision_rects(rect1_list, rect2_list)
 	end
 	return false
 end
+
 function HUDManager:_is_mutex(component_map, name)
 	for _, mutex_name in pairs(component_map.mutex_list) do
 		if mutex_name:key() == name then
@@ -347,6 +377,7 @@ function HUDManager:_is_mutex(component_map, name)
 	end
 	return false
 end
+
 function HUDManager:_create_bounding_boxes(panel)
 	local bounding_box_list = {}
 	local childrens = panel:children()
@@ -371,6 +402,7 @@ function HUDManager:_create_bounding_boxes(panel)
 	end
 	return bounding_box_list
 end
+
 function HUDManager:_create_overlay_list(name)
 	local component = self._component_map[name:key()]
 	local overlay_list = {}
@@ -387,6 +419,7 @@ function HUDManager:_create_overlay_list(name)
 	end
 	return overlay_list
 end
+
 function HUDManager:_validate_components(name)
 	for _, overlay_name in pairs(self._component_map[name:key()].overlay_list) do
 		if self._component_map[overlay_name:key()] and self._component_map[overlay_name:key()].panel:visible() then
@@ -396,6 +429,7 @@ function HUDManager:_validate_components(name)
 	end
 	return true
 end
+
 function HUDManager:resolution_changed()
 	local res = RenderSettings.resolution
 	local safe_rect_pixels = managers.viewport:get_safe_rect_pixels()
@@ -406,6 +440,7 @@ function HUDManager:resolution_changed()
 		self:layout(gui.idstring)
 	end
 end
+
 function HUDManager:update(t, dt)
 	for _, cb in pairs(self._updators) do
 		cb(t, dt)
@@ -427,17 +462,21 @@ function HUDManager:update(t, dt)
 		end
 	end
 end
+
 function HUDManager:add_updator(id, cb)
 	self._updators[id] = cb
 end
+
 function HUDManager:remove_updator(id)
 	self._updators[id] = nil
 end
+
 local nl_w_pos = Vector3()
 local nl_pos = Vector3()
 local nl_dir = Vector3()
 local nl_dir_normalized = Vector3()
 local nl_cam_forward = Vector3()
+
 function HUDManager:_update_name_labels(t, dt)
 	local cam = managers.viewport:get_current_camera()
 	if not cam then
@@ -475,6 +514,7 @@ function HUDManager:_update_name_labels(t, dt)
 		end
 	end
 end
+
 function HUDManager:_init_player_hud_values()
 	self._hud = self._hud or {}
 	self._hud.MAX_CLIP = 140
@@ -488,6 +528,7 @@ function HUDManager:_init_player_hud_values()
 	self._hud.mugshots = self._hud.mugshots or {}
 	self._hud.name_labels = self._hud.name_labels or {}
 end
+
 function HUDManager:_announcement_hud_layout()
 	local hud = managers.hud:script(self.ANNOUNCEMENT_HUD)
 	local full_hud = managers.hud:script(self.ANNOUNCEMENT_HUD_FULLSCREEN)
@@ -556,6 +597,7 @@ function HUDManager:_announcement_hud_layout()
 	hud.level_up_text:set_center_x(hud.level_up_text:parent():center_x())
 	hud.level_up_text:set_center_y(hud.next_level_text:h() + 150 * tweak_data.scale.level_up_multiplier / 2)
 end
+
 function HUDManager:_player_info_hud_layout()
 	if not self:alive(PlayerBase.PLAYER_INFO_HUD) then
 		return
@@ -636,6 +678,7 @@ function HUDManager:_player_info_hud_layout()
 		self:_layout_chat_output()
 	end
 end
+
 function HUDManager:_layout_chat_output()
 	local hud = managers.hud:script(PlayerBase.PLAYER_INFO_HUD)
 	local full_hud = managers.hud:script(PlayerBase.PLAYER_INFO_HUD_FULLSCREEN)
@@ -646,6 +689,7 @@ function HUDManager:_layout_chat_output()
 		full_hud.panel:child("textscroll"):set_bottom(hud.health_panel:bottom() + self._saferect_size.y * self._workspace_size.h - 4)
 	end
 end
+
 function HUDManager:set_chat_output_state(state)
 	if is_PS3 then
 		return
@@ -657,6 +701,7 @@ function HUDManager:set_chat_output_state(state)
 	full_hud:set_chat_output_state(state)
 	self:_layout_chat_output()
 end
+
 function HUDManager:_layout_player_info_hud_fullscreen()
 	if not self:alive(PlayerBase.PLAYER_INFO_HUD_FULLSCREEN) then
 		return
@@ -701,6 +746,7 @@ function HUDManager:_layout_player_info_hud_fullscreen()
 		hud.panel:child("say_text"):set_visible(false)
 	end
 end
+
 function HUDManager:_cb_chat()
 	local hud = managers.hud:script(PlayerBase.PLAYER_INFO_HUD_FULLSCREEN)
 	local chat_text = hud.panel:child("chat_input"):child("text"):text()
@@ -717,6 +763,7 @@ function HUDManager:_cb_chat()
 		self:set_chat_focus(false)
 	end)
 end
+
 function HUDManager:sync_say(...)
 	self:_say(...)
 	if not self._chat_focus then
@@ -730,6 +777,7 @@ function HUDManager:sync_say(...)
 		}
 	end
 end
+
 function HUDManager:_say(message, id)
 	print("_say", message, id)
 	self._sound_source:post_event("prompt_exit")
@@ -739,22 +787,27 @@ function HUDManager:_say(message, id)
 	s.box_print(message, tweak_data.chat_colors[id], i)
 	s.scrollus:set_color(Color.white)
 end
+
 function HUDManager:_cb_unlock()
 	setup:add_end_frame_clbk(function()
 		self:set_chat_focus(false)
 	end)
 end
+
 function HUDManager:_cb_lock()
 end
+
 function HUDManager:toggle_chatinput()
 	self:set_chat_focus(true)
 end
+
 function HUDManager:_set_chat_alpha(scrollus, scrolllines, alpha)
 	scrollus:set_color(Color.white:with_alpha(alpha))
 	for _, line in ipairs(scrolllines) do
 		scrollus:set_range_color(line.si, line.si + line.i, line.c:with_alpha(alpha))
 	end
 end
+
 function HUDManager:set_chat_focus(focus)
 	if not self:alive(PlayerBase.PLAYER_INFO_HUD_FULLSCREEN) then
 		return
@@ -783,6 +836,7 @@ function HUDManager:set_chat_focus(focus)
 		self._workspace:disconnect_keyboard()
 	end
 end
+
 function HUDManager:_player_hud_layout()
 	if not self:alive(PlayerBase.PLAYER_HUD) then
 		return
@@ -862,6 +916,7 @@ function HUDManager:_player_hud_layout()
 		self:add_waypoint(id, data)
 	end
 end
+
 function HUDManager:add_waypoint(id, data)
 	if self._hud.waypoints[id] then
 		self:remove_waypoint(id)
@@ -980,6 +1035,7 @@ function HUDManager:add_waypoint(id, data)
 		self._hud.waypoints[id].slot_x = -t[1] / 2 - t[3] - self._hud.waypoints[id].text:w() / 2 - 20
 	end
 end
+
 function HUDManager:remove_waypoint(id)
 	self._hud.stored_waypoints[id] = nil
 	if not self._hud.waypoints[id] then
@@ -998,20 +1054,24 @@ function HUDManager:remove_waypoint(id)
 	end
 	self._hud.waypoints[id] = nil
 end
+
 function HUDManager:set_waypoint_timer_pause(id, pause)
 	if not self._hud.waypoints[id] then
 		return
 	end
 	self._hud.waypoints[id].pause_timer = self._hud.waypoints[id].pause_timer + (pause and 1 or -1)
 end
+
 function HUDManager:get_waypoint_data(id)
 	return self._hud.waypoints[id]
 end
+
 function HUDManager:clear_waypoints()
 	for id, _ in pairs(clone(self._hud.waypoints)) do
 		self:remove_waypoint(id)
 	end
 end
+
 function HUDManager:add_item(data)
 	local hud = managers.hud:script(PlayerBase.PLAYER_HUD)
 	local icon, texture_rect = tweak_data.hud_icons:get_icon_data(data.icon)
@@ -1052,6 +1112,7 @@ function HUDManager:add_item(data)
 	self:_layout_special_equipment()
 	return #self._hud.items
 end
+
 function HUDManager:remove_item(id)
 	local hud = managers.hud:script(PlayerBase.PLAYER_HUD)
 	hud.item_panel:remove(self._hud.items[id].bitmap)
@@ -1059,6 +1120,7 @@ function HUDManager:remove_item(id)
 	self._hud.items[id] = nil
 	self:_layout_special_equipment()
 end
+
 function HUDManager:clear_items()
 	local hud = managers.hud:script(PlayerBase.PLAYER_HUD)
 	if not hud then
@@ -1072,18 +1134,21 @@ function HUDManager:clear_items()
 	self._hud.items = {}
 	self:_layout_special_equipment()
 end
+
 function HUDManager:set_next_item_selected()
 	if not self._hud.selected_item or #self._hud.items == 0 then
 		return
 	end
 	self:set_item_selected(self._hud.selected_item + 1 <= #self._hud.items and self._hud.selected_item + 1 or 1)
 end
+
 function HUDManager:set_previous_item_selected()
 	if not self._hud.selected_item or #self._hud.items == 0 then
 		return
 	end
 	self:set_item_selected(1 <= self._hud.selected_item - 1 and self._hud.selected_item - 1 or #self._hud.items)
 end
+
 function HUDManager:set_item_selected(id)
 	self._hud.selected_item = id or self._hud.selected_item
 	for i, data in ipairs(self._hud.items) do
@@ -1098,9 +1163,11 @@ function HUDManager:set_item_selected(id)
 	hud.selected_item_icon:set_center_y(align:center_y() + align:parent():y())
 	hud.selected_item_icon:set_right(align:left() + 0 + align:parent():x())
 end
+
 function HUDManager:set_item_amount(index, amount)
 	self._hud.items[index].amount:set_text(tostring(amount))
 end
+
 function HUDManager:_layout_items()
 	local hud = managers.hud:script(PlayerBase.PLAYER_HUD)
 	for i, data in ipairs(self._hud.items) do
@@ -1118,6 +1185,7 @@ function HUDManager:_layout_items()
 		self:set_item_selected(self._hud.selected_item)
 	end
 end
+
 function HUDManager:add_special_equipment(data)
 	local hud = managers.hud:script(PlayerBase.PLAYER_HUD)
 	local icon, texture_rect = tweak_data.hud_icons:get_icon_data(data.icon)
@@ -1173,6 +1241,7 @@ function HUDManager:add_special_equipment(data)
 	flash_icon:animate(hud.flash_icon, nil, hud.special_equipment_panel)
 	return id
 end
+
 function HUDManager:remove_special_equipment(id)
 	local hud = managers.hud:script(PlayerBase.PLAYER_HUD)
 	for i, data in ipairs(self._hud.special_equipments) do
@@ -1190,6 +1259,7 @@ function HUDManager:remove_special_equipment(id)
 		end
 	end
 end
+
 function HUDManager:_layout_special_equipments()
 	print("HUDManager:_layout_special_equipments()")
 	local hud = managers.hud:script(PlayerBase.PLAYER_HUD)
@@ -1212,6 +1282,7 @@ function HUDManager:_layout_special_equipments()
 		end
 	end
 end
+
 function HUDManager:clear_special_equipments()
 	local hud = managers.hud:script(PlayerBase.PLAYER_HUD)
 	for _, data in ipairs(self._hud.special_equipments) do
@@ -1224,6 +1295,7 @@ function HUDManager:clear_special_equipments()
 	end
 	self._hud.special_equipments = {}
 end
+
 function HUDManager:set_special_equipment_amount(id, amount)
 	for i, data in ipairs(self._hud.special_equipments) do
 		if data.id == id then
@@ -1232,6 +1304,7 @@ function HUDManager:set_special_equipment_amount(id, amount)
 		end
 	end
 end
+
 function HUDManager:_layout_special_equipment()
 	local hud = managers.hud:script(PlayerBase.PLAYER_HUD)
 	if not hud then
@@ -1245,6 +1318,7 @@ function HUDManager:_layout_special_equipment()
 	hud.special_equipment_panel:set_bottom(hud.d_pad_panel:top() - offset)
 	hud.special_equipment_panel:set_center_x(hud.d_pad_panel:center_x())
 end
+
 function HUDManager:_arrange_weapons()
 	local hud = managers.hud:script(PlayerBase.PLAYER_HUD)
 	local last
@@ -1267,6 +1341,7 @@ function HUDManager:_arrange_weapons()
 		end
 	end
 end
+
 function HUDManager:add_weapon(data)
 	local hud = managers.hud:script(PlayerBase.PLAYER_HUD)
 	local icon, texture_rect = tweak_data.hud_icons:get_icon_data(data.unit:base():weapon_tweak_data().hud_icon)
@@ -1319,6 +1394,7 @@ function HUDManager:add_weapon(data)
 	end
 	self:_arrange_weapons()
 end
+
 function HUDManager:set_weapon_selected_by_inventory_index(inventory_index)
 	for i, data in pairs(self._hud.weapons) do
 		if data.inventory_index == inventory_index then
@@ -1327,6 +1403,7 @@ function HUDManager:set_weapon_selected_by_inventory_index(inventory_index)
 		end
 	end
 end
+
 function HUDManager:_set_weapon_selected(id)
 	self._hud.selected_weapon = id
 	for i, data in pairs(self._hud.weapons) do
@@ -1338,6 +1415,7 @@ function HUDManager:_set_weapon_selected(id)
 		end
 	end
 end
+
 function HUDManager:_set_hud_ammo(unit)
 	local hud = managers.hud:script(PlayerBase.PLAYER_HUD)
 	if not hud then
@@ -1347,6 +1425,7 @@ function HUDManager:_set_hud_ammo(unit)
 	hud.ammo_current:set_image(hud_ammo)
 	hud.ammo_used:set_image(hud_ammo)
 end
+
 function HUDManager:set_weapon_ammo_by_unit(unit)
 	for i, data in pairs(self._hud.weapons) do
 		if data.unit == unit then
@@ -1355,6 +1434,7 @@ function HUDManager:set_weapon_ammo_by_unit(unit)
 		end
 	end
 end
+
 function HUDManager:clear_weapons()
 	local hud = managers.hud:script(PlayerBase.PLAYER_HUD)
 	for _, data in pairs(self._hud.weapons) do
@@ -1363,6 +1443,7 @@ function HUDManager:clear_weapons()
 	end
 	self._hud.weapons = {}
 end
+
 function HUDManager:add_mugshot_by_unit(unit)
 	if unit:base().is_local_player then
 		return
@@ -1410,6 +1491,7 @@ function HUDManager:add_mugshot_by_unit(unit)
 	unit:unit_data().mugshot_id = mugshot_id
 	return mugshot_id
 end
+
 function HUDManager:add_mugshot_without_unit(char_name, ai, peer_id, name)
 	local character_name = name
 	local character_name_id = char_name
@@ -1432,6 +1514,7 @@ function HUDManager:add_mugshot_without_unit(char_name, ai, peer_id, name)
 	})
 	return mugshot_id
 end
+
 function HUDManager:add_mugshot(data)
 	local hud = managers.hud:script(PlayerBase.PLAYER_INFO_HUD)
 	local icon = data.icon or "guis/textures/mugshot1"
@@ -1635,11 +1718,13 @@ function HUDManager:add_mugshot(data)
 	self:_layout_mugshots()
 	return id
 end
+
 function HUDManager:remove_hud_info_by_unit(unit)
 	if unit:unit_data().name_label_id then
 		self:_remove_name_label(unit:unit_data().name_label_id)
 	end
 end
+
 function HUDManager:remove_mugshot_by_peer_id(peer_id)
 	for i, data in ipairs(self._hud.mugshots) do
 		if data.peer_id == peer_id then
@@ -1648,6 +1733,7 @@ function HUDManager:remove_mugshot_by_peer_id(peer_id)
 		end
 	end
 end
+
 function HUDManager:remove_mugshot_by_character_name(character_name)
 	for i, data in ipairs(self._hud.mugshots) do
 		if data.character_name_id == character_name then
@@ -1656,9 +1742,11 @@ function HUDManager:remove_mugshot_by_character_name(character_name)
 		end
 	end
 end
+
 function HUDManager:remove_mugshot(id)
 	self:_remove_mugshot(id)
 end
+
 function HUDManager:_remove_mugshot(id)
 	local hud = managers.hud:script(PlayerBase.PLAYER_INFO_HUD)
 	if not hud then
@@ -1673,6 +1761,7 @@ function HUDManager:_remove_mugshot(id)
 	end
 	self:_layout_mugshots()
 end
+
 function HUDManager:set_mugshot_crewbonus(id, hud_icon_id)
 	local hud = managers.hud:script(PlayerBase.PLAYER_INFO_HUD)
 	if not hud then
@@ -1698,6 +1787,7 @@ function HUDManager:set_mugshot_crewbonus(id, hud_icon_id)
 		end
 	end
 end
+
 function HUDManager:set_mugshot_weapon(id, hud_icon_id)
 	for i, data in ipairs(self._hud.mugshots) do
 		if data.id == id then
@@ -1705,6 +1795,7 @@ function HUDManager:set_mugshot_weapon(id, hud_icon_id)
 		end
 	end
 end
+
 function HUDManager:set_mugshot_location(id, location_id)
 	if not location_id then
 		return
@@ -1720,9 +1811,11 @@ function HUDManager:set_mugshot_location(id, location_id)
 		end
 	end
 end
+
 function HUDManager:_update_mugshot_panel_size(mugshot)
 	mugshot.panel:set_w(64 + mugshot.name:w() + 4 + mugshot.state_text:w() + 4 + mugshot.location_text:w())
 end
+
 function HUDManager:set_mugshot_damage_taken(id)
 	if not id then
 		return
@@ -1735,6 +1828,7 @@ function HUDManager:set_mugshot_damage_taken(id)
 		end
 	end
 end
+
 function HUDManager:set_mugshot_armor(id, amount)
 	if not id then
 		return
@@ -1748,6 +1842,7 @@ function HUDManager:set_mugshot_armor(id, amount)
 		end
 	end
 end
+
 function HUDManager:layout_mugshot_armor(data, amount)
 	local x = data.armor_texture_rect[1]
 	local y = data.armor_texture_rect[2]
@@ -1758,6 +1853,7 @@ function HUDManager:layout_mugshot_armor(data, amount)
 	data.health_armor:set_h(h - h_offset)
 	data.health_armor:set_bottom(data.health_background:bottom())
 end
+
 function HUDManager:set_mugshot_health(id, amount)
 	if not id then
 		return
@@ -1771,6 +1867,7 @@ function HUDManager:set_mugshot_health(id, amount)
 		end
 	end
 end
+
 function HUDManager:layout_mugshot_health(data, amount)
 	local x = data.health_texture_rect[1]
 	local y = data.health_texture_rect[2]
@@ -1783,6 +1880,7 @@ function HUDManager:layout_mugshot_health(data, amount)
 	local color = amount < 0.33 and Color(1, 0, 0) or Color(0.5, 0.8, 0.4)
 	data.health_health:set_color(color)
 end
+
 function HUDManager:set_mugshot_talk(id, active)
 	if not id then
 		return
@@ -1796,6 +1894,7 @@ function HUDManager:set_mugshot_talk(id, active)
 		end
 	end
 end
+
 function HUDManager:set_mugshot_voice(id, active)
 	if not id then
 		return
@@ -1807,6 +1906,7 @@ function HUDManager:set_mugshot_voice(id, active)
 		end
 	end
 end
+
 function HUDManager:set_mugshot_name(id, name)
 	for i, data in ipairs(self._hud.mugshots) do
 		if data.id == id then
@@ -1815,6 +1915,7 @@ function HUDManager:set_mugshot_name(id, name)
 		end
 	end
 end
+
 function HUDManager:_get_mugshot_data(id)
 	if not id then
 		return nil
@@ -1826,6 +1927,7 @@ function HUDManager:_get_mugshot_data(id)
 	end
 	return nil
 end
+
 function HUDManager:set_mugshot_normal(id)
 	local data = self:_get_mugshot_data(id)
 	if not data then
@@ -1841,9 +1943,11 @@ function HUDManager:set_mugshot_normal(id)
 	data.location_text:set_left(data.name:right() + 4)
 	self:_update_mugshot_panel_size(data)
 end
+
 function HUDManager:set_mugshot_downed(id)
 	self:_set_mugshot_state(id, "mugshot_downed", managers.localization:text("debug_mugshot_downed"))
 end
+
 function HUDManager:set_mugshot_custody(id)
 	self:set_mugshot_talk(id, false)
 	local data = self:_set_mugshot_state(id, "mugshot_in_custody", managers.localization:text("debug_mugshot_in_custody"))
@@ -1851,12 +1955,15 @@ function HUDManager:set_mugshot_custody(id)
 		data.location_text:set_visible(false)
 	end
 end
+
 function HUDManager:set_mugshot_cuffed(id)
 	self:_set_mugshot_state(id, "mugshot_cuffed", managers.localization:text("debug_mugshot_cuffed"))
 end
+
 function HUDManager:set_mugshot_tased(id)
 	self:_set_mugshot_state(id, "mugshot_electrified", managers.localization:text("debug_mugshot_electrified"))
 end
+
 function HUDManager:_set_mugshot_state(id, icon_data, text)
 	local data = self:_get_mugshot_data(id)
 	if not data then
@@ -1875,6 +1982,7 @@ function HUDManager:_set_mugshot_state(id, icon_data, text)
 	self:_update_mugshot_panel_size(data)
 	return data
 end
+
 function HUDManager:show_mugshot_timer(id)
 	local data = self:_get_mugshot_data(id)
 	if not data then
@@ -1882,6 +1990,7 @@ function HUDManager:show_mugshot_timer(id)
 	end
 	data.timer_text:set_visible(true)
 end
+
 function HUDManager:hide_mugshot_timer(id)
 	local data = self:_get_mugshot_data(id)
 	if not data then
@@ -1889,6 +1998,7 @@ function HUDManager:hide_mugshot_timer(id)
 	end
 	data.timer_text:set_visible(false)
 end
+
 function HUDManager:set_mugshot_timer(id, time)
 	local data = self:_get_mugshot_data(id)
 	if not data then
@@ -1896,6 +2006,7 @@ function HUDManager:set_mugshot_timer(id, time)
 	end
 	data.timer_text:set_text(tostring(math.floor(time)))
 end
+
 function HUDManager:add_mugshot_equipment(id, equipment)
 	if not id then
 		return
@@ -1917,6 +2028,7 @@ function HUDManager:add_mugshot_equipment(id, equipment)
 		end
 	end
 end
+
 function HUDManager:remove_mugshot_equipment(id, equipment)
 	if not id then
 		return
@@ -1935,6 +2047,7 @@ function HUDManager:remove_mugshot_equipment(id, equipment)
 		end
 	end
 end
+
 function HUDManager:_layout_mugshot_equipment(data)
 	local icon_size = 34
 	if data.crew_bonus then
@@ -1949,6 +2062,7 @@ function HUDManager:_layout_mugshot_equipment(data)
 		e_data.icon:set_bottom(align:bottom())
 	end
 end
+
 function HUDManager:clear_mugshots()
 	local hud = managers.hud:script(PlayerBase.PLAYER_INFO_HUD)
 	for _, mugshot in ipairs(self._hud.mugshots) do
@@ -1956,6 +2070,7 @@ function HUDManager:clear_mugshots()
 	end
 	self._hud.mugshots = {}
 end
+
 function HUDManager:_layout_mugshots()
 	local hud = managers.hud:script(PlayerBase.PLAYER_HUD)
 	local info_hud = managers.hud:script(PlayerBase.PLAYER_INFO_HUD)
@@ -2019,6 +2134,7 @@ function HUDManager:_layout_mugshots()
 		self:_update_mugshot_panel_size(mugshot)
 	end
 end
+
 function HUDManager:_add_name_label(data)
 	local hud = managers.hud:script(PlayerBase.PLAYER_INFO_HUD_FULLSCREEN)
 	local last_id = self._hud.name_labels[#self._hud.name_labels] and self._hud.name_labels[#self._hud.name_labels].id or 0
@@ -2054,6 +2170,7 @@ function HUDManager:_add_name_label(data)
 	})
 	return id
 end
+
 function HUDManager:_remove_name_label(id)
 	local hud = managers.hud:script(PlayerBase.PLAYER_INFO_HUD_FULLSCREEN)
 	if not hud then
@@ -2067,6 +2184,7 @@ function HUDManager:_remove_name_label(id)
 		end
 	end
 end
+
 function HUDManager:update_name_label_by_peer(peer)
 	for _, data in pairs(self._hud.name_labels) do
 		if data.peer_id == peer:id() then
@@ -2078,6 +2196,7 @@ function HUDManager:update_name_label_by_peer(peer)
 		end
 	end
 end
+
 function HUDManager:set_control_info(data)
 	local hud = managers.hud:script(PlayerBase.PLAYER_INFO_HUD)
 	if not hud then
@@ -2085,14 +2204,17 @@ function HUDManager:set_control_info(data)
 	end
 	hud.control_hostages:set_text(managers.localization:text("debug_control_hostages") .. " " .. data.nr_hostages)
 end
+
 function HUDManager:start_anticipation(data)
 	local hud = managers.hud:script(PlayerBase.PLAYER_HUD)
 	if not hud then
 		return
 	end
 end
+
 function HUDManager:sync_start_anticipation()
 end
+
 function HUDManager:check_start_anticipation_music(t)
 	if not self._anticipation_music_started and t < 30 then
 		self._anticipation_music_started = true
@@ -2100,15 +2222,18 @@ function HUDManager:check_start_anticipation_music(t)
 		self:sync_start_anticipation_music()
 	end
 end
+
 function HUDManager:sync_start_anticipation_music()
 	managers.music:post_event(tweak_data.levels:get_music_event("anticipation"))
 end
+
 function HUDManager:start_assault(data)
 	self._hud.in_assault = true
 	managers.network:session():send_to_peers("sync_start_assault")
 	self:sync_start_assault(data)
 	managers.mission:call_global_event("start_assault")
 end
+
 function HUDManager:sync_start_assault(data)
 	managers.music:post_event(tweak_data.levels:get_music_event("assault"))
 	local hud = managers.hud:script(PlayerBase.PLAYER_INFO_HUD)
@@ -2124,12 +2249,14 @@ function HUDManager:sync_start_assault(data)
 	hud.assault_image:animate(hud.flash_assault_title)
 	hud.control_hostages:set_color(Color.white / 1.5)
 end
+
 function HUDManager:end_assault(result)
 	self._anticipation_music_started = false
 	self._hud.in_assault = false
 	self:sync_end_assault(result)
 	managers.network:session():send_to_peers("sync_end_assault", result)
 end
+
 function HUDManager:sync_end_assault(result)
 	managers.music:post_event(tweak_data.levels:get_music_event("control"))
 	local hud = managers.hud:script(PlayerBase.PLAYER_INFO_HUD)
@@ -2150,6 +2277,7 @@ function HUDManager:sync_end_assault(result)
 	hud.control_assault_title:stop()
 	hud.control_hostages:set_color(Color.white)
 end
+
 function HUDManager:setup_anticipation(total_t)
 	local exists = self._anticipation_dialogs and true or false
 	self._anticipation_dialogs = {}
@@ -2171,6 +2299,7 @@ function HUDManager:setup_anticipation(total_t)
 		table.insert(self._anticipation_dialogs, {time = 10, dialog = 8})
 	end
 end
+
 function HUDManager:check_anticipation_voice(t)
 	if not self._anticipation_dialogs[1] then
 		return
@@ -2181,6 +2310,7 @@ function HUDManager:check_anticipation_voice(t)
 		managers.network:session():send_to_peers("sync_assault_dialog", data.dialog)
 	end
 end
+
 function HUDManager:sync_assault_dialog(index)
 	if not managers.groupai:state():bain_state() then
 		return
@@ -2188,6 +2318,7 @@ function HUDManager:sync_assault_dialog(index)
 	local dialog = HUDManager.ASSAULT_DIALOGS[index]
 	managers.dialog:queue_dialog(dialog, {})
 end
+
 function HUDManager:_layout_point_of_no_return_panel()
 	local hud = managers.hud:script(PlayerBase.PLAYER_INFO_HUD)
 	if not hud then
@@ -2206,6 +2337,7 @@ function HUDManager:_layout_point_of_no_return_panel()
 	hud.point_of_no_return_title:set_align("right")
 	hud.point_of_no_return_timer:set_align("right")
 end
+
 function HUDManager:feed_point_of_no_return_timer(time, is_inside)
 	local hud = managers.hud:script(PlayerBase.PLAYER_INFO_HUD)
 	if not hud then
@@ -2223,6 +2355,7 @@ function HUDManager:feed_point_of_no_return_timer(time, is_inside)
 		hud.point_of_no_return_timer:set_color(self._point_of_no_return_color)
 	end
 end
+
 function HUDManager:show_point_of_no_return_timer()
 	local hud = managers.hud:script(PlayerBase.PLAYER_INFO_HUD)
 	if not hud then
@@ -2230,6 +2363,7 @@ function HUDManager:show_point_of_no_return_timer()
 	end
 	hud.point_of_no_return_panel:set_visible(true)
 end
+
 function HUDManager:flash_point_of_no_return_timer(beep)
 	local hud = managers.hud:script(PlayerBase.PLAYER_INFO_HUD)
 	if not hud then
@@ -2238,6 +2372,7 @@ function HUDManager:flash_point_of_no_return_timer(beep)
 	if beep then
 		self._sound_source:post_event("last_10_seconds_beep")
 	end
+	
 	local function flash_timer(o)
 		local t = 0
 		while t < 0.5 do
@@ -2250,8 +2385,10 @@ function HUDManager:flash_point_of_no_return_timer(beep)
 			o:set_font_size(math.lerp(tweak_data.hud.timer_font_size, tweak_data.hud.timer_font_size * 1.25, n))
 		end
 	end
+	
 	hud.point_of_no_return_timer:animate(flash_timer)
 end
+
 function HUDManager:_layout_secret_assignment_panel()
 	local hud = managers.hud:script(PlayerBase.PLAYER_HUD)
 	if not hud then
@@ -2271,6 +2408,7 @@ function HUDManager:_layout_secret_assignment_panel()
 	hud.secret_assignment_description:set_right(hud.secret_assignment_panel:width() - 4)
 	hud.secret_assignment_description:set_top(hud.secret_assignment_status_timer:bottom() + 16)
 end
+
 function HUDManager:present_secret_assignment(params)
 	local hud = managers.hud:script(PlayerBase.PLAYER_HUD)
 	if not hud then
@@ -2289,6 +2427,7 @@ function HUDManager:present_secret_assignment(params)
 	hud.secret_assignment_status_timer:set_left(x - hud.secret_assignment_panel:x())
 	hud.secret_assignment_panel:animate(hud.present_secret_assignment_panel)
 end
+
 function HUDManager:complete_secret_assignment(params)
 	local hud = managers.hud:script(PlayerBase.PLAYER_HUD)
 	if not hud then
@@ -2296,6 +2435,7 @@ function HUDManager:complete_secret_assignment(params)
 	end
 	hud.secret_assignment_panel:animate(hud.complete_secret_assignment_panel, params.success)
 end
+
 function HUDManager:feed_secret_assignment_timer(time)
 	local hud = managers.hud:script(PlayerBase.PLAYER_HUD)
 	if not hud then
@@ -2307,6 +2447,7 @@ function HUDManager:feed_secret_assignment_timer(time)
 	local text = (minutes < 10 and "0" .. minutes or minutes) .. ":" .. (seconds < 10 and "0" .. seconds or seconds)
 	hud.secret_assignment_status_timer:set_text(text)
 end
+
 function HUDManager:feed_secret_assignment_counter(counter, amount)
 	local hud = managers.hud:script(PlayerBase.PLAYER_HUD)
 	if not hud then
@@ -2315,12 +2456,15 @@ function HUDManager:feed_secret_assignment_counter(counter, amount)
 	local text = "" .. counter .. "/" .. amount
 	hud.secret_assignment_status_counter:set_text(text)
 end
+
 function HUDManager:set_crosshair_offset(offset)
 	self._ch_offset = math.lerp(tweak_data.weapon.crosshair.MIN_OFFSET, tweak_data.weapon.crosshair.MAX_OFFSET, offset)
 end
+
 function HUDManager:set_crosshair_visible(visible)
 	self:script("guis/player_hud").crosshair_panel:set_visible(visible)
 end
+
 function HUDManager:set_ammo_amount(max_clip, current_clip, current_left)
 	local hud = managers.hud:script(PlayerBase.PLAYER_HUD)
 	hud.ammo_amount:set_text(current_left)
@@ -2346,6 +2490,7 @@ function HUDManager:set_ammo_amount(max_clip, current_clip, current_left)
 	hud.ammo_used:set_rightbottom(hud.ammo_current:leftbottom())
 	self:_set_ammo_warning(max_clip, current_clip, current_left)
 end
+
 function HUDManager:_set_ammo_warning(max_clip, current_clip, current_left)
 	local hud = managers.hud:script(PlayerBase.PLAYER_HUD)
 	local reload = current_clip <= math.round(max_clip / 4)
@@ -2386,6 +2531,7 @@ function HUDManager:_set_ammo_warning(max_clip, current_clip, current_left)
 		})
 	end
 end
+
 function HUDManager:set_weapon_name(name_id)
 	local hud = managers.hud:script(PlayerBase.PLAYER_HUD)
 	self._hud.weapon_name = {}
@@ -2396,6 +2542,7 @@ function HUDManager:set_weapon_name(name_id)
 	hud.weapon_name:set_color(hud.weapon_name:color():with_alpha(1))
 	hud.weapon_name:set_text(string.upper(managers.localization:text(name_id)))
 end
+
 function HUDManager:show_hint(params)
 	local hud = managers.hud:script(PlayerBase.PLAYER_INFO_HUD)
 	if not hud then
@@ -2412,9 +2559,11 @@ function HUDManager:show_hint(params)
 	end
 	self._hud.show_hint_thread = hud.hint_text:animate(hud.show_hint, hud.hint_shadow_text, callback(self, self, "show_hint_done"), params.time or 4)
 end
+
 function HUDManager:show_hint_done()
 	self._hud.show_hint_thread = nil
 end
+
 function HUDManager:present_text(params)
 	local hud = managers.hud:script(PlayerBase.PLAYER_HUD)
 	if not hud then
@@ -2431,6 +2580,7 @@ function HUDManager:present_text(params)
 	end
 	self._hud.present_text_thread = hud.present_text:animate(hud.show_present_text, callback(self, self, "present_text_done"), params.time or 1)
 end
+
 function HUDManager:present_text_done()
 	self._hud.present_text_thread = nil
 	local queued = table.remove(self._hud.present_text_queue, 1)
@@ -2438,6 +2588,7 @@ function HUDManager:present_text_done()
 		self:present_text(queued)
 	end
 end
+
 function HUDManager:present(params)
 	self._hud.present_queue = self._hud.present_queue or {}
 	if self._hud.present_thread then
@@ -2451,6 +2602,7 @@ function HUDManager:present(params)
 		self:_present_mid_text(params)
 	end
 end
+
 function HUDManager:_present_level_up(params)
 	local hud = managers.hud:script(self.ANNOUNCEMENT_HUD)
 	local full_hud = managers.hud:script(self.ANNOUNCEMENT_HUD_FULLSCREEN)
@@ -2490,6 +2642,7 @@ function HUDManager:_present_level_up(params)
 	self._hud.animate_bg_thread = full_hud.present_background:animate(hud.animate_bg, full_hud.present_background)
 	self._hud.present_thread = hud.level_up_left:animate(hud.present_level_up, full_hud.present_background, params.level, callback(self, self, "present_done"), params.time or 1)
 end
+
 function HUDManager:present_done()
 	if self._hud.animate_bg_thread then
 		local full_hud = managers.hud:script(self.ANNOUNCEMENT_HUD_FULLSCREEN)
@@ -2507,6 +2660,7 @@ function HUDManager:present_done()
 		end
 	end
 end
+
 function HUDManager:_present_mid_text(params)
 	local text = params.text
 	local hud = managers.hud:script(PlayerBase.PLAYER_INFO_HUD)
@@ -2534,10 +2688,12 @@ function HUDManager:_present_mid_text(params)
 	full_hud.present_background:set_h(56 * tweak_data.scale.present_multiplier)
 	full_hud.present_background:set_center_y(hud.present_mid_icon:center_y() + safe_rect_pixels.y - 2 * tweak_data.scale.present_multiplier)
 end
+
 function HUDManager:present_mid_text(params)
 	params.present_mid_text = true
 	self:present(params)
 end
+
 function HUDManager:_kick_crosshair_offset(offset)
 	self._ch_current_offset = self._ch_current_offset or 0
 	if self._ch_current_offset > tweak_data.weapon.crosshair.MAX_OFFSET then
@@ -2546,6 +2702,7 @@ function HUDManager:_kick_crosshair_offset(offset)
 	self._ch_current_offset = self._ch_current_offset + math.lerp(tweak_data.weapon.crosshair.MIN_KICK_OFFSET, tweak_data.weapon.crosshair.MAX_KICK_OFFSET, offset)
 	self:_layout_crosshair()
 end
+
 function HUDManager:_layout_crosshair()
 	local hud = managers.hud:script(PlayerBase.PLAYER_HUD)
 	local x = hud.crosshair_panel:center_x() - hud.crosshair_panel:left()
@@ -2562,6 +2719,7 @@ function HUDManager:_layout_crosshair()
 		part:set_center_y(y + math.sin(rotation) * self._ch_current_offset * tweak_data.scale.hud_crosshair_offset_multiplier)
 	end
 end
+
 function HUDManager:_layout_d_pad()
 	local hud = managers.hud:script(PlayerBase.PLAYER_HUD)
 	local x, y = hud.d_pad_panel:size()
@@ -2579,6 +2737,7 @@ function HUDManager:_layout_d_pad()
 		part:set_color(Color.white:with_alpha(0.4))
 	end
 end
+
 function HUDManager:pressed_d_pad(dir)
 	local hud = managers.hud:script(PlayerBase.PLAYER_HUD)
 	self._hud.pressed_d_pad[dir] = {}
@@ -2588,6 +2747,7 @@ function HUDManager:pressed_d_pad(dir)
 	self._hud.pressed_d_pad[dir].bitmap = bitmap
 	self._hud.pressed_d_pad[dir].timer = 0.25
 end
+
 function HUDManager:_update_crosshair_offset(t, dt)
 	if self._ch_current_offset and self._ch_current_offset > self._ch_offset then
 		self:_kick_crosshair_offset(-dt * 3)
@@ -2615,6 +2775,7 @@ function HUDManager:_update_crosshair_offset(t, dt)
 	end
 	self:_update_pressed_d_pad(t, dt)
 end
+
 function HUDManager:_update_pressed_d_pad(t, dt)
 	for dir, data in pairs(self._hud.pressed_d_pad) do
 		data.timer = data.timer - dt
@@ -2624,12 +2785,14 @@ function HUDManager:_update_pressed_d_pad(t, dt)
 		end
 	end
 end
+
 local wp_pos = Vector3()
 local wp_dir = Vector3()
 local wp_dir_normalized = Vector3()
 local wp_cam_forward = Vector3()
 local wp_onscreen_direction = Vector3()
 local wp_onscreen_target_pos = Vector3()
+
 function HUDManager:_update_waypoints(t, dt)
 	local cam = managers.viewport:get_current_camera()
 	if not cam then
@@ -2789,12 +2952,14 @@ function HUDManager:_update_waypoints(t, dt)
 		end
 	end
 end
+
 function HUDManager:set_player_location(location_id)
 	if location_id then
 		local hud = managers.hud:script(PlayerBase.PLAYER_INFO_HUD)
 		hud.location_text:set_text(string.upper(managers.localization:text(location_id)))
 	end
 end
+
 function HUDManager:reset_player_hpbar()
 	local hud = managers.hud:script(PlayerBase.PLAYER_INFO_HUD)
 	if not hud then
@@ -2821,6 +2986,7 @@ function HUDManager:reset_player_hpbar()
 	local _, _, w, h = hud.health_name:text_rect()
 	hud.health_name:set_size(hud.health_panel:w(), h)
 end
+
 function HUDManager:set_player_armor(data)
 	if data.current == 0 and not data.no_hint then
 		managers.hint:show_hint("damage_pad")
@@ -2841,6 +3007,7 @@ function HUDManager:set_player_armor(data)
 	hud.health_armor:set_h((130 - y_offset) * tweak_data.scale.hud_health_multiplier)
 	hud.health_armor:set_bottom(hud.health_health:parent():h())
 end
+
 function HUDManager:set_player_health(data)
 	local hud = managers.hud:script(PlayerBase.PLAYER_INFO_HUD)
 	if not hud then
@@ -2861,6 +3028,7 @@ function HUDManager:set_player_health(data)
 	local color = amount < 0.33 and Color(1, 0, 0) or Color(0.5, 0.8, 0.4)
 	hud.health_health:set_color(color)
 end
+
 function HUDManager:show_scenario(text)
 	local scenario = managers.hud:script(self.SCENARIO)
 	if self:exists(PlayerBase.PLAYER_HUD) then
@@ -2878,10 +3046,12 @@ function HUDManager:show_scenario(text)
 	scenario.data.decay_duration = 1
 	scenario.data.decay = scenario.data.decay_duration
 end
+
 function HUDManager:showing_scenario()
 	local scenario = managers.hud:script(self.SCENARIO)
 	return scenario.data.update
 end
+
 function HUDManager:_update_scenario(t, dt)
 	local scenario = managers.hud:script(self.SCENARIO)
 	if not scenario.data.update then
@@ -2904,6 +3074,7 @@ function HUDManager:_update_scenario(t, dt)
 		scenario.data.update = false
 	end
 end
+
 function HUDManager:show_interact(data)
 	self:remove_interact()
 	local hud = self:script(PlayerBase.PLAYER_HUD)
@@ -2915,6 +3086,7 @@ function HUDManager:show_interact(data)
 	hud.interact_text:set_text(text)
 	hud.interact_bitmap:set_image(icon, texture_rect[1], texture_rect[2], texture_rect[3], texture_rect[4])
 end
+
 function HUDManager:remove_interact()
 	local hud = self:script(PlayerBase.PLAYER_HUD)
 	if not hud then
@@ -2924,6 +3096,7 @@ function HUDManager:remove_interact()
 	hud.interact_background:set_visible(false)
 	hud.interact_bitmap:set_visible(false)
 end
+
 function HUDManager:show_interaction_bar(current, total)
 	local hud = self:script(PlayerBase.PLAYER_HUD)
 	if not hud then
@@ -2933,6 +3106,7 @@ function HUDManager:show_interaction_bar(current, total)
 	hud.interact_bar:set_visible(true)
 	hud.interact_bar_stop:set_visible(true)
 end
+
 function HUDManager:hide_interaction_bar()
 	local hud = self:script(PlayerBase.PLAYER_HUD)
 	if not hud then
@@ -2941,6 +3115,7 @@ function HUDManager:hide_interaction_bar()
 	hud.interact_bar:set_visible(false)
 	hud.interact_bar_stop:set_visible(false)
 end
+
 function HUDManager:set_interaction_bar_width(current, total)
 	local hud = self:script(PlayerBase.PLAYER_HUD)
 	if not hud then
@@ -2952,6 +3127,7 @@ function HUDManager:set_interaction_bar_width(current, total)
 	hud.interact_bar:set_w(width)
 	hud.interact_bar:set_texture_rect(texture_rect[1], texture_rect[2], texture_rect[3] * mul, texture_rect[4])
 end
+
 function HUDManager:activate_objective(data)
 	local hud = self:script(PlayerBase.PLAYER_INFO_HUD)
 	if not hud then
@@ -3047,6 +3223,7 @@ function HUDManager:activate_objective(data)
 		h = h + hud.objectives_panel:child(i):h()
 	end
 end
+
 function HUDManager:complete_sub_objective(data)
 	local hud = self:script(PlayerBase.PLAYER_INFO_HUD)
 	if not hud then
@@ -3057,6 +3234,7 @@ function HUDManager:complete_sub_objective(data)
 	local bitmap = sub_panel:child("bitmap" .. data.sub_id)
 	bitmap:set_image("guis/textures/menu_tickbox", 24, 0, 24, 24)
 end
+
 function HUDManager:update_amount_objective(data)
 	local hud = self:script(PlayerBase.PLAYER_INFO_HUD)
 	if not hud then
@@ -3066,6 +3244,7 @@ function HUDManager:update_amount_objective(data)
 	local amount = panel:child("amount" .. data.id)
 	amount:set_text(data.current_amount .. " / " .. data.amount .. " " .. data.amount_text)
 end
+
 function HUDManager:complete_objective(data)
 	local hud = self:script(PlayerBase.PLAYER_INFO_HUD)
 	if not hud then
@@ -3077,6 +3256,7 @@ function HUDManager:complete_objective(data)
 		hud.objectives_panel:child(data.text):animate(hud.complete_objective)
 	end
 end
+
 function HUDManager:clear_objectives()
 	local hud = self:script(PlayerBase.PLAYER_INFO_HUD)
 	if not hud then
@@ -3087,6 +3267,7 @@ function HUDManager:clear_objectives()
 		hud.objectives_panel:remove(hud.objectives_panel:child(1))
 	end
 end
+
 function HUDManager:show_stats_screen()
 	local safe = self.STATS_SCREEN_SAFERECT
 	local full = self.STATS_SCREEN_FULLSCREEN
@@ -3103,6 +3284,7 @@ function HUDManager:show_stats_screen()
 	end
 	self._showing_stats_screen = true
 end
+
 function HUDManager:hide_stats_screen()
 	self._showing_stats_screen = false
 	local safe = self.STATS_SCREEN_SAFERECT
@@ -3118,9 +3300,11 @@ function HUDManager:hide_stats_screen()
 		hud.secret_assignment_description:set_visible(false)
 	end
 end
+
 function HUDManager:showing_stats_screen()
 	return self._showing_stats_screen
 end
+
 function HUDManager:set_danger_visible(visible, params)
 	local hud = self:script(PlayerBase.PLAYER_HUD)
 	hud.danger_zone1:set_visible(visible)
@@ -3142,6 +3326,7 @@ function HUDManager:set_danger_visible(visible, params)
 		end
 	end
 end
+
 function HUDManager:wfp_add_member(peer_id)
 	local hud = managers.hud:script(self.WAITING_SAFERECT)
 	if not hud.members:child(tostring(peer_id)) then
@@ -3193,10 +3378,12 @@ function HUDManager:wfp_add_member(peer_id)
 		end
 	end
 end
+
 function HUDManager:wfp_member_loaded_done(peer_id)
 	local hud = managers.hud:script(self.WAITING_SAFERECT)
 	self:wfp_add_member(peer_id)
 end
+
 function HUDManager:wfp_set_kit_selection(peer_id, category, id, slot)
 	local hud = managers.hud:script(self.WAITING_SAFERECT)
 	if not hud.members:child(tostring(peer_id)) then
@@ -3230,6 +3417,7 @@ function HUDManager:wfp_set_kit_selection(peer_id, category, id, slot)
 		})
 	end
 end
+
 function HUDManager:wfp_member_is_not_ready(peer_id)
 	local hud = managers.hud:script(self.WAITING_SAFERECT)
 	self:wfp_add_member(peer_id)
@@ -3238,6 +3426,7 @@ function HUDManager:wfp_member_is_not_ready(peer_id)
 	local name = peer:name()
 	text:set_text(managers.localization:text("menu_waiting_is_not_ready"))
 end
+
 function HUDManager:wfp_member_ready(peer_id)
 	local hud = managers.hud:script(self.WAITING_SAFERECT)
 	self:wfp_add_member(peer_id)
@@ -3246,6 +3435,7 @@ function HUDManager:wfp_member_ready(peer_id)
 	local name = peer:name()
 	text:set_text(managers.localization:text("menu_waiting_is_ready"))
 end
+
 function HUDManager:wfp_remove_member(peer_id)
 	local hud = managers.hud:script(self.WAITING_SAFERECT)
 	if not hud.members:child(tostring(peer_id)) then
@@ -3256,6 +3446,7 @@ function HUDManager:wfp_remove_member(peer_id)
 		child:set_y((i - 1) * hud.members:h() / 3)
 	end
 end
+
 function HUDManager:pd_start_progress(current, total, msg, icon_id)
 	local hud = self:script(PlayerBase.PLAYER_DOWNED_HUD)
 	if not hud then
@@ -3276,6 +3467,7 @@ function HUDManager:pd_start_progress(current, total, msg, icon_id)
 	end
 	self._hud.animate_info_bar_thread = hud.info_bar:animate(hud.animate_info_bar, total)
 end
+
 function HUDManager:pd_stop_progress()
 	local hud = self:script(PlayerBase.PLAYER_DOWNED_HUD)
 	if not hud then
@@ -3286,6 +3478,7 @@ function HUDManager:pd_stop_progress()
 	hud.info_bar_panel:set_visible(false)
 	hud.info_bitmap:set_visible(false)
 end
+
 function HUDManager:pd_set_info_bar_width(current, total)
 	local hud = self:script(PlayerBase.PLAYER_DOWNED_HUD)
 	if not hud then
@@ -3297,6 +3490,7 @@ function HUDManager:pd_set_info_bar_width(current, total)
 	hud.info_bar:set_w(width)
 	hud.info_bar:set_texture_rect(texture_rect[1], texture_rect[2], texture_rect[3] * mul, texture_rect[4])
 end
+
 function HUDManager:pd_start_timer(data)
 	self:pd_stop_timer()
 	local time = data.time or 10
@@ -3304,14 +3498,17 @@ function HUDManager:pd_start_timer(data)
 	self._hud.timer_thread = hud.timer:animate(hud.start_timer, time)
 	hud.arrest_finished_text:set_visible(false)
 end
+
 function HUDManager:pd_pause_timer()
 	local hud = managers.hud:script(PlayerBase.PLAYER_DOWNED_HUD)
 	hud.pause_timer()
 end
+
 function HUDManager:pd_unpause_timer()
 	local hud = managers.hud:script(PlayerBase.PLAYER_DOWNED_HUD)
 	hud.unpause_timer()
 end
+
 function HUDManager:pd_stop_timer()
 	local hud = managers.hud:script(PlayerBase.PLAYER_DOWNED_HUD)
 	if self._hud.timer_thread then
@@ -3320,6 +3517,7 @@ function HUDManager:pd_stop_timer()
 	end
 	hud.unpause_timer()
 end
+
 function HUDManager:pd_show_text()
 	local hud = managers.hud:script(PlayerBase.PLAYER_DOWNED_HUD)
 	hud.timer:set_visible(false)
@@ -3327,14 +3525,17 @@ function HUDManager:pd_show_text()
 	hud.info_bar_panel:set_visible(false)
 	hud.arrest_finished_text:set_visible(true)
 end
+
 function HUDManager:pd_hide_text()
 	local hud = managers.hud:script(PlayerBase.PLAYER_DOWNED_HUD)
 	hud.arrest_finished_text:set_visible(false)
 end
+
 function HUDManager:on_simulation_ended()
 	self:remove_updator("point_of_no_return")
 	self:end_assault()
 end
+
 function HUDManager:debug_show_coordinates()
 	if self._debug then
 		return
@@ -3353,6 +3554,7 @@ function HUDManager:debug_show_coordinates()
 		layer = 2000
 	})
 end
+
 function HUDManager:debug_hide_coordinates()
 	if not self._debug then
 		return
@@ -3360,6 +3562,7 @@ function HUDManager:debug_hide_coordinates()
 	Overlay:newgui():destroy_workspace(self._debug.ws)
 	self._debug = nil
 end
+
 function HUDManager:save(data)
 	local state = {
 		waypoints = {},
@@ -3373,6 +3576,7 @@ function HUDManager:save(data)
 	end
 	data.HUDManager = state
 end
+
 function HUDManager:load(data)
 	local state = data.HUDManager
 	for id, init_data in pairs(state.waypoints) do

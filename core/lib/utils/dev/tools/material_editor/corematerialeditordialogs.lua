@@ -1,4 +1,5 @@
 CoreMaterialEditorGlobalDialog = CoreMaterialEditorGlobalDialog or class()
+
 function CoreMaterialEditorGlobalDialog:init(parent, editor)
 	self._editor = editor
 	self._dialog = EWS:Dialog(parent, "Global Configuration", "", Vector3(-1, -1, 0), Vector3(400, 500, 0), "CAPTION,SYSTEM_MENU,CLOSE_BOX,STAY_ON_TOP")
@@ -29,6 +30,7 @@ function CoreMaterialEditorGlobalDialog:init(parent, editor)
 	end
 	self._dialog:show_modal()
 end
+
 function CoreMaterialEditorGlobalDialog:destroy(clean)
 	if clean then
 		for _, n in ipairs(self._destroy_map) do
@@ -38,15 +40,19 @@ function CoreMaterialEditorGlobalDialog:destroy(clean)
 	self._editor:_save_global_to_disk()
 	self._dialog:end_modal("")
 end
+
 function CoreMaterialEditorGlobalDialog:on_remove(custom_data)
 	local item = custom_data:get_item()
 	self._tree_ctrl:remove(item)
 	table.insert(self._destroy_map, self._item_map[tostring(item)])
 end
+
 function CoreMaterialEditorGlobalDialog:_on_ok()
 end
+
 function CoreMaterialEditorGlobalDialog:_on_cancel()
 end
+
 function CoreMaterialEditorGlobalDialog:_fill_tree(id, parent, node)
 	local text = node:name()
 	for k, v in pairs(node:parameters()) do
@@ -67,7 +73,9 @@ function CoreMaterialEditorGlobalDialog:_fill_tree(id, parent, node)
 	end
 	return new_id
 end
+
 CoreMaterialEditorStartDialog = CoreMaterialEditorStartDialog or class()
+
 function CoreMaterialEditorStartDialog:init(parent, editor)
 	self._editor = editor
 	self._parent = parent
@@ -89,6 +97,7 @@ function CoreMaterialEditorStartDialog:init(parent, editor)
 	main_frame_box:add(main_panel, 1, 0, "EXPAND")
 	self._frame:set_sizer(main_frame_box)
 end
+
 function CoreMaterialEditorStartDialog:on_new()
 	local path = managers.database:save_file_dialog(self._parent, true, "Material Configurations (*.material_config)|*.material_config")
 	if path then
@@ -101,35 +110,43 @@ function CoreMaterialEditorStartDialog:on_new()
 		self:end_modal()
 	end
 end
+
 function CoreMaterialEditorStartDialog:on_open()
 	local node, path = managers.database:load_node_dialog(self._parent, "*.material_config")
 	if node and path and self._editor:_load_node(path, node) then
 		self:end_modal()
 	end
 end
+
 function CoreMaterialEditorStartDialog:on_exit()
 	self._frame:destroy()
 	managers.toolhub:close(self._editor.TOOLHUB_NAME)
 end
+
 function CoreMaterialEditorStartDialog:running()
 	return self._running
 end
+
 function CoreMaterialEditorStartDialog:show_modal()
 	self._running = true
 	self._parent:set_enabled(false)
 	self._frame:set_visible(true)
 end
+
 function CoreMaterialEditorStartDialog:update(t, dt)
 	self._frame_pos = self._parent:get_position() + self._parent:get_size() * 0.5 - self._frame_size * 0.5
 	self._frame:set_position(self._frame_pos)
 end
+
 function CoreMaterialEditorStartDialog:end_modal()
 	self._running = false
 	self._frame:set_visible(false)
 	self._parent:set_enabled(true)
 	self._parent:set_focus()
 end
+
 CoreMaterialEditorCompileWarningDialog = CoreMaterialEditorCompileWarningDialog or class()
+
 function CoreMaterialEditorCompileWarningDialog:init(parent)
 	self._parent = parent
 	local frame_size = Vector3(540, 340, 0)
@@ -152,9 +169,11 @@ function CoreMaterialEditorCompileWarningDialog:init(parent)
 	main_frame_box:add(main_panel, 1, 0, "EXPAND")
 	self._dialog:set_sizer(main_frame_box)
 end
+
 function CoreMaterialEditorCompileWarningDialog:show_modal()
 	return self._dialog:show_modal()
 end
+
 function CoreMaterialEditorCompileWarningDialog:end_modal(data)
 	self._dialog:end_modal(data)
 end

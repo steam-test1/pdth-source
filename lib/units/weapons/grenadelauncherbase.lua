@@ -1,7 +1,9 @@
 GrenadeLauncherBase = GrenadeLauncherBase or class(RaycastWeaponBase)
+
 function GrenadeLauncherBase:init(...)
 	GrenadeLauncherBase.super.init(self, ...)
 end
+
 function GrenadeLauncherBase:_fire_raycast(user_unit, from_pos, direction)
 	local range_mul = managers.player:upgrade_value(self._name_id, "explosion_range_multiplier")
 	local range = tweak_data.weapon[self._name_id].EXPLOSION_RANGE * (range_mul == 0 and 1 or range_mul)

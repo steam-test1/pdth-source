@@ -1,9 +1,11 @@
 FakeAssaultStateUnitElement = FakeAssaultStateUnitElement or class(MissionElement)
+
 function FakeAssaultStateUnitElement:init(unit)
 	FakeAssaultStateUnitElement.super.init(self, unit)
 	self._hed.state = false
 	table.insert(self._save_values, "state")
 end
+
 function FakeAssaultStateUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

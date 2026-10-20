@@ -1,9 +1,11 @@
 DifficultyUnitElement = DifficultyUnitElement or class(MissionElement)
+
 function DifficultyUnitElement:init(unit)
 	DifficultyUnitElement.super.init(self, unit)
 	self._hed.difficulty = 0
 	table.insert(self._save_values, "difficulty")
 end
+
 function DifficultyUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

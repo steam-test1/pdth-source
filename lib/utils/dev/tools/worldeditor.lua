@@ -59,11 +59,13 @@ require("lib/units/editor/SpawnPlayerElement")
 require("lib/units/editor/EnemyDummyTrigger")
 require("lib/units/editor/SpawnEnemyElement")
 WorldEditor = WorldEditor or class(CoreEditor)
+
 function WorldEditor:init(game_state_machine)
 	WorldEditor.super.init(self, game_state_machine)
 	Network:set_multiplayer(true)
 	managers.network:host_game()
 end
+
 function WorldEditor:_init_mission_difficulties()
 	self._mission_difficulties = {
 		"easy",
@@ -74,6 +76,7 @@ function WorldEditor:_init_mission_difficulties()
 	}
 	self._mission_difficulty = "normal"
 end
+
 function WorldEditor:_init_mission_players()
 	self._mission_players = {
 		1,
@@ -83,13 +86,16 @@ function WorldEditor:_init_mission_players()
 	}
 	self._mission_player = 1
 end
+
 function WorldEditor:_project_init_layer_classes()
 	self:add_layer("Ai", CoreAiLayer.AiLayer)
 	self:add_layer("Heatmap", CoreHeatmapLayer.HeatmapLayer)
 end
+
 function WorldEditor:_project_init_slot_masks()
 	self._go_through_units_before_simulaton_mask = self._go_through_units_before_simulaton_mask + 15
 end
+
 function WorldEditor:project_run_simulation(with_mission)
 	Global.game_settings.difficulty = self._mission_difficulty
 	managers.network:host_game()
@@ -108,11 +114,13 @@ function WorldEditor:project_run_simulation(with_mission)
 	managers.network:game():on_load_complete()
 	managers.network:game():spawn_players()
 end
+
 function WorldEditor:_project_check_unit(unit)
 	if unit:unit_data().secret_assignment_id then
 		managers.secret_assignment:register_unit(unit)
 	end
 end
+
 function WorldEditor:project_stop_simulation()
 	managers.hud:on_simulation_ended()
 	managers.hud:clear_waypoints()
@@ -133,13 +141,16 @@ function WorldEditor:project_stop_simulation()
 	managers.game_play_central:on_simulation_ended()
 	managers.criminals:on_simulation_ended()
 end
+
 function WorldEditor:project_clear_units()
 	local units = World:find_units_quick("all", World:make_slot_mask(2, 4, 5, 6, 8, 9, 11, 12, 13, 14, 15, 16, 17, 18, 20, 21, 22, 23, 24, 25, 38))
 	for _, unit in ipairs(units) do
 		unit:set_slot(0)
 	end
 end
+
 function WorldEditor:project_clear_layers()
 end
+
 function WorldEditor:project_recreate_layers()
 end

@@ -1,12 +1,15 @@
 core:module("CoreElementDebug")
 core:import("CoreMissionScriptElement")
 ElementDebug = ElementDebug or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementDebug:init(...)
 	ElementDebug.super.init(self, ...)
 end
+
 function ElementDebug:client_on_executed(...)
 	self:on_executed(...)
 end
+
 function ElementDebug:on_executed(instigator)
 	if not self._values.enabled then
 		return

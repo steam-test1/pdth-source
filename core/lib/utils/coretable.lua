@@ -1,6 +1,7 @@
 core:module("CoreTable")
 core:import("CoreClass")
 core:import("CoreDebug")
+
 function clone(o)
 	local res = {}
 	for k, v in pairs(o) do
@@ -9,6 +10,7 @@ function clone(o)
 	setmetatable(res, getmetatable(o))
 	return res
 end
+
 function deep_clone(o)
 	if type(o) == "userdata" then
 		return o
@@ -24,6 +26,7 @@ function deep_clone(o)
 	end
 	return res
 end
+
 function dpairs(vector_table)
 	if type(table) ~= "table" then
 		error("Expected table got", type(vector_table))
@@ -42,6 +45,7 @@ function dpairs(vector_table)
 		end
 	end
 end
+
 function table.tuple_iterator(v, n)
 	local index = 1 - n
 	local count = #v
@@ -52,6 +56,7 @@ function table.tuple_iterator(v, n)
 		end
 	end
 end
+
 function table.sorted_map_iterator(map, key_comparator_func)
 	local sorted_keys = table.map_keys(map)
 	local index = 0
@@ -65,6 +70,7 @@ function table.sorted_map_iterator(map, key_comparator_func)
 		end
 	end
 end
+
 function table.map_copy(map)
 	local copy = {}
 	for k, v in pairs(map) do
@@ -72,6 +78,7 @@ function table.map_copy(map)
 	end
 	return copy
 end
+
 function table.list_copy(list)
 	local copy = {}
 	for k, v in ipairs(list) do
@@ -79,6 +86,7 @@ function table.list_copy(list)
 	end
 	return copy
 end
+
 function table.get_vector_index(v, e)
 	for index, value in ipairs(v) do
 		if value == e then
@@ -86,12 +94,14 @@ function table.get_vector_index(v, e)
 		end
 	end
 end
+
 function table.delete(v, e)
 	local index = table.get_vector_index(v, e)
 	if index then
 		table.remove(v, index)
 	end
 end
+
 function table.exclude(t, e)
 	local filtered = {}
 	for _, v in ipairs(t) do
@@ -101,6 +111,7 @@ function table.exclude(t, e)
 	end
 	return filtered
 end
+
 function table.equals(a, b, value_compare_func)
 	value_compare_func = value_compare_func or function(va, vb)
 		return va == vb
@@ -114,6 +125,7 @@ function table.equals(a, b, value_compare_func)
 	end
 	return size_a == table.size(b)
 end
+
 function table.contains(v, e)
 	for _, value in pairs(v) do
 		if value == e then
@@ -122,6 +134,7 @@ function table.contains(v, e)
 	end
 	return false
 end
+
 function table.index_of(v, e)
 	for index, value in ipairs(v) do
 		if value == e then
@@ -130,6 +143,7 @@ function table.index_of(v, e)
 	end
 	return -1
 end
+
 function table.get_key(map, wanted_key_value)
 	for key, value in pairs(map) do
 		if value == wanted_key_value then
@@ -138,6 +152,7 @@ function table.get_key(map, wanted_key_value)
 	end
 	return nil
 end
+
 function table.has(v, k)
 	for key, _ in pairs(v) do
 		if key == k then
@@ -146,6 +161,7 @@ function table.has(v, k)
 	end
 	return false
 end
+
 function table.size(v)
 	local i = 0
 	for _, _ in pairs(v) do
@@ -153,14 +169,18 @@ function table.size(v)
 	end
 	return i
 end
+
 function table.empty(v)
 	return not next(v)
 end
+
 function table.concat_map(map, concat_values, none_string, wrap, sep, last_sep)
 	local count = 0
+	
 	local function func()
 		return none_string
 	end
+	
 	wrap = wrap or "\""
 	sep = sep or ", "
 	last_sep = last_sep or " and "
@@ -172,6 +192,7 @@ function table.concat_map(map, concat_values, none_string, wrap, sep, last_sep)
 		else
 			append_string = tostring(key)
 		end
+		
 		function func(count, first)
 			if count == 1 then
 				return wrap .. append_string .. wrap
@@ -181,10 +202,12 @@ function table.concat_map(map, concat_values, none_string, wrap, sep, last_sep)
 				return last_func(count - 1, false) .. sep .. wrap .. append_string .. wrap
 			end
 		end
+		
 		count = count + 1
 	end
 	return func(count, true)
 end
+
 function table.ordering(prioritized_order_list)
 	return function(a, b)
 		local a_index = table.get_vector_index(prioritized_order_list, a)
@@ -198,6 +221,7 @@ function table.ordering(prioritized_order_list)
 		end
 	end
 end
+
 function table.sorted_copy(t, predicate)
 	local sorted_copy = {}
 	for _, value in ipairs(t) do
@@ -206,6 +230,7 @@ function table.sorted_copy(t, predicate)
 	table.sort(sorted_copy, predicate)
 	return sorted_copy
 end
+
 function table.find_value(t, func)
 	for _, value in ipairs(t) do
 		if func(value) then
@@ -213,6 +238,7 @@ function table.find_value(t, func)
 		end
 	end
 end
+
 function table.find_all_values(t, func)
 	local matches = {}
 	for _, value in ipairs(t) do
@@ -222,6 +248,7 @@ function table.find_all_values(t, func)
 	end
 	return matches
 end
+
 function table.true_for_all(t, predicate)
 	for key, value in pairs(t) do
 		if not predicate(value, key) then
@@ -230,6 +257,7 @@ function table.true_for_all(t, predicate)
 	end
 	return true
 end
+
 function table.collect(t, func)
 	local result = {}
 	for key, value in pairs(t) do
@@ -237,6 +265,7 @@ function table.collect(t, func)
 	end
 	return result
 end
+
 function table.inject(t, initial, func)
 	local result = initial
 	for _, value in ipairs(t) do
@@ -244,6 +273,7 @@ function table.inject(t, initial, func)
 	end
 	return result
 end
+
 function table.insert_sorted(t, item, comparator_func)
 	if item == nil then
 		return
@@ -259,11 +289,13 @@ function table.insert_sorted(t, item, comparator_func)
 	end
 	table.insert(t, index, item)
 end
+
 function table.for_each_value(t, func)
 	for _, value in ipairs(t) do
 		func(value)
 	end
 end
+
 function table.range(s, e)
 	local range = {}
 	for i = s, e do
@@ -271,6 +303,7 @@ function table.range(s, e)
 	end
 	return range
 end
+
 function table.unpack_sparse(sparse_list)
 	table.__unpack_sparse_implementations = table.__unpack_sparse_implementations or {}
 	local count = 0
@@ -289,9 +322,11 @@ function table.unpack_sparse(sparse_list)
 	end
 	return func(sparse_list)
 end
+
 function table.unpack_map(map)
 	return unpack(table.map_to_list(map))
 end
+
 function table.map_to_list(map)
 	local list = {}
 	for k, v in pairs(map) do
@@ -300,6 +335,7 @@ function table.map_to_list(map)
 	end
 	return list
 end
+
 function table.map_keys(map, sort_func)
 	local keys = {}
 	for key, _ in pairs(map) do
@@ -308,6 +344,7 @@ function table.map_keys(map, sort_func)
 	table.sort(keys, sort_func)
 	return keys
 end
+
 function table.map_values(map, sort_func)
 	local values = {}
 	for _, value in pairs(map) do
@@ -318,6 +355,7 @@ function table.map_values(map, sort_func)
 	end
 	return values
 end
+
 function table.remap(map, remap_func)
 	local result = {}
 	for k, v in pairs(map) do
@@ -326,6 +364,7 @@ function table.remap(map, remap_func)
 	end
 	return result
 end
+
 function table.list_add(...)
 	local result = {}
 	for _, list_table in ipairs({
@@ -337,6 +376,7 @@ function table.list_add(...)
 	end
 	return result
 end
+
 function table.list_union(...)
 	local unique = {}
 	for _, list_table in ipairs({
@@ -352,6 +392,7 @@ function table.list_union(...)
 	end
 	return result
 end
+
 function table.print_data(data, t)
 	if type(data) == "table" then
 		t = t or ""
@@ -369,8 +410,10 @@ function table.print_data(data, t)
 		CoreDebug.cat_debug("debug", CoreClass.type_name(data), tostring(data))
 	end
 end
+
 if Application:ews_enabled() then
 	local __lua_representation, __write_lua_representation_to_file
+	
 	function __lua_representation(value)
 		local t = type(value)
 		if t == "string" then
@@ -381,6 +424,7 @@ if Application:ews_enabled() then
 			error("Unable to generate Lua representation of type \"" .. t .. "\".")
 		end
 	end
+	
 	function __write_lua_representation_to_file(value, file, indentation)
 		indentation = indentation or 1
 		local t = type(value)
@@ -400,6 +444,7 @@ if Application:ews_enabled() then
 			error("Unable to generate Lua representation of type \"" .. t .. "\".")
 		end
 	end
+	
 	function write_lua_representation_to_path(value, path)
 		assert(type(path) == "string", "Invalid path argument. Expected string.")
 		local file = io.open(path, "w")
@@ -407,6 +452,7 @@ if Application:ews_enabled() then
 		__write_lua_representation_to_file(value, file)
 		file:close()
 	end
+	
 	function read_lua_representation_from_path(path)
 		assert(type(path) == "string", "Invalid path argument. Expected string.")
 		local file = io.open(path, "r")

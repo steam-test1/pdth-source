@@ -1,4 +1,5 @@
 UnitByName = UnitByName or class(CoreEditorEwsDialog)
+
 function UnitByName:init(name, unit_filter_function, ...)
 	self._filter_with_name_id = true
 	self._dialog_name = self._dialog_name or name or "UnitByName"
@@ -70,58 +71,71 @@ function UnitByName:init(name, unit_filter_function, ...)
 	self:fill_unit_list()
 	self._dialog:set_visible(true)
 end
+
 function UnitByName:_build_buttons(panel, sizer)
 	local cancel_btn = EWS:Button(panel, "Cancel", "", "")
 	sizer:add(cancel_btn, 0, 2, "RIGHT,LEFT")
 	cancel_btn:connect("EVT_COMMAND_BUTTON_CLICKED", callback(self, self, "on_cancel"), "")
 	cancel_btn:connect("EVT_KEY_DOWN", callback(self, self, "key_cancel"), "")
 end
+
 function UnitByName:on_filter_with_name_id(params)
 	self._filter_with_name_id = params.ctrlr:get_value()
 	self:fill_unit_list()
 end
+
 function UnitByName:on_all_layers()
 	for name, cb in pairs(self._layer_cbs) do
 		cb:set_value(true)
 	end
 	self:fill_unit_list()
 end
+
 function UnitByName:on_none_layers()
 	for name, cb in pairs(self._layer_cbs) do
 		cb:set_value(false)
 	end
 	self:fill_unit_list()
 end
+
 function UnitByName:on_invert_layers()
 	for name, cb in pairs(self._layer_cbs) do
 		cb:set_value(not cb:get_value())
 	end
 	self:fill_unit_list()
 end
+
 function UnitByName:key_delete(ctrlr, event)
 	event:skip()
 	if EWS:name_to_key_code("K_DELETE") == event:key_code() then
 		self:_on_delete()
 	end
 end
+
 function UnitByName:key_cancel(ctrlr, event)
 	event:skip()
 	if EWS:name_to_key_code("K_ESCAPE") == event:key_code() then
 		self:on_cancel()
 	end
 end
+
 function UnitByName:on_layer_cb(data)
 	self:fill_unit_list()
 end
+
 function UnitByName:on_cancel()
 	self._dialog:set_visible(false)
 end
+
 function UnitByName:_on_delete()
 end
+
 function UnitByName:_on_mark_unit()
 end
+
 function UnitByName:_on_select_unit()
 end
+
 function UnitByName:_selected_item_units()
 	local units = {}
 	for _, i in ipairs(self._list:selected_items()) do
@@ -132,12 +146,14 @@ function UnitByName:_selected_item_units()
 	end
 	return units
 end
+
 function UnitByName:_selected_item_unit()
 	local index = self._list:selected_item()
 	if index ~= -1 then
 		return self._units[self._list:get_item_data(index)]
 	end
 end
+
 function UnitByName:deleted_unit(unit)
 	for i = 0, self._list:item_count() - 1 do
 		if self._units[self._list:get_item_data(i)] == unit then
@@ -146,12 +162,14 @@ function UnitByName:deleted_unit(unit)
 		end
 	end
 end
+
 function UnitByName:spawned_unit(unit)
 	local i = self._list:append_item(unit:unit_data().name_id)
 	local j = #self._units + 1
 	self._units[j] = unit
 	self._list:set_item_data(i, j)
 end
+
 function UnitByName:selected_unit(unit)
 	for _, i in ipairs(self._list:selected_items()) do
 		self._list:set_item_selected(i, false)
@@ -164,6 +182,7 @@ function UnitByName:selected_unit(unit)
 		end
 	end
 end
+
 function UnitByName:selected_units(units)
 	if self._blocked then
 		return
@@ -181,6 +200,7 @@ function UnitByName:selected_units(units)
 		end
 	end
 end
+
 function UnitByName:unit_name_changed(unit)
 	for i = 0, self._list:item_count() - 1 do
 		if self._units[self._list:get_item_data(i)] == unit then
@@ -208,9 +228,11 @@ function UnitByName:unit_name_changed(unit)
 		end
 	end
 end
+
 function UnitByName:update_filter()
 	self:fill_unit_list()
 end
+
 function UnitByName:fill_unit_list()
 	self._list:delete_all_items()
 	local layers = managers.editor:layers()
@@ -235,9 +257,11 @@ function UnitByName:fill_unit_list()
 	self._list:thaw()
 	self._list:autosize_column(0)
 end
+
 function UnitByName:_get_filter_string(unit)
 	return self._filter_with_name_id and unit:unit_data().name_id or unit:name():s()
 end
+
 function UnitByName:_continent_locked(unit)
 	local continent = unit:unit_data().continent
 	if not continent then
@@ -245,18 +269,22 @@ function UnitByName:_continent_locked(unit)
 	end
 	return unit:unit_data().continent:value("locked")
 end
+
 function UnitByName:_unit_condition(unit)
 	if self._unit_filter_function then
 		return self._unit_filter_function(unit)
 	end
 	return true
 end
+
 function UnitByName:reset()
 	self:fill_unit_list()
 end
+
 function UnitByName:freeze()
 	self._list:freeze()
 end
+
 function UnitByName:thaw()
 	self._list:thaw()
 end

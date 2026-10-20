@@ -1,13 +1,16 @@
 MenuNodeStatsGui = MenuNodeStatsGui or class(MenuNodeGui)
+
 function MenuNodeStatsGui:init(node, layer, parameters)
 	MenuNodeStatsGui.super.init(self, node, layer, parameters)
 	self._stats_items = {}
 	self:_setup_stats(node)
 end
+
 function MenuNodeStatsGui:_setup_panels(node)
 	MenuNodeStatsGui.super._setup_panels(self, node)
 	local safe_rect_pixels = managers.viewport:get_safe_rect_pixels()
 end
+
 function MenuNodeStatsGui:_setup_stats(node)
 	self:_add_stats({
 		topic = managers.localization:text("menu_stats_money"),
@@ -91,6 +94,7 @@ function MenuNodeStatsGui:_setup_stats(node)
 		panel:set_h(h)
 	end
 end
+
 function MenuNodeStatsGui:_add_stats(params)
 	local y = 0
 	for _, panel in ipairs(self._stats_items) do
@@ -178,15 +182,19 @@ function MenuNodeStatsGui:_add_stats(params)
 	end
 	table.insert(self._stats_items, panel)
 end
+
 function MenuNodeStatsGui:_create_menu_item(row_item)
 	MenuNodeStatsGui.super._create_menu_item(self, row_item)
 end
+
 function MenuNodeStatsGui:_setup_main_panel(safe_rect)
 	MenuNodeStatsGui.super._setup_main_panel(self, safe_rect)
 end
+
 function MenuNodeStatsGui:_setup_item_panel(safe_rect, res)
 	MenuNodeStatsGui.super._setup_item_panel(self, safe_rect, res)
 end
+
 function MenuNodeStatsGui:resolution_changed()
 	MenuNodeStatsGui.super.resolution_changed(self)
 end

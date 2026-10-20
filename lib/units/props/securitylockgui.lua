@@ -1,4 +1,5 @@
 SecurityLockGui = SecurityLockGui or class()
+
 function SecurityLockGui:init(unit)
 	self._unit = unit
 	self._visible = true
@@ -18,11 +19,13 @@ function SecurityLockGui:init(unit)
 	self._unit:set_extension_update_enabled(Idstring("timer_gui"), false)
 	self._update_enabled = false
 end
+
 function SecurityLockGui:add_workspace(gui_object)
 	self._ws = self._new_gui:create_object_workspace(0, 0, gui_object, Vector3(0, 0, 0))
 	self._gui = self._ws:panel():gui(Idstring("guis/security_lock_gui"))
 	self._gui_script = self._gui:script()
 end
+
 function SecurityLockGui:setup()
 	self._gui_script.working_text:set_render_template(Idstring("VertexColorTextured"))
 	self._gui_script.time_header_text:set_render_template(Idstring("VertexColorTextured"))
@@ -81,6 +84,7 @@ function SecurityLockGui:setup()
 		self._original_colors[child:key()] = child:color()
 	end
 end
+
 function SecurityLockGui:_start(bar, timer, current_timer)
 	self._current_bar = bar
 	self._started = true
@@ -100,6 +104,7 @@ function SecurityLockGui:_start(bar, timer, current_timer)
 		return
 	end
 end
+
 function SecurityLockGui:start(bar, timer)
 	if self._started then
 		return
@@ -108,9 +113,11 @@ function SecurityLockGui:start(bar, timer)
 	if managers.network:session() then
 	end
 end
+
 function SecurityLockGui:sync_start(bar, timer)
 	self:_start(bar, timer)
 end
+
 function SecurityLockGui:update(unit, t, dt)
 	if not self._powered then
 		return
@@ -132,13 +139,16 @@ function SecurityLockGui:update(unit, t, dt)
 		self._gui_script.working_text:set_color(self._gui_script.working_text:color():with_alpha(0.5 + (math.sin(t * 750) + 1) / 4))
 	end
 end
+
 function SecurityLockGui:set_visible(visible)
 	self._visible = visible
 	self._gui:set_visible(visible)
 end
+
 function SecurityLockGui:set_powered(powered)
 	self:_set_powered(powered)
 end
+
 function SecurityLockGui:_set_powered(powered)
 	self._powered = powered
 	if not self._powered then
@@ -153,6 +163,7 @@ function SecurityLockGui:_set_powered(powered)
 		end
 	end
 end
+
 function SecurityLockGui:done()
 	self:_set_done()
 	if self._unit:damage() then
@@ -160,6 +171,7 @@ function SecurityLockGui:done()
 	end
 	self:post_event(self._done_event)
 end
+
 function SecurityLockGui:_set_done(bar)
 	bar = bar or self._current_bar
 	self._done_bars[bar] = true
@@ -176,16 +188,19 @@ function SecurityLockGui:_set_done(bar)
 	self._gui_script.time_header_text:set_visible(false)
 	self._gui_script.time_text:set_visible(false)
 end
+
 function SecurityLockGui:post_event(event)
 	if not event then
 		return
 	end
 	self._unit:sound_source():post_event(event)
 end
+
 function SecurityLockGui:lock_gui()
 	self._ws:set_cull_distance(self._cull_distance)
 	self._ws:set_frozen(true)
 end
+
 function SecurityLockGui:destroy()
 	if alive(self._new_gui) and alive(self._ws) then
 		self._new_gui:destroy_workspace(self._ws)
@@ -193,6 +208,7 @@ function SecurityLockGui:destroy()
 		self._new_gui = nil
 	end
 end
+
 function SecurityLockGui:save(data)
 	local state = {}
 	state.update_enabled = self._update_enabled
@@ -205,6 +221,7 @@ function SecurityLockGui:save(data)
 	state.visible = self._visible
 	data.SecurityLockGui = state
 end
+
 function SecurityLockGui:load(data)
 	local state = data.SecurityLockGui
 	for bar, _ in pairs(state.done_bars) do

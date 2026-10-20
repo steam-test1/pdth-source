@@ -1,4 +1,5 @@
 CriminalsManager = CriminalsManager or class()
+
 function CriminalsManager:init()
 	self._characters = {
 		{
@@ -51,17 +52,21 @@ function CriminalsManager:init()
 		}
 	}
 end
+
 function CriminalsManager:on_simulation_ended()
 	for id, data in pairs(self._characters) do
 		self:_remove(id)
 	end
 end
+
 function CriminalsManager:local_character_name()
 	return self._local_character
 end
+
 function CriminalsManager:characters()
 	return self._characters
 end
+
 function CriminalsManager:get_any_unit()
 	for id, data in pairs(self._characters) do
 		if data.taken and alive(data.unit) and data.unit:id() ~= -1 then
@@ -69,6 +74,7 @@ function CriminalsManager:get_any_unit()
 		end
 	end
 end
+
 function CriminalsManager:_remove(id)
 	local data = self._characters[id]
 	if data.name == self._local_character then
@@ -83,6 +89,7 @@ function CriminalsManager:_remove(id)
 	data.peer_id = 0
 	data.data = {}
 end
+
 function CriminalsManager:add_character(name, unit, peer_id, ai)
 	print("[CriminalsManager] Add character " .. name, unit)
 	Application:stack_dump()
@@ -118,6 +125,7 @@ function CriminalsManager:add_character(name, unit, peer_id, ai)
 		end
 	end
 end
+
 function CriminalsManager:set_unit(name, unit)
 	print("[CriminalsManager] Set unit " .. name, unit)
 	for id, data in pairs(self._characters) do
@@ -140,6 +148,7 @@ function CriminalsManager:set_unit(name, unit)
 		end
 	end
 end
+
 function CriminalsManager:is_taken(name)
 	for _, data in pairs(self._characters) do
 		if name == data.name then
@@ -148,6 +157,7 @@ function CriminalsManager:is_taken(name)
 	end
 	return false
 end
+
 function CriminalsManager:character_name_by_peer_id(peer_id)
 	for _, data in pairs(self._characters) do
 		if data.taken and peer_id == data.peer_id then
@@ -155,6 +165,7 @@ function CriminalsManager:character_name_by_peer_id(peer_id)
 		end
 	end
 end
+
 function CriminalsManager:character_data_by_name(name)
 	for _, data in pairs(self._characters) do
 		if data.taken and name == data.name then
@@ -162,6 +173,7 @@ function CriminalsManager:character_data_by_name(name)
 		end
 	end
 end
+
 function CriminalsManager:character_data_by_peer_id(peer_id)
 	for _, data in pairs(self._characters) do
 		if data.taken and peer_id == data.peer_id then
@@ -169,6 +181,7 @@ function CriminalsManager:character_data_by_peer_id(peer_id)
 		end
 	end
 end
+
 function CriminalsManager:character_static_data_by_name(name)
 	for _, data in pairs(self._characters) do
 		if name == data.name then
@@ -176,6 +189,7 @@ function CriminalsManager:character_static_data_by_name(name)
 		end
 	end
 end
+
 function CriminalsManager:character_unit_by_name(name)
 	for _, data in pairs(self._characters) do
 		if data.taken and name == data.name then
@@ -183,6 +197,7 @@ function CriminalsManager:character_unit_by_name(name)
 		end
 	end
 end
+
 function CriminalsManager:character_taken_by_name(name)
 	for _, data in pairs(self._characters) do
 		if name == data.name then
@@ -190,6 +205,7 @@ function CriminalsManager:character_taken_by_name(name)
 		end
 	end
 end
+
 function CriminalsManager:character_peer_id_by_name(name)
 	for _, data in pairs(self._characters) do
 		if data.taken and name == data.name then
@@ -197,6 +213,7 @@ function CriminalsManager:character_peer_id_by_name(name)
 		end
 	end
 end
+
 function CriminalsManager:get_free_character_name()
 	local available = {}
 	for id, data in pairs(self._characters) do
@@ -217,6 +234,7 @@ function CriminalsManager:get_free_character_name()
 		return available[math.random(1, #available)]
 	end
 end
+
 function CriminalsManager:get_num_player_criminals()
 	local num = 0
 	for id, data in pairs(self._characters) do
@@ -226,6 +244,7 @@ function CriminalsManager:get_num_player_criminals()
 	end
 	return num
 end
+
 function CriminalsManager:remove_character_by_unit(unit)
 	if type_name(unit) ~= "Unit" then
 		return
@@ -238,6 +257,7 @@ function CriminalsManager:remove_character_by_unit(unit)
 		end
 	end
 end
+
 function CriminalsManager:remove_character_by_peer_id(peer_id)
 	for id, data in pairs(self._characters) do
 		if data.taken and peer_id == data.peer_id then
@@ -246,6 +266,7 @@ function CriminalsManager:remove_character_by_peer_id(peer_id)
 		end
 	end
 end
+
 function CriminalsManager:remove_character_by_name(name)
 	for id, data in pairs(self._characters) do
 		if data.taken and name == data.name then
@@ -254,6 +275,7 @@ function CriminalsManager:remove_character_by_name(name)
 		end
 	end
 end
+
 function CriminalsManager:character_name_by_unit(unit)
 	if type_name(unit) ~= "Unit" then
 		return nil
@@ -265,6 +287,7 @@ function CriminalsManager:character_name_by_unit(unit)
 		end
 	end
 end
+
 function CriminalsManager:character_static_data_by_unit(unit)
 	if type_name(unit) ~= "Unit" then
 		return nil

@@ -23,9 +23,11 @@ LEVEL_SKIP = {
 	unit_sequence_trigger = true
 }
 LevelDependencyNode = LevelDependencyNode or CoreClass.class(CoreDependencyNode.DependencyNodeBase)
+
 function LevelDependencyNode:init(name, get_dn_cb, database)
 	self.super.init(self, LEVEL, nil, name, get_dn_cb, database)
 end
+
 function LevelDependencyNode:_parse()
 	local file = string.format(LEVEL_FILE, self._name)
 	local f = File:open(file, "r")
@@ -37,6 +39,7 @@ function LevelDependencyNode:_parse()
 	f:close()
 	return {level_node, mission_node}
 end
+
 function LevelDependencyNode:_walkxml2dependencies(xmlnode, deps)
 	local node_name = xmlnode:name()
 	if node_name == "unit" then

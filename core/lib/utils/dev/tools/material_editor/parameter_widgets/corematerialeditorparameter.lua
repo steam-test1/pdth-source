@@ -1,5 +1,6 @@
 require("core/lib/utils/dev/tools/material_editor/CoreSmartNode")
 local CoreMaterialEditorParameter = CoreMaterialEditorParameter or class()
+
 function CoreMaterialEditorParameter:init(parent, editor, parameter_info, parameter_node)
 	self:set_params(parent, editor, parameter_info, parameter_node)
 	self._panel = EWS:Panel(parent, "", "")
@@ -26,6 +27,7 @@ function CoreMaterialEditorParameter:init(parent, editor, parameter_info, parame
 	self:_load_value()
 	self._editor:_update_output()
 end
+
 function CoreMaterialEditorParameter:set_params(parent, editor, parameter_info, parameter_node)
 	self._parent = parent
 	self._editor = editor
@@ -49,6 +51,7 @@ function CoreMaterialEditorParameter:set_params(parent, editor, parameter_info, 
 		end
 	end
 end
+
 function CoreMaterialEditorParameter:on_copy_to_parent()
 	if self._editor._parent_combo_box:get_value() ~= "[NONE]" then
 		self:_copy_to_parent()
@@ -64,26 +67,34 @@ function CoreMaterialEditorParameter:on_copy_to_parent()
 	end
 	self._editor:_create_parameter_panel()
 end
+
 function CoreMaterialEditorParameter:update_live()
 	self._editor:live_update_parameter(self._parameter_info.name:s(), self._parameter_info.type, self._parameter_info.ui_type:s(), self._value)
 end
+
 function CoreMaterialEditorParameter:update(t, dt)
 end
+
 function CoreMaterialEditorParameter:destroy()
 	self._panel:destroy()
 end
+
 function CoreMaterialEditorParameter:panel()
 	return self._panel
 end
+
 function CoreMaterialEditorParameter:get_value()
 	return self._value
 end
+
 function CoreMaterialEditorParameter:to_slider_range(v, min, step)
 	return (v - min) / step
 end
+
 function CoreMaterialEditorParameter:from_slider_range(v, min, step)
 	return v * step + min
 end
+
 function CoreMaterialEditorParameter:_create_node()
 	if self._parameter_info.type == "vector3" then
 		self._parameter_node = self._editor._current_material_node:make_child("variable")
@@ -104,6 +115,7 @@ function CoreMaterialEditorParameter:_create_node()
 		self._parameter_node:set_parameter("value", str)
 	end
 end
+
 function CoreMaterialEditorParameter:_load_value()
 	if self._editor._current_material_node:parameter("src") and not self._customize then
 		self._node = self._parent_param_node
@@ -134,6 +146,7 @@ function CoreMaterialEditorParameter:_load_value()
 		self._value = tonumber(self._node:parameter("value"))
 	end
 end
+
 function CoreMaterialEditorParameter:_copy_to_parent(name)
 	local material_node
 	if name then
@@ -167,4 +180,5 @@ function CoreMaterialEditorParameter:_copy_to_parent(name)
 	self._editor:_load_parent_dropdown()
 	self._editor._parent_combo_box:set_value(parent)
 end
+
 return CoreMaterialEditorParameter

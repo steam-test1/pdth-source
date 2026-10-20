@@ -1,5 +1,6 @@
 require("lib/states/GameState")
 IngameBattleState = IngameBattleState or class(GameState)
+
 function IngameBattleState:init(game_state_machine)
 	GameState.init(self, "ingame_battle", game_state_machine)
 	self._ws = Overlay:newgui():create_screen_workspace()
@@ -14,6 +15,7 @@ function IngameBattleState:init(game_state_machine)
 	})
 	self._ws:hide()
 end
+
 function IngameBattleState:set_controller_enabled(enabled)
 	local players = managers.player:players()
 	for _, player in ipairs(players) do
@@ -23,6 +25,7 @@ function IngameBattleState:set_controller_enabled(enabled)
 		end
 	end
 end
+
 function IngameBattleState:at_enter()
 	local players = managers.player:players()
 	for k, player in ipairs(players) do
@@ -35,6 +38,7 @@ function IngameBattleState:at_enter()
 	end
 	self._ws:show()
 end
+
 function IngameBattleState:at_exit()
 	self._ws:hide()
 end

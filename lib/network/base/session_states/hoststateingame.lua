@@ -1,7 +1,9 @@
 HostStateInGame = HostStateInGame or class(HostStateBase)
+
 function HostStateInGame:enter(data, enter_params)
 	print("[HostStateInGame:enter]", data, inspect(enter_params))
 end
+
 function HostStateInGame:on_join_request_received(data, peer_name, client_mask_set, dlcs, client_ip, client_user_id, sender)
 	print("[HostStateInGame:on_join_request_received]", peer_name, client_mask_set, dlcs, client_ip, client_user_id, sender:ip_at_index(0))
 	local my_user_id = data.local_peer:user_id() or ""
@@ -53,6 +55,7 @@ function HostStateInGame:on_join_request_received(data, peer_name, client_mask_s
 	local difficulty_index = tweak_data:difficulty_to_index(Global.game_settings.difficulty)
 	new_peer_rpc:join_request_reply(1, new_peer_id, level_index, difficulty_index, 2, data.local_peer:mask_set(), my_user_id)
 end
+
 function HostStateInGame:on_peer_finished_loading(data, peer)
 	self:_introduce_new_peer_to_old_peers(data, peer)
 	self:_introduce_old_peers_to_new_peer(data, peer)
@@ -69,9 +72,11 @@ function HostStateInGame:on_peer_finished_loading(data, peer)
 		end
 	end
 end
+
 function HostStateInGame:is_joinable(data)
 	return not data.wants_to_load_level
 end
+
 function HostStateInGame:on_connection_to_peer_established(data, peer)
 	peer:set_ip_verified(true)
 	peer:send("set_loading_state", false)

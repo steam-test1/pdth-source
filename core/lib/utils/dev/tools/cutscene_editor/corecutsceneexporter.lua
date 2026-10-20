@@ -1,28 +1,33 @@
 core:import("CoreEngineAccess")
 require("core/lib/managers/cutscene/CoreCutsceneKeys")
 CoreCutsceneExporter = CoreCutsceneExporter or class()
+
 function CoreCutsceneExporter:init()
 	self.__clips = {}
 	self.__cutscene_keys = {}
 	assert(type(self.export_to_path) == "function" or type(self.export_to_database) == "function", "Subclasses of CoreCutsceneExporter must define either export_to_database() or export_to_path().")
 end
+
 function CoreCutsceneExporter:free_cached_animations()
 	self.__final_animation_cache = nil
 	self.__joined_animation_cache = nil
 	self.__footage_animation_cache = nil
 end
+
 function CoreCutsceneExporter:add_clip(clip)
 	table.insert_sorted(self.__clips, clip, function(a, b)
 		return a:start_time() < b:start_time()
 	end)
 	self:_clear_cached_lists()
 end
+
 function CoreCutsceneExporter:add_key(cutscene_key)
 	table.insert_sorted(self.__cutscene_keys, cutscene_key, function(a, b)
 		return a:frame() < b:frame()
 	end)
 	self:_clear_cached_lists()
 end
+
 function CoreCutsceneExporter:add_animation_patch(unit_name, blend_set, animation_name)
 	if unit_name and blend_set and animation_name then
 		self.__animation_patches = self.__animation_patches or {}
@@ -30,37 +35,46 @@ function CoreCutsceneExporter:add_animation_patch(unit_name, blend_set, animatio
 		self.__animation_patches[unit_name][blend_set] = animation_name
 	end
 end
+
 function CoreCutsceneExporter:export_to_database(asset_name)
 	self:_assert_is_valid()
 	return false
 end
+
 function CoreCutsceneExporter:frame_count()
 	local last_clip_end_time = #self.__clips > 0 and self.__clips[#self.__clips]:end_time() or 0
 	local last_key_time = 0 < #self.__cutscene_keys and self.__cutscene_keys[#self.__cutscene_keys]:frame() or 0
 	return math.max(last_clip_end_time, last_key_time)
 end
+
 function CoreCutsceneExporter:contains_optimized_footage()
 	return table.find_value(self.__clips, function(clip)
 		return clip:metadata():footage()._cutscene:is_optimized()
 	end) ~= nil
 end
+
 function CoreCutsceneExporter:contains_unoptimized_footage()
 	return table.find_value(self.__clips, function(clip)
 		return not clip:metadata():footage()._cutscene:is_optimized()
 	end) ~= nil
 end
+
 function CoreCutsceneExporter:is_valid()
 	return #self:problems() == 0
 end
+
 function CoreCutsceneExporter:problems()
 	self.__problems = self.__problems or table.map_keys(self:_problem_map())
 	return self.__problems
 end
+
 function CoreCutsceneExporter:_problem_map()
 	local problem_map = {}
+	
 	local function add_problem(problem)
 		problem_map[problem] = true
 	end
+	
 	if #self.__cutscene_keys == 0 and self:frame_count() == 0 then
 		add_problem("The project contains no data.")
 	else
@@ -103,6 +117,7 @@ function CoreCutsceneExporter:_problem_map()
 	end
 	return problem_map
 end
+
 function CoreCutsceneExporter:_has_cameras()
 	for unit_name, _ in pairs(self:_all_controlled_unit_types(true)) do
 		if string.begins(unit_name, "camera") then
@@ -111,6 +126,7 @@ function CoreCutsceneExporter:_has_cameras()
 	end
 	return false
 end
+
 function CoreCutsceneExporter:_all_controlled_unit_types(include_cameras)
 	if self.__all_controlled_unit_types == nil then
 		self.__all_controlled_unit_types = {}
@@ -124,9 +140,11 @@ function CoreCutsceneExporter:_all_controlled_unit_types(include_cameras)
 		return unit_name, not string.begins(unit_name, "camera") and unit_type or nil
 	end)
 end
+
 function CoreCutsceneExporter:_all_controlled_unit_names(include_cameras)
 	return table.map_keys(self:_all_controlled_unit_types(include_cameras))
 end
+
 function CoreCutsceneExporter:_get_final_animation(unit_name)
 	self.__final_animation_cache = self.__final_animation_cache or setmetatable({}, {__mode = "v"})
 	local final_animation = self.__final_animation_cache[unit_name]
@@ -166,6 +184,7 @@ function CoreCutsceneExporter:_get_final_animation(unit_name)
 	end
 	return final_animation or nil
 end
+
 function CoreCutsceneExporter:_get_joined_animation(unit_name_or_func)
 	self.__joined_animation_cache = self.__joined_animation_cache or setmetatable({}, {__mode = "v"})
 	local unit_name_func = type(unit_name_or_func) ~= "function" and function()
@@ -181,11 +200,13 @@ function CoreCutsceneExporter:_get_joined_animation(unit_name_or_func)
 	end
 	return joined_animation or nil
 end
+
 function CoreCutsceneExporter:_get_joined_camera_animation()
 	return self:_get_joined_animation(function(clip)
 		return clip and clip:metadata():camera()
 	end)
 end
+
 function CoreCutsceneExporter:_get_footage_animation(cutscene, unit_name)
 	self.__footage_animation_cache = self.__footage_animation_cache or setmetatable({}, {__mode = "v"})
 	local key = cutscene:name() .. ":" .. unit_name
@@ -204,6 +225,7 @@ function CoreCutsceneExporter:_get_footage_animation(cutscene, unit_name)
 	end
 	return footage_animation or nil
 end
+
 function CoreCutsceneExporter:_get_animatable_set_name_for_unit_type(unit_type)
 	local unit_data = CoreEngineAccess._editor_unit_data(unit_type:id())
 	local model_filename = unit_data:model()
@@ -224,6 +246,7 @@ function CoreCutsceneExporter:_get_animatable_set_name_for_unit_type(unit_type)
 	end
 	error(string.format("Unit \"%s\" - Model XML is missing animation_set name.", unit_type))
 end
+
 function CoreCutsceneExporter:_join_animations(unit_name_func)
 	local joined_animation
 	for _, clip in ipairs(self.__clips) do
@@ -257,16 +280,19 @@ function CoreCutsceneExporter:_join_animations(unit_name_func)
 	end
 	return joined_animation
 end
+
 function CoreCutsceneExporter:_clear_cached_lists()
 	self.__problems = nil
 	self.__all_controlled_unit_types = nil
 	self:free_cached_animations()
 end
+
 function CoreCutsceneExporter:_process_animation(animation_cutter_method_name, animation, ...)
 	local result = AnimationCutter[animation_cutter_method_name](AnimationCutter, animation, ...)
 	animation:free()
 	return result
 end
+
 function CoreCutsceneExporter:_assert_is_valid()
 	local problems = self:problems()
 	if #problems ~= 0 then

@@ -1,4 +1,5 @@
 SandboxLevel = SandboxLevel or class()
+
 function SandboxLevel:post_init()
 	self._ctrlr_debug = Input:create_virtual_controller()
 	if Input:keyboard():has_button("right shift") then
@@ -9,9 +10,11 @@ function SandboxLevel:post_init()
 	self._debug_unit_name = "dummy_duel"
 	self._dummy_unit = nil
 end
+
 function SandboxLevel:spawn_pos()
 	return managers.viewport:get_current_camera():position() + managers.viewport:get_current_camera():rotation():y() * 750
 end
+
 function SandboxLevel:spawn_dummy()
 	if not self._dummy_unit then
 		self._dummy_unit = World:spawn_unit(self._debug_unit_name, self:spawn_pos())

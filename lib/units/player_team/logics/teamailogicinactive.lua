@@ -1,4 +1,5 @@
 TeamAILogicInactive = class(TeamAILogicBase)
+
 function TeamAILogicInactive.enter(data, new_logic_name, enter_params)
 	TeamAILogicBase.enter(data, new_logic_name, enter_params)
 	local my_data = data.internal_data
@@ -32,6 +33,7 @@ function TeamAILogicInactive.enter(data, new_logic_name, enter_params)
 		data.unit:brain():set_objective(nil)
 	end
 end
+
 function TeamAILogicInactive.is_available_for_assignment(data)
 	return false
 end

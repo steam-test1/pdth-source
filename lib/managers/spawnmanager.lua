@@ -1,7 +1,9 @@
 SpawnManager = SpawnManager or class()
+
 function SpawnManager:init()
 	self._spawn_requests = {}
 end
+
 function SpawnManager:spawn_enemy_group_in_vis_group(event, i_vis_group)
 	local spawn_request = {}
 	spawn_request.groups = {}
@@ -25,6 +27,7 @@ function SpawnManager:spawn_enemy_group_in_vis_group(event, i_vis_group)
 	table.insert(self._spawn_requests, spawn_request)
 	return self:_spawn_units()
 end
+
 function SpawnManager:spawn_enemy_group(event)
 	local spawn_request = {}
 	spawn_request.groups = {}
@@ -73,8 +76,10 @@ function SpawnManager:spawn_enemy_group(event)
 	table.insert(self._spawn_requests, spawn_request)
 	return self:_spawn_units()
 end
+
 function SpawnManager:update(unit, t, dt)
 end
+
 function SpawnManager:_spawn_units()
 	if self._spawn_requests then
 		local units_spawned = {}

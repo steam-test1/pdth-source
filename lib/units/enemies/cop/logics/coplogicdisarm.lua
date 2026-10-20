@@ -1,4 +1,5 @@
 CopLogicDisarm = class(CopLogicBase)
+
 function CopLogicDisarm.enter(data, new_logic_name, enter_params)
 	CopLogicBase.enter(data, new_logic_name, enter_params)
 	data.unit:brain():cancel_all_pathing_searches()
@@ -40,6 +41,7 @@ function CopLogicDisarm.enter(data, new_logic_name, enter_params)
 	end
 	CopLogicTravel.reset_actions(data, my_data, old_internal_data, CopLogicTravel.allowed_transitional_actions)
 end
+
 function CopLogicDisarm.exit(data, new_logic_name, enter_params)
 	CopLogicBase.exit(data, new_logic_name, enter_params)
 	local my_data = data.internal_data
@@ -65,6 +67,7 @@ function CopLogicDisarm.exit(data, new_logic_name, enter_params)
 		rsrv_pos.move_dest = nil
 	end
 end
+
 function CopLogicDisarm.update(data)
 	local exit_state
 	local t = data.t
@@ -137,6 +140,7 @@ function CopLogicDisarm.update(data)
 		CopLogicBase._exit(data.unit, exit_state)
 	end
 end
+
 function CopLogicDisarm._process_pathing_results(data, my_data)
 	if data.pathing_results then
 		for path_id, path in pairs(data.pathing_results) do
@@ -153,6 +157,7 @@ function CopLogicDisarm._process_pathing_results(data, my_data)
 		data.pathing_results = nil
 	end
 end
+
 function CopLogicDisarm._update_enemy_detection(data)
 	managers.groupai:state():on_unit_detection_updated(data.unit)
 	local my_data = data.internal_data
@@ -203,6 +208,7 @@ function CopLogicDisarm._update_enemy_detection(data)
 	end
 	CopLogicBase._report_detections(enemies)
 end
+
 function CopLogicDisarm._chk_reaction_to_criminal(data, key_criminal, criminal_data)
 	local u_criminal = criminal_data.unit
 	local visible = criminal_data.verified
@@ -240,6 +246,7 @@ function CopLogicDisarm._chk_reaction_to_criminal(data, key_criminal, criminal_d
 	end
 	return reaction
 end
+
 function CopLogicDisarm.action_complete_clbk(data, action)
 	local my_data = data.internal_data
 	local action_type = action:type()
@@ -251,9 +258,11 @@ function CopLogicDisarm.action_complete_clbk(data, action)
 		my_data.turning = nil
 	end
 end
+
 function CopLogicDisarm.damage_clbk(data, damage_info)
 	CopLogicIdle.damage_clbk(data, damage_info)
 end
+
 function CopLogicDisarm.death_clbk(data, damage_info)
 	local my_data = data.internal_data
 	if my_data.focus_enemy then
@@ -264,12 +273,15 @@ function CopLogicDisarm.death_clbk(data, damage_info)
 		my_data.focus_enemy = nil
 	end
 end
+
 function CopLogicDisarm.can_deactivate(data)
 	return false
 end
+
 function CopLogicDisarm.on_detected_enemy_destroyed(data, enemy_unit)
 	CopLogicAttack.on_detected_enemy_destroyed(data, enemy_unit)
 end
+
 function CopLogicDisarm.on_criminal_neutralized(data, criminal_key)
 	CopLogicIdle.on_criminal_neutralized(data, criminal_key)
 	local my_data = data.internal_data
@@ -282,23 +294,29 @@ function CopLogicDisarm.on_criminal_neutralized(data, criminal_key)
 		my_data.focus_enemy = nil
 	end
 end
+
 function CopLogicDisarm.on_alert(...)
 	CopLogicIdle.on_alert(...)
 end
+
 function CopLogicDisarm.is_available_for_assignment(data)
 	return false
 end
+
 function CopLogicDisarm.on_intimidated(data, amount, aggressor_unit)
 	CopLogicIdle.on_intimidated(data, amount, aggressor_unit)
 end
+
 function CopLogicDisarm.on_new_objective(data, old_objective)
 	CopLogicIdle.on_new_objective(data, old_objective)
 end
+
 function CopLogicDisarm._get_all_paths(data)
 	return {
 		advance_path = data.internal_data.advance_path
 	}
 end
+
 function CopLogicDisarm._set_verified_paths(data, verified_paths)
 	data.internal_data.advance_path = verified_paths.advance_path
 end

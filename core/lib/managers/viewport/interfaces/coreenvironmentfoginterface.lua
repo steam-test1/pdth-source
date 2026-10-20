@@ -8,12 +8,15 @@ EnvironmentFogInterface.DATA_PATH = {
 	"fog"
 }
 EnvironmentFogInterface.SHARED = false
+
 function EnvironmentFogInterface:init(handle)
 	self._handle = handle
 end
+
 function EnvironmentFogInterface:parameters()
 	return table.list_copy(self._handle:parameters())
 end
+
 function EnvironmentFogInterface:_process_return(params)
 	assert(table.maxn(params) == 4, "[EnvironmentFogInterface] You did not return all parameters!")
 	return params

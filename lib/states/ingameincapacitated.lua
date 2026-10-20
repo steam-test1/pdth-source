@@ -1,8 +1,10 @@
 require("lib/states/GameState")
 IngameIncapacitatedState = IngameIncapacitatedState or class(IngamePlayerBaseState)
+
 function IngameIncapacitatedState:init(game_state_machine)
 	IngameIncapacitatedState.super.init(self, "ingame_incapacitated", game_state_machine)
 end
+
 function IngameIncapacitatedState:update(t, dt)
 	local player = managers.player:player_unit()
 	if not alive(player) then
@@ -18,6 +20,7 @@ function IngameIncapacitatedState:update(t, dt)
 		player:base():set_slot(player, 0)
 	end
 end
+
 function IngameIncapacitatedState:at_enter()
 	local players = managers.player:players()
 	for k, player in ipairs(players) do
@@ -38,6 +41,7 @@ function IngameIncapacitatedState:at_enter()
 	managers.hud:show(PlayerBase.PLAYER_INFO_HUD_FULLSCREEN)
 	managers.hud:show(PlayerBase.PLAYER_DOWNED_HUD)
 end
+
 function IngameIncapacitatedState:at_exit()
 	local player = managers.player:player_unit()
 	if player then
@@ -48,12 +52,15 @@ function IngameIncapacitatedState:at_exit()
 	managers.hud:hide(PlayerBase.PLAYER_INFO_HUD_FULLSCREEN)
 	managers.hud:hide(PlayerBase.PLAYER_DOWNED_HUD)
 end
+
 function IngameIncapacitatedState:on_server_left()
 	IngameCleanState.on_server_left(self)
 end
+
 function IngameIncapacitatedState:on_kicked()
 	IngameCleanState.on_kicked(self)
 end
+
 function IngameIncapacitatedState:on_disconnected()
 	IngameCleanState.on_disconnected(self)
 end

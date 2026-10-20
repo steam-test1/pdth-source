@@ -1,8 +1,10 @@
 SecretAssignmentManager = SecretAssignmentManager or class()
+
 function SecretAssignmentManager:init()
 	self._enabled = true
 	self:_setup()
 end
+
 function SecretAssignmentManager:_setup()
 	self._debug = false
 	self._assignments = {}
@@ -16,9 +18,11 @@ function SecretAssignmentManager:_setup()
 	self._chance.interval_timer = self._chance.test_interval
 	self._chance.chance = 5
 end
+
 function SecretAssignmentManager:assignments()
 	return self._assignments
 end
+
 function SecretAssignmentManager:update(t, dt)
 	do return end
 	if self._current_assignment and self._current_assignment.timer then
@@ -50,9 +54,11 @@ function SecretAssignmentManager:update(t, dt)
 		end
 	end
 end
+
 function SecretAssignmentManager:set_enabled(enabled)
 	self._enabled = enabled
 end
+
 function SecretAssignmentManager:set_assignment_enabled(name, enabled)
 	if self._assignments[name] then
 		self._assignments[name].enabled = enabled
@@ -60,6 +66,7 @@ function SecretAssignmentManager:set_assignment_enabled(name, enabled)
 		Application:error("Can't set enabled state for secret assignment " .. name)
 	end
 end
+
 function SecretAssignmentManager:register_unit(unit)
 	if not unit:unit_data().secret_assignment_id then
 		return
@@ -84,6 +91,7 @@ function SecretAssignmentManager:register_unit(unit)
 		end
 	end
 end
+
 function SecretAssignmentManager:register_civilian(unit)
 	local name = "civilian_escape"
 	self._assignments[name].amount_of_units = (self._assignments[name].amount_of_units or 0) + 1
@@ -91,11 +99,13 @@ function SecretAssignmentManager:register_civilian(unit)
 	unit:unit_data().mission_element:add_event_callback("death", callback(self, self, "unregister_civilian"))
 	unit:unit_data().mission_element:add_event_callback("fled", callback(self, self, "unregister_civilian"))
 end
+
 function SecretAssignmentManager:unregister_civilian(unit)
 	local name = "civilian_escape"
 	self._assignments[name].amount_of_units = self._assignments[name].amount_of_units - 1
 	self._assignments[name].can_be_activated = self._assignments[name].amount_of_units > 0
 end
+
 function SecretAssignmentManager:unregister_unit(unit, failed)
 	if not unit:unit_data().secret_assignment_id then
 		return
@@ -124,6 +134,7 @@ function SecretAssignmentManager:unregister_unit(unit, failed)
 		end
 	end
 end
+
 function SecretAssignmentManager:interacted(name)
 	if not self._assignments[name].assigned then
 		Application:error("Assignment", name, "has not been given!")
@@ -138,10 +149,12 @@ function SecretAssignmentManager:interacted(name)
 	end
 	self:_complete_assignment(name)
 end
+
 function SecretAssignmentManager:target_killed(unit)
 	local name = unit:unit_data().secret_assignment_id
 	self._assignments[name].peer:send_queued_sync("complete_secret_assignment", name)
 end
+
 function SecretAssignmentManager:civilian_escaped()
 	if not self._has_delegated then
 		return
@@ -151,6 +164,7 @@ function SecretAssignmentManager:civilian_escaped()
 		self._assignments[name].peer:send_queued_sync("failed_secret_assignment", name)
 	end
 end
+
 function SecretAssignmentManager:complete_secret_assignment(name)
 	if not self._current_assignment then
 		Application:error("Didn't have a current secret assignment")
@@ -158,6 +172,7 @@ function SecretAssignmentManager:complete_secret_assignment(name)
 	end
 	self:_complete_assignment(name)
 end
+
 function SecretAssignmentManager:failed_secret_assignment(name)
 	if not self._current_assignment then
 		Application:error("Didn't have a current secret assignment")
@@ -165,6 +180,7 @@ function SecretAssignmentManager:failed_secret_assignment(name)
 	end
 	self:_fail_assignment(name)
 end
+
 function SecretAssignmentManager:_complete_assignment(name)
 	local data = tweak_data.secret_assignment_manager[name]
 	local title = managers.localization:text("sa_prefix_completed")
@@ -187,6 +203,7 @@ function SecretAssignmentManager:_complete_assignment(name)
 		managers.network:session():send_to_host("secret_assignment_done", name, true)
 	end
 end
+
 function SecretAssignmentManager:_fail_assignment(name)
 	local data = tweak_data.secret_assignment_manager[name]
 	local title = managers.localization:text("sa_prefix_failed")
@@ -214,11 +231,13 @@ function SecretAssignmentManager:_fail_assignment(name)
 		managers.network:session():send_to_host("secret_assignment_done", name, false)
 	end
 end
+
 function SecretAssignmentManager:secret_assignment_done(name, success)
 	self._assignments[name].completed = success
 	self._assignments[name].assigned = false
 	self._has_delegated = false
 end
+
 function SecretAssignmentManager:delegate_assignment()
 	local can_be_activated = self:_get_available_assignments()
 	if #can_be_activated == 0 then
@@ -237,6 +256,7 @@ function SecretAssignmentManager:delegate_assignment()
 	peer:send_queued_sync("assign_secret_assignment", name)
 	self._has_delegated = name
 end
+
 function SecretAssignmentManager:_get_available_assignments()
 	if managers.groupai:state():get_assault_mode() then
 		return {}
@@ -250,6 +270,7 @@ function SecretAssignmentManager:_get_available_assignments()
 	end
 	return t
 end
+
 function SecretAssignmentManager:_check_level_filter(name)
 	if not Global.level_data.level_id then
 		return true
@@ -276,6 +297,7 @@ function SecretAssignmentManager:_check_level_filter(name)
 	end
 	return true
 end
+
 function SecretAssignmentManager:_get_peer()
 	if not managers.network:game() then
 		return nil
@@ -291,6 +313,7 @@ function SecretAssignmentManager:_get_peer()
 	end
 	return nil
 end
+
 function SecretAssignmentManager:assign(name)
 	local data = tweak_data.secret_assignment_manager[name]
 	self._current_assignment = self._assignments[name]
@@ -325,6 +348,7 @@ function SecretAssignmentManager:assign(name)
 	elseif data.type == "kill" then
 	end
 end
+
 function SecretAssignmentManager:_start_interact_assignment(name)
 	self._current_assignment.units = {}
 	local counter = tweak_data.secret_assignment_manager[name].amount or 1
@@ -341,6 +365,7 @@ function SecretAssignmentManager:_start_interact_assignment(name)
 		table.insert(self._current_assignment.units, unit)
 	end
 end
+
 function SecretAssignmentManager:assignment_names()
 	local t = {}
 	for name, _ in pairs(tweak_data.secret_assignment_manager) do
@@ -349,6 +374,7 @@ function SecretAssignmentManager:assignment_names()
 	table.sort(t)
 	return t
 end
+
 function SecretAssignmentManager:reset()
 	self:_setup()
 	managers.hud:complete_secret_assignment({})

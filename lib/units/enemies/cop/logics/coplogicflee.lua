@@ -1,4 +1,5 @@
 CopLogicFlee = class(CopLogicBase)
+
 function CopLogicFlee.enter(data, new_logic_name, enter_params)
 	CopLogicBase.enter(data, new_logic_name, enter_params)
 	data.unit:brain():cancel_all_pathing_searches()
@@ -43,6 +44,7 @@ function CopLogicFlee.enter(data, new_logic_name, enter_params)
 	CopLogicBase._reset_attention(data)
 	data.unit:movement():set_stance("wnd")
 end
+
 function CopLogicFlee.exit(data, new_logic_name, enter_params)
 	CopLogicBase.exit(data, new_logic_name, enter_params)
 	local my_data = data.internal_data
@@ -64,6 +66,7 @@ function CopLogicFlee.exit(data, new_logic_name, enter_params)
 		rsrv_pos.move_dest = nil
 	end
 end
+
 function CopLogicFlee.update(data)
 	local exit_state
 	local unit = data.unit
@@ -211,6 +214,7 @@ function CopLogicFlee.update(data)
 		end
 	end
 end
+
 function CopLogicFlee._update_enemy_detection(data)
 	managers.groupai:state():on_unit_detection_updated(data.unit)
 	data.t = TimerManager:game():time()
@@ -245,6 +249,7 @@ function CopLogicFlee._update_enemy_detection(data)
 	CopLogicBase.queue_task(my_data, my_data.detection_task_key, CopLogicFlee._update_enemy_detection, data, data.t + delay)
 	CopLogicBase._report_detections(my_data.detected_enemies)
 end
+
 function CopLogicFlee._upd_shoot(data, my_data)
 	local shoot
 	local focus_enemy = my_data.focus_enemy
@@ -272,6 +277,7 @@ function CopLogicFlee._upd_shoot(data, my_data)
 	end
 	data.unit:movement():set_allow_fire(focus_enemy.verified and true or false)
 end
+
 function CopLogicFlee._update_pathing(data, my_data)
 	if data.pathing_results then
 		local path = my_data.flee_path_search_id and data.pathing_results[my_data.flee_path_search_id]
@@ -305,6 +311,7 @@ function CopLogicFlee._update_pathing(data, my_data)
 		my_data.cover_pathing = nil
 	end
 end
+
 function CopLogicFlee._update_cover_pathing(data, my_data)
 	if data.pathing_results then
 		local path = data.pathing_results[my_data.cover_path_search_id]
@@ -323,6 +330,7 @@ function CopLogicFlee._update_cover_pathing(data, my_data)
 		my_data.coarse_path_search_id = nil
 	end
 end
+
 function CopLogicFlee._chk_reaction_to_criminal(data, my_data, key_criminal, u_criminal)
 	local reaction
 	local record = managers.groupai:state():criminal_record(key_criminal)
@@ -363,6 +371,7 @@ function CopLogicFlee._chk_reaction_to_criminal(data, my_data, key_criminal, u_c
 	end
 	return reaction
 end
+
 function CopLogicFlee.action_complete_clbk(data, action)
 	local action_type = action:type()
 	if action_type == "walk" then
@@ -414,6 +423,7 @@ function CopLogicFlee.action_complete_clbk(data, action)
 		CopLogicFlee._cancel_flee_pathing(data, my_data)
 	end
 end
+
 function CopLogicFlee._update_cover(data)
 	local my_data = data.internal_data
 	local cover_release_dis = 100
@@ -457,6 +467,7 @@ function CopLogicFlee._update_cover(data)
 	local delay = want_cover and 2 or 3
 	CopLogicBase.queue_task(my_data, my_data.cover_update_task_key, CopLogicFlee._update_cover, data, data.t + delay)
 end
+
 function CopLogicFlee._cancel_cover_pathing(data, my_data)
 	if my_data.cover_pathing then
 		if data.active_searches[my_data.cover_path_search_id] then
@@ -469,6 +480,7 @@ function CopLogicFlee._cancel_cover_pathing(data, my_data)
 	end
 	my_data.cover_path = nil
 end
+
 function CopLogicFlee._cancel_flee_pathing(data, my_data)
 	if my_data.flee_path_search_id then
 		if data.active_searches[my_data.flee_path_search_id] then
@@ -489,38 +501,49 @@ function CopLogicFlee._cancel_flee_pathing(data, my_data)
 		my_data.coarse_path_search_id = nil
 	end
 end
+
 function CopLogicFlee.damage_clbk(data, damage_info)
 	CopLogicIdle.damage_clbk(data, damage_info)
 end
+
 function CopLogicFlee.death_clbk(data, damage_info)
 	CopLogicAttack.death_clbk(data, damage_info)
 end
+
 function CopLogicFlee.can_deactivate(data)
 	return false
 end
+
 function CopLogicFlee.on_detected_enemy_destroyed(data, enemy_unit)
 	CopLogicAttack.on_detected_enemy_destroyed(data, enemy_unit)
 end
+
 function CopLogicFlee.on_criminal_neutralized(data, criminal_key)
 	CopLogicAttack.on_criminal_neutralized(data, criminal_key)
 end
+
 function CopLogicFlee.is_available_for_assignment(data)
 	return false
 end
+
 function CopLogicFlee.on_alert(...)
 	CopLogicIdle.on_alert(...)
 end
+
 function CopLogicFlee._flee_coarse_path_verify_clbk(shait, data, nav_seg)
 	return managers.groupai:state():is_area_safe(nav_seg)
 end
+
 function CopLogicFlee.on_intimidated(data, amount, aggressor_unit)
 	CopLogicIdle._surrender(data, amount)
 end
+
 function CopLogicFlee._get_all_paths(data)
 	return {
 		flee_path = data.internal_data.flee_path
 	}
 end
+
 function CopLogicFlee._set_verified_paths(data, verified_paths)
 	data.internal_data.flee_path = verified_paths.flee_path
 end

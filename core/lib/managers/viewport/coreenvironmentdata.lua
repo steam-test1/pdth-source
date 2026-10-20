@@ -1,6 +1,7 @@
 core:module("CoreEnvironmentData")
 core:import("CoreClass")
 EnvironmentData = EnvironmentData or CoreClass.class()
+
 function EnvironmentData:init(entry_path)
 	self._entry_path = entry_path
 	self._metadata = {}
@@ -9,6 +10,7 @@ function EnvironmentData:init(entry_path)
 		self:load(entry_path)
 	end
 end
+
 function EnvironmentData:load(entry_path)
 	self._metadata = {}
 	self._data = {}
@@ -21,9 +23,11 @@ function EnvironmentData:load(entry_path)
 	self:_serialized_load_data(env_data.data, self._data)
 	return
 end
+
 function EnvironmentData:name()
 	return self._entry_path
 end
+
 function EnvironmentData:copy()
 	local data = EnvironmentData:new()
 	data._entry_path = self._entry_path
@@ -32,21 +36,27 @@ function EnvironmentData:copy()
 	end)
 	return data
 end
+
 function EnvironmentData:for_each(cb)
 	self:_for_each(cb, self._data, {})
 end
+
 function EnvironmentData:parameter_block(...)
 	return self:_get(self._data, ...)
 end
+
 function EnvironmentData:set_parameter_block(block_data, ...)
 	self:_set(false, self._data, block_data, ...)
 end
+
 function EnvironmentData:data_root()
 	return self._data
 end
+
 function EnvironmentData:metadata()
 	return self._metadata
 end
+
 function EnvironmentData:_serialize_to_script(type, name)
 	if Application:editor() then
 		return PackageManager:editor_load_script_data(type:id(), name:id())
@@ -54,6 +64,7 @@ function EnvironmentData:_serialize_to_script(type, name)
 		return PackageManager:script_data(type:id(), name:id())
 	end
 end
+
 function EnvironmentData:_for_each(cb, data, path)
 	for k, v in pairs(data) do
 		local t = {
@@ -74,6 +85,7 @@ function EnvironmentData:_for_each(cb, data, path)
 		end
 	end
 end
+
 function EnvironmentData:_get(data, ...)
 	local args = {
 		...
@@ -86,6 +98,7 @@ function EnvironmentData:_get(data, ...)
 	end
 	error("[EnvironmentData] Bad path!")
 end
+
 function EnvironmentData:_set(create_new, data, block, ...)
 	local args = {
 		...
@@ -106,6 +119,7 @@ function EnvironmentData:_set(create_new, data, block, ...)
 	end
 	error("[EnvironmentData] Bad path!")
 end
+
 function EnvironmentData:_serialized_load_data(data, data_table)
 	for _, d in ipairs(data) do
 		if d._meta == "param" then

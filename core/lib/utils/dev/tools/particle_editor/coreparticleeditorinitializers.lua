@@ -1,4 +1,5 @@
 CoreParticleEditorInitializers = CoreParticleEditorInitializers or class()
+
 function CoreParticleEditorInitializers:create_boxrandomposition()
 	local initializer = CoreEffectStackMember:new("boxrandomposition", "initializer", "Position (Box Random)")
 	initializer:set_description("Initializes particle positions randomly within a given box.")
@@ -20,6 +21,7 @@ Coordinates are in centimeters.]]
 	initializer:add_property(p)
 	return initializer
 end
+
 function CoreParticleEditorInitializers:create_boxrandomvelocity()
 	local initializer = CoreEffectStackMember:new("boxrandomvelocity", "initializer", "Velocity (Box Random)")
 	initializer:set_description("Initializes particle velocities randomly within a given box.")
@@ -41,6 +43,7 @@ Coordinates are in centimeters per second and relative to effect spawn point and
 	initializer:add_property(p)
 	return initializer
 end
+
 function CoreParticleEditorInitializers:create_centervelocity()
 	local initializer = CoreEffectStackMember:new("centervelocity", "initializer", "Velocity (To/From Center)")
 	initializer:set_description("Initializes particle velocities with a vector pointing to/from a point in space.")
@@ -67,6 +70,7 @@ world - world position]]
 	initializer:add_property(p)
 	return initializer
 end
+
 function CoreParticleEditorInitializers:create_boxevenposition()
 	local initializer = CoreEffectStackMember:new("boxevenposition", "initializer", "Position (Box Even Distribution)")
 	initializer:set_description([[
@@ -90,11 +94,13 @@ Coordinates are in centimeters and relative to effect spawn point and rotation.]
 	initializer:add_property(p)
 	return initializer
 end
+
 function CoreParticleEditorInitializers:create_trail()
 	local initializer = CoreEffectStackMember:new("trail", "initializer", "Trail")
 	initializer:add_property(CoreEffectProperty:new("size", "int", "3", "Number of segments in trail"))
 	return initializer
 end
+
 function CoreParticleEditorInitializers:create_boxrandomrotation()
 	local initializer = CoreEffectStackMember:new("boxrandomrotation", "initializer", "Rotation (Box Random)")
 	initializer:set_description("Initializes particle rotations to random values, with the normal within a specified box and a random angle around the normal.")
@@ -114,6 +120,7 @@ world - Rotations are not rotated (and output to ROTATION channel)]]
 	initializer:add_property(CoreEffectProperty:new("max_rot", "float", "365", "Max angle around normal"))
 	return initializer
 end
+
 function CoreParticleEditorInitializers:create_constantage()
 	local initializer = CoreEffectStackMember:new("constantage", "initializer", "Age (Constant)")
 	initializer:set_description([[
@@ -124,6 +131,7 @@ effect surface type effects.]])
 	initializer:add_property(CoreEffectProperty:new("age", "time", "99999", help))
 	return initializer
 end
+
 function CoreParticleEditorInitializers:create_boxrandomage()
 	local initializer = CoreEffectStackMember:new("boxrandomage", "initializer", "Age (Box Random)")
 	initializer:set_description("Initializes particle ages within specified range.")
@@ -131,6 +139,7 @@ function CoreParticleEditorInitializers:create_boxrandomage()
 	initializer:add_property(CoreEffectProperty:new("max", "time", "1", "Upper bound of time value"))
 	return initializer
 end
+
 function CoreParticleEditorInitializers:create_boxrandomcolor()
 	local initializer = CoreEffectStackMember:new("boxrandomcolor", "initializer", "Color (Box Random)")
 	initializer:set_description("Initializes particle colors within a range of colors.")
@@ -140,6 +149,7 @@ function CoreParticleEditorInitializers:create_boxrandomcolor()
 	initializer:add_property(CoreEffectProperty:new("max", "color", "255 255 255", help))
 	return initializer
 end
+
 function CoreParticleEditorInitializers:create_boxrandomcolorgradient()
 	local initializer = CoreEffectStackMember:new("boxrandomcolorgradient", "initializer", "Color (Box Random Gradient)")
 	initializer:set_description("Initializes particle colors with a base color and randomized gradients of this color.")
@@ -151,6 +161,7 @@ function CoreParticleEditorInitializers:create_boxrandomcolorgradient()
 	initializer:add_property(CoreEffectProperty:new("max", "percentage", "1", help))
 	return initializer
 end
+
 function CoreParticleEditorInitializers:create_localboxrandomposition()
 	local initializer = CoreEffectStackMember:new("localboxrandomposition", "initializer", "Local Position (Box Random)")
 	initializer:set_description([[
@@ -162,6 +173,7 @@ The positions are written to the local position channel, and are not transformed
 	initializer:add_property(p)
 	return initializer
 end
+
 function CoreParticleEditorInitializers:create_boxrandomangle()
 	local initializer = CoreEffectStackMember:new("boxrandomangle", "initializer", "Angle (Box Random)")
 	initializer:set_description("Initializes angles randomly using a box distribution.")
@@ -171,6 +183,7 @@ function CoreParticleEditorInitializers:create_boxrandomangle()
 	initializer:add_property(CoreEffectProperty:new("max", "float", "360", help))
 	return initializer
 end
+
 function CoreParticleEditorInitializers:create_boxrandomanglevelocity()
 	local initializer = CoreEffectStackMember:new("boxrandomanglevelocity", "initializer", "Angle Velocity (Box Random)")
 	initializer:set_description("Initializes angle velocities randomly using a box distribution.")
@@ -180,6 +193,7 @@ function CoreParticleEditorInitializers:create_boxrandomanglevelocity()
 	initializer:add_property(CoreEffectProperty:new("max", "float", "-180", help))
 	return initializer
 end
+
 function CoreParticleEditorInitializers:create_boxrandomopacity()
 	local initializer = CoreEffectStackMember:new("boxrandomopacity", "initializer", "Opacity (Box Random)")
 	initializer:set_description("Initializes opacities randomly using a box distribution.")
@@ -189,6 +203,7 @@ function CoreParticleEditorInitializers:create_boxrandomopacity()
 	initializer:add_property(CoreEffectProperty:new("max", "opacity", "255", help))
 	return initializer
 end
+
 function CoreParticleEditorInitializers:create_boxrandomsize()
 	local initializer = CoreEffectStackMember:new("boxrandomsize", "initializer", "Size (Box Random)")
 	initializer:set_description("Initializes sizes randomly using a box distribution.")
@@ -198,6 +213,7 @@ function CoreParticleEditorInitializers:create_boxrandomsize()
 	initializer:add_property(CoreEffectProperty:new("max", "vector2", "200 200", help))
 	return initializer
 end
+
 function CoreParticleEditorInitializers:create_boxrandomaspectsize()
 	local initializer = CoreEffectStackMember:new("boxrandomaspectsize", "initializer", "Size (Box Random Aspect)")
 	initializer:set_description("Initializes sizes randomly with a certain aspect using a box distribution.")
@@ -209,6 +225,7 @@ function CoreParticleEditorInitializers:create_boxrandomaspectsize()
 	initializer:add_property(CoreEffectProperty:new("max", "float", "1.5", help))
 	return initializer
 end
+
 function CoreParticleEditorInitializers:create_boxrandomuvoffset()
 	local initializer = CoreEffectStackMember:new("boxrandomuvoffset", "initializer", "UV Offset (Box Random Frame)")
 	initializer:set_description("Initializes uv offsets randomly between frames in a texture.")
@@ -219,6 +236,7 @@ function CoreParticleEditorInitializers:create_boxrandomuvoffset()
 	initializer:add_property(CoreEffectProperty:new("num_frames", "int", "16", "Number of frames contained in texture"))
 	return initializer
 end
+
 function CoreParticleEditorInitializers:create_worldtransform()
 	local initializer = CoreEffectStackMember:new("worldtransform", "initializer", "Local -> World Transform")
 	initializer:set_description("Transforms local positions (and optionally rotations) to world coordinates.")
@@ -226,6 +244,7 @@ function CoreParticleEditorInitializers:create_worldtransform()
 	initializer:add_property(CoreEffectProperty:new("transform_rotations", "boolean", "false", help))
 	return initializer
 end
+
 function CoreParticleEditorInitializers:create_lightcone()
 	local initializer = CoreEffectStackMember:new("lightcone", "initializer", "Light Cone")
 	initializer:set_description([[

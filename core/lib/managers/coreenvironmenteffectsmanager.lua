@@ -1,24 +1,29 @@
 core:module("CoreEnvironmentEffectsManager")
 core:import("CoreTable")
 EnvironmentEffectsManager = EnvironmentEffectsManager or class()
+
 function EnvironmentEffectsManager:init()
 	self._effects = {}
 	self._current_effects = {}
 	self._mission_effects = {}
 	self._repeat_mission_effects = {}
 end
+
 function EnvironmentEffectsManager:add_effect(name, effect)
 	self._effects[name] = effect
 	if effect:default() then
 		self:use(name)
 	end
 end
+
 function EnvironmentEffectsManager:effect(name)
 	return self._effects[name]
 end
+
 function EnvironmentEffectsManager:effects()
 	return self._effects
 end
+
 function EnvironmentEffectsManager:effects_names()
 	local t = {}
 	for name, effect in pairs(self._effects) do
@@ -29,6 +34,7 @@ function EnvironmentEffectsManager:effects_names()
 	table.sort(t)
 	return t
 end
+
 function EnvironmentEffectsManager:use(effect)
 	if self._effects[effect] then
 		if not table.contains(self._current_effects, self._effects[effect]) then
@@ -40,23 +46,27 @@ function EnvironmentEffectsManager:use(effect)
 		Application:error("No effect named, " .. effect .. " availible to use")
 	end
 end
+
 function EnvironmentEffectsManager:load_effects(effect)
 	if self._effects[effect] then
 		self._effects[effect]:load_effects()
 	end
 end
+
 function EnvironmentEffectsManager:stop(effect)
 	if self._effects[effect] then
 		self._effects[effect]:stop()
 		table.delete(self._current_effects, self._effects[effect])
 	end
 end
+
 function EnvironmentEffectsManager:stop_all()
 	for _, effect in ipairs(self._current_effects) do
 		effect:stop()
 	end
 	self._current_effects = {}
 end
+
 function EnvironmentEffectsManager:update(t, dt)
 	for _, effect in ipairs(self._current_effects) do
 		effect:update(t, dt)
@@ -75,10 +85,12 @@ function EnvironmentEffectsManager:update(t, dt)
 		end
 	end
 end
+
 function EnvironmentEffectsManager:gravity_and_wind_dir()
 	local wind_importance = 0.5
 	return Vector3(0, 0, -982) + Wind:wind_at(Vector3()) * wind_importance
 end
+
 function EnvironmentEffectsManager:spawn_mission_effect(name, params)
 	if params.base_time > 0 or 0 < params.random_time then
 		if self._repeat_mission_effects[name] then
@@ -93,6 +105,7 @@ function EnvironmentEffectsManager:spawn_mission_effect(name, params)
 	self._mission_effects[name] = self._mission_effects[name] or {}
 	table.insert(self._mission_effects[name], params)
 end
+
 function EnvironmentEffectsManager:kill_all_mission_effects()
 	for _, params in pairs(self._repeat_mission_effects) do
 		if params.effect_id then
@@ -107,12 +120,15 @@ function EnvironmentEffectsManager:kill_all_mission_effects()
 	end
 	self._mission_effects = {}
 end
+
 function EnvironmentEffectsManager:kill_mission_effect(name)
 	self:_kill_mission_effect(name, "kill")
 end
+
 function EnvironmentEffectsManager:fade_kill_mission_effect(name)
 	self:_kill_mission_effect(name, "fade_kill")
 end
+
 function EnvironmentEffectsManager:_kill_mission_effect(name, type)
 	local kill = callback(World:effect_manager(), World:effect_manager(), type)
 	local params = self._repeat_mission_effects[name]
@@ -132,6 +148,7 @@ function EnvironmentEffectsManager:_kill_mission_effect(name, type)
 	end
 	self._mission_effects[name] = nil
 end
+
 function EnvironmentEffectsManager:save(data)
 	local state = {
 		mission_effects = {}
@@ -146,6 +163,7 @@ function EnvironmentEffectsManager:save(data)
 	end
 	data.EnvironmentEffectsManager = state
 end
+
 function EnvironmentEffectsManager:load(data)
 	local state = data.EnvironmentEffectsManager
 	for name, effects in pairs(state.mission_effects) do
@@ -154,18 +172,25 @@ function EnvironmentEffectsManager:load(data)
 		end
 	end
 end
+
 EnvironmentEffect = EnvironmentEffect or class()
+
 function EnvironmentEffect:init(default)
 	self._default = default
 end
+
 function EnvironmentEffect:load_effects()
 end
+
 function EnvironmentEffect:update(t, dt)
 end
+
 function EnvironmentEffect:start()
 end
+
 function EnvironmentEffect:stop()
 end
+
 function EnvironmentEffect:default()
 	return self._default
 end

@@ -4,9 +4,11 @@ require("core/lib/managers/cutscene/CoreCutsceneCast")
 require("core/lib/managers/cutscene/CoreCutscenePlayer")
 require("core/lib/managers/cutscene/CoreCutsceneActorDatabase")
 CoreCutsceneManager = CoreCutsceneManager or mixin(class(), BasicEventHandling)
+
 function CoreCutsceneManager:cutscene_actor_unit_type(original_unit_type)
 	return Global.__CutsceneManager__replaced_actor_unit_types and Global.__CutsceneManager__replaced_actor_unit_types[original_unit_type] or original_unit_type
 end
+
 function CoreCutsceneManager:replace_cutscene_actor_unit_type(original_unit_type, replacement_unit_type)
 	assert(DB:has("unit", original_unit_type), string.format("Unrecognized Unit \"%s\".", original_unit_type:t()))
 	assert(replacement_unit_type == nil or DB:has("unit", replacement_unit_type), string.format("Unrecognized Unit \"%s\".", (replacement_unit_type or ""):t()))
@@ -18,6 +20,7 @@ function CoreCutsceneManager:replace_cutscene_actor_unit_type(original_unit_type
 	end
 	Global.__CutsceneManager__replaced_actor_unit_types[original_unit_type] = replacement_unit_type
 end
+
 function CoreCutsceneManager:init()
 	managers.listener:add_set("cutscene", {"cutscene"})
 	self._timer = TimerManager:game_animation()
@@ -26,9 +29,11 @@ function CoreCutsceneManager:init()
 	self._gui_workspace = self:_create_gui_workspace()
 	self._video_workspace = self:_create_video_workspace()
 end
+
 function CoreCutsceneManager:post_init()
 	self:_prime_cutscenes_in_world()
 end
+
 function CoreCutsceneManager:destroy()
 	if self._player then
 		self._player:destroy()
@@ -49,9 +54,11 @@ function CoreCutsceneManager:destroy()
 	end
 	managers.listener:remove_set("cutscene")
 end
+
 function CoreCutsceneManager:timer()
 	return self._timer
 end
+
 function CoreCutsceneManager:set_timer(timer)
 	self._timer = assert(timer, "Must supply a timer.")
 	if self._player then
@@ -64,10 +71,12 @@ function CoreCutsceneManager:set_timer(timer)
 		self:video_workspace():set_timer(self._timer)
 	end
 end
+
 function CoreCutsceneManager:register_unit_with_cutscene_data_extension(unit)
 	self._units_with_cutscene_data_extension = self._units_with_cutscene_data_extension or {}
 	table.insert(self._units_with_cutscene_data_extension, unit)
 end
+
 function CoreCutsceneManager:unregister_unit_with_cutscene_data_extension(unit)
 	if self._units_with_cutscene_data_extension then
 		table.delete(self._units_with_cutscene_data_extension, unit)
@@ -76,6 +85,7 @@ function CoreCutsceneManager:unregister_unit_with_cutscene_data_extension(unit)
 		end
 	end
 end
+
 function CoreCutsceneManager:_prime_cutscenes_in_world()
 	for _, unit in ipairs(self._units_with_cutscene_data_extension or {}) do
 		if alive(unit) then
@@ -85,6 +95,7 @@ function CoreCutsceneManager:_prime_cutscenes_in_world()
 		end
 	end
 end
+
 function CoreCutsceneManager:_destroy_units_with_cutscene_data_extension()
 	local units_to_destroy = table.list_copy(self._units_with_cutscene_data_extension or {})
 	for _, unit in ipairs(units_to_destroy) do
@@ -96,6 +107,7 @@ function CoreCutsceneManager:_destroy_units_with_cutscene_data_extension()
 	end
 	assert(self._units_with_cutscene_data_extension == nil, "Not all units with the CutsceneData extension were destroyed.")
 end
+
 function CoreCutsceneManager:register_cutscene_actor(unit)
 	assert(alive(unit), "Zombie unit registered as cutscene actor.")
 	local actor_name = unit.unit_data and unit:unit_data().cutscene_actor
@@ -109,6 +121,7 @@ function CoreCutsceneManager:register_cutscene_actor(unit)
 	self._cutscene_actors[actor_name] = unit
 	return true
 end
+
 function CoreCutsceneManager:unregister_cutscene_actor(unit)
 	assert(alive(unit), "Zombie unit unregistered as cutscene actor.")
 	local actor_name = unit.unit_data and unit:unit_data().cutscene_actor
@@ -123,6 +136,7 @@ function CoreCutsceneManager:unregister_cutscene_actor(unit)
 	end
 	return true
 end
+
 function CoreCutsceneManager:cutscene_actors_in_world()
 	if self._cutscene_actors == nil then
 		return {}
@@ -135,16 +149,20 @@ function CoreCutsceneManager:cutscene_actors_in_world()
 	end
 	return self._cutscene_actors
 end
+
 function CoreCutsceneManager:actor_database()
 	return self._actor_database
 end
+
 function CoreCutsceneManager:debug_next_exec(scene_name)
 	self:delay_cutscene_debug()
 	Global.debug_cutscene = scene_name
 end
+
 function CoreCutsceneManager:delay_cutscene_debug()
 	self._delay_cutscene_debug = true
 end
+
 function CoreCutsceneManager:start_delayed_cutscene()
 	local debug_scene = Global.debug_cutscene or arg_value("-debugcs")
 	if not self._delay_cutscene_debug and debug_scene then
@@ -160,6 +178,7 @@ function CoreCutsceneManager:start_delayed_cutscene()
 		end)
 	end
 end
+
 function CoreCutsceneManager:update()
 	do return end
 	local time = self._timer:time()
@@ -194,15 +213,18 @@ function CoreCutsceneManager:update()
 		end
 	end
 end
+
 function CoreCutsceneManager:paused_update()
 	self:update()
 end
+
 function CoreCutsceneManager:play_overlay_effect(effect_data)
 	self:stop_overlay_effect()
 	effect_data.play_paused = true
 	effect_data.timer = self:timer()
 	self.__overlay_effect_id = managers.overlay_effect:play_effect(effect_data)
 end
+
 function CoreCutsceneManager:stop_overlay_effect(fade_out)
 	if self.__overlay_effect_id then
 		assert(fade_out == nil or type(fade_out) == "boolean")
@@ -210,28 +232,35 @@ function CoreCutsceneManager:stop_overlay_effect(fade_out)
 		self.__overlay_effect_id = nil
 	end
 end
+
 function CoreCutsceneManager:_create_gui_workspace()
 	return nil
 end
+
 function CoreCutsceneManager:_create_video_workspace()
 	local res = RenderSettings.resolution
 	local workspace = Overlay:newgui():create_scaled_screen_workspace(res.x, res.x / managers.viewport:aspect_ratio(), 0, 0, res.x, res.y)
 	workspace:set_timer(self._timer)
 	return workspace
 end
+
 function CoreCutsceneManager:input_controller()
 	return self._input_controller
 end
+
 function CoreCutsceneManager:gui_workspace()
 	return self._gui_workspace
 end
+
 function CoreCutsceneManager:video_workspace()
 	return self._video_workspace
 end
+
 function CoreCutsceneManager:_video()
 	local panel = self:video_workspace():panel()
 	return panel:num_children() > 1 and panel:child(1) or nil
 end
+
 function CoreCutsceneManager:set_gui_visible(visible)
 	local gui_workspace = self:gui_workspace() or responder(visible)
 	if gui_workspace:visible() ~= visible then
@@ -240,9 +269,11 @@ function CoreCutsceneManager:set_gui_visible(visible)
 	local input_controller = self:input_controller()
 	input_controller[visible and "enable" or "disable"](input_controller)
 end
+
 function CoreCutsceneManager:get_cutscene_names()
 	return managers.database:list_entries_of_type("cutscene")
 end
+
 function CoreCutsceneManager:prime(name, time)
 	time = time or 0
 	local cutscene = self:get_cutscene(name)
@@ -254,6 +285,7 @@ function CoreCutsceneManager:prime(name, time)
 	end
 	self._player:seek(time, true)
 end
+
 function CoreCutsceneManager:_player_for_cutscene(cutscene)
 	local orientation_unit = cutscene:find_spawned_orientation_unit()
 	local cutscene_data = orientation_unit and orientation_unit.cutscene_data and orientation_unit:cutscene_data()
@@ -265,12 +297,14 @@ function CoreCutsceneManager:_player_for_cutscene(cutscene)
 		return player
 	end
 end
+
 function CoreCutsceneManager:play_cutscene(name)
 	if not self._manager_locked then
 		self:prime(name)
 		self:play()
 	end
 end
+
 function CoreCutsceneManager:play()
 	if self._player ~= nil and not self._player:is_playing() then
 		if not self._is_overriding_user_music then
@@ -281,18 +315,21 @@ function CoreCutsceneManager:play()
 		self._start_playback = true
 	end
 end
+
 function CoreCutsceneManager:stop(disable_events)
 	self._start_playback = nil
 	self._stop_playback = true
 	self._paused = nil
 	self._disable_events = disable_events
 end
+
 function CoreCutsceneManager:skip()
 	if self._player then
 		self._player:skip_to_end()
 	end
 	self:stop(false)
 end
+
 function CoreCutsceneManager:_cleanup(called_from_prime)
 	if self._is_overriding_user_music then
 		managers.music:override_user_music(false)
@@ -319,6 +356,7 @@ function CoreCutsceneManager:_cleanup(called_from_prime)
 		self:_on_playback_finished(playing_cutscene_name)
 	end
 end
+
 function CoreCutsceneManager:pause()
 	self._paused = true
 	if self:is_playing() then
@@ -330,33 +368,41 @@ function CoreCutsceneManager:pause()
 		self:_send_event("EVT_PLAYBACK_PAUSED", self._player:cutscene_name())
 	end
 end
+
 function CoreCutsceneManager:resume()
 	if self:is_paused() then
 		self._paused = nil
 		self:play()
 	end
 end
+
 function CoreCutsceneManager:evaluate_at_time(name, time)
 	self:prime(name, time)
 	self._player:evaluate_current_frame()
 end
+
 function CoreCutsceneManager:evaluate_at_frame(name, frame)
 	self:evaluate_at_time(name, frame / self:get_cutscene(name):frames_per_second())
 end
+
 function CoreCutsceneManager:is_playing_cutscene(name)
 	return self:is_playing() and self._player:cutscene_name() == name
 end
+
 function CoreCutsceneManager:is_playing()
 	return self._player ~= nil and self._player:is_playing() or self:_video() ~= nil
 end
+
 function CoreCutsceneManager:is_paused()
 	return self._paused ~= nil
 end
+
 function CoreCutsceneManager:add_playing_changed_callback(object, func_or_name)
 	local func = type(func_or_name) == "string" and callback(object, object, func_or_name) or func_or_name
 	self:connect("EVT_PLAYBACK_STARTED", func, true)
 	self:connect("EVT_PLAYBACK_FINISHED", func, false)
 end
+
 function CoreCutsceneManager:get_cutscene(name)
 	local cutscene = self._cutscenes and self._cutscenes[name]
 	if cutscene == nil then
@@ -372,10 +418,13 @@ function CoreCutsceneManager:get_cutscene(name)
 	end
 	return cutscene
 end
+
 function CoreCutsceneManager:_on_playback_started(cutscene_name)
 end
+
 function CoreCutsceneManager:_on_playback_finished(cutscene_name)
 end
+
 function CoreCutsceneManager:_debug_persistent_keys_per_cutscene()
 	local persistent_keys_per_cutscene = {}
 	for _, name in ipairs(self:get_cutscene_names()) do
@@ -385,6 +434,7 @@ function CoreCutsceneManager:_debug_persistent_keys_per_cutscene()
 	end
 	return persistent_keys_per_cutscene
 end
+
 function CoreCutsceneManager:_debug_persistent_keys_report()
 	local output_string = "Persistent Cutscene Keys Report\n"
 	output_string = output_string .. "-------------------------------\n"
@@ -398,6 +448,7 @@ function CoreCutsceneManager:_debug_persistent_keys_report()
 	end
 	return output_string
 end
+
 function CoreCutsceneManager:_debug_dump_persistent_keys_report(path)
 	if path then
 		local file = SystemFS:open(path, "w")
@@ -409,55 +460,72 @@ function CoreCutsceneManager:_debug_dump_persistent_keys_report(path)
 		cat_print("debug", self:_debug_persistent_keys_report())
 	end
 end
+
 function CoreCutsceneManager:set_active_camera()
 	error("CoreCutsceneManager:set_active_camera() is deprecated. The camera is now kept in CoreCutscenePlayer, but is not exposed here.")
 end
+
 function CoreCutsceneManager:attempt_switch_to_active_camera()
 	error("CoreCutsceneManager:attempt_switch_to_active_camera() is deprecated. The camera is now kept in CoreCutscenePlayer, but is not exposed here.")
 end
+
 function CoreCutsceneManager:set_cutscene_camera_enabled()
 	error("CoreCutsceneManager:set_cutscene_camera_enabled() is deprecated. The camera is now kept in CoreCutscenePlayer, but is not exposed here.")
 end
+
 function CoreCutsceneManager:set_listener_enabled()
 	error("CoreCutsceneManager:set_listener_enabled() is deprecated. The listener is now kept in CoreCutscenePlayer, but is not exposed here.")
 end
+
 function CoreCutsceneManager:set_camera_attribute()
 	error("CoreCutsceneManager:set_camera_attribute() is deprecated. The camera is now kept in CoreCutscenePlayer, but is not exposed here.")
 end
+
 function CoreCutsceneManager:play_camera_shake()
 	error("CoreCutsceneManager:play_camera_shake() is deprecated. The camera is now kept in CoreCutscenePlayer, but is not exposed here.")
 end
+
 function CoreCutsceneManager:load()
 	Application:stack_dump_error("CoreCutsceneManager:load() is deprecated. There is no need to call it.")
 end
+
 function CoreCutsceneManager:save()
 	error("CoreCutsceneManager:save() is deprecated. The new Cutscene Editor uses CoreCutsceneEditorProjects.")
 end
+
 function CoreCutsceneManager:save_all()
 	error("CoreCutsceneManager:save_all() is deprecated. The new Cutscene Editor uses CoreCutsceneEditorProjects.")
 end
+
 function CoreCutsceneManager:pre_load_cutscene_units()
 	Application:stack_dump_error("CoreCutsceneManager:pre_load_cutscene_units() is deprecated. There is no need to call it.")
 end
+
 function CoreCutsceneManager:internal_load()
 	Application:stack_dump_error("CoreCutsceneManager:internal_load() is deprecated. There is no need to call it.")
 end
+
 function CoreCutsceneManager:stop_cutscene()
 	Application:stack_dump_error("CoreCutsceneManager:stop_cutscene() is deprecated. Use CoreCutsceneManager:stop() instead.")
 	self:stop()
 end
+
 function CoreCutsceneManager:set_stop_at_end()
 	Application:stack_dump_error("CoreCutsceneManager:set_stop_at_end() is deprecated. There is no need to call it.")
 end
+
 function CoreCutsceneManager:get_current_frame_nr()
 	error("CoreCutsceneManager:get_current_frame_nr() is deprecated. The playhead state is kept in CoreCutscenePlayer, but is not exposed here.")
 end
+
 function CoreCutsceneManager:get_frame_count()
 	error("CoreCutsceneManager:get_frame_count() is deprecated. The frame count is part of the CoreCutscene, but is not exposed here.")
 end
+
 function CoreCutsceneManager:move_to_frame()
 	error("CoreCutsceneManager:move_to_frame() is deprecated. The playhead state is kept in CoreCutscenePlayer, but is not exposed here.")
 end
+
 function CoreCutsceneManager:evaluate_current_frame()
 	error("CoreCutsceneManager:evaluate_current_frame() is deprecated. The playhead state is kept in CoreCutscenePlayer, but is not exposed here.")
 end

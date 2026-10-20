@@ -1,4 +1,5 @@
 WaypointUnitElement = WaypointUnitElement or class(MissionElement)
+
 function WaypointUnitElement:init(unit)
 	WaypointUnitElement.super.init(self, unit)
 	self:_add_wp_options()
@@ -34,6 +35,7 @@ function WaypointUnitElement:init(unit)
 	table.insert(self._save_values, "icon")
 	table.insert(self._save_values, "text_id")
 end
+
 function WaypointUnitElement:_add_wp_options()
 	self._text_options = {"debug_none"}
 	for _, id_string in ipairs(managers.localization:ids("strings/system_text")) do
@@ -43,9 +45,11 @@ function WaypointUnitElement:_add_wp_options()
 		end
 	end
 end
+
 function WaypointUnitElement:set_text()
 	self._text:set_value(managers.localization:text(self._hed.text_id))
 end
+
 function WaypointUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

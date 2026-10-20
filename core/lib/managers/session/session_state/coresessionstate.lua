@@ -7,6 +7,7 @@ core:import("CoreSessionStateInit")
 core:import("CoreSessionInfo")
 core:import("CoreSessionGenericState")
 SessionState = SessionState or class(CoreSessionGenericState.State)
+
 function SessionState:init(factory, player_slots, game_state)
 	self._factory = factory
 	self._session_creator = CorePortableSessionCreator.Creator:new(self)
@@ -19,24 +20,31 @@ function SessionState:init(factory, player_slots, game_state)
 	self._session_info = CoreSessionInfo.Info:new()
 	self:_set_stable_for_loading()
 end
+
 function SessionState:transition()
 	self._state:transition()
 end
+
 function SessionState:player_slots()
 	return self._player_slots
 end
+
 function SessionState:join_standard_session()
 	self._join_session_requester:request()
 end
+
 function SessionState:start_session()
 	self._state:state():start_session()
 end
+
 function SessionState:quit_session()
 	self._quit_session_requester:request()
 end
+
 function SessionState:end_session()
 	self._state:state():end_session()
 end
+
 function SessionState:session_info()
 	return self._session_info
 end

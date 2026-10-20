@@ -1,4 +1,5 @@
 ObjectiveUnitElement = ObjectiveUnitElement or class(MissionElement)
+
 function ObjectiveUnitElement:init(unit)
 	ObjectiveUnitElement.super.init(self, unit)
 	self._hed.state = "activate"
@@ -8,12 +9,14 @@ function ObjectiveUnitElement:init(unit)
 	table.insert(self._save_values, "objective")
 	table.insert(self._save_values, "sub_objective")
 end
+
 function ObjectiveUnitElement:update_sub_objectives()
 	local sub_objectives = managers.objectives:sub_objectives_by_name(self._hed.objective)
 	self._hed.sub_objective = "none"
 	CoreEws.update_combobox_options(self._sub_objective_params, sub_objectives)
 	CoreEws.change_combobox_value(self._sub_objective_params, self._hed.sub_objective)
 end
+
 function ObjectiveUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

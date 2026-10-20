@@ -1,11 +1,14 @@
 core:import("CoreMissionScriptElement")
 ElementFakeAssaultState = ElementFakeAssaultState or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementFakeAssaultState:init(...)
 	ElementFakeAssaultState.super.init(self, ...)
 end
+
 function ElementFakeAssaultState:client_on_executed(...)
 	self:on_executed(...)
 end
+
 function ElementFakeAssaultState:on_executed(instigator)
 	if not self._values.enabled then
 		return

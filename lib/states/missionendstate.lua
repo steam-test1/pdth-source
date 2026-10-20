@@ -2,6 +2,7 @@ require("lib/states/GameState")
 MissionEndState = MissionEndState or class(GameState)
 MissionEndState.GUI_FULLSCREEN = Idstring("guis/victoryscreen/victoryscreen_fullscreen")
 MissionEndState.GUI_SAFERECT = Idstring("guis/victoryscreen/victoryscreen_saferect")
+
 function MissionEndState:init(name, game_state_machine, setup)
 	GameState.init(self, name, game_state_machine)
 	if managers.hud then
@@ -12,6 +13,7 @@ function MissionEndState:init(name, game_state_machine, setup)
 	self._continue_cb = callback(self, self, "_continue")
 	self._controller = nil
 end
+
 function MissionEndState:setup_controller()
 	if not self._controller then
 		self._controller = managers.controller:create_controller("victoryscreen", managers.controller:get_default_wrapper_index(), false)
@@ -20,11 +22,13 @@ function MissionEndState:setup_controller()
 	local enabled = not managers.menu:active_menu()
 	self._controller:set_enabled(enabled)
 end
+
 function MissionEndState:set_controller_enabled(enabled)
 	if self._controller then
 		self._controller:set_enabled(enabled)
 	end
 end
+
 function MissionEndState:at_enter(old_state, params)
 	managers.platform:set_presence("Mission_end")
 	managers.hud:remove_updator("point_of_no_return")
@@ -136,12 +140,14 @@ function MissionEndState:at_enter(old_state, params)
 		managers.network:session():set_state("game_end")
 	end
 end
+
 function MissionEndState:_set_continue_button_text()
 	local text = string.upper(managers.localization:text("failed_disconnected_continue", {
 		CONTINUE = managers.localization:btn_macro("continue")
 	}))
 	managers.hud:script(self.GUI_SAFERECT):set_continue_button_text(text)
 end
+
 function MissionEndState:play_finishing_sound(success)
 	if self._server_left then
 		return
@@ -152,9 +158,11 @@ function MissionEndState:play_finishing_sound(success)
 		managers.dialog:queue_dialog(success and "hos_03" or "hos_04", {})
 	end
 end
+
 function MissionEndState:completion_bonus_done(total_xp_bonus)
 	self._total_xp_bonus = total_xp_bonus
 end
+
 function MissionEndState:at_exit(next_state)
 	managers.hud:hide(PlayerBase.XP_HUD)
 	managers.hud:hide(self.GUI_SAFERECT)
@@ -179,12 +187,14 @@ function MissionEndState:at_exit(next_state)
 		end
 	end
 end
+
 function MissionEndState:_shut_down_network()
 	Network:set_multiplayer(false)
 	managers.network:queue_stop_network()
 	managers.network.matchmake:destroy_game()
 	managers.network.voice_chat:destroy_voice()
 end
+
 function MissionEndState:_load_start_menu(next_state)
 	if next_state:name() == "disconnected" then
 		return
@@ -194,6 +204,7 @@ function MissionEndState:_load_start_menu(next_state)
 	end
 	setup:load_start_menu()
 end
+
 function MissionEndState:on_statistics_result(best_kills_peer_id, best_kills_score, best_special_kills_peer_id, best_special_kills_score, best_accuracy_peer_id, best_accuracy_score, most_downs_peer_id, most_downs_score, total_kills, total_specials_kills, total_head_shots, group_accuracy, group_downs)
 	print("on_statistics_result begin")
 	if managers.network and managers.network:session() and managers.network:session():peer(best_kills_peer_id) then
@@ -209,9 +220,11 @@ function MissionEndState:on_statistics_result(best_kills_peer_id, best_kills_sco
 		managers.network:session():send_to_peers("award_achievment", "cant_touch")
 	end
 end
+
 function MissionEndState:_continue()
 	self:continue()
 end
+
 function MissionEndState:continue()
 	if managers.system_menu:is_active() then
 		return
@@ -226,6 +239,7 @@ function MissionEndState:continue()
 		Application:error("Trying to continue from victory screen, but I have no state to goto")
 	end
 end
+
 function MissionEndState:_clear_controller()
 	if not self._controller then
 		return
@@ -235,6 +249,7 @@ function MissionEndState:_clear_controller()
 	self._controller:destroy()
 	self._controller = nil
 end
+
 function MissionEndState:debug_continue()
 	if not self._success then
 		return
@@ -248,6 +263,7 @@ function MissionEndState:debug_continue()
 		self:gsm():change_state_by_name(self._old_state:name())
 	end
 end
+
 function MissionEndState:update(t, dt)
 	managers.hud:script(self.GUI_SAFERECT):update(t, dt)
 	if self._total_xp_bonus then
@@ -294,15 +310,19 @@ function MissionEndState:update(t, dt)
 		end
 	end
 end
+
 function MissionEndState:game_ended()
 	return true
 end
+
 function MissionEndState:on_server_left()
 	IngameCleanState.on_server_left(self)
 end
+
 function MissionEndState:on_kicked()
 	IngameCleanState.on_kicked(self)
 end
+
 function MissionEndState:on_disconnected()
 	IngameCleanState.on_disconnected(self)
 end

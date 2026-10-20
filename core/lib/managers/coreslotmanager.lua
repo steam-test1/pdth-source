@@ -1,5 +1,6 @@
 core:module("CoreSlotManager")
 SlotManager = SlotManager or class()
+
 function SlotManager:init()
 	local unit_manager = World:unit_manager()
 	unit_manager:set_slot_limited(0, 0)
@@ -28,6 +29,7 @@ function SlotManager:init()
 	self._masks.brush_placeable = World:make_slot_mask(1)
 	self._masks.brushes = World:make_slot_mask(29)
 end
+
 function SlotManager:get_mask(...)
 	local mask
 	local arg_list = {
@@ -50,9 +52,11 @@ function SlotManager:get_mask(...)
 	end
 	return mask
 end
+
 function SlotManager:get_mask_name(slotmask)
 	return table.get_key(self._masks, slotmask)
 end
+
 function SlotManager:get_mask_map()
 	return self._masks
 end

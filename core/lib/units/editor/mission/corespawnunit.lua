@@ -1,8 +1,10 @@
 CoreSpawnUnitUnitElement = CoreSpawnUnitUnitElement or class(MissionElement)
 SpawnUnitUnitElement = SpawnUnitUnitElement or class(CoreSpawnUnitUnitElement)
+
 function SpawnUnitUnitElement:init(...)
 	CoreSpawnUnitUnitElement.init(self, ...)
 end
+
 function CoreSpawnUnitUnitElement:init(unit)
 	MissionElement.init(self, unit)
 	self._hed.unit_name = "none"
@@ -15,6 +17,7 @@ function CoreSpawnUnitUnitElement:init(unit)
 	table.insert(self._save_values, "unit_spawn_dir")
 	self._test_units = {}
 end
+
 function CoreSpawnUnitUnitElement:test_element()
 	if self._hed.unit_name ~= "none" then
 		local unit = safe_spawn_unit(self._hed.unit_name, self._unit:position(), self._unit:rotation())
@@ -22,6 +25,7 @@ function CoreSpawnUnitUnitElement:test_element()
 		unit:push(self._hed.unit_spawn_mass, self._hed.unit_spawn_dir * self._hed.unit_spawn_velocity)
 	end
 end
+
 function CoreSpawnUnitUnitElement:stop_test_element()
 	for _, unit in ipairs(self._test_units) do
 		if alive(unit) then
@@ -30,9 +34,11 @@ function CoreSpawnUnitUnitElement:stop_test_element()
 	end
 	self._test_units = {}
 end
+
 function CoreSpawnUnitUnitElement:update_selected(time, rel_time)
 	Application:draw_arrow(self._unit:position(), self._unit:position() + self._hed.unit_spawn_dir * 400, 0.75, 0.75, 0.75)
 end
+
 function CoreSpawnUnitUnitElement:update_editing(time, rel_time)
 	local kb = Input:keyboard()
 	local speed = 60 * rel_time
@@ -59,6 +65,7 @@ function CoreSpawnUnitUnitElement:update_editing(time, rel_time)
 		Application:draw_sphere(ray.position, 25, 1, 0, 0)
 	end
 end
+
 function CoreSpawnUnitUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel
@@ -134,6 +141,7 @@ Bullet hit (10 g, 900 m/s)]]
 	help.sizer = panel_sizer
 	self:add_help_text(help)
 end
+
 function CoreSpawnUnitUnitElement:add_to_mission_package()
 	managers.editor:add_to_world_package({
 		category = "units",

@@ -10,6 +10,7 @@ CoreEnvEditor = CoreEnvEditor or class()
 CoreEnvEditor.TEMPLATE_IDENTIFIER = "template"
 CoreEnvEditor.MIX_MUL = 200
 CoreEnvEditor.REMOVE_DEPRECATED_DURING_LOAD = true
+
 function CoreEnvEditor:init(env_file_name)
 	self._env_path = assert(managers.viewport:first_active_viewport():environment_mixer():current_environment()) or "core/environments/default"
 	self._env_name = self._env_path
@@ -65,8 +66,10 @@ function CoreEnvEditor:init(env_file_name)
 	managers.viewport:first_active_viewport():reset_network_cache()
 	self:check_news(true)
 end
+
 function CoreEnvEditor:read_mode()
 end
+
 function CoreEnvEditor:read_templates()
 	for _, name in ipairs(managers.database:list_entries_of_type("environment")) do
 		if string.find(name, self.TEMPLATE_IDENTIFIER) then
@@ -80,17 +83,21 @@ function CoreEnvEditor:read_templates()
 		self._template_skies[env_name] = DB:load_node("environment_sky", env_name)
 	end
 end
+
 function CoreEnvEditor:on_check_news()
 	self:check_news()
 end
+
 function CoreEnvEditor:reg_mixer(widget)
 	table.insert(self._mixer_widgets, widget)
 end
+
 function CoreEnvEditor:update_mix(env1, env2, blend)
 	for _, widget in ipairs(self._mixer_widgets) do
 		widget:update_mix(env1, env2, blend)
 	end
 end
+
 function CoreEnvEditor:check_news(new_only)
 	local news
 	if new_only then
@@ -110,6 +117,7 @@ function CoreEnvEditor:check_news(new_only)
 		EWS:MessageDialog(self._main_frame, str, "New Features!", "OK,ICON_INFORMATION"):show_modal()
 	end
 end
+
 function CoreEnvEditor:feed(data)
 	for k, v in pairs(data:data_root()) do
 		if k == "post_effect" then
@@ -148,6 +156,7 @@ function CoreEnvEditor:feed(data)
 	managers.viewport:first_active_viewport():feed_params()
 	return data
 end
+
 function CoreEnvEditor:create_main_frame()
 	self._main_frame = EWS:Frame("", Vector3(250, 0, 0), Vector3(450, 800, 0), "FRAME_FLOAT_ON_PARENT,DEFAULT_FRAME_STYLE", Global.frame)
 	self:set_title()
@@ -185,6 +194,7 @@ function CoreEnvEditor:create_main_frame()
 	self._main_frame:set_sizer(main_box)
 	self._main_frame:set_visible(true)
 end
+
 function CoreEnvEditor:add_post_processors_param(pro, mod, param, gui)
 	if not self._posteffect.post_processors then
 		self._posteffect.post_processors = {}
@@ -220,6 +230,7 @@ function CoreEnvEditor:add_post_processors_param(pro, mod, param, gui)
 	end
 	return gui
 end
+
 function CoreEnvEditor:add_underlay_param(mat, param, gui)
 	if not self._underlayeffect.materials then
 		self._underlayeffect.materials = {}
@@ -240,6 +251,7 @@ function CoreEnvEditor:add_underlay_param(mat, param, gui)
 	end
 	return gui
 end
+
 function CoreEnvEditor:add_sky_param(param, gui)
 	if not self._sky.params then
 		self._sky.params = {}
@@ -247,6 +259,7 @@ function CoreEnvEditor:add_sky_param(param, gui)
 	self._sky.params[param] = gui
 	return gui
 end
+
 function CoreEnvEditor:retrive_posteffect_param(node, pro, mod, param)
 	for post_processor in node:children() do
 		if post_processor:parameter("name") == pro then
@@ -269,6 +282,7 @@ function CoreEnvEditor:retrive_posteffect_param(node, pro, mod, param)
 		end
 	end
 end
+
 function CoreEnvEditor:retrive_underlay_param(node, mat, param)
 	for material in node:children() do
 		if material:parameter("name") == mat then
@@ -287,6 +301,7 @@ function CoreEnvEditor:retrive_underlay_param(node, mat, param)
 		end
 	end
 end
+
 function CoreEnvEditor:retrive_sky_param(node, param)
 	for parameter in node:children() do
 		if parameter:parameter("key") == param then
@@ -301,6 +316,7 @@ function CoreEnvEditor:retrive_sky_param(node, param)
 		end
 	end
 end
+
 function CoreEnvEditor:flipp(...)
 	local v = {
 		...
@@ -314,12 +330,14 @@ function CoreEnvEditor:flipp(...)
 		return ...
 	end
 end
+
 function CoreEnvEditor:add_gui_element(gui, tab, ...)
 	local list = {
 		...
 	}
 	self:add_box(gui, self._tabs[tab], list, 1)
 end
+
 function CoreEnvEditor:create_tab(tab)
 	if not self._tabs[tab] then
 		self._tabs[tab] = {}
@@ -334,6 +352,7 @@ function CoreEnvEditor:create_tab(tab)
 		self._tabs[tab].box = EWS:BoxSizer("VERTICAL")
 	end
 end
+
 function CoreEnvEditor:build_tab(tab)
 	if self._tabs[tab] then
 		self._tabs[tab].scrolled_window:set_sizer(self._tabs[tab].box)
@@ -344,11 +363,13 @@ function CoreEnvEditor:build_tab(tab)
 		self._tabs[tab].panel:refresh()
 	end
 end
+
 function CoreEnvEditor:get_tab(tab)
 	if self._tabs[tab] then
 		return self._tabs[tab].scrolled_window
 	end
 end
+
 function CoreEnvEditor:add_box(gui, parent, list, index)
 	local this = parent.child[list[index]]
 	if not this then
@@ -366,16 +387,20 @@ function CoreEnvEditor:add_box(gui, parent, list, index)
 		this.box:add(gui._box, 0, 2, "ALL,EXPAND")
 	end
 end
+
 function CoreEnvEditor:set_title()
 	self._main_frame:set_title(self._env_name .. " - Environment Editor")
 end
+
 function CoreEnvEditor:value_is_changed()
 	self._value_is_changed = true
 	managers.viewport:first_active_viewport():feed_params()
 end
+
 function CoreEnvEditor:add_updator(upd)
 	table.insert(self._updators, upd)
 end
+
 function CoreEnvEditor:get_child(node, name)
 	for child in node:children() do
 		if child:name() == name then
@@ -384,6 +409,7 @@ function CoreEnvEditor:get_child(node, name)
 	end
 	Application:error("Can't find child!")
 end
+
 function CoreEnvEditor:on_encode_parameters()
 	local current_env = self._env_path
 	if self._encode_parameters_dialog:show_modal() == "ID_YES" and managers and managers.environment then
@@ -395,6 +421,7 @@ function CoreEnvEditor:on_encode_parameters()
 	end
 	self:database_load_env(current_env)
 end
+
 function CoreEnvEditor:write_to_disk(path, new_name)
 	local file = SystemFS:open(path, "w")
 	if file then
@@ -411,11 +438,13 @@ function CoreEnvEditor:write_to_disk(path, new_name)
 		file:close()
 	end
 end
+
 function CoreEnvEditor:write_sky_orientation(file)
 	file:print("\t\t<sky_orientation>\n")
 	file:print("\t\t\t<param key=\"rotation\" value=\"0\" />\n")
 	file:print("\t\t</sky_orientation>\n")
 end
+
 function CoreEnvEditor:write_posteffect(file)
 	file:print("\t\t<post_effect>\n")
 	for post_processor_name, post_processor in pairs(self._posteffect.post_processors) do
@@ -451,6 +480,7 @@ function CoreEnvEditor:write_posteffect(file)
 	end
 	file:print("\t\t</post_effect>\n")
 end
+
 function CoreEnvEditor:write_shadow_params(file)
 	local params = self:shadow_feed_params({})
 	file:print("\t\t\t\t<shadow_rendering>\n")
@@ -467,6 +497,7 @@ function CoreEnvEditor:write_shadow_params(file)
 	file:print("\t\t\t\t\t</shadow_modifier>\n")
 	file:print("\t\t\t\t</shadow_rendering>\n")
 end
+
 function CoreEnvEditor:write_underlayeffect(file)
 	file:print("\t\t<underlay_effect>\n")
 	for underlay_name, material in pairs(self._underlayeffect.materials) do
@@ -484,6 +515,7 @@ function CoreEnvEditor:write_underlayeffect(file)
 	end
 	file:print("\t\t</underlay_effect>\n")
 end
+
 function CoreEnvEditor:write_sky(file)
 	file:print("\t\t<others>\n")
 	for param_name, param in pairs(self._sky.params) do
@@ -497,9 +529,11 @@ function CoreEnvEditor:write_sky(file)
 	end
 	file:print("\t\t</others>\n")
 end
+
 function CoreEnvEditor:on_close()
 	managers.toolhub:close("Environment Editor")
 end
+
 function CoreEnvEditor:database_load_posteffect(post_effect_node)
 	for post_processor in post_effect_node:children() do
 		local post_pro = self._posteffect.post_processors[post_processor:name()]
@@ -544,6 +578,7 @@ function CoreEnvEditor:database_load_posteffect(post_effect_node)
 	end
 	self:set_title()
 end
+
 function CoreEnvEditor:database_load_underlay(underlay_effect_node)
 	if underlay_effect_node:name() == "underlay_effect" then
 		for material in underlay_effect_node:children() do
@@ -591,6 +626,7 @@ function CoreEnvEditor:database_load_underlay(underlay_effect_node)
 	end
 	self:set_title()
 end
+
 function CoreEnvEditor:database_load_sky(sky_node)
 	if sky_node:name() == "others" then
 		for param in sky_node:children() do
@@ -629,6 +665,7 @@ function CoreEnvEditor:database_load_sky(sky_node)
 	end
 	self:set_title()
 end
+
 function CoreEnvEditor:database_load_env(env_path)
 	local full_path = managers.database:entry_expanded_path("environment", env_path)
 	local env = managers.database:has(full_path) and managers.database:load_node(full_path)
@@ -651,15 +688,18 @@ function CoreEnvEditor:database_load_env(env_path)
 	self:set_title()
 	return env
 end
+
 function CoreEnvEditor:on_open_file()
 	local path = managers.database:open_file_dialog(self._main_frame, "Environments (*.environment)|*.environment")
 	if path then
 		self:database_load_env(managers.database:entry_path(path))
 	end
 end
+
 function CoreEnvEditor:on_save_file()
 	self:write_to_disk(managers.database:base_path() .. string.gsub(self._env_path, "/", "\\") .. ".environment")
 end
+
 function CoreEnvEditor:on_save_file_as()
 	local path = managers.database:save_file_dialog(self._main_frame, false, "Environments (*.environment)|*.environment")
 	if path then
@@ -667,17 +707,20 @@ function CoreEnvEditor:on_save_file_as()
 		self:database_load_env(managers.database:entry_name(path))
 	end
 end
+
 function CoreEnvEditor:on_manager_flush()
 	if managers and managers.environment then
 		managers.environment:flush()
 	end
 end
+
 function CoreEnvEditor:destroy()
 	if alive(self._main_frame) then
 		self._main_frame:destroy()
 		self._main_frame = nil
 	end
 end
+
 function CoreEnvEditor:close()
 	self._main_frame:destroy()
 	Global.render_debug.draw_enabled = self._debug_draw
@@ -693,9 +736,11 @@ function CoreEnvEditor:close()
 	managers.viewport:first_active_viewport():environment_mixer():set_environment(self._prev_environment)
 	managers.viewport:first_active_viewport():reset_network_cache()
 end
+
 function CoreEnvEditor:set_position(newpos)
 	self._main_frame:set_position(newpos)
 end
+
 function CoreEnvEditor:update(t, dt)
 	self:sync()
 	for _, upd in ipairs(self._updators) do
@@ -728,6 +773,7 @@ function CoreEnvEditor:update(t, dt)
 		self:draw_cursor()
 	end
 end
+
 function CoreEnvEditor:step()
 	local undo = self._undo[self._undo_index]
 	if undo._sky and self._sky then
@@ -752,6 +798,7 @@ function CoreEnvEditor:step()
 		end
 	end
 end
+
 function CoreEnvEditor:on_undo()
 	if self._undo_index > 1 then
 		self._undo_index = self._undo_index - 1
@@ -759,6 +806,7 @@ function CoreEnvEditor:on_undo()
 		self._value_is_changed = false
 	end
 end
+
 function CoreEnvEditor:on_redo()
 	if self._undo_index <= self._max_undo_index then
 		self._undo_index = self._undo_index + 1
@@ -766,11 +814,13 @@ function CoreEnvEditor:on_redo()
 		self._value_is_changed = false
 	end
 end
+
 function CoreEnvEditor:get_cursor_look_point(camera, dist)
 	local mouse_local = Vector3(0, 0, 0)
 	local cursor_pos = Vector3(mouse_local.x / self._screen_borders.x * 2 - 1, mouse_local.y / self._screen_borders.y * 2 - 1, dist)
 	return camera:screen_to_world(cursor_pos)
 end
+
 function CoreEnvEditor:draw_cursor()
 	if managers.viewport and managers.viewport.get_current_camera then
 		local camera = managers.viewport:get_current_camera()
@@ -780,6 +830,7 @@ function CoreEnvEditor:draw_cursor()
 		end
 	end
 end
+
 function CoreEnvEditor:pick_depth()
 	if managers.viewport and managers.viewport.get_current_camera then
 		local camera = managers.viewport:get_current_camera()
@@ -795,6 +846,7 @@ function CoreEnvEditor:pick_depth()
 	end
 	return 0
 end
+
 function CoreEnvEditor:pick_height()
 	if managers.viewport and managers.viewport.get_current_camera then
 		local camera = managers.viewport:get_current_camera()
@@ -809,6 +861,7 @@ function CoreEnvEditor:pick_height()
 	end
 	return 0
 end
+
 function CoreEnvEditor:sync()
 	local undo_struct = {}
 	if self._out_sky then
@@ -906,6 +959,7 @@ function CoreEnvEditor:sync()
 		self._value_is_changed = false
 	end
 end
+
 function CoreEnvEditor:value_database_lookup(str)
 	local i = string.find(str, "#")
 	local db_key = string.sub(str, 1, i - 1)

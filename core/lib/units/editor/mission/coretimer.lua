@@ -1,13 +1,16 @@
 CoreTimerUnitElement = CoreTimerUnitElement or class(MissionElement)
 TimerUnitElement = TimerUnitElement or class(CoreTimerUnitElement)
+
 function TimerUnitElement:init(...)
 	TimerUnitElement.super.init(self, ...)
 end
+
 function CoreTimerUnitElement:init(unit)
 	CoreTimerUnitElement.super.init(self, unit)
 	self._hed.timer = 0
 	table.insert(self._save_values, "timer")
 end
+
 function CoreTimerUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel
@@ -33,11 +36,14 @@ function CoreTimerUnitElement:_build_panel(panel, panel_sizer)
 	help.sizer = panel_sizer
 	self:add_help_text(help)
 end
+
 CoreTimerOperatorUnitElement = CoreTimerOperatorUnitElement or class(MissionElement)
 TimerOperatorUnitElement = TimerOperatorUnitElement or class(CoreTimerOperatorUnitElement)
+
 function TimerOperatorUnitElement:init(...)
 	TimerOperatorUnitElement.super.init(self, ...)
 end
+
 function CoreTimerOperatorUnitElement:init(unit)
 	CoreTimerOperatorUnitElement.super.init(self, unit)
 	self._hed.operation = "none"
@@ -47,6 +53,7 @@ function CoreTimerOperatorUnitElement:init(unit)
 	table.insert(self._save_values, "time")
 	table.insert(self._save_values, "elements")
 end
+
 function CoreTimerOperatorUnitElement:draw_links(t, dt, selected_unit, all_units)
 	CoreTimerOperatorUnitElement.super.draw_links(self, t, dt, selected_unit)
 	for _, id in ipairs(self._hed.elements) do
@@ -63,8 +70,10 @@ function CoreTimerOperatorUnitElement:draw_links(t, dt, selected_unit, all_units
 		end
 	end
 end
+
 function CoreTimerOperatorUnitElement:update_editing()
 end
+
 function CoreTimerOperatorUnitElement:add_element()
 	local ray = managers.editor:unit_by_raycast({mask = 10, ray_type = "editor"})
 	if ray and ray.unit and ray.unit:name() == Idstring("core/units/mission_elements/logic_timer/logic_timer") then
@@ -76,6 +85,7 @@ function CoreTimerOperatorUnitElement:add_element()
 		end
 	end
 end
+
 function CoreTimerOperatorUnitElement:remove_links(unit)
 	for _, id in ipairs(self._hed.elements) do
 		if id == unit:unit_data().unit_id then
@@ -83,9 +93,11 @@ function CoreTimerOperatorUnitElement:remove_links(unit)
 		end
 	end
 end
+
 function CoreTimerOperatorUnitElement:add_triggers(vc)
 	vc:add_trigger(Idstring("lmb"), callback(self, self, "add_element"))
 end
+
 function CoreTimerOperatorUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel
@@ -132,11 +144,14 @@ function CoreTimerOperatorUnitElement:_build_panel(panel, panel_sizer)
 	help.sizer = panel_sizer
 	self:add_help_text(help)
 end
+
 CoreTimerTriggerUnitElement = CoreTimerTriggerUnitElement or class(MissionElement)
 TimerTriggerUnitElement = TimerTriggerUnitElement or class(CoreTimerTriggerUnitElement)
+
 function TimerTriggerUnitElement:init(...)
 	TimerTriggerUnitElement.super.init(self, ...)
 end
+
 function CoreTimerTriggerUnitElement:init(unit)
 	CoreTimerTriggerUnitElement.super.init(self, unit)
 	self._hed.time = 0
@@ -144,6 +159,7 @@ function CoreTimerTriggerUnitElement:init(unit)
 	table.insert(self._save_values, "time")
 	table.insert(self._save_values, "elements")
 end
+
 function CoreTimerTriggerUnitElement:draw_links(t, dt, selected_unit, all_units)
 	CoreTimerTriggerUnitElement.super.draw_links(self, t, dt, selected_unit)
 	for _, id in ipairs(self._hed.elements) do
@@ -160,8 +176,10 @@ function CoreTimerTriggerUnitElement:draw_links(t, dt, selected_unit, all_units)
 		end
 	end
 end
+
 function CoreTimerTriggerUnitElement:update_editing()
 end
+
 function CoreTimerTriggerUnitElement:add_element()
 	local ray = managers.editor:unit_by_raycast({mask = 10, ray_type = "editor"})
 	if ray and ray.unit and ray.unit:name() == Idstring("core/units/mission_elements/logic_timer/logic_timer") then
@@ -173,6 +191,7 @@ function CoreTimerTriggerUnitElement:add_element()
 		end
 	end
 end
+
 function CoreTimerTriggerUnitElement:remove_links(unit)
 	for _, id in ipairs(self._hed.elements) do
 		if id == unit:unit_data().unit_id then
@@ -180,9 +199,11 @@ function CoreTimerTriggerUnitElement:remove_links(unit)
 		end
 	end
 end
+
 function CoreTimerTriggerUnitElement:add_triggers(vc)
 	vc:add_trigger(Idstring("lmb"), callback(self, self, "add_element"))
 end
+
 function CoreTimerTriggerUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

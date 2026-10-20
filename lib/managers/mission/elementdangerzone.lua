@@ -1,8 +1,10 @@
 core:import("CoreMissionScriptElement")
 ElementDangerZone = ElementDangerZone or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementDangerZone:init(...)
 	ElementDangerZone.super.init(self, ...)
 end
+
 function ElementDangerZone:on_executed(instigator)
 	if not self._values.enabled then
 		return

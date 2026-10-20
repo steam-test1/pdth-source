@@ -1,8 +1,10 @@
 require("lib/states/GameState")
 MenuMainState = MenuMainState or class(GameState)
+
 function MenuMainState:init(game_state_machine)
 	GameState.init(self, "menu_main", game_state_machine)
 end
+
 function MenuMainState:at_enter(old_state)
 	if old_state:name() ~= "freeflight" or not managers.menu:is_active() then
 		self._camera_object = World:create_camera()
@@ -43,14 +45,17 @@ function MenuMainState:at_enter(old_state)
 		managers.menu:open_node("trial_info")
 	end
 end
+
 function MenuMainState:at_exit(new_state)
 	if new_state:name() ~= "freeflight" then
 		managers.menu:close_menu("menu_main")
 	end
 end
+
 function MenuMainState:on_server_left()
 	self:_create_server_left_dialog()
 end
+
 function MenuMainState:_create_server_left_dialog()
 	local dialog_data = {}
 	dialog_data.title = managers.localization:text("dialog_warning_title")
@@ -62,12 +67,14 @@ function MenuMainState:_create_server_left_dialog()
 	dialog_data.button_list = {ok_button}
 	managers.system_menu:show(dialog_data)
 end
+
 function MenuMainState:on_server_left_ok_pressed()
 	print("[MenuMainState:on_server_left_ok_pressed]")
 	managers.network:queue_stop_network()
 	managers.menu:close_menu("lobby_menu")
 	managers.menu:open_menu("menu_main")
 end
+
 function MenuMainState:_create_disconnected_dialog()
 	managers.menu:show_mp_disconnected_internet_dialog({
 		ok_func = callback(self, self, "on_server_left_ok_pressed")

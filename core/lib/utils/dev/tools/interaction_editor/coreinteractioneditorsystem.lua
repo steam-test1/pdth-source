@@ -7,6 +7,7 @@ core:import("CoreInteractionEditorSystemEvents")
 new_counter = new_counter or 1
 node_id = node_id or 1
 InteractionEditorSystem = InteractionEditorSystem or CoreClass.class(CoreInteractionEditorSystemEvents.InteractionEditorSystemEvents)
+
 function InteractionEditorSystem:init(ui, path)
 	self._ui = ui
 	self._path = path
@@ -45,35 +46,45 @@ function InteractionEditorSystem:init(ui, path)
 		end
 	end
 end
+
 function InteractionEditorSystem:caption()
 	return self._caption
 end
+
 function InteractionEditorSystem:desc()
 	return self._desc
 end
+
 function InteractionEditorSystem:ui()
 	return self._ui
 end
+
 function InteractionEditorSystem:is_new()
 	return self._is_new
 end
+
 function InteractionEditorSystem:path()
 	return self._path
 end
+
 function InteractionEditorSystem:update(t, dt)
 	if self._active and self._graph then
 		self._graph:update(t, dt)
 	end
 end
+
 function InteractionEditorSystem:graph()
 	return self._graph
 end
+
 function InteractionEditorSystem:graph_node(id)
 	return self._node_id_map[id]
 end
+
 function InteractionEditorSystem:selected_nodes()
 	return self._graph:selected_nodes()
 end
+
 function InteractionEditorSystem:add_pattern_data(node, pat, ptype, name, full_name)
 	local nd = self._pattern_data[node] or {}
 	local key = full_name .. " - " .. ptype
@@ -87,12 +98,15 @@ function InteractionEditorSystem:add_pattern_data(node, pat, ptype, name, full_n
 	}
 	self._pattern_data[node] = nd
 end
+
 function InteractionEditorSystem:pattern_data(node, full_name_and_type)
 	return unpack(assert(self._pattern_data[node])[full_name_and_type])
 end
+
 function InteractionEditorSystem:remove_pattern_data(node, full_name_and_type)
 	assert(self._pattern_data[node])[full_name_and_type] = nil
 end
+
 function InteractionEditorSystem:add_node(node_type, skip_stack)
 	local id = node_type .. tostring(node_id)
 	assert(self._desc:node_add(id, node_type))
@@ -105,6 +119,7 @@ function InteractionEditorSystem:add_node(node_type, skip_stack)
 	if not skip_stack then
 	end
 end
+
 function InteractionEditorSystem:remove_node(node, skip_stack)
 	local id = node:metadata()
 	assert(self._desc:node_remove(id))
@@ -112,21 +127,26 @@ function InteractionEditorSystem:remove_node(node, skip_stack)
 	if not skip_stack then
 	end
 end
+
 function InteractionEditorSystem:panel()
 	return self._panel
 end
+
 function InteractionEditorSystem:context_menu()
 	return self._context_menu
 end
+
 function InteractionEditorSystem:close()
 	self:deactivate()
 	self._panel:destroy_children()
 	self._ui:destroy_nb_page(self._ui:get_nb_page_by_caption(self._caption))
 	self._graph = nil
 end
+
 function InteractionEditorSystem:active()
 	return self._active
 end
+
 function InteractionEditorSystem:activate()
 	self._ui:set_title(not self._is_new and self._path)
 	self._ui:set_save_close_option_enabled(true)
@@ -136,12 +156,14 @@ function InteractionEditorSystem:activate()
 	end
 	self._active = true
 end
+
 function InteractionEditorSystem:deactivate()
 	self._ui:set_title()
 	self._ui:set_save_close_option_enabled(false)
 	self._ui:clean_prop_panel()
 	self._active = false
 end
+
 function InteractionEditorSystem:save(path)
 	local md_node = Node("graph_metadata")
 	md_node:add_child(self._desc:to_xml())
@@ -157,15 +179,19 @@ function InteractionEditorSystem:save(path)
 	self._ui:update_nb_page_caption(page_id, self._caption)
 	self._op_stack:mark_save()
 end
+
 function InteractionEditorSystem:undo()
 	self._op_stack:undo()
 end
+
 function InteractionEditorSystem:redo()
 	self._op_stack:redo()
 end
+
 function InteractionEditorSystem:has_unsaved_changes()
 	return self._op_stack:has_unsaved_changes()
 end
+
 function InteractionEditorSystem:set_node_colors(node, id)
 	for _, trans in ipairs(self._desc:node_inputs(id)) do
 		local color = assert(self:_slot_color(self._desc:transput_type(id, trans)))
@@ -176,6 +202,7 @@ function InteractionEditorSystem:set_node_colors(node, id)
 		node:set_output_colour(trans, color.r, color.g, color.b)
 	end
 end
+
 function InteractionEditorSystem:_slot_color(t)
 	for i, v in ipairs(CoreInteractionEditorConfig.NODE_TYPES) do
 		if v == t then
@@ -183,6 +210,7 @@ function InteractionEditorSystem:_slot_color(t)
 		end
 	end
 end
+
 function InteractionEditorSystem:_save_patterns(pattern_data, cfg_node)
 	for node, data in pairs(pattern_data) do
 		for _, params in pairs(data) do
@@ -195,6 +223,7 @@ function InteractionEditorSystem:_save_patterns(pattern_data, cfg_node)
 		end
 	end
 end
+
 function InteractionEditorSystem:_load_patterns(desc, pattern_data, cfg_node)
 	for inst in cfg_node:children() do
 		local node = inst:parameter("node")

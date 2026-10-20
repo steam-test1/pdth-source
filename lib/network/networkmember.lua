@@ -1,7 +1,9 @@
 NetworkMember = NetworkMember or class()
+
 function NetworkMember:init(peer)
 	self._peer = peer
 end
+
 function NetworkMember:delete()
 	if managers.criminals then
 		managers.criminals:remove_character_by_peer_id(self._peer:id())
@@ -23,20 +25,25 @@ function NetworkMember:delete()
 	end
 	managers.player:remove_crew_bonus(self._peer:id())
 end
+
 function NetworkMember:load(data)
 	self._peer = managers.network:session():peer(data.id)
 end
+
 function NetworkMember:save()
 	local data = {}
 	data.id = self._peer:id()
 	return data
 end
+
 function NetworkMember:peer()
 	return self._peer
 end
+
 function NetworkMember:unit()
 	return self._unit
 end
+
 function NetworkMember:_get_old_entry()
 	local peer_ident = SystemInfo:platform() == Idstring("WIN32") and self._peer:user_id() or self._peer:name()
 	local old_plr_entry = managers.network:game()._old_players[peer_ident]
@@ -52,6 +59,7 @@ function NetworkMember:_get_old_entry()
 	end
 	return member_downed, member_dead, health, used_deployable
 end
+
 function NetworkMember:assign_character_name()
 	local character_name = managers.criminals:character_name_by_unit(self._unit)
 	if not character_name then
@@ -64,6 +72,7 @@ function NetworkMember:assign_character_name()
 	self._assigned_name = character_name
 	return character_name
 end
+
 function NetworkMember:spawn_unit(spawn_point_id, is_drop_in, spawn_as)
 	if self._unit then
 		return
@@ -143,6 +152,7 @@ function NetworkMember:spawn_unit(spawn_point_id, is_drop_in, spawn_as)
 	end
 	return unit
 end
+
 function NetworkMember:set_unit(unit, character_name)
 	local is_new_unit = unit and (not self._unit or self._unit:key() ~= unit:key())
 	self._unit = unit
@@ -163,6 +173,7 @@ function NetworkMember:set_unit(unit, character_name)
 		end
 	end
 end
+
 function NetworkMember:sync_lobby_data(peer)
 	print("[NetworkMember:sync_lobby_data] to", peer:id())
 	local peer_id = managers.network:session():local_peer():id()
@@ -179,6 +190,7 @@ function NetworkMember:sync_lobby_data(peer)
 		peer:send_after_load("lobby_sync_update_difficulty", difficulty)
 	end
 end
+
 function NetworkMember:sync_data(peer)
 	print("[NetworkMember:sync_data] to", peer:id())
 	managers.player:update_crew_bonus_to_peer(peer)
@@ -187,15 +199,19 @@ function NetworkMember:sync_data(peer)
 	if self._unit then
 	end
 end
+
 function NetworkMember:spawn_unit_called()
 	return self._spawn_unit_called
 end
+
 function NetworkMember:drop_in_progress()
 	return self._dropin_progress
 end
+
 function NetworkMember:set_drop_in_progress(dropin_progress)
 	self._dropin_progress = dropin_progress
 end
+
 function NetworkMember:character_name()
 	return self._assigned_name
 end

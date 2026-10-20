@@ -1,6 +1,7 @@
 core:module("SystemMenuManager")
 require("lib/managers/dialogs/KeyboardInputDialog")
 PS3KeyboardInputDialog = PS3KeyboardInputDialog or class(KeyboardInputDialog)
+
 function PS3KeyboardInputDialog:show()
 	local data = {}
 	data.title = self:title()
@@ -15,6 +16,7 @@ function PS3KeyboardInputDialog:show()
 	end
 	return success
 end
+
 function PS3KeyboardInputDialog:done_callback(input_text, success)
 	KeyboardInputDialog.done_callback(self, success, input_text)
 end

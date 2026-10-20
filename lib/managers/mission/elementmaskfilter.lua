@@ -1,10 +1,13 @@
 core:import("CoreMissionScriptElement")
 ElementMaskFilter = ElementMaskFilter or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementMaskFilter:init(...)
 	ElementMaskFilter.super.init(self, ...)
 end
+
 function ElementMaskFilter:client_on_executed(...)
 end
+
 function ElementMaskFilter:on_executed(instigator)
 	if not self._values.enabled then
 		return

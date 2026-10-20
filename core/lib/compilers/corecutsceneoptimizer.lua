@@ -2,6 +2,7 @@ require("core/lib/compilers/CoreCutsceneExporter")
 require("core/lib/managers/cutscene/CoreCutscene")
 CoreCutsceneOptimizer = CoreCutsceneOptimizer or class(CoreCutsceneExporter)
 CoreCutsceneOptimizer.ANIMATION_BLOB_PART_DURATION = 5
+
 function CoreCutsceneOptimizer:init()
 	self.super.init(self)
 	self.__compression_enabled = {
@@ -10,6 +11,7 @@ function CoreCutsceneOptimizer:init()
 		ps3 = true
 	}
 end
+
 function CoreCutsceneOptimizer:export_to_compile_destination(dest, optimized_cutscene_path)
 	self:_assert_is_valid()
 	local cutscene_name = managers.database:entry_name(optimized_cutscene_path)
@@ -20,15 +22,18 @@ function CoreCutsceneOptimizer:export_to_compile_destination(dest, optimized_cut
 	self:_write_cutscene_unit_xml(string.gsub(optimized_cutscene_path, "%.cutscene$", ".unit"))
 	managers.database:recompile()
 end
+
 function CoreCutsceneOptimizer:compression_enabled(platform)
 	assert(self.__compression_enabled[platform] ~= nil, "Unsupported platform \"" .. tostring(platform) .. "\"")
 	return self.__compression_enabled[platform]
 end
+
 function CoreCutsceneOptimizer:set_compression_enabled(platform, should_compress)
 	assert(self.__compression_enabled[platform] ~= nil, "Unsupported platform \"" .. tostring(platform) .. "\"")
 	assert(type(should_compress) == "boolean", "Expected boolean")
 	self.__compression_enabled[platform] = should_compress
 end
+
 function CoreCutsceneOptimizer:_write_cutscene_xml(path, animation_blobs)
 	local cutscene_node = Node("cutscene")
 	cutscene_node:set_parameter("unit", managers.database:entry_path(path))
@@ -42,6 +47,7 @@ function CoreCutsceneOptimizer:_write_cutscene_xml(path, animation_blobs)
 	end
 	if not table.empty(self:_all_controlled_unit_names(true)) then
 		local controlled_units_node = cutscene_node:make_child("controlled_units")
+		
 		local function add_controlled_unit(unit_type, unit_name)
 			local unit_node = controlled_units_node:make_child("unit")
 			unit_node:set_parameter("type", unit_type)
@@ -51,6 +57,7 @@ function CoreCutsceneOptimizer:_write_cutscene_xml(path, animation_blobs)
 				unit_node:set_parameter("blend_set", "patched")
 			end
 		end
+		
 		if self:_has_cameras() then
 			add_controlled_unit("locator", "camera")
 		end
@@ -70,6 +77,7 @@ function CoreCutsceneOptimizer:_write_cutscene_xml(path, animation_blobs)
 	self:_add_discontinuity_keys(keys_node)
 	managers.database:save_node(cutscene_node, path)
 end
+
 function CoreCutsceneOptimizer:_add_unit_visibility_keys(keys_node)
 	local unit_names = self:_all_controlled_unit_names()
 	local was_visible = {}
@@ -88,9 +96,11 @@ function CoreCutsceneOptimizer:_add_unit_visibility_keys(keys_node)
 				local visible = cutscene:animation_for_unit(unit_name) ~= nil
 				if visible ~= was_visible[unit_name] then
 					local visibility_key = CoreCutsceneKey:create(CoreUnitVisibleCutsceneKey.ELEMENT_NAME)
+					
 					function visibility_key.is_valid_unit_name()
 						return true
 					end
+					
 					visibility_key:set_frame(clip:start_time())
 					visibility_key:set_unit_name(unit_name)
 					visibility_key:set_visible(visible)
@@ -101,6 +111,7 @@ function CoreCutsceneOptimizer:_add_unit_visibility_keys(keys_node)
 		end
 	end
 end
+
 function CoreCutsceneOptimizer:_add_discontinuity_keys(keys_node)
 	local previous_clip
 	for _, clip in ipairs(self.__clips) do
@@ -117,21 +128,25 @@ function CoreCutsceneOptimizer:_add_discontinuity_keys(keys_node)
 		previous_clip = clip
 	end
 end
+
 function CoreCutsceneOptimizer:_write_cutscene_unit_xml(path)
 	local unit_node = Node("unit")
 	unit_node:set_parameter("type", "cutscene")
 	unit_node:set_parameter("slot", 20)
 	local model_node = unit_node:make_child("model")
 	model_node:set_parameter("file", "locator")
+	
 	local function add_extension_node(name, class)
 		local extension_node = unit_node:make_child("extension")
 		extension_node:set_parameter("name", name)
 		extension_node:set_parameter("class", class)
 	end
+	
 	add_extension_node("unit_data", "ScriptUnitData")
 	add_extension_node("cutscene_data", "CutsceneData")
 	managers.database:save_node(unit_node, path)
 end
+
 function CoreCutsceneOptimizer:_create_merged_animation()
 	local unit_animation_map = {}
 	for _, unit_name in ipairs(self:_all_controlled_unit_names()) do
@@ -150,6 +165,7 @@ function CoreCutsceneOptimizer:_create_merged_animation()
 	end
 	return merged_animation
 end
+
 function CoreCutsceneOptimizer:_write_animation_blobs(full_animation, dest, part_path_pattern)
 	local animation_blob_names = {}
 	local default_settings = {
@@ -176,6 +192,7 @@ function CoreCutsceneOptimizer:_write_animation_blobs(full_animation, dest, part
 	end
 	return animation_blob_names
 end
+
 function CoreCutsceneOptimizer:_write_animation_part(dest, path, animation, compressed_animation)
 	local platforms_to_export = {}
 	local base_path = path
@@ -194,11 +211,14 @@ function CoreCutsceneOptimizer:_write_animation_part(dest, path, animation, comp
 		save_func(AnimationCutter, use_compressed and compressed_animation or animation, path)
 	end
 end
+
 function CoreCutsceneOptimizer:_problem_map()
 	local problem_map = self.super._problem_map(self)
+	
 	local function add_problem(problem)
 		problem_map[problem] = true
 	end
+	
 	if self:contains_optimized_footage() then
 		add_problem("Projects with optimized clips are not currently supported.")
 	end

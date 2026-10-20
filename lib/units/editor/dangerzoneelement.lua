@@ -1,9 +1,11 @@
 DangerZoneUnitElement = DangerZoneUnitElement or class(MissionElement)
+
 function DangerZoneUnitElement:init(unit)
 	DangerZoneUnitElement.super.init(self, unit)
 	self._hed.level = 1
 	table.insert(self._save_values, "level")
 end
+
 function DangerZoneUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

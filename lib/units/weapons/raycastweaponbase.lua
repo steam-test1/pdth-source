@@ -13,6 +13,7 @@ local tmp_vec1 = Vector3()
 local tmp_vec2 = Vector3()
 RaycastWeaponBase = RaycastWeaponBase or class(UnitBase)
 RaycastWeaponBase.TRAIL_EFFECT = Idstring("effects/particles/weapons/weapon_trail")
+
 function RaycastWeaponBase:init(unit)
 	UnitBase.init(self, unit, false)
 	self._unit = unit
@@ -45,16 +46,20 @@ function RaycastWeaponBase:init(unit)
 		weapon_unit = self._unit
 	}
 end
+
 function RaycastWeaponBase:change_fire_object(new_obj)
 	self._obj_fire = new_obj
 	self._muzzle_effect_table.parent = new_obj
 end
+
 function RaycastWeaponBase:get_name_id()
 	return self._name_id
 end
+
 function RaycastWeaponBase:weapon_tweak_data()
 	return tweak_data.weapon[self._name_id]
 end
+
 function RaycastWeaponBase:_create_use_setups()
 	local sel_index = tweak_data.weapon[self._name_id].use_data.selection_index
 	local use_data = {}
@@ -70,9 +75,11 @@ function RaycastWeaponBase:_create_use_setups()
 	npc_setup.equip = {align_place = "right_hand"}
 	npc_setup.unequip = {}
 end
+
 function RaycastWeaponBase:get_use_data(character_setup)
 	return self._use_data[character_setup]
 end
+
 function RaycastWeaponBase:setup(setup_data)
 	self._autoaim = setup_data.autoaim
 	self._alert_events = setup_data.alert_AI and {} or nil
@@ -81,27 +88,34 @@ function RaycastWeaponBase:setup(setup_data)
 	self._bullet_slotmask = setup_data.hit_slotmask or self._bullet_slotmask
 	self._setup = setup_data
 end
+
 function RaycastWeaponBase:fire_mode()
 	return tweak_data.weapon[self._name_id].auto and "auto" or "single"
 end
+
 function RaycastWeaponBase:dryfire()
 	self:play_tweak_data_sound("dryfire")
 end
+
 function RaycastWeaponBase:_fire_sound()
 	self:play_tweak_data_sound("fire")
 end
+
 function RaycastWeaponBase:start_shooting_allowed()
 	return self._next_fire_allowed <= Application:time()
 end
+
 function RaycastWeaponBase:start_shooting()
 	self:_fire_sound()
 	self._next_fire_allowed = math.max(self._next_fire_allowed, Application:time())
 	self._shooting = true
 end
+
 function RaycastWeaponBase:stop_shooting()
 	self:play_tweak_data_sound("stop_fire")
 	self._shooting = nil
 end
+
 function RaycastWeaponBase:trigger_pressed(...)
 	local fired
 	if self._next_fire_allowed <= Application:time() then
@@ -113,6 +127,7 @@ function RaycastWeaponBase:trigger_pressed(...)
 	end
 	return fired
 end
+
 function RaycastWeaponBase:trigger_held(...)
 	local fired
 	if self._next_fire_allowed <= Application:time() then
@@ -123,6 +138,7 @@ function RaycastWeaponBase:trigger_held(...)
 	end
 	return fired
 end
+
 function RaycastWeaponBase:fire(from_pos, direction, dmg_mul, shoot_player)
 	if self._ammo_remaining_in_clip == 0 then
 		return
@@ -138,13 +154,16 @@ function RaycastWeaponBase:fire(from_pos, direction, dmg_mul, shoot_player)
 	end
 	return ray_res
 end
+
 function RaycastWeaponBase:_check_ammo_total(unit)
 	if self._ammo_total <= 0 and unit:base().is_local_player and unit:inventory():all_out_of_ammo() then
 		PlayerStandard.say_line(unit:sound(), "g81x_plu")
 	end
 end
+
 local mvec_to = Vector3()
 local mvec_spread_direction = Vector3()
+
 function RaycastWeaponBase:_fire_raycast(user_unit, from_pos, direction, dmg_mul)
 	local result = {}
 	local hit_unit
@@ -194,6 +213,7 @@ function RaycastWeaponBase:_fire_raycast(user_unit, from_pos, direction, dmg_mul
 	end
 	return result
 end
+
 function RaycastWeaponBase:check_autoaim(from_pos, direction, max_dist)
 	local autohit = self._autohit_data
 	local near_cos = autohit.near_angle
@@ -231,7 +251,9 @@ function RaycastWeaponBase:check_autoaim(from_pos, direction, max_dist)
 	end
 	return closest_ray, dodge_enemies
 end
+
 local mvec_from_pos = Vector3()
+
 function RaycastWeaponBase:_check_alert(rays, fire_pos, direction, user_unit)
 	local group_ai = managers.groupai:state()
 	local t = TimerManager:game():time()
@@ -296,6 +318,7 @@ function RaycastWeaponBase:_check_alert(rays, fire_pos, direction, user_unit)
 		group_ai:propagate_alert(new_alert)
 	end
 end
+
 function RaycastWeaponBase:damage_player(col_ray, from_pos, direction)
 	local unit = managers.player:player_unit()
 	if not unit then
@@ -332,6 +355,7 @@ function RaycastWeaponBase:damage_player(col_ray, from_pos, direction)
 	end
 	return nil, ray_data
 end
+
 function RaycastWeaponBase:force_hit(from_pos, direction, user_unit, impact_pos, impact_normal, hit_unit, hit_body)
 	self._ammo_remaining_in_clip = math.max(0, self._ammo_remaining_in_clip - 1)
 	local col_ray = {
@@ -343,6 +367,7 @@ function RaycastWeaponBase:force_hit(from_pos, direction, user_unit, impact_pos,
 	}
 	InstantBulletBase:on_collision(col_ray, self._unit, user_unit, self._damage)
 end
+
 function RaycastWeaponBase:tweak_data_anim_play(anim, ...)
 	if self:weapon_tweak_data().animations[anim] then
 		self:anim_play(self:weapon_tweak_data().animations[anim], ...)
@@ -350,6 +375,7 @@ function RaycastWeaponBase:tweak_data_anim_play(anim, ...)
 	end
 	return false
 end
+
 function RaycastWeaponBase:anim_play(anim, speed_multiplier)
 	if anim then
 		local length = self._unit:anim_length(Idstring(anim))
@@ -358,6 +384,7 @@ function RaycastWeaponBase:anim_play(anim, speed_multiplier)
 		self._unit:anim_play_to(Idstring(anim), length, speed_multiplier)
 	end
 end
+
 function RaycastWeaponBase:tweak_data_anim_stop(anim, ...)
 	if self:weapon_tweak_data().animations[anim] then
 		self:anim_stop(self:weapon_tweak_data().animations[anim], ...)
@@ -365,9 +392,11 @@ function RaycastWeaponBase:tweak_data_anim_stop(anim, ...)
 	end
 	return false
 end
+
 function RaycastWeaponBase:anim_stop(anim)
 	self._unit:anim_stop(Idstring(anim))
 end
+
 function RaycastWeaponBase:replenish()
 	local ammo_max_multiplier = managers.player:equipped_upgrade_value("extra_start_out_ammo", "player", "extra_ammo_multiplier")
 	ammo_max_multiplier = (ammo_max_multiplier == 0 and 1 or ammo_max_multiplier) * managers.player:synced_crew_bonus_upgrade_value("more_ammo", 1, true)
@@ -378,75 +407,96 @@ function RaycastWeaponBase:replenish()
 	self._ammo_pickup = tweak_data.weapon[self._name_id].AMMO_PICKUP
 	self:update_damage()
 end
+
 function RaycastWeaponBase:update_damage()
 	self._damage = tweak_data.weapon[self._name_id].DAMAGE * self:damage_multiplier()
 end
+
 function RaycastWeaponBase:reload_speed_multiplier()
 	local multiplier = managers.player:upgrade_value(self._name_id, "reload_speed_multiplier", 1)
 	multiplier = multiplier * managers.player:synced_crew_bonus_upgrade_value("speed_reloaders", 1)
 	return multiplier
 end
+
 function RaycastWeaponBase:damage_multiplier()
 	local multiplier = managers.player:upgrade_value(self._name_id, "damage_multiplier", 1)
 	multiplier = multiplier * managers.player:synced_crew_bonus_upgrade_value("aggressor", 1)
 	return multiplier
 end
+
 function RaycastWeaponBase:spread_multiplier()
 	local multiplier = managers.player:upgrade_value(self._name_id, "spread_multiplier", 1)
 	multiplier = multiplier * managers.player:synced_crew_bonus_upgrade_value("sharpshooters", 1)
 	return multiplier
 end
+
 function RaycastWeaponBase:fire_rate_multiplier()
 	return managers.player:upgrade_value(self._name_id, "fire_rate_multiplier", 1)
 end
+
 function RaycastWeaponBase:melee_damage_multiplier()
 	return managers.player:upgrade_value(self._name_id, "melee_multiplier", 1)
 end
+
 function RaycastWeaponBase:upgrade_value(value, default)
 	return managers.player:upgrade_value(self._name_id, value, default)
 end
+
 function RaycastWeaponBase:melee_damage_info()
 	local my_tweak_data = self:weapon_tweak_data()
 	local dmg = my_tweak_data.damage_melee * self:melee_damage_multiplier()
 	local dmg_effect = dmg * my_tweak_data.damage_melee_effect_mul
 	return dmg, dmg_effect
 end
+
 function RaycastWeaponBase:ammo_info()
 	return self._ammo_max_per_clip, self._ammo_remaining_in_clip, self._ammo_total
 end
+
 function RaycastWeaponBase:set_ammo(ammo)
 	local ammo_num = math.floor(ammo * self._ammo_max)
 	self._ammo_total = ammo_num
 	self._ammo_remaining_in_clip = math.min(self._ammo_max_per_clip, ammo_num)
 end
+
 function RaycastWeaponBase:ammo_full()
 	return self._ammo_total == self._ammo_max
 end
+
 function RaycastWeaponBase:clip_full()
 	return self._ammo_remaining_in_clip == self._ammo_max_per_clip
 end
+
 function RaycastWeaponBase:clip_empty()
 	return self._ammo_remaining_in_clip == 0
 end
+
 function RaycastWeaponBase:clip_not_empty()
 	return self._ammo_remaining_in_clip > 0
 end
+
 function RaycastWeaponBase:reload_expire_t()
 	return nil
 end
+
 function RaycastWeaponBase:reload_enter_expire_t()
 	return nil
 end
+
 function RaycastWeaponBase:reload_exit_expire_t()
 	return nil
 end
+
 function RaycastWeaponBase:update_reloading(t, dt, time_left)
 end
+
 function RaycastWeaponBase:start_reload()
 end
+
 function RaycastWeaponBase:reload_interuptable()
 	return false
 end
+
 function RaycastWeaponBase:on_reload()
 	if self._setup.expend_ammo then
 		self._ammo_remaining_in_clip = math.min(self._ammo_total, self._ammo_max_per_clip)
@@ -455,15 +505,19 @@ function RaycastWeaponBase:on_reload()
 		self._ammo_total = self._ammo_max_per_clip
 	end
 end
+
 function RaycastWeaponBase:ammo_max()
 	return self._ammo_max == self._ammo_total
 end
+
 function RaycastWeaponBase:out_of_ammo()
 	return self._ammo_total == 0
 end
+
 function RaycastWeaponBase:can_reload()
 	return self._ammo_total > self._ammo_remaining_in_clip
 end
+
 function RaycastWeaponBase:add_ammo()
 	if self:ammo_max() then
 		return false
@@ -472,6 +526,7 @@ function RaycastWeaponBase:add_ammo()
 	self._ammo_total = math.clamp(self._ammo_total + add_amount, 0, self._ammo_max)
 	return true
 end
+
 function RaycastWeaponBase:add_ammo_from_bag(availible)
 	if self:ammo_max() then
 		return 0
@@ -481,22 +536,27 @@ function RaycastWeaponBase:add_ammo_from_bag(availible)
 	self._ammo_total = math.min(self._ammo_max, self._ammo_total + math.ceil(can_have * self._ammo_max))
 	return can_have
 end
+
 function RaycastWeaponBase:on_equip()
 end
+
 function RaycastWeaponBase:play_tweak_data_sound(event)
 	if tweak_data.weapon[self._name_id].sounds[event] then
 		self:play_sound(tweak_data.weapon[self._name_id].sounds[event])
 	end
 end
+
 function RaycastWeaponBase:play_sound(event)
 	self._sound_fire:post_event(event)
 end
+
 function RaycastWeaponBase:destroy(unit)
 	RaycastWeaponBase.super.pre_destroy(self, unit)
 	if self._shooting then
 		self:stop_shooting()
 	end
 end
+
 function RaycastWeaponBase:_get_spread(user_unit)
 	local spread_multiplier = self:spread_multiplier()
 	local current_state = user_unit:movement()._current_state
@@ -508,17 +568,23 @@ function RaycastWeaponBase:_get_spread(user_unit)
 	end
 	return tweak_data.weapon[self._name_id].spread[current_state._moving and "moving_standing" or "standing"] * spread_multiplier
 end
+
 function RaycastWeaponBase:set_visibility_state(state)
 	self._unit:set_visible(state)
 end
+
 function RaycastWeaponBase:set_bullet_hit_slotmask(new_slotmask)
 	self._bullet_slotmask = new_slotmask
 end
+
 function RaycastWeaponBase:flashlight_state_changed()
 end
+
 function RaycastWeaponBase:set_flashlight_enabled(enabled)
 end
+
 InstantBulletBase = InstantBulletBase or class()
+
 function InstantBulletBase:on_collision(col_ray, weapon_unit, user_unit, damage)
 	local hit_unit = col_ray.unit
 	if not hit_unit:character_damage() or not hit_unit:character_damage()._no_blood then
@@ -543,13 +609,16 @@ function InstantBulletBase:on_collision(col_ray, weapon_unit, user_unit, damage)
 	end
 	return nil
 end
+
 function InstantBulletBase:on_hit_player(col_ray, weapon_unit, user_unit, damage)
 	col_ray.unit = managers.player:player_unit()
 	return self:give_impact_damage(col_ray, weapon_unit, user_unit, damage)
 end
+
 function InstantBulletBase:play_impact_sound_and_effects(col_ray)
 	managers.game_play_central:play_impact_sound_and_effects({col_ray = col_ray})
 end
+
 function InstantBulletBase:give_impact_damage(col_ray, weapon_unit, user_unit, damage)
 	local action_data = {}
 	action_data.variant = "bullet"

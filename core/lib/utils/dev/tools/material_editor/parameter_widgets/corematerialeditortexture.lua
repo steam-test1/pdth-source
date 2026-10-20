@@ -1,6 +1,7 @@
 require("core/lib/utils/dev/tools/material_editor/CoreSmartNode")
 local CoreMaterialEditorParameter = require("core/lib/utils/dev/tools/material_editor/parameter_widgets/CoreMaterialEditorParameter")
 local CoreMaterialEditorTexture = CoreMaterialEditorTexture or class(CoreMaterialEditorParameter)
+
 function CoreMaterialEditorTexture:init(parent, editor, parameter_info, parameter_node)
 	CoreMaterialEditorParameter.init(self, parent, editor, parameter_info, parameter_node)
 	local text = self._global_texture and "environment_cubemap (Global)" or self._value
@@ -12,11 +13,14 @@ function CoreMaterialEditorTexture:init(parent, editor, parameter_info, paramete
 	self._button:connect("", "EVT_COMMAND_BUTTON_CLICKED", self._on_browse, self)
 	self._right_box:add(self._button, 0, 4, "ALL")
 end
+
 function CoreMaterialEditorTexture:update(t, dt)
 end
+
 function CoreMaterialEditorTexture:destroy()
 	CoreMaterialEditorParameter.destroy(self)
 end
+
 function CoreMaterialEditorTexture:on_toggle_customize()
 	self._customize = not self._customize
 	self:_load_value()
@@ -27,6 +31,7 @@ function CoreMaterialEditorTexture:on_toggle_customize()
 		self:_on_browse()
 	end
 end
+
 function CoreMaterialEditorTexture:on_open_texture()
 	local str = os.getenv("MATEDOPEN")
 	local s, e = string.find(str, "$FILE")
@@ -41,6 +46,7 @@ function CoreMaterialEditorTexture:on_open_texture()
 		end
 	end
 end
+
 function CoreMaterialEditorTexture:on_pick_global_texture()
 	local dialog = EWS:SingleChoiceDialog(self._editor._main_frame, "Pick a global texture.", "Global Textures", {
 		"environment_cubemap"
@@ -59,6 +65,7 @@ function CoreMaterialEditorTexture:on_pick_global_texture()
 		self:update_live()
 	end
 end
+
 function CoreMaterialEditorTexture:_on_browse()
 	local node, path = managers.database:load_node_dialog(self._right_panel, "Textures (*.dds)|*.dds")
 	if path then
@@ -75,4 +82,5 @@ function CoreMaterialEditorTexture:_on_browse()
 		self:update_live()
 	end
 end
+
 return CoreMaterialEditorTexture

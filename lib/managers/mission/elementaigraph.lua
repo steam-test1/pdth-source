@@ -1,13 +1,17 @@
 core:import("CoreMissionScriptElement")
 ElementAIGraph = ElementAIGraph or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementAIGraph:init(...)
 	ElementAIGraph.super.init(self, ...)
 end
+
 function ElementAIGraph:on_script_activated()
 end
+
 function ElementAIGraph:client_on_executed(...)
 	self:on_executed(...)
 end
+
 function ElementAIGraph:on_executed(instigator)
 	if not self._values.enabled then
 		return

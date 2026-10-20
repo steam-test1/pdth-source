@@ -2,12 +2,15 @@ core:module("CorePlayerSlotStateDetectLocalUser")
 core:import("CorePlayerSlotStateLocalUserBound")
 core:import("CorePlayerSlotStateInit")
 DetectLocalUser = DetectLocalUser or class()
+
 function DetectLocalUser:init()
 	self.player_slot._perform_local_user_binding:task_started()
 end
+
 function DetectLocalUser:destroy()
 	self.player_slot._perform_local_user_binding:task_completed()
 end
+
 function DetectLocalUser:transition()
 	if self.player_slot._init:is_requested() then
 		return CorePlayerSlotStateInit.Init

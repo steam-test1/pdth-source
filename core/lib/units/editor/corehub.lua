@@ -1,8 +1,10 @@
 CoreHub = CoreHub or class(HubElement)
 Hub = Hub or class(CoreHub)
+
 function Hub:init(...)
 	CoreHub.init(self, ...)
 end
+
 function CoreHub:init(unit)
 	HubElement.init(self, unit)
 	self._timeline_color = Vector3(0, 1, 0)
@@ -28,6 +30,7 @@ function CoreHub:init(unit)
 	table.insert(self._hed.action_types, "deactivate")
 	table.insert(self._hed.action_types, "trigger_actions")
 end
+
 function CoreHub:set_actions()
 	if not self._actions_ctrlrs then
 		return
@@ -51,12 +54,14 @@ function CoreHub:set_actions()
 		action_delay:set_enabled(false)
 	end
 end
+
 function CoreHub:append_actions_sorted()
 	self._actions_ctrlrs.actions:clear()
 	for _, name in ipairs(self:_action_names()) do
 		self._actions_ctrlrs.actions:append(name)
 	end
 end
+
 function CoreHub:_action_names()
 	local names = {}
 	for _, action in ipairs(self._hed.actions) do
@@ -65,6 +70,7 @@ function CoreHub:_action_names()
 	table.sort(names)
 	return names
 end
+
 function CoreHub:set_triggers()
 	if not self._triggers_ctrlrs then
 		return
@@ -85,12 +91,14 @@ function CoreHub:set_triggers()
 		trigger_types:set_enabled(false)
 	end
 end
+
 function CoreHub:append_triggers_sorted()
 	self._triggers_ctrlrs.triggers:clear()
 	for _, name in ipairs(self:_trigger_names()) do
 		self._triggers_ctrlrs.triggers:append(name)
 	end
 end
+
 function CoreHub:_trigger_names()
 	local names = {}
 	for _, trigger in ipairs(self._hed.triggers) do
@@ -99,6 +107,7 @@ function CoreHub:_trigger_names()
 	table.sort(names)
 	return names
 end
+
 function CoreHub:set_required_triggers()
 	self._required_triggers:clear()
 	for i = 1, #self._hed.triggers - 1 do
@@ -114,16 +123,19 @@ function CoreHub:set_required_triggers()
 	end
 	self._required_triggers:set_value(self._hed.required_triggers)
 end
+
 function CoreHub:set_trigger_type(trigger_types)
 	if self._selected_trigger then
 		self._selected_trigger.type = trigger_types:get_value()
 	end
 end
+
 function CoreHub:set_action_type(action_types)
 	if self._selected_action then
 		self._selected_action.type = action_types:get_value()
 	end
 end
+
 function CoreHub:set_action_delay(action_delay)
 	if self._selected_action then
 		local value = tonumber(action_delay:get_value()) or 0
@@ -134,24 +146,29 @@ function CoreHub:set_action_delay(action_delay)
 		end
 	end
 end
+
 function CoreHub:ews_select_action()
 	self:select_action(self._actions_ctrlrs.actions:get_value(), self._actions_ctrlrs.actions, self._actions_ctrlrs.action_types, self._actions_ctrlrs.action_delay)
 end
+
 function CoreHub:select_action_with_unit(unit)
 	if not table.contains(self._hed.actions, unit) then
 		return
 	end
 	self:select_action(self:combobox_name(unit), self._actions_ctrlrs.actions, self._actions_ctrlrs.action_types, self._actions_ctrlrs.action_delay)
 end
+
 function CoreHub:ews_select_trigger()
 	self:select_trigger(self._triggers_ctrlrs.triggers:get_value(), self._triggers_ctrlrs.triggers, self._triggers_ctrlrs.trigger_types)
 end
+
 function CoreHub:select_trigger_with_unit(unit)
 	if not table.contains(self._hed.triggers, unit) then
 		return
 	end
 	self:select_trigger(self:combobox_name(unit), self._triggers_ctrlrs.triggers, self._triggers_ctrlrs.trigger_types)
 end
+
 function CoreHub:select_action(s, actions, action_types, action_delay)
 	local action_id = self:combobox_id(s)
 	local a = self._hed.actions_data[action_id]
@@ -175,6 +192,7 @@ function CoreHub:select_action(s, actions, action_types, action_delay)
 		self._timeline:select_action(self._selected_action)
 	end
 end
+
 function CoreHub:select_trigger(s, triggers, trigger_types)
 	local trigger_id = self:combobox_id(s)
 	local t = self._hed.triggers_data[trigger_id]
@@ -193,13 +211,16 @@ function CoreHub:select_trigger(s, triggers, trigger_types)
 		trigger_types:set_enabled(false)
 	end
 end
+
 function CoreHub:update_selected(t, dt)
 	Application:draw_circle(self._unit:position(), 75, 1, 1, 0)
 end
+
 function CoreHub:draw_connections_selected(t, dt)
 	self:draw_triggers(t, dt)
 	self:draw_actions(t, dt)
 end
+
 function CoreHub:draw_actions(t, dt)
 	for _, action in ipairs(self._hed.actions) do
 		local r, g, b = action:hub_element():get_color(self._hed.actions_data[self:id_string(action)].type)
@@ -213,6 +234,7 @@ function CoreHub:draw_actions(t, dt)
 		self:draw_arrow(self._unit, action, r * s, g * s, b * s, true)
 	end
 end
+
 function CoreHub:draw_triggers(t, dt)
 	for _, trigger in ipairs(self._hed.triggers) do
 		local r, g, b = 1, 1, 0
@@ -232,8 +254,10 @@ function CoreHub:draw_triggers(t, dt)
 		self:draw_arrow(trigger, self._unit, r * s, g * s, b * s, true)
 	end
 end
+
 function CoreHub:update_unselected()
 end
+
 function CoreHub:draw_connections_unselected()
 	Application:draw_circle(self._unit:position(), 50, 1, 1, 0)
 	for _, trigger in ipairs(self._hed.triggers) do
@@ -250,9 +274,11 @@ function CoreHub:draw_connections_unselected()
 		self:draw_arrow(self._unit, action, r * 0.5, g * 0.5, b * 0.5, false)
 	end
 end
+
 function CoreHub:combobox_name(unit)
 	return unit:unit_data().name_id .. " (" .. unit:unit_data().unit_id .. ")"
 end
+
 function CoreHub:combobox_id(name)
 	local s
 	local e = string.len(name) - 1
@@ -265,16 +291,20 @@ function CoreHub:combobox_id(name)
 	end
 	return string.sub(name, s, e)
 end
+
 function CoreHub:id_string(unit)
 	return tostring(unit:unit_data().unit_id)
 end
+
 function CoreHub:save_mission_action(file, t, hub)
 	HubElement.save_mission_action(self, file, t, hub, true)
 end
+
 function CoreHub:save_mission_trigger(file, tab)
 	local name = self._unit:name()
 	file:puts(tab .. "<trigger type=\"Hub\" name=\"" .. name .. self._unit:unit_data().unit_id .. "\"/>")
 end
+
 function CoreHub:layer_finished()
 	local hed = self._hed
 	local t = {}
@@ -304,6 +334,7 @@ function CoreHub:layer_finished()
 		table.insert(t:hub_element_data().hubs, self._unit)
 	end
 end
+
 function CoreHub:action_unit(id)
 	for _, unit in ipairs(self._hed.actions) do
 		if unit:unit_data().unit_id == id then
@@ -311,6 +342,7 @@ function CoreHub:action_unit(id)
 		end
 	end
 end
+
 function CoreHub:trigger_unit(id)
 	for _, unit in ipairs(self._hed.triggers) do
 		if unit:unit_data().unit_id == id then
@@ -318,6 +350,7 @@ function CoreHub:trigger_unit(id)
 		end
 	end
 end
+
 function CoreHub:add_action(a)
 	if table.contains(self._hed.actions, a) then
 		return
@@ -339,6 +372,7 @@ function CoreHub:add_action(a)
 	end
 	self:select_action(self:combobox_name(a), self._actions_ctrlrs.actions, self._actions_ctrlrs.action_types, self._actions_ctrlrs.action_delay)
 end
+
 function CoreHub:add_trigger(t)
 	if table.contains(self._hed.triggers, t) then
 		return
@@ -359,6 +393,7 @@ function CoreHub:add_trigger(t)
 	self:select_trigger(self:combobox_name(t), self._triggers_ctrlrs.triggers, self._triggers_ctrlrs.trigger_types)
 	self:set_required_triggers()
 end
+
 function CoreHub:remove_action(a)
 	cat_print("editor", "remove_action", a:name())
 	table.delete(a:hub_element_data().hubs, self._unit)
@@ -367,6 +402,7 @@ function CoreHub:remove_action(a)
 		self._timeline:remove_action(a)
 	end
 end
+
 function CoreHub:delete_action(a)
 	table.delete(self._unit:hub_element_data().actions, a)
 	if self._selected_action and self:action_unit(self._selected_action.unit_id) == a then
@@ -378,12 +414,14 @@ function CoreHub:delete_action(a)
 		self._timeline:remove_action(a)
 	end
 end
+
 function CoreHub:remove_trigger(t)
 	cat_print("editor", "remove_trigger", t:name())
 	table.delete(t:hub_element_data().hubs, self._unit)
 	self:delete_trigger(t)
 	self:set_required_triggers()
 end
+
 function CoreHub:delete_trigger(t)
 	table.delete(self._unit:hub_element_data().triggers, t)
 	if self._selected_trigger and self:trigger_unit(self._selected_trigger.unit_id) == t then
@@ -392,12 +430,15 @@ function CoreHub:delete_trigger(t)
 	self._hed.triggers_data[self:id_string(t)] = nil
 	self:set_triggers()
 end
+
 function CoreHub:get_hub_action(unit)
 	return self._hed.actions_data[self:id_string(unit)]
 end
+
 function CoreHub:get_hub_trigger(unit)
 	return self._hed.triggers_data[self:id_string(unit)]
 end
+
 function CoreHub:on_timeline_btn()
 	if not self._timeline then
 		self._timeline = HubTimeline:new(self._unit:unit_data().name_id)
@@ -406,6 +447,7 @@ function CoreHub:on_timeline_btn()
 		self._timeline:set_visible(true)
 	end
 end
+
 function CoreHub:_build_panel()
 	self:_create_panel()
 	local timeline_btn = EWS:Button(self._panel, "Timeline", "", "BU_EXACTFIT,NO_BORDER")
@@ -505,6 +547,7 @@ function CoreHub:_build_panel()
 	self:set_triggers()
 	self:set_required_triggers()
 end
+
 function CoreHub:destroy()
 	if self._timeline then
 		self._timeline:destroy()

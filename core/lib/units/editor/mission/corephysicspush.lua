@@ -1,8 +1,10 @@
 CorePhysicsPushUnitElement = CorePhysicsPushUnitElement or class(MissionElement)
 PhysicsPushUnitElement = PhysicsPushUnitElement or class(CorePhysicsPushUnitElement)
+
 function PhysicsPushUnitElement:init(...)
 	CorePhysicsPushUnitElement.init(self, ...)
 end
+
 function CorePhysicsPushUnitElement:init(unit)
 	MissionElement.init(self, unit)
 	self._hed.physicspush_range = 1000
@@ -12,9 +14,11 @@ function CorePhysicsPushUnitElement:init(unit)
 	table.insert(self._save_values, "physicspush_velocity")
 	table.insert(self._save_values, "physicspush_mass")
 end
+
 function CorePhysicsPushUnitElement:update_selected()
 	Application:draw_sphere(self._unit:position(), self._hed.physicspush_range, 0, 1, 0)
 end
+
 function CorePhysicsPushUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel
@@ -56,6 +60,7 @@ function CorePhysicsPushUnitElement:_build_panel(panel, panel_sizer)
 	panel_sizer:add(velocity_sizer, 0, 0, "EXPAND")
 	panel_sizer:add(mass_sizer, 0, 0, "EXPAND")
 end
+
 function CorePhysicsPushUnitElement:add_to_mission_package()
 	managers.editor:add_to_world_package({
 		category = "physic_effects",

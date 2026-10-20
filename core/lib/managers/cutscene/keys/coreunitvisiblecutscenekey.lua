@@ -4,14 +4,17 @@ CoreUnitVisibleCutsceneKey.ELEMENT_NAME = "unit_visible"
 CoreUnitVisibleCutsceneKey.NAME = "Unit Visibility"
 CoreUnitVisibleCutsceneKey:register_serialized_attribute("unit_name", "")
 CoreUnitVisibleCutsceneKey:register_serialized_attribute("visible", true, toboolean)
+
 function CoreUnitVisibleCutsceneKey:__tostring()
 	return (self:visible() and "Show" or "Hide") .. " \"" .. self:unit_name() .. "\"."
 end
+
 function CoreUnitVisibleCutsceneKey:unload()
 	if self._cast then
 		self:play(nil, true)
 	end
 end
+
 function CoreUnitVisibleCutsceneKey:play(player, undo, fast_forward)
 	assert(type(self.evaluate) == "function", "Cutscene key must define the \"evaluate\" method to use the default CoreCutsceneKeyBase:play method.")
 	if undo then
@@ -27,6 +30,7 @@ function CoreUnitVisibleCutsceneKey:play(player, undo, fast_forward)
 		self:evaluate(player, fast_forward)
 	end
 end
+
 function CoreUnitVisibleCutsceneKey:evaluate(player, fast_forward, visible)
 	assert(self._cast)
 	visible = visible or self:visible()

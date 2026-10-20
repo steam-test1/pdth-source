@@ -4,8 +4,10 @@ core:import("CoreCode")
 core:import("CoreClass")
 core:import("CoreXml")
 core:import("CoreDebug")
+
 function save_unit(world, level, unit, data)
 end
+
 function save_data_table(unit)
 	local ud = unit:unit_data()
 	local t = {}
@@ -28,6 +30,7 @@ function save_data_table(unit)
 	t.projection_lights = ud.projection_lights
 	return t
 end
+
 function _light_data_table(unit)
 	local t = {}
 	local lights = CoreEditorUtils.get_editable_lights(unit)
@@ -48,6 +51,7 @@ function _light_data_table(unit)
 	end
 	return t
 end
+
 function _triggers_data_table(unit)
 	local t = {}
 	local triggers = managers.sequence:get_trigger_list(unit:name())
@@ -67,6 +71,7 @@ function _triggers_data_table(unit)
 	end
 	return t
 end
+
 function _editable_gui_data_table(unit)
 	local t
 	if unit:editable_gui() then
@@ -78,6 +83,7 @@ function _editable_gui_data_table(unit)
 	end
 	return t
 end
+
 function save_layout(params)
 	local dialogs = {}
 	if params.save_dialog_states then
@@ -111,6 +117,7 @@ function save_layout(params)
 	f:puts(ScriptSerializer:to_generic_xml(data))
 	f:close()
 end
+
 function load_layout(params)
 	local data = ScriptSerializer:from_generic_xml(params.file:read())
 	for name, settings in pairs(data.dialogs) do

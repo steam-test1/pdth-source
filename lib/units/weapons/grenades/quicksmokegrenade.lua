@@ -1,8 +1,10 @@
 QuickSmokeGrenade = QuickSmokeGrenade or class()
+
 function QuickSmokeGrenade:init(unit)
 	self._unit = unit
 	self._state = 0
 end
+
 function QuickSmokeGrenade:update(unit, t, dt)
 	if self._remove_t and t > self._remove_t then
 		self._unit:set_slot(0)
@@ -22,6 +24,7 @@ function QuickSmokeGrenade:update(unit, t, dt)
 		end
 	end
 end
+
 function QuickSmokeGrenade:activate(position, duration)
 	self._state = 1
 	self._timer = 0.5
@@ -29,14 +32,17 @@ function QuickSmokeGrenade:activate(position, duration)
 	self._duration = duration
 	self:_play_sound_and_effects()
 end
+
 function QuickSmokeGrenade:detonate()
 	self:_play_sound_and_effects()
 	self._remove_t = TimerManager:game():time() + self._duration
 end
+
 function QuickSmokeGrenade:preemptive_kill()
 	self._unit:sound_source():post_event("grenade_gas_stop")
 	self._unit:set_slot(0)
 end
+
 function QuickSmokeGrenade:_play_sound_and_effects()
 	if self._state == 1 then
 		local sound_source = SoundDevice:create_source("grenade_fire_source")
@@ -62,6 +68,7 @@ function QuickSmokeGrenade:_play_sound_and_effects()
 		})
 	end
 end
+
 function QuickSmokeGrenade:destroy()
 	if self._smoke_effect then
 		World:effect_manager():fade_kill(self._smoke_effect)

@@ -1,4 +1,5 @@
 MaskFilterUnitElement = MaskFilterUnitElement or class(MissionElement)
+
 function MaskFilterUnitElement:init(unit)
 	MaskFilterUnitElement.super.init(self, unit)
 	self._hed.mask = "none"
@@ -6,6 +7,7 @@ function MaskFilterUnitElement:init(unit)
 	table.insert(self._save_values, "mask")
 	table.insert(self._save_values, "player_amount")
 end
+
 function MaskFilterUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

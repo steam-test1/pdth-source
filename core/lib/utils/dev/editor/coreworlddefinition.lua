@@ -4,6 +4,7 @@ core:import("CoreMath")
 core:import("CoreEditorUtils")
 core:import("CoreEngineAccess")
 WorldDefinition = WorldDefinition or class()
+
 function WorldDefinition:init(params)
 	managers.worlddefinition = self
 	self._world_dir = params.world_dir
@@ -28,6 +29,7 @@ function WorldDefinition:init(params)
 	self._mission_element_units = {}
 	self._termination_counter = 0
 end
+
 function WorldDefinition:_serialize_to_script(type, name)
 	if Application:editor() then
 		return PackageManager:editor_load_script_data(type:id(), name:id())
@@ -38,9 +40,11 @@ function WorldDefinition:_serialize_to_script(type, name)
 		return PackageManager:script_data(type:id(), name:id())
 	end
 end
+
 function WorldDefinition:get_max_id()
 	return self._definition.world_data.max_id
 end
+
 function WorldDefinition:_parse_replace_unit()
 	local is_editor = Application:editor()
 	if DB:has("xml", self._replace_units_path) then
@@ -55,12 +59,15 @@ function WorldDefinition:_parse_replace_unit()
 		end
 	end
 end
+
 function WorldDefinition:world_dir()
 	return self._world_dir
 end
+
 function WorldDefinition:continent_excluded(name)
 	return self._excluded_continents[name]
 end
+
 function WorldDefinition:_load_world_package()
 	if Application:editor() then
 		return
@@ -85,6 +92,7 @@ function WorldDefinition:_load_world_package()
 	end
 	self:_load_sound_package()
 end
+
 function WorldDefinition:_load_sound_package()
 	local package = self._world_dir .. "world_sounds"
 	if not DB:has("package", package) then
@@ -96,6 +104,7 @@ function WorldDefinition:_load_sound_package()
 		self._current_sound_package = package
 	end
 end
+
 function WorldDefinition:_load_continent_init_package(path)
 	if Application:editor() then
 		return
@@ -110,6 +119,7 @@ function WorldDefinition:_load_continent_init_package(path)
 		table.insert(self._continent_init_packages, path)
 	end
 end
+
 function WorldDefinition:_load_continent_package(path)
 	if Application:editor() then
 		return
@@ -125,6 +135,7 @@ function WorldDefinition:_load_continent_package(path)
 		managers.sequence:preload()
 	end
 end
+
 function WorldDefinition:unload_packages()
 	self:_unload_package(self._current_world_package)
 	self:_unload_package(self._current_sound_package)
@@ -132,6 +143,7 @@ function WorldDefinition:unload_packages()
 		self:_unload_package(package)
 	end
 end
+
 function WorldDefinition:_unload_package(package)
 	if not package then
 		return
@@ -140,6 +152,7 @@ function WorldDefinition:_unload_package(package)
 		PackageManager:unload(package)
 	end
 end
+
 function WorldDefinition:_parse_world_setting(world_setting)
 	if not world_setting then
 		return
@@ -157,6 +170,7 @@ function WorldDefinition:_parse_world_setting(world_setting)
 		self._excluded_continents[name] = bool
 	end
 end
+
 function WorldDefinition:parse_continents(node, t)
 	local path = self:world_dir() .. self._definition.world_data.continents_file
 	if not DB:has("continents", path) then
@@ -183,9 +197,11 @@ function WorldDefinition:parse_continents(node, t)
 		end
 	end
 end
+
 function WorldDefinition:_continent_editor_only(data)
 	return not Application:editor() and data.editor_only
 end
+
 function WorldDefinition:init_done()
 	if self._continent_init_packages then
 		for _, package in ipairs(self._continent_init_packages) do
@@ -196,6 +212,7 @@ function WorldDefinition:init_done()
 	self._continent_definitions = nil
 	self._definition = nil
 end
+
 function WorldDefinition:create(layer, offset)
 	Application:check_termination()
 	offset = offset or Vector3()
@@ -332,8 +349,10 @@ function WorldDefinition:create(layer, offset)
 	end
 	return return_data
 end
+
 function WorldDefinition:_load_level_settings(data, offset)
 end
+
 function WorldDefinition:_load_ai_nav_graphs(data, offset)
 	local path = self:world_dir() .. data.file
 	if not DB:has("nav_data", path) then
@@ -345,11 +364,13 @@ function WorldDefinition:_load_ai_nav_graphs(data, offset)
 	managers.navigation:set_load_data(values)
 	values = nil
 end
+
 function WorldDefinition:_load_ai_settings(data, offset)
 	managers.groupai:set_state(data.ai_settings.group_state)
 	managers.ai_data:load_data(data.ai_data)
 	return data.ai_settings
 end
+
 function WorldDefinition:_create_portal(data, offset)
 	if not Application:editor() then
 		for _, portal in ipairs(data.portals) do
@@ -376,6 +397,7 @@ function WorldDefinition:_create_portal(data, offset)
 		group:set_ids(data.ids)
 	end
 end
+
 function WorldDefinition:_create_editor_groups()
 	local groups = {}
 	local group_names = {}
@@ -399,6 +421,7 @@ function WorldDefinition:_create_editor_groups()
 	end
 	return {groups = groups, group_names = group_names}
 end
+
 function WorldDefinition:_create_sounds(data)
 	local path = self:world_dir() .. data.file
 	if not DB:has("world_sounds", path) then
@@ -420,6 +443,7 @@ function WorldDefinition:_create_sounds(data)
 		managers.sound_environment:add_area_emitter(sound_area_emitter)
 	end
 end
+
 function WorldDefinition:_create_massunit(data, offset)
 	local path = self:world_dir() .. data.file
 	if Application:editor() then
@@ -443,9 +467,11 @@ function WorldDefinition:_create_massunit(data, offset)
 	MassUnitManager:delete_all_units()
 	MassUnitManager:load(path:id(), offset, self._massunit_replace_names)
 end
+
 function WorldDefinition:sky_rotation_modifier(interface)
 	return self._environment.sky_rot
 end
+
 function WorldDefinition:_create_environment(data, offset)
 	if data.environment_values.environment ~= "none" then
 		managers.viewport:preload_environment(data.environment_values.environment)
@@ -488,6 +514,7 @@ function WorldDefinition:_create_environment(data, offset)
 		data.units = units
 	end
 end
+
 function WorldDefinition:_create_world_cameras(data)
 	local path = self:world_dir() .. data.file
 	if not DB:has("world_cameras", path) then
@@ -497,6 +524,7 @@ function WorldDefinition:_create_world_cameras(data)
 	local values = self:_serialize_to_script("world_cameras", path)
 	managers.worldcamera:load(values)
 end
+
 function WorldDefinition:_create_mission_unit(data, offset)
 	self:preload_unit(data.unit_data.name)
 	local unit = self:make_unit(data.unit_data, offset)
@@ -510,6 +538,7 @@ function WorldDefinition:_create_mission_unit(data, offset)
 	end
 	return unit
 end
+
 function WorldDefinition:_create_wires_unit(data, offset)
 	self:preload_unit(data.unit_data.name)
 	local unit = self:make_unit(data.unit_data, offset)
@@ -523,14 +552,17 @@ function WorldDefinition:_create_wires_unit(data, offset)
 	end
 	return unit
 end
+
 function WorldDefinition:_create_statics_unit(data, offset)
 	self:preload_unit(data.unit_data.name)
 	return self:make_unit(data.unit_data, offset)
 end
+
 function WorldDefinition:_create_dynamics_unit(data, offset)
 	self:preload_unit(data.unit_data.name)
 	return self:make_unit(data.unit_data, offset)
 end
+
 function WorldDefinition:_create_ai_editor_unit(data, offset)
 	local unit = self:_create_statics_unit(data, offset)
 	if data.ai_editor_data then
@@ -540,6 +572,7 @@ function WorldDefinition:_create_ai_editor_unit(data, offset)
 	end
 	return unit
 end
+
 function WorldDefinition:preload_unit(name)
 	local is_editor = Application:editor()
 	if table.has(self._replace_names, name) then
@@ -559,6 +592,7 @@ function WorldDefinition:preload_unit(name)
 		CoreEngineAccess._editor_load(Idstring("unit"), name:id())
 	end
 end
+
 function WorldDefinition:make_unit(data, offset)
 	local is_editor = Application:editor()
 	local name = data.name
@@ -595,6 +629,7 @@ function WorldDefinition:make_unit(data, offset)
 	self._termination_counter = (self._termination_counter + 1) % 100
 	return unit
 end
+
 function WorldDefinition:assign_unit_data(unit, data)
 	local is_editor = Application:editor()
 	if not unit:unit_data() then
@@ -626,12 +661,14 @@ function WorldDefinition:assign_unit_data(unit, data)
 	self:_setup_projection_light(unit, data)
 	self:_project_assign_unit_data(unit, data)
 end
+
 function WorldDefinition:_setup_unit_id(unit, data)
 	unit:unit_data().unit_id = data.unit_id
 	unit:set_editor_id(unit:unit_data().unit_id)
 	self._all_units[unit:unit_data().unit_id] = unit
 	self:use_me(unit, Application:editor())
 end
+
 function WorldDefinition:_setup_editor_unit_data(unit, data)
 	if not Application:editor() then
 		return
@@ -640,6 +677,7 @@ function WorldDefinition:_setup_editor_unit_data(unit, data)
 	unit:unit_data().world_pos = unit:position()
 	unit:unit_data().projection_lights = data.projection_lights
 end
+
 function WorldDefinition:_setup_lights(unit, data)
 	for _, l in ipairs(data.lights) do
 		local light = unit:get_object(l.name:id())
@@ -668,9 +706,11 @@ function WorldDefinition:_setup_lights(unit, data)
 		end
 	end
 end
+
 function WorldDefinition:setup_lights(...)
 	self:_setup_lights(...)
 end
+
 function WorldDefinition:_setup_variations(unit, data)
 	if data.mesh_variation and data.mesh_variation ~= "default" then
 		unit:unit_data().mesh_variation = data.mesh_variation
@@ -681,6 +721,7 @@ function WorldDefinition:_setup_variations(unit, data)
 		unit:set_material_config(Idstring(unit:unit_data().material), true)
 	end
 end
+
 function WorldDefinition:_setup_editable_gui(unit, data)
 	if not data.editable_gui then
 		return
@@ -696,9 +737,11 @@ function WorldDefinition:_setup_editable_gui(unit, data)
 		unit:editable_gui():lock_gui()
 	end
 end
+
 function WorldDefinition:external_set_only_visible_in_editor(unit)
 	self:_set_only_visible_in_editor(unit, nil)
 end
+
 function WorldDefinition:_set_only_visible_in_editor(unit, data)
 	if Application:editor() then
 		return
@@ -707,6 +750,7 @@ function WorldDefinition:_set_only_visible_in_editor(unit, data)
 		unit:set_visible(false)
 	end
 end
+
 function WorldDefinition:_setup_cutscene_actor(unit, data)
 	if not data.cutscene_actor then
 		return
@@ -714,6 +758,7 @@ function WorldDefinition:_setup_cutscene_actor(unit, data)
 	unit:unit_data().cutscene_actor = data.cutscene_actor
 	managers.cutscene:register_cutscene_actor(unit)
 end
+
 function WorldDefinition:_setup_disable_shadow(unit, data)
 	if not data.disable_shadows then
 		return
@@ -723,6 +768,7 @@ function WorldDefinition:_setup_disable_shadow(unit, data)
 	end
 	unit:set_shadows_disabled(data.disable_shadows)
 end
+
 function WorldDefinition:_setup_hide_on_projection_light(unit, data)
 	if not data.hide_on_projection_light then
 		return
@@ -731,6 +777,7 @@ function WorldDefinition:_setup_hide_on_projection_light(unit, data)
 		unit:unit_data().hide_on_projection_light = data.hide_on_projection_light
 	end
 end
+
 function WorldDefinition:_setup_disable_on_ai_graph(unit, data)
 	if not data.disable_on_ai_graph then
 		return
@@ -739,6 +786,7 @@ function WorldDefinition:_setup_disable_on_ai_graph(unit, data)
 		unit:unit_data().disable_on_ai_graph = data.disable_on_ai_graph
 	end
 end
+
 function WorldDefinition:_add_to_portal(unit, data)
 	if Application:editor() or not self._portal_slot_mask then
 		return
@@ -747,6 +795,7 @@ function WorldDefinition:_add_to_portal(unit, data)
 		managers.portal:add_unit(unit)
 	end
 end
+
 function WorldDefinition:_setup_projection_light(unit, data)
 	if not data.projection_light then
 		return
@@ -761,11 +810,14 @@ function WorldDefinition:_setup_projection_light(unit, data)
 	local omni = string.find(light:properties(), "omni") and true or false
 	light:set_projection_texture(texture_name, omni)
 end
+
 function WorldDefinition:setup_projection_light(...)
 	self:_setup_projection_light(...)
 end
+
 function WorldDefinition:_project_assign_unit_data(...)
 end
+
 function WorldDefinition:add_trigger_sequence(unit, triggers)
 	local is_editor = Application:editor()
 	for _, trigger in ipairs(triggers) do
@@ -783,6 +835,7 @@ function WorldDefinition:add_trigger_sequence(unit, triggers)
 		end
 	end
 end
+
 function WorldDefinition:use_me(unit, is_editor)
 	local id = unit:unit_data().unit_id
 	id = id ~= 0 and id or unit:editor_id()
@@ -800,6 +853,7 @@ function WorldDefinition:use_me(unit, is_editor)
 		self._use_unit_callbacks[id] = nil
 	end
 end
+
 function WorldDefinition:get_unit_on_load(id, call)
 	if self._all_units[id] then
 		return self._all_units[id]
@@ -811,12 +865,15 @@ function WorldDefinition:get_unit_on_load(id, call)
 	end
 	return nil
 end
+
 function WorldDefinition:get_unit(id)
 	return self._all_units[id]
 end
+
 function WorldDefinition:add_mission_element_unit(unit)
 	self._mission_element_units[unit:unit_data().unit_id] = unit
 end
+
 function WorldDefinition:get_mission_element_unit(id)
 	return self._mission_element_units[id]
 end

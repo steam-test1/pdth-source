@@ -47,6 +47,7 @@ BaseNetworkHandler._gamestate_filter = {
 	},
 	lobby = {menu_main = true, ingame_lobby_menu = true}
 }
+
 function BaseNetworkHandler._verify_in_session()
 	local session = managers.network:session()
 	if not session or session:closing() then
@@ -56,6 +57,7 @@ function BaseNetworkHandler._verify_in_session()
 	end
 	return session
 end
+
 function BaseNetworkHandler._verify_in_server_session()
 	local session = managers.network:session()
 	if not (session and session:is_host()) or session:closing() then
@@ -65,6 +67,7 @@ function BaseNetworkHandler._verify_in_server_session()
 	end
 	return session
 end
+
 function BaseNetworkHandler._verify_in_client_session()
 	local session = managers.network:session()
 	if not (session and session:is_client()) or session:closing() then
@@ -74,6 +77,7 @@ function BaseNetworkHandler._verify_in_client_session()
 	end
 	return session
 end
+
 function BaseNetworkHandler._verify_sender(rpc)
 	local session = managers.network:session()
 	local peer
@@ -90,12 +94,15 @@ function BaseNetworkHandler._verify_sender(rpc)
 	print("[BaseNetworkHandler._verify_sender] Discarding message", session, peer and peer:id())
 	Application:stack_dump()
 end
+
 function BaseNetworkHandler._verify_character_and_sender(unit, rpc)
 	return BaseNetworkHandler._verify_sender(rpc) and BaseNetworkHandler._verify_character(unit)
 end
+
 function BaseNetworkHandler._verify_character(unit)
 	return alive(unit) and not unit:character_damage():dead()
 end
+
 function BaseNetworkHandler._verify_gamestate(acceptable_gamestates)
 	local correct_state = acceptable_gamestates[game_state_machine:last_queued_state_name()]
 	if correct_state then
@@ -104,6 +111,7 @@ function BaseNetworkHandler._verify_gamestate(acceptable_gamestates)
 	print("[BaseNetworkHandler._verify_gamestate] Discarding message. current state:", game_state_machine:last_queued_state_name(), "acceptable:", inspect(acceptable_gamestates))
 	Application:stack_dump()
 end
+
 function BaseNetworkHandler:_chk_flush_unit_too_early_packets(unit)
 	if self._flushing_unit_too_early_packets then
 		return
@@ -135,6 +143,7 @@ function BaseNetworkHandler:_chk_flush_unit_too_early_packets(unit)
 	end
 	self._flushing_unit_too_early_packets = nil
 end
+
 function BaseNetworkHandler:_chk_unit_too_early(unit, unit_id_str, fun_name, unit_param_index, ...)
 	if self._flushing_unit_too_early_packets then
 		return

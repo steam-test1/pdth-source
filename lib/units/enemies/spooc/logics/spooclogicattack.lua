@@ -1,4 +1,5 @@
 SpoocLogicAttack = class(CopLogicAttack)
+
 function SpoocLogicAttack.enter(data, new_logic_name, enter_params)
 	CopLogicBase.enter(data, new_logic_name, enter_params)
 	data.unit:brain():cancel_all_pathing_searches()
@@ -36,6 +37,7 @@ function SpoocLogicAttack.enter(data, new_logic_name, enter_params)
 		data.unit:movement():set_stance("hos")
 	end
 end
+
 function SpoocLogicAttack.exit(data, new_logic_name, enter_params)
 	CopLogicBase.exit(data, new_logic_name, enter_params)
 	local my_data = data.internal_data
@@ -58,6 +60,7 @@ function SpoocLogicAttack.exit(data, new_logic_name, enter_params)
 	end
 	data.unit:brain():set_update_enabled_state(true)
 end
+
 function SpoocLogicAttack.queued_update(data)
 	if CopLogicIdle._chk_relocate(data) then
 		return
@@ -221,6 +224,7 @@ function SpoocLogicAttack.queued_update(data)
 	CopLogicBase.queue_task(my_data, my_data.update_task_key, SpoocLogicAttack.queued_update, data, data.t + requeue_delay)
 	CopLogicBase._report_detections(my_data.detected_enemies)
 end
+
 function SpoocLogicAttack._upd_enemy_detection(data)
 	managers.groupai:state():on_unit_detection_updated(data.unit)
 	local my_data = data.internal_data
@@ -262,6 +266,7 @@ function SpoocLogicAttack._upd_enemy_detection(data)
 	my_data.focus_enemy = focus_enemy
 	my_data.focus_type = focus_type
 end
+
 function SpoocLogicAttack._upd_aim(data, my_data)
 	local shoot, aim
 	local focus_enemy = my_data.focus_enemy
@@ -333,6 +338,7 @@ function SpoocLogicAttack._upd_aim(data, my_data)
 	end
 	CopLogicAttack.aim_allow_fire(shoot, aim, data, my_data)
 end
+
 function SpoocLogicAttack.action_complete_clbk(data, action)
 	local action_type = action:type()
 	local my_data = data.internal_data
@@ -356,12 +362,14 @@ function SpoocLogicAttack.action_complete_clbk(data, action)
 		my_data.spooc_attack = nil
 	end
 end
+
 function SpoocLogicAttack._cancel_spooc_attempt(data, my_data)
 	if my_data.spooc_attack then
 		local new_action = {type = "idle", body_part = 2}
 		data.unit:brain():action_request(new_action)
 	end
 end
+
 function SpoocLogicAttack._upd_spooc_attack(data, my_data)
 	local focus_enemy = my_data.focus_enemy
 	local record = managers.groupai:state():criminal_record(focus_enemy.unit:key())
@@ -388,6 +396,7 @@ function SpoocLogicAttack._upd_spooc_attack(data, my_data)
 		end
 	end
 end
+
 function SpoocLogicAttack._chk_request_action_spooc_attack(data, my_data)
 	if data.unit:anim_data().crouch then
 		CopLogicAttack._chk_request_action_stand(data)
@@ -407,18 +416,22 @@ function SpoocLogicAttack._chk_request_action_spooc_attack(data, my_data)
 		return true
 	end
 end
+
 function SpoocLogicAttack.on_criminal_neutralized(data, criminal_key)
 	CopLogicAttack.on_criminal_neutralized(data, criminal_key)
 	local my_data = data.internal_data
 end
+
 function SpoocLogicAttack.on_detected_enemy_destroyed(data, enemy_unit)
 	CopLogicAttack.on_detected_enemy_destroyed(data, enemy_unit)
 	local my_data = data.internal_data
 end
+
 function SpoocLogicAttack.damage_clbk(data, damage_info)
 	data.internal_data.last_dmg_t = TimerManager:game():time()
 	CopLogicIdle.damage_clbk(data, damage_info)
 end
+
 function SpoocLogicAttack.is_available_for_assignment(data)
 	if data.internal_data.spooc_attack then
 		return

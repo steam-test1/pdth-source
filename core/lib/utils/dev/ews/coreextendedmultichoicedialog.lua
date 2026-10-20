@@ -6,6 +6,7 @@ if Application:ews_enabled() then
 		return core_or_local("CoreExtendedMultiChoiceDialog", ...)
 	end)
 end
+
 function CoreExtendedMultiChoiceDialog:init(parent, caption, message, pos, size, style, objects)
 	self._objects = objects or {}
 	self._dialog = EWS:Dialog(parent, caption or "", "", pos or Vector3(-1, -1, 0), size or Vector3(450, 500, 0), style or "CAPTION,SYSTEM_MENU,STAY_ON_TOP")
@@ -36,6 +37,7 @@ function CoreExtendedMultiChoiceDialog:init(parent, caption, message, pos, size,
 	box:add(button_box, 0, 0, "EXPAND")
 	self._dialog:set_sizer(box)
 end
+
 function CoreExtendedMultiChoiceDialog:show_modal()
 	self._value_map = {}
 	self._left_list_box:clear()
@@ -45,15 +47,18 @@ function CoreExtendedMultiChoiceDialog:show_modal()
 	end
 	return self._dialog:show_modal()
 end
+
 function CoreExtendedMultiChoiceDialog:on_ok_button()
 	for i = 0, self._right_list_box:nr_items() - 1 do
 		table.insert(self._value_map, self._right_list_box:get_string(i))
 	end
 	self._dialog:end_modal("ID_OK")
 end
+
 function CoreExtendedMultiChoiceDialog:on_cancel_button()
 	self._dialog:end_modal("ID_CANCEL")
 end
+
 function CoreExtendedMultiChoiceDialog:on_left_box()
 	local index = self._left_list_box:selected_index()
 	if -1 < index then
@@ -62,6 +67,7 @@ function CoreExtendedMultiChoiceDialog:on_left_box()
 		self._left_list_box:remove(index)
 	end
 end
+
 function CoreExtendedMultiChoiceDialog:on_right_box()
 	local index = self._right_list_box:selected_index()
 	if -1 < index then
@@ -70,6 +76,7 @@ function CoreExtendedMultiChoiceDialog:on_right_box()
 		self._right_list_box:remove(index)
 	end
 end
+
 function CoreExtendedMultiChoiceDialog:get_value()
 	return self._value_map
 end

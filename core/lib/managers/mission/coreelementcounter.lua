@@ -1,9 +1,11 @@
 core:module("CoreElementCounter")
 core:import("CoreMissionScriptElement")
 ElementCounter = ElementCounter or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementCounter:init(...)
 	ElementCounter.super.init(self, ...)
 end
+
 function ElementCounter:on_executed(instigator)
 	if not self._values.enabled then
 		return
@@ -20,13 +22,17 @@ function ElementCounter:on_executed(instigator)
 		self._mission_script:debug_output("Counter " .. self._editor_name .. ": already exhausted!", Color(1, 0, 0.75, 0))
 	end
 end
+
 function ElementCounter:reset_counter_target(counter_target)
 	self._values.counter_target = counter_target
 end
+
 ElementCounterReset = ElementCounterReset or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementCounterReset:init(...)
 	ElementCounterReset.super.init(self, ...)
 end
+
 function ElementCounterReset:on_executed(instigator)
 	if not self._values.enabled then
 		return

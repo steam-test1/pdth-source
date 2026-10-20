@@ -1,4 +1,5 @@
 SecretAssignmentUnitElement = SecretAssignmentUnitElement or class(MissionElement)
+
 function SecretAssignmentUnitElement:init(unit)
 	SecretAssignmentUnitElement.super.init(self, unit)
 	self._hed.set_enabled = false
@@ -6,6 +7,7 @@ function SecretAssignmentUnitElement:init(unit)
 	table.insert(self._save_values, "set_enabled")
 	table.insert(self._save_values, "assignment")
 end
+
 function SecretAssignmentUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

@@ -1,11 +1,14 @@
 core:import("CoreMissionScriptElement")
 ElementMoney = ElementMoney or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementMoney:init(...)
 	ElementMoney.super.init(self, ...)
 end
+
 function ElementMoney:client_on_executed(...)
 	self:on_executed(...)
 end
+
 function ElementMoney:on_executed(instigator)
 	if not self._values.enabled then
 		return

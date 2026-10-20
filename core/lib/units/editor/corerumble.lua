@@ -1,8 +1,10 @@
 CoreRumbleHubElement = CoreRumbleHubElement or class(HubElement)
 RumbleHubElement = RumbleHubElement or class(CoreRumbleHubElement)
+
 function RumbleHubElement:init(...)
 	CoreRumbleHubElement.init(self, ...)
 end
+
 function CoreRumbleHubElement:init(unit)
 	HubElement.init(self, unit)
 	self._hed.rumble_engine = "both"
@@ -16,6 +18,7 @@ function CoreRumbleHubElement:init(unit)
 	table.insert(self._save_values, "rumble_sustain")
 	table.insert(self._save_values, "rumble_release")
 end
+
 function CoreRumbleHubElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

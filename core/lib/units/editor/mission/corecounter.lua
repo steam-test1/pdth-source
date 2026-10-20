@@ -1,13 +1,16 @@
 CoreCounterUnitElement = CoreCounterUnitElement or class(MissionElement)
 CounterUnitElement = CounterUnitElement or class(CoreCounterUnitElement)
+
 function CounterUnitElement:init(...)
 	CoreCounterUnitElement.init(self, ...)
 end
+
 function CoreCounterUnitElement:init(unit)
 	MissionElement.init(self, unit)
 	self._hed.counter_target = 1
 	table.insert(self._save_values, "counter_target")
 end
+
 function CoreCounterUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

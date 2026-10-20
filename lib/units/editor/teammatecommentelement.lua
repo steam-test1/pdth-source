@@ -1,4 +1,5 @@
 TeammateCommentUnitElement = TeammateCommentUnitElement or class(MissionElement)
+
 function TeammateCommentUnitElement:init(unit)
 	TeammateCommentUnitElement.super.init(self, unit)
 	self._hed.comment = "none"
@@ -10,9 +11,11 @@ function TeammateCommentUnitElement:init(unit)
 	table.insert(self._save_values, "use_instigator")
 	table.insert(self._save_values, "radius")
 end
+
 function TeammateCommentUnitElement:post_init(...)
 	TeammateCommentUnitElement.super.post_init(self, ...)
 end
+
 function TeammateCommentUnitElement:update_selected(t, dt)
 	if self._hed.radius ~= 0 then
 		local brush = Draw:brush()
@@ -22,6 +25,7 @@ function TeammateCommentUnitElement:update_selected(t, dt)
 		pen:sphere(self._unit:position(), self._hed.radius)
 	end
 end
+
 function TeammateCommentUnitElement:test_element()
 	if self._hed.comment then
 		managers.editor:set_wanted_mute(false)
@@ -41,6 +45,7 @@ function TeammateCommentUnitElement:test_element()
 		end
 	end
 end
+
 function TeammateCommentUnitElement:stop_test_element()
 	managers.editor:set_wanted_mute(true)
 	managers.editor:set_listener_enabled(false)
@@ -48,6 +53,7 @@ function TeammateCommentUnitElement:stop_test_element()
 		self._ss:stop()
 	end
 end
+
 function TeammateCommentUnitElement:select_comment_btn()
 	local dialog = SelectNameModal:new("Select comment", managers.groupai:state().teammate_comment_names)
 	if dialog:cancelled() then
@@ -58,6 +64,7 @@ function TeammateCommentUnitElement:select_comment_btn()
 		CoreEws.change_combobox_value(self._comment_params, self._hed.comment)
 	end
 end
+
 function TeammateCommentUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel
@@ -118,6 +125,7 @@ function TeammateCommentUnitElement:_build_panel(panel, panel_sizer)
 	help.sizer = panel_sizer
 	self:add_help_text(help)
 end
+
 function TeammateCommentUnitElement:destroy()
 	self:stop_test_element()
 	TeammateCommentUnitElement.super.destroy(self)

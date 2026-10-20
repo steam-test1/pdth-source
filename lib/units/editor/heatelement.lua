@@ -1,4 +1,5 @@
 HeatUnitElement = HeatUnitElement or class(MissionElement)
+
 function HeatUnitElement:init(unit)
 	HeatUnitElement.super.init(self, unit)
 	self._hed.points = 0
@@ -6,6 +7,7 @@ function HeatUnitElement:init(unit)
 	table.insert(self._save_values, "points")
 	table.insert(self._save_values, "level")
 end
+
 function HeatUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel
@@ -44,13 +46,16 @@ function HeatUnitElement:_build_panel(panel, panel_sizer)
 	help.sizer = panel_sizer
 	self:add_help_text(help)
 end
+
 HeatTriggerUnitElement = HeatTriggerUnitElement or class(MissionElement)
+
 function HeatTriggerUnitElement:init(unit)
 	HeatTriggerUnitElement.super.init(self, unit)
 	self._hed.trigger_times = 1
 	self._hed.stage = 0
 	table.insert(self._save_values, "stage")
 end
+
 function HeatTriggerUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

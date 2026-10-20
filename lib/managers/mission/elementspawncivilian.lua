@@ -1,17 +1,21 @@
 core:import("CoreMissionScriptElement")
 ElementSpawnCivilian = ElementSpawnCivilian or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementSpawnCivilian:init(...)
 	ElementSpawnCivilian.super.init(self, ...)
 	self._enemy_name = self._values.enemy and Idstring(self._values.enemy) or Idstring("units/characters/civilians/dummy_civilian_1/dummy_civilian_1")
 	self._units = {}
 	self._events = {}
 end
+
 function ElementSpawnCivilian:enemy_name()
 	return self._enemy_name
 end
+
 function ElementSpawnCivilian:units()
 	return self._units
 end
+
 function ElementSpawnCivilian:produce()
 	local unit = safe_spawn_unit(self._enemy_name, self._values.position, self._values.rotation)
 	unit:unit_data().mission_element = self
@@ -48,6 +52,7 @@ function ElementSpawnCivilian:produce()
 	self:event("spawn", unit)
 	return unit
 end
+
 function ElementSpawnCivilian:event(name, unit)
 	if self._events[name] then
 		for _, callback in ipairs(self._events[name]) do
@@ -55,10 +60,12 @@ function ElementSpawnCivilian:event(name, unit)
 		end
 	end
 end
+
 function ElementSpawnCivilian:add_event_callback(name, callback)
 	self._events[name] = self._events[name] or {}
 	table.insert(self._events[name], callback)
 end
+
 function ElementSpawnCivilian:on_executed(instigator)
 	if not self._values.enabled then
 		return
@@ -69,9 +76,11 @@ function ElementSpawnCivilian:on_executed(instigator)
 	local unit = self:produce()
 	ElementSpawnCivilian.super.on_executed(self, unit)
 end
+
 function ElementSpawnCivilian:unspawn_all_units()
 	ElementSpawnEnemyDummy.unspawn_all_units(self)
 end
+
 function ElementSpawnCivilian:execute_on_all_units(func)
 	ElementSpawnEnemyDummy.execute_on_all_units(self, func)
 end

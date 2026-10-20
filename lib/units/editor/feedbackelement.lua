@@ -1,4 +1,5 @@
 FeedbackUnitElement = FeedbackUnitElement or class(MissionElement)
+
 function FeedbackUnitElement:init(unit)
 	FeedbackUnitElement.super.init(self, unit)
 	self._hed.effect = "mission_triggered"
@@ -30,6 +31,7 @@ function FeedbackUnitElement:init(unit)
 	table.insert(self._save_values, "above_camera_effect")
 	table.insert(self._save_values, "above_camera_effect_distance")
 end
+
 function FeedbackUnitElement:update_selected()
 	local brush = Draw:brush()
 	brush:set_color(Color(0.15, 1, 1, 1))
@@ -41,6 +43,7 @@ function FeedbackUnitElement:update_selected()
 	brush:sphere(self._unit:position(), self._hed.range * self._hed.above_camera_effect_distance, 4)
 	pen:sphere(self._unit:position(), self._hed.range * self._hed.above_camera_effect_distance)
 end
+
 function FeedbackUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel
@@ -285,6 +288,7 @@ function FeedbackUnitElement:_build_panel(panel, panel_sizer)
 		value = "above_camera_effect_distance"
 	})
 end
+
 function FeedbackUnitElement:select_above_camera_effect_btn()
 	local dialog = SelectNameModal:new("Select effect", self:_effect_options())
 	if dialog:cancelled() then
@@ -295,6 +299,7 @@ function FeedbackUnitElement:select_above_camera_effect_btn()
 		CoreEws.change_combobox_value(self._above_camera_effect_params, self._hed.above_camera_effect)
 	end
 end
+
 function FeedbackUnitElement:_effect_options()
 	local effect_options = {}
 	for _, name in ipairs(managers.database:list_entries_of_type("effect")) do
@@ -302,6 +307,7 @@ function FeedbackUnitElement:_effect_options()
 	end
 	return effect_options
 end
+
 function FeedbackUnitElement:add_to_mission_package()
 	if self._hed.effect and self._hed.above_camera_effect ~= "none" then
 		managers.editor:add_to_world_package({

@@ -1,6 +1,7 @@
 AchievmentManager = AchievmentManager or class()
 AchievmentManager.PATH = "gamedata/achievments"
 AchievmentManager.FILE_EXTENSION = "achievment"
+
 function AchievmentManager:init()
 	self.exp_awards = {
 		none = 0,
@@ -32,11 +33,13 @@ function AchievmentManager:init()
 		Application:error("[AchievmentManager:init] Unsupported platform")
 	end
 end
+
 function AchievmentManager:fetch_trophies()
 	if SystemInfo:platform() == Idstring("PS3") then
 		Trophies:get_unlockstate(AchievmentManager.unlockstate_result)
 	end
 end
+
 function AchievmentManager.unlockstate_result(error_str, table)
 	if table then
 		for i, data in ipairs(table) do
@@ -53,6 +56,7 @@ function AchievmentManager.unlockstate_result(error_str, table)
 	end
 	managers.network.account:achievements_fetched()
 end
+
 function AchievmentManager.fetch_achievments(error_str)
 	print("[AchievmentManager.fetch_achievments]", error_str)
 	if error_str == "success" then
@@ -65,6 +69,7 @@ function AchievmentManager.fetch_achievments(error_str)
 	end
 	managers.network.account:achievements_fetched()
 end
+
 function AchievmentManager:_parse_achievments(platform)
 	local list = PackageManager:script_data(self.FILE_EXTENSION:id(), self.PATH:id())
 	self.achievments = {}
@@ -83,18 +88,23 @@ function AchievmentManager:_parse_achievments(platform)
 		end
 	end
 end
+
 function AchievmentManager:get_script_data(id)
 	return self.script_data[id]
 end
+
 function AchievmentManager:set_script_data(id, data)
 	self.script_data[id] = data
 end
+
 function AchievmentManager:exists(id)
 	return self.achievments[id] ~= nil
 end
+
 function AchievmentManager:get_info(id)
 	return self.achievments[id]
 end
+
 function AchievmentManager:award(id)
 	if not self:exists(id) then
 		return
@@ -109,11 +119,13 @@ function AchievmentManager:award(id)
 	end
 	self:do_award(id)
 end
+
 function AchievmentManager:_give_reward(id, skip_exp)
 	print("[AchievmentManager:_give_reward] ", id)
 	local data = self:get_info(id)
 	data.awarded = true
 end
+
 function AchievmentManager:award_steam(id)
 	print("[AchievmentManager:award_steam] Awarded Steam achievment", id)
 	if not self.handler:initialized() then
@@ -124,6 +136,7 @@ function AchievmentManager:award_steam(id)
 	self.handler:set_achievement(self:get_info(id).id)
 	self.handler:store_data()
 end
+
 function AchievmentManager:clear_steam(id)
 	print("[AchievmentManager:clear_steam]", id)
 	if not self.handler:initialized() then
@@ -133,6 +146,7 @@ function AchievmentManager:clear_steam(id)
 	self.handler:clear_achievement(self:get_info(id).id)
 	self.handler:store_data()
 end
+
 function AchievmentManager.steam_unlock_result(achievment)
 	print("[AchievmentManager:steam_unlock_result] Awarded Steam achievment", achievment)
 	for id, ach in pairs(managers.achievment.achievments) do
@@ -142,6 +156,7 @@ function AchievmentManager.steam_unlock_result(achievment)
 		end
 	end
 end
+
 function AchievmentManager:award_psn(id)
 	print("[AchievmentManager:award] Awarded PSN achievment", id)
 	if not self._trophies_installed then
@@ -151,6 +166,7 @@ function AchievmentManager:award_psn(id)
 	local request = Trophies:unlock_id(self:get_info(id).id, AchievmentManager.psn_unlock_result)
 	self._requests[request] = id
 end
+
 function AchievmentManager.psn_unlock_result(request, error_str)
 	print("[AchievmentManager:psn_unlock_result] Awarded PSN achievment", request, error_str)
 	local id = managers.achievment._requests[request]
@@ -158,6 +174,7 @@ function AchievmentManager.psn_unlock_result(request, error_str)
 		managers.achievment:_give_reward(id)
 	end
 end
+
 function AchievmentManager:chk_install_trophies()
 	if Trophies:is_installed() then
 		print("[AchievmentManager:chk_install_trophies] Already installed")
@@ -169,6 +186,7 @@ function AchievmentManager:chk_install_trophies()
 		Trophies:install(callback(self, self, "clbk_install_trophies"))
 	end
 end
+
 function AchievmentManager:clbk_install_trophies(result)
 	print("[AchievmentManager:clbk_install_trophies]", result)
 	if result then

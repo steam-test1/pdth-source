@@ -1,28 +1,34 @@
 CoreMusicUnitElement = CoreMusicUnitElement or class(MissionElement)
 MusicUnitElement = MusicUnitElement or class(CoreMusicUnitElement)
+
 function MusicUnitElement:init(...)
 	CoreMusicUnitElement.init(self, ...)
 end
+
 function CoreMusicUnitElement:init(unit)
 	MissionElement.init(self, unit)
 	table.insert(self._save_values, "music_event")
 end
+
 function CoreMusicUnitElement:test_element()
 	if self._hed.music_event then
 		managers.editor:set_wanted_mute(false)
 		managers.music:post_event(self._hed.music_event)
 	end
 end
+
 function CoreMusicUnitElement:stop_test_element()
 	managers.editor:set_wanted_mute(true)
 	managers.music:stop()
 end
+
 function CoreMusicUnitElement:set_category()
 	local value = self._paths_params.value
 	CoreEWS.update_combobox_options(self._music_params, managers.music:music_events(value))
 	CoreEWS.change_combobox_value(self._music_params, managers.music:music_events(value)[1])
 	self._hed.music_event = self._music_params.value
 end
+
 function CoreMusicUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

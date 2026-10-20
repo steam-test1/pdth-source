@@ -1,6 +1,7 @@
 require("core/lib/utils/dev/tools/material_editor/CoreMaterialEditorDialogs")
 require("core/lib/utils/dev/ews/tree_control/CoreManagedTreeControl")
 CoreMaterialEditor = CoreMaterialEditor or class()
+
 function CoreMaterialEditor:_create_main_frame()
 	self._main_frame = EWS:Frame(self.FRAME_TITLE, Vector3(-1, -1, 0), Vector3(400, 800, 0), "FRAME_FLOAT_ON_PARENT,DEFAULT_FRAME_STYLE", Global.frame)
 	self._main_frame:set_icon(self.FRAME_ICON)
@@ -158,6 +159,7 @@ function CoreMaterialEditor:_create_main_frame()
 	self._main_frame:set_sizer(main_frame_box)
 	self._main_frame:set_visible(true)
 end
+
 function CoreMaterialEditor:_build_shader_options()
 	local shader_name = self._compilable_shader_combo_box:get_value()
 	if self._shader_option_tree_name ~= shader_name then
@@ -173,10 +175,12 @@ function CoreMaterialEditor:_build_shader_options()
 		self:_unfreeze_frame()
 	end
 end
+
 function CoreMaterialEditor:_set_shader_option_tooltip(node, item)
 	local tooltip = node:parameter("tooltip") or ""
 	self._shader_option_tree:set_tooltip(item, tooltip)
 end
+
 function CoreMaterialEditor:_build_section(shader_name, shader, node, tree)
 	for child in node:children() do
 		local project = child:parameter("project")
@@ -200,6 +204,7 @@ function CoreMaterialEditor:_build_section(shader_name, shader, node, tree)
 		end
 	end
 end
+
 function CoreMaterialEditor:_create_parameter_panel()
 	local progress_dialog
 	if not (self._material_config_node:num_children() > 1) or self._output_collapse_box:expanded() then

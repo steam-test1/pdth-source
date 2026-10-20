@@ -1,4 +1,5 @@
 core:import("CoreEngineAccess")
+
 function CoreEditor:build_lower_panel(parent)
 	self._lower_panel = EWS:Panel(Global.frame_panel, "", "TAB_TRAVERSAL")
 	local lower_sizer = EWS:BoxSizer("HORIZONTAL")
@@ -8,6 +9,7 @@ function CoreEditor:build_lower_panel(parent)
 	self._edit_panel:set_visible(false)
 	return self._lower_panel
 end
+
 function CoreEditor:add_edit_buttons(edit_btn_sizer)
 	cat_print("editor", " CoreEditor:add_edit_buttons( edit_btn_sizer )")
 	self._edit_buttons = {}
@@ -15,6 +17,7 @@ function CoreEditor:add_edit_buttons(edit_btn_sizer)
 		self._left_toolbar:set_tool_enabled(btn, false)
 	end
 end
+
 function CoreEditor:build_info_frame(parent)
 	self._info_frame = EWS:Panel(parent, "Info Frame", "TAB_TRAVERSAL")
 	self._info_sizer = EWS:BoxSizer("HORIZONTAL")
@@ -47,6 +50,7 @@ function CoreEditor:build_info_frame(parent)
 	unit_info_sizer:add(self._unit_info_toolbar, 0, 0, "EXPAND")
 	return self._info_frame
 end
+
 function CoreEditor:add_open_unit_file_buttons()
 	self._open_unit_file_buttons = {}
 	self._unit_info_toolbar:add_tool("LTB_OPEN_UNIT_XML", "Open unit file", CoreEWS.image_path("world_editor\\unit_file_unit_16x16.png"), "Open unit file")
@@ -80,8 +84,10 @@ function CoreEditor:add_open_unit_file_buttons()
 		self._unit_info_toolbar:set_tool_enabled(btn, false)
 	end
 end
+
 function CoreEditor:_change_unit_info(notebook)
 end
+
 function CoreEditor:on_open_unit_file(data)
 	if alive(self:selected_unit()) then
 		local unit = self:selected_unit()
@@ -122,6 +128,7 @@ function CoreEditor:on_open_unit_file(data)
 		end
 	end
 end
+
 function CoreEditor:sequence_file(unit)
 	if alive(unit) then
 		local object_file = CoreEngineAccess._editor_unit_data(unit:name():id()):model()
@@ -140,6 +147,7 @@ function CoreEditor:sequence_file(unit)
 	end
 	return false
 end
+
 function CoreEditor:build_edit_frame(parent)
 	self._edit_panel = EWS:Panel(parent, "Edit Panel", "TAB_TRAVERSAL")
 	local main_sizer = EWS:BoxSizer("HORIZONTAL")
@@ -147,6 +155,7 @@ function CoreEditor:build_edit_frame(parent)
 	self._edit_panel:set_visible(false)
 	return self._edit_panel, main_sizer
 end
+
 function CoreEditor:show_edit(data)
 	self[data.panel]:set_visible(self._left_toolbar:tool_state(data.btn))
 	self._info_frame:set_visible(not self:check_edit_buttons())
@@ -154,6 +163,7 @@ function CoreEditor:show_edit(data)
 	self._edit_panel:layout()
 	self._lower_panel:layout()
 end
+
 function CoreEditor:check_edit_buttons()
 	local value = false
 	for _, btn in pairs(self._edit_buttons) do
@@ -161,10 +171,12 @@ function CoreEditor:check_edit_buttons()
 	end
 	return value
 end
+
 function CoreEditor:layout_edit_panel()
 	self._edit_panel:layout()
 	self._lower_panel:layout()
 end
+
 function CoreEditor:unit_output(unit)
 	if alive(unit) then
 		local n = "\n"
@@ -216,6 +228,7 @@ function CoreEditor:unit_output(unit)
 		end
 	end
 end
+
 function CoreEditor:_unit_materials(unit)
 	local names = {}
 	for _, material in ipairs(unit:get_objects_by_type(Idstring("material"))) do

@@ -1,4 +1,5 @@
 PressureUnitElement = PressureUnitElement or class(MissionElement)
+
 function PressureUnitElement:init(unit)
 	PressureUnitElement.super.init(self, unit)
 	self._hed.points = 0
@@ -6,6 +7,7 @@ function PressureUnitElement:init(unit)
 	table.insert(self._save_values, "points")
 	table.insert(self._save_values, "interval")
 end
+
 function PressureUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

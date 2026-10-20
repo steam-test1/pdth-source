@@ -25,15 +25,18 @@ CoreZoomCameraCutsceneKey:register_serialized_attribute("interpolation", "Linear
 CoreZoomCameraCutsceneKey:register_serialized_attribute("interpolation_bias", 0.5, function(n)
 	return (tonumber(n) or 0) / 100
 end)
+
 function CoreZoomCameraCutsceneKey:__tostring()
 	return "Change camera zoom."
 end
+
 function CoreZoomCameraCutsceneKey:populate_from_editor(cutscene_editor)
 	self.super.populate_from_editor(self, cutscene_editor)
 	local camera_attributes = cutscene_editor:camera_attributes()
 	self:set_start_fov(camera_attributes.fov)
 	self:set_end_fov(camera_attributes.fov)
 end
+
 function CoreZoomCameraCutsceneKey:play(player, undo, fast_forward)
 	if undo then
 		local preceeding_key = self:preceeding_key()
@@ -46,6 +49,7 @@ function CoreZoomCameraCutsceneKey:play(player, undo, fast_forward)
 		player:set_camera_attribute("fov", self:start_fov())
 	end
 end
+
 function CoreZoomCameraCutsceneKey:update(player, time)
 	local transition_time = self:transition_time()
 	if time <= transition_time + 0.033333335 then
@@ -55,18 +59,23 @@ function CoreZoomCameraCutsceneKey:update(player, time)
 		player:set_camera_attribute("fov", fov)
 	end
 end
+
 function CoreZoomCameraCutsceneKey:is_valid_start_fov(value)
 	return value and 0 < value and value < 180
 end
+
 function CoreZoomCameraCutsceneKey:is_valid_transition_time(value)
 	return value and 0 <= value
 end
+
 function CoreZoomCameraCutsceneKey:is_valid_interpolation(value)
 	return self.INTERPOLATION_FUNCTIONS[value] ~= nil
 end
+
 function CoreZoomCameraCutsceneKey:is_valid_interpolation_bias(value)
 	return value and 0 <= value and value <= 1
 end
+
 CoreZoomCameraCutsceneKey.is_valid_end_fov = CoreZoomCameraCutsceneKey.is_valid_start_fov
 CoreZoomCameraCutsceneKey.control_for_interpolation = CoreCutsceneKeyBase.standard_combo_box_control
 CoreZoomCameraCutsceneKey.control_for_interpolation_bias = CoreCutsceneKeyBase.standard_percentage_slider_control
@@ -74,6 +83,7 @@ CoreZoomCameraCutsceneKey.refresh_control_for_interpolation = CoreCutsceneKeyBas
 	return a == "Linear" or a < b
 end))
 CoreZoomCameraCutsceneKey.refresh_control_for_interpolation_bias = CoreCutsceneKeyBase:standard_percentage_slider_control_refresh("interpolation_bias")
+
 function CoreZoomCameraCutsceneKey:_calc_interpolation(t)
 	local interpolation_func = self.INTERPOLATION_FUNCTIONS[self:interpolation()]
 	return interpolation_func(t, math.clamp(self:interpolation_bias(), 0, 1))

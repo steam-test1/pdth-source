@@ -8,12 +8,15 @@ EnvironmentShadowInterface.DATA_PATH = {
 	"shadow_modifier"
 }
 EnvironmentShadowInterface.SHARED = false
+
 function EnvironmentShadowInterface:init(handle)
 	self._handle = handle
 end
+
 function EnvironmentShadowInterface:parameters()
 	return self:convert_to_interface(self._handle:parameters())
 end
+
 function EnvironmentShadowInterface:convert_to_interface(params)
 	local interface_params = {}
 	interface_params.d0 = params.shadow_slice_depths.x
@@ -26,6 +29,7 @@ function EnvironmentShadowInterface:convert_to_interface(params)
 	interface_params.f = params.shadow_fadeout.x - interface_params.d3
 	return interface_params
 end
+
 function EnvironmentShadowInterface:_process_return(block)
 	if block and block.d0 and block.d1 and block.d2 and block.d3 and block.o1 and block.o2 and block.o3 then
 		local return_block = {}

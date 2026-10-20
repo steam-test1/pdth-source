@@ -3,6 +3,7 @@ core:import("CoreControllerWrapperSettings")
 core:import("CoreAccessObjectBase")
 ControllerWrapper = ControllerWrapper or class(CoreAccessObjectBase.AccessObjectBase)
 ControllerWrapper.TYPE = "generic"
+
 function ControllerWrapper:init(manager, id, name, controller_map, default_controller_id, setup, debug, skip_virtual_controller, custom_virtual_connect_func_map)
 	ControllerWrapper.super.init(self, manager, name)
 	self._id = id
@@ -43,6 +44,7 @@ function ControllerWrapper:init(manager, id, name, controller_map, default_contr
 	self._rebind_callback_list = {}
 	self._last_rebind_callback_id = 0
 end
+
 function ControllerWrapper:destroy()
 	for id, func in pairs(self._destroy_callback_list) do
 		func(self, id)
@@ -52,6 +54,7 @@ function ControllerWrapper:destroy()
 		self._virtual_controller = nil
 	end
 end
+
 function ControllerWrapper:update(t, dt)
 	self:reset_cache(true)
 	self:update_delay_trigger_queue()
@@ -60,6 +63,7 @@ function ControllerWrapper:update(t, dt)
 		self._virtual_controller:clear_axis_triggers()
 	end
 end
+
 function ControllerWrapper:paused_update(t, dt)
 	self:reset_cache(true)
 	self:update_delay_trigger_queue()
@@ -68,6 +72,7 @@ function ControllerWrapper:paused_update(t, dt)
 		self._virtual_controller:clear_axis_triggers()
 	end
 end
+
 function ControllerWrapper:reset_cache(check_time)
 	local reset_cache_time = TimerManager:wall():time()
 	if not check_time or reset_cache_time > self._reset_cache_time then
@@ -91,6 +96,7 @@ function ControllerWrapper:reset_cache(check_time)
 		self._reset_cache_time = reset_cache_time
 	end
 end
+
 function ControllerWrapper:update_delay_trigger_queue()
 	if self._enabled and self._virtual_controller then
 		for connection_name, data in pairs(self._delay_trigger_queue) do
@@ -103,6 +109,7 @@ function ControllerWrapper:update_delay_trigger_queue()
 		end
 	end
 end
+
 function ControllerWrapper:check_connect_changed_status()
 	local connected = self:connected()
 	if connected ~= self._was_connected then
@@ -112,6 +119,7 @@ function ControllerWrapper:check_connect_changed_status()
 		self._was_connected = connected
 	end
 end
+
 function ControllerWrapper:update_multi_input()
 	if self._enabled and self._virtual_controller then
 		for connection_name, single_connection_name_list in pairs(self._multi_input_map) do
@@ -135,6 +143,7 @@ function ControllerWrapper:update_multi_input()
 		end
 	end
 end
+
 function ControllerWrapper:update_delay_input()
 	if self._enabled and self._virtual_controller then
 		local wall_time = TimerManager:wall():time()
@@ -174,30 +183,37 @@ function ControllerWrapper:update_delay_input()
 		end
 	end
 end
+
 function ControllerWrapper:add_destroy_callback(func)
 	self._last_destroy_callback_id = self._last_destroy_callback_id + 1
 	self._destroy_callback_list[self._last_destroy_callback_id] = func
 	return self._last_destroy_callback_id
 end
+
 function ControllerWrapper:remove_destroy_callback(id)
 	self._destroy_callback_list[id] = nil
 end
+
 function ControllerWrapper:add_connect_changed_callback(func)
 	self._last_connect_changed_callback_id = self._last_connect_changed_callback_id + 1
 	self._connect_changed_callback_list[self._last_connect_changed_callback_id] = func
 	return self._last_connect_changed_callback_id
 end
+
 function ControllerWrapper:remove_connect_changed_callback(id)
 	self._connect_changed_callback_list[id] = nil
 end
+
 function ControllerWrapper:add_rebind_callback(func)
 	self._last_rebind_callback_id = self._last_rebind_callback_id + 1
 	self._rebind_callback_list[self._last_rebind_callback_id] = func
 	return self._last_rebind_callback_id
 end
+
 function ControllerWrapper:remove_rebind_callback(id)
 	self._rebind_callback_list[id] = nil
 end
+
 function ControllerWrapper:rebind_connections(setup, setup_map)
 	self:clear_connections(false)
 	self:clear_triggers(true)
@@ -209,6 +225,7 @@ function ControllerWrapper:rebind_connections(setup, setup_map)
 		func(self, id)
 	end
 end
+
 function ControllerWrapper:setup(setup)
 	if setup then
 		self._setup = setup
@@ -220,6 +237,7 @@ function ControllerWrapper:setup(setup)
 		end
 	end
 end
+
 function ControllerWrapper:setup_connection(connection_name, connection, controller_id, controller)
 	if self._debug or not connection:get_debug() then
 		local input_name_list = connection:get_input_name_list()
@@ -262,6 +280,7 @@ function ControllerWrapper:setup_connection(connection_name, connection, control
 		end
 	end
 end
+
 function ControllerWrapper:connect(controller_id, input_name, connection_name, connection, allow_multiple, is_multi)
 	local controller = self._controller_map[controller_id or self._default_controller_id]
 	if controller then
@@ -285,6 +304,7 @@ function ControllerWrapper:connect(controller_id, input_name, connection_name, c
 		error("Invalid controller wrapper. Tried to connect to non-existing controller id \"" .. tostring(controller_id) .. "\".")
 	end
 end
+
 function ControllerWrapper:virtual_connect(controller_id, controller, input_name, connection_name, connection)
 	local func = self._custom_virtual_connect_func_map[controller_id][input_name]
 	if func then
@@ -293,6 +313,7 @@ function ControllerWrapper:virtual_connect(controller_id, controller, input_name
 		self:virtual_connect2(controller_id, controller, input_name, connection_name, connection)
 	end
 end
+
 function ControllerWrapper:virtual_connect2(controller_id, controller, input_name, connection_name, connection)
 	local min_src, max_src, min_dest, max_dest = connection:get_range()
 	local connect_src_type = connection:get_connect_src_type()
@@ -302,6 +323,7 @@ function ControllerWrapper:virtual_connect2(controller_id, controller, input_nam
 	end
 	self._virtual_controller:connect(controller, Idstring(connect_src_type), input_name, Idstring("range"), min_src, max_src, Idstring(connect_dest_type), Idstring(connection_name), Idstring("range"), min_dest, max_dest)
 end
+
 function ControllerWrapper:connected(controller_id)
 	if controller_id then
 		return self._controller_map[controller_id]:connected()
@@ -314,39 +336,51 @@ function ControllerWrapper:connected(controller_id)
 		return true
 	end
 end
+
 function ControllerWrapper:get_setup()
 	return self._setup
 end
+
 function ControllerWrapper:get_connection_settings(connection_name)
 	return self._setup:get_connection(connection_name)
 end
+
 function ControllerWrapper:get_default_controller_id()
 	return self._default_controller_id
 end
+
 function ControllerWrapper:get_type()
 	return self.TYPE
 end
+
 function ControllerWrapper:get_id()
 	return self._id
 end
+
 function ControllerWrapper:get_name()
 	return self._name
 end
+
 function ControllerWrapper:get_debug()
 	return self._debug
 end
+
 function ControllerWrapper:get_connection_map()
 	return self._connection_map
 end
+
 function ControllerWrapper:get_controller_map()
 	return self._controller_map
 end
+
 function ControllerWrapper:get_controller(controller_id)
 	return self._controller_map[controller_id or self._default_controller_id]
 end
+
 function ControllerWrapper:connection_exist(connection_name)
 	return self._connection_map[connection_name] ~= nil
 end
+
 function ControllerWrapper:set_enabled(bool)
 	if bool then
 		self:enable()
@@ -354,12 +388,15 @@ function ControllerWrapper:set_enabled(bool)
 		self:disable()
 	end
 end
+
 function ControllerWrapper:enable()
 	self:set_active(true)
 end
+
 function ControllerWrapper:disable()
 	self:set_active(false)
 end
+
 function ControllerWrapper:_really_activate()
 	ControllerWrapper.super._really_activate(self)
 	if not self._enabled then
@@ -374,6 +411,7 @@ function ControllerWrapper:_really_activate()
 		self._was_connected = self:connected()
 	end
 end
+
 function ControllerWrapper:_really_deactivate()
 	ControllerWrapper.super._really_deactivate(self)
 	if self._enabled then
@@ -386,15 +424,19 @@ function ControllerWrapper:_really_deactivate()
 		end
 	end
 end
+
 function ControllerWrapper:enabled()
 	return self._enabled
 end
+
 function ControllerWrapper:is_claimed()
 	return self._claimed
 end
+
 function ControllerWrapper:set_claimed(bool)
 	self._claimed = bool
 end
+
 function ControllerWrapper:add_trigger(connection_name, func)
 	local trigger = {}
 	self._trigger_map[connection_name] = self._trigger_map[connection_name] or {}
@@ -409,6 +451,7 @@ function ControllerWrapper:add_trigger(connection_name, func)
 	end
 	self._trigger_map[connection_name][func] = trigger
 end
+
 function ControllerWrapper:add_release_trigger(connection_name, func)
 	local trigger = {}
 	self._release_trigger_map[connection_name] = self._release_trigger_map[connection_name] or {}
@@ -419,6 +462,7 @@ function ControllerWrapper:add_release_trigger(connection_name, func)
 	end
 	self._release_trigger_map[connection_name][func] = trigger
 end
+
 function ControllerWrapper:get_trigger_func(connection_name, func)
 	local wrapper = self
 	if self._delay_bool_map[connection_name] or self._multi_input_map[connection_name] then
@@ -437,6 +481,7 @@ function ControllerWrapper:get_trigger_func(connection_name, func)
 		end
 	end
 end
+
 function ControllerWrapper:get_release_trigger_func(connection_name, func)
 	local wrapper = self
 	if self._delay_bool_map[connection_name] or self._multi_input_map[connection_name] then
@@ -453,6 +498,7 @@ function ControllerWrapper:get_release_trigger_func(connection_name, func)
 		end
 	end
 end
+
 function ControllerWrapper:queue_delay_trigger(connection_name, func, ...)
 	self._delay_trigger_queue[connection_name] = {
 		func = func,
@@ -461,14 +507,17 @@ function ControllerWrapper:queue_delay_trigger(connection_name, func, ...)
 		}
 	}
 end
+
 function ControllerWrapper:has_trigger(connection_name, func)
 	local trigger_sub_map = self._trigger_map[connection_name]
 	return trigger_sub_map and trigger_sub_map[func]
 end
+
 function ControllerWrapper:has_release_trigger(connection_name, func)
 	local release_trigger_sub_map = self._release_trigger_map[connection_name]
 	return release_trigger_sub_map and release_trigger_sub_map[func]
 end
+
 function ControllerWrapper:remove_trigger(connection_name, func)
 	local trigger_sub_map = self._trigger_map[connection_name]
 	if trigger_sub_map then
@@ -503,6 +552,7 @@ function ControllerWrapper:remove_trigger(connection_name, func)
 		Application:error(self:to_string() .. " Unable to remove trigger on non-existing connection \"" .. tostring(connection_name) .. "\".")
 	end
 end
+
 function ControllerWrapper:remove_release_trigger(connection_name, func)
 	local trigger_sub_map = self._release_trigger_map[connection_name]
 	if trigger_sub_map then
@@ -532,6 +582,7 @@ function ControllerWrapper:remove_release_trigger(connection_name, func)
 		Application:error(self:to_string() .. " Unable to remove release trigger on non-existing connection \"" .. tostring(connection_name) .. "\".")
 	end
 end
+
 function ControllerWrapper:clear_triggers(temporary)
 	if self._virtual_controller then
 		self._virtual_controller:clear_triggers()
@@ -553,6 +604,7 @@ function ControllerWrapper:clear_triggers(temporary)
 		self._release_trigger_map = {}
 	end
 end
+
 function ControllerWrapper:restore_triggers()
 	if self._virtual_controller then
 		for connection_name, trigger_sub_map in pairs(self._trigger_map) do
@@ -571,6 +623,7 @@ function ControllerWrapper:restore_triggers()
 		end
 	end
 end
+
 function ControllerWrapper:clear_connections(temporary)
 	if self._virtual_controller then
 		self._virtual_controller:clear_connections()
@@ -582,6 +635,7 @@ function ControllerWrapper:clear_connections(temporary)
 		self._multi_input_map = {}
 	end
 end
+
 function ControllerWrapper:get_any_input()
 	if self._input_any_cache == nil then
 		self._input_any_cache = self._enabled and self._virtual_controller and #self._virtual_controller:down_list() > 0
@@ -589,6 +643,7 @@ function ControllerWrapper:get_any_input()
 	end
 	return self._input_any_cache
 end
+
 function ControllerWrapper:get_any_input_pressed()
 	if self._input_any_pressed_cache == nil then
 		self._input_any_pressed_cache = self._enabled and self._virtual_controller and #self._virtual_controller:pressed_list() > 0
@@ -596,6 +651,7 @@ function ControllerWrapper:get_any_input_pressed()
 	end
 	return self._input_any_pressed_cache
 end
+
 function ControllerWrapper:get_any_input_released()
 	if self._input_any_released_cache == nil then
 		self._input_any_released_cache = self._enabled and self._virtual_controller and #self._virtual_controller:released_list() > 0
@@ -603,7 +659,9 @@ function ControllerWrapper:get_any_input_released()
 	end
 	return self._input_any_released_cache
 end
+
 local id_strings = {}
+
 function ControllerWrapper:get_input_pressed(connection_name)
 	local cache = self._input_pressed_cache[connection_name]
 	if cache == nil then
@@ -620,6 +678,7 @@ function ControllerWrapper:get_input_pressed(connection_name)
 	end
 	return cache
 end
+
 function ControllerWrapper:print_invalid_connection_error(connection_name)
 	ControllerWrapper.INVALID_CONNECTION_ERROR = ControllerWrapper.INVALID_CONNECTION_ERROR or {}
 	if not ControllerWrapper.INVALID_CONNECTION_ERROR[connection_name] then
@@ -627,6 +686,7 @@ function ControllerWrapper:print_invalid_connection_error(connection_name)
 		ControllerWrapper.INVALID_CONNECTION_ERROR[connection_name] = true
 	end
 end
+
 function ControllerWrapper:get_input_bool(connection_name)
 	local cache = self._input_bool_cache[connection_name]
 	if cache == nil then
@@ -643,6 +703,7 @@ function ControllerWrapper:get_input_bool(connection_name)
 	end
 	return cache
 end
+
 function ControllerWrapper:get_input_float(connection_name)
 	local cache = self._input_float_cache[connection_name]
 	if cache == nil then
@@ -658,6 +719,7 @@ function ControllerWrapper:get_input_float(connection_name)
 	end
 	return cache
 end
+
 function ControllerWrapper:get_input_axis_clbk(connection_name, func)
 	if not self:enabled() then
 		return
@@ -668,11 +730,14 @@ function ControllerWrapper:get_input_axis_clbk(connection_name, func)
 		id_strings[connection_name] = id
 	end
 	local connection = self._setup:get_connection(connection_name)
+	
 	local function f(axis_id, controller_name, axis)
 		func(self:get_modified_axis(connection_name, connection, axis))
 	end
+	
 	self._virtual_controller:add_axis_trigger(id, f)
 end
+
 function ControllerWrapper:get_input_axis(connection_name)
 	local cache = self._input_axis_cache[connection_name]
 	if cache == nil then
@@ -694,6 +759,7 @@ function ControllerWrapper:get_input_axis(connection_name)
 	end
 	return cache
 end
+
 function ControllerWrapper:get_modified_axis(connection_name, connection, axis)
 	local multiplier = connection.get_multiplier and connection:get_multiplier()
 	if multiplier then
@@ -709,6 +775,7 @@ function ControllerWrapper:get_modified_axis(connection_name, connection, axis)
 	mvector3.set_static(axis, x, y, z)
 	return self:lerp_axis(connection_name, connection, axis)
 end
+
 function ControllerWrapper:lerp_axis(connection_name, connection, axis)
 	local lerp = connection.get_lerp and connection:get_lerp()
 	if lerp then
@@ -718,18 +785,23 @@ function ControllerWrapper:lerp_axis(connection_name, connection, axis)
 	end
 	return axis
 end
+
 function ControllerWrapper:rescale_x_axis(connection_name, connection, x)
 	return self:rescale_axis_component(connection_name, connection, x)
 end
+
 function ControllerWrapper:rescale_y_axis(connection_name, connection, y)
 	return self:rescale_axis_component(connection_name, connection, y)
 end
+
 function ControllerWrapper:rescale_z_axis(connection_name, connection, z)
 	return self:rescale_axis_component(connection_name, connection, z)
 end
+
 function ControllerWrapper:rescale_axis_component(connection_name, connection, comp)
 	return comp
 end
+
 function ControllerWrapper:set_connection_enabled(connection_name, enabled)
 	local connection = self._connection_map[connection_name] and self._setup:get_connection(connection_name)
 	if connection then
@@ -795,14 +867,17 @@ function ControllerWrapper:set_connection_enabled(connection_name, enabled)
 		Application:error(self:to_string() .. " Controller can't enable connection \"" .. tostring(connection_name) .. "\" because it doesn't exist.")
 	end
 end
+
 function ControllerWrapper:get_connection_enabled(connection_name)
 	local connection = self._connection_map[connection_name] and self._setup:get_connection(connection_name)
 	local ret = connection and connection:get_enabled()
 	return ret
 end
+
 function ControllerWrapper:to_string()
 	return self:__tostring()
 end
+
 function ControllerWrapper:__tostring()
 	return string.format("[Controller][Wrapper][ID: %s, Type: %s, Name: %s, Enabled: %s, Debug: %s]", tostring(self._id), tostring(self:get_type()), tostring(self._name or "N/A"), tostring(self._enabled and "Yes" or "No"), tostring(self._debug and "Yes" or "No"))
 end

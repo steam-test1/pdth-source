@@ -5,6 +5,7 @@ core:import("CoreEws")
 core:import("CoreColorPickerPanel")
 local CoreMaterialEditorParameter = require("core/lib/utils/dev/tools/material_editor/parameter_widgets/CoreMaterialEditorParameter")
 local CoreMaterialEditorColor3 = CoreMaterialEditorColor3 or class(CoreMaterialEditorParameter)
+
 function CoreMaterialEditorColor3:init(parent, editor, parameter_info, parameter_node)
 	CoreMaterialEditorParameter.init(self, parent, editor, parameter_info, parameter_node)
 	local main_box = EWS:BoxSizer("VERTICAL")
@@ -16,13 +17,16 @@ function CoreMaterialEditorColor3:init(parent, editor, parameter_info, parameter
 	main_box:add(self._picker_panel:panel(), 1, 0, "ALL,EXPAND")
 	self._right_box:add(main_box, 1, 0, "EXPAND")
 end
+
 function CoreMaterialEditorColor3:update(t, dt)
 	CoreMaterialEditorParameter.update(self, t, dt)
 	self._picker_panel:update(t, dt)
 end
+
 function CoreMaterialEditorColor3:destroy()
 	CoreMaterialEditorParameter.destroy(self)
 end
+
 function CoreMaterialEditorColor3:on_toggle_customize()
 	self._customize = not self._customize
 	self:_load_value()
@@ -31,9 +35,11 @@ function CoreMaterialEditorColor3:on_toggle_customize()
 	self._picker_panel:set_color(Color(self._value.x, self._value.y, self._value.z))
 	self:update_live()
 end
+
 function CoreMaterialEditorColor3:_on_color(sender, color)
 	self._value = Vector3(color.r, color.g, color.b)
 	self._parameter_node:set_parameter("value", math.vector_to_string(self._value))
 	self:update_live()
 end
+
 return CoreMaterialEditorColor3

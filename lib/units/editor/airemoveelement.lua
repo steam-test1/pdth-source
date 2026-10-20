@@ -1,4 +1,5 @@
 AIRemoveUnitElement = AIRemoveUnitElement or class(MissionElement)
+
 function AIRemoveUnitElement:init(unit)
 	MissionElement.init(self, unit)
 	self._hed.elements = {}
@@ -6,11 +7,14 @@ function AIRemoveUnitElement:init(unit)
 	table.insert(self._save_values, "elements")
 	table.insert(self._save_values, "use_instigator")
 end
+
 function AIRemoveUnitElement:draw_links(t, dt, selected_unit, all_units)
 	MissionElement.draw_links(self, t, dt, selected_unit, all_units)
 end
+
 function AIRemoveUnitElement:update_editing()
 end
+
 function AIRemoveUnitElement:update_selected(t, dt, selected_unit, all_units)
 	for _, id in ipairs(self._hed.elements) do
 		local unit = all_units[id]
@@ -26,6 +30,7 @@ function AIRemoveUnitElement:update_selected(t, dt, selected_unit, all_units)
 		end
 	end
 end
+
 function AIRemoveUnitElement:add_element()
 	local ray = managers.editor:unit_by_raycast({mask = 10, ray_type = "editor"})
 	if ray and ray.unit and (string.find(ray.unit:name():s(), "ai_spawn_enemy", 1, true) or string.find(ray.unit:name():s(), "ai_spawn_civilian", 1, true)) then
@@ -37,6 +42,7 @@ function AIRemoveUnitElement:add_element()
 		end
 	end
 end
+
 function AIRemoveUnitElement:remove_links(unit)
 	for _, id in ipairs(self._hed.elements) do
 		if id == unit:unit_data().unit_id then
@@ -44,9 +50,11 @@ function AIRemoveUnitElement:remove_links(unit)
 		end
 	end
 end
+
 function AIRemoveUnitElement:add_triggers(vc)
 	vc:add_trigger(Idstring("lmb"), callback(self, self, "add_element"))
 end
+
 function AIRemoveUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

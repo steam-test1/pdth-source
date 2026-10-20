@@ -1,8 +1,10 @@
 AmmoClip = AmmoClip or class(Pickup)
+
 function AmmoClip:init(unit)
 	AmmoClip.super.init(self, unit)
 	self._ammo_type = ""
 end
+
 function AmmoClip:_pickup(unit)
 	if self._picked_up then
 		return

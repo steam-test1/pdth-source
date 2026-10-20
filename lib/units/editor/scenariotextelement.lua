@@ -1,13 +1,16 @@
 ScenarioTextUnitElement = ScenarioTextUnitElement or class(MissionElement)
+
 function ScenarioTextUnitElement:init(unit)
 	ScenarioTextUnitElement.super.init(self, unit)
 	self._options = {"debug_none", "sl_bank"}
 	self._hed.text_id = "debug_none"
 	table.insert(self._save_values, "text_id")
 end
+
 function ScenarioTextUnitElement:set_text()
 	self._text:set_value(managers.localization:text(self._hed.text_id))
 end
+
 function ScenarioTextUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

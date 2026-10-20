@@ -5,6 +5,7 @@ CoreShaderLibCompiler.TEMP_PATH = "core\\temp\\"
 CoreShaderLibCompiler.SHADER_PATH = "core\\shader_sources\\"
 CoreShaderLibCompiler.RT_PATH = "shaders\\"
 CoreShaderLibCompiler.ROOT_PATH = "..\\"
+
 function CoreShaderLibCompiler:compile(file, dest, force_recompile)
 	if file.name ~= "shaders/base" or file.type ~= "render_template_database" then
 		return false
@@ -43,6 +44,7 @@ function CoreShaderLibCompiler:compile(file, dest, force_recompile)
 	self:cleanup(params)
 	return false
 end
+
 function CoreShaderLibCompiler:cleanup(params)
 	cat_print("debug", "[CoreShaderLibCompiler] Cleaning...")
 	os.remove(params.win32d3d9)
@@ -53,25 +55,31 @@ function CoreShaderLibCompiler:cleanup(params)
 	os.remove(self:base_path() .. self.TEMP_PATH .. "make.xml")
 	os.remove(self:base_path() .. self.TEMP_PATH .. self.SHADER_NAME .. ".render_template_database")
 end
+
 function CoreShaderLibCompiler:base_path()
 	return self:root_path() .. "assets\\"
 end
+
 function CoreShaderLibCompiler:root_path()
 	local path = data_path_abs() .. self.ROOT_PATH
 	local f
+	
 	function f(s)
 		local str, i = string.gsub(s, "\\[%w_%.%s]+\\%.%.\\", "\\")
 		return 0 < i and f(str) or str
 	end
+	
 	local out_path = f(path)
 	if string.sub(out_path, -1) ~= "\\" then
 		out_path = out_path .. "\\"
 	end
 	return out_path
 end
+
 function CoreShaderLibCompiler:up_to_date(file, dest)
 	return dest:up_to_date(file.path, "render_template_database", file.name, file.properties) and dest:up_to_date("core\\shader_sources\\base", "shader_source", "core/shader_sources/base", {}) and dest:up_to_date("core\\shader_sources\\common_include", "shader_source", "core/shader_sources/common_include", {})
 end
+
 function CoreShaderLibCompiler:copy_file(from, to, properties, dest)
 	local from_file = io.open(from, "rb")
 	if from_file then
@@ -86,6 +94,7 @@ function CoreShaderLibCompiler:copy_file(from, to, properties, dest)
 		cat_print("debug", string.format("[CoreShaderLibCompiler] %s was not compiled! You might be missing dll's...?.", from))
 	end
 end
+
 function CoreShaderLibCompiler:create_make_file()
 	local make_params = self:get_make_params()
 	local file = assert(io.open(self:base_path() .. self.TEMP_PATH .. "make.xml", "w+"))
@@ -103,6 +112,7 @@ function CoreShaderLibCompiler:create_make_file()
 	file:close()
 	return make_params
 end
+
 function CoreShaderLibCompiler:run_compiler()
 	local cmd = string.format("%saux_assets\\engine\\bin\\shaderdev\\shaderdev -m \"%s%smake.xml\"", self:root_path(), self:base_path(), self.TEMP_PATH)
 	local file = assert(io.popen(cmd, "r"), cmd)
@@ -110,6 +120,7 @@ function CoreShaderLibCompiler:run_compiler()
 		cat_print("debug", line)
 	end
 end
+
 function CoreShaderLibCompiler:get_make_params()
 	local rt = self:base_path() .. self.RT_PATH .. self.SHADER_NAME
 	local src = self:base_path() .. self.SHADER_PATH .. self.SHADER_NAME

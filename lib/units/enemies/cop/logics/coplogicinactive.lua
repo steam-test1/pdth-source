@@ -1,4 +1,5 @@
 CopLogicInactive = class(CopLogicBase)
+
 function CopLogicInactive.enter(data, new_logic_name, enter_params)
 	CopLogicBase.enter(data, new_logic_name, enter_params)
 	local my_data = data.internal_data
@@ -39,6 +40,7 @@ function CopLogicInactive.enter(data, new_logic_name, enter_params)
 		managers.groupai:state():on_objective_failed(data.unit, data.objective)
 	end
 end
+
 function CopLogicInactive.is_available_for_assignment(data)
 	return false
 end

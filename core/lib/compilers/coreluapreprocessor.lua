@@ -3,6 +3,7 @@ CoreLuaPreprocessor = CoreLuaPreprocessor or class()
 CoreLuaPreprocessor.preprocessors = {}
 CoreLuaPreprocessor.ENABLED = false
 CoreLuaPreprocessor.DEBUG = false
+
 function CoreLuaPreprocessor:preprocess(path, code)
 	if not self.ENABLED or string.find(path, "CoreLuaPreprocessor") then
 		return code
@@ -16,6 +17,7 @@ function CoreLuaPreprocessor:preprocess(path, code)
 	end
 	return out
 end
+
 function CoreLuaPreprocessor:regx(str, nr, path)
 	local output = str
 	for _, exp in ipairs(self.preprocessors) do
@@ -34,6 +36,7 @@ function CoreLuaPreprocessor:regx(str, nr, path)
 	end
 	return output, nr
 end
+
 function CoreLuaPreprocessor:adjust_size(macro, args)
 	local org = args[1] .. args[2] .. args[3]
 	macro = string.gsub(macro, "\n", " ")
@@ -43,6 +46,7 @@ function CoreLuaPreprocessor:adjust_size(macro, args)
 	end
 	return macro .. string.rep("\n", addlines)
 end
+
 function CoreLuaPreprocessor:multiline(str, innr)
 	local ret, nr = string.gsub(str, "(%-%-%[%[@)([^@%]%]]+)(@%]%])", function(...)
 		local args = {
@@ -63,6 +67,7 @@ function CoreLuaPreprocessor:multiline(str, innr)
 		return ret, innr
 	end
 end
+
 function CoreLuaPreprocessor:singleline(str, innr)
 	local ret, nr = string.gsub(str, [[
 (%-%-@)([^

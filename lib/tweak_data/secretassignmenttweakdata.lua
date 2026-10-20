@@ -1,4 +1,5 @@
 SecretAssignmentTweakData = SecretAssignmentTweakData or class()
+
 function SecretAssignmentTweakData:init()
 	self.bank_manager = {}
 	self.bank_manager.type = "kill"

@@ -6,6 +6,7 @@ PS3Dialog.BUTTON_TYPE_LIST = {
 	"yes-no",
 	"yes-no-back"
 }
+
 function PS3Dialog:show()
 	local focus_button = self:focus_button()
 	local button_text_list = self:button_text_list()
@@ -29,6 +30,7 @@ function PS3Dialog:show()
 	self:button_pressed(result and 0 or 1)
 	return true
 end
+
 function PS3Dialog:button_pressed(button_index)
 	Dialog.button_pressed(self, button_index + 1)
 end

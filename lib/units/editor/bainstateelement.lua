@@ -1,9 +1,11 @@
 BainStateElement = BainStateElement or class(MissionElement)
+
 function BainStateElement:init(unit)
 	BainStateElement.super.init(self, unit)
 	self._hed.state = true
 	table.insert(self._save_values, "state")
 end
+
 function BainStateElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

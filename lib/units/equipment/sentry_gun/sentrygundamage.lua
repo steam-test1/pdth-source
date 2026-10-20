@@ -1,4 +1,5 @@
 SentryGunDamage = SentryGunDamage or class()
+
 function SentryGunDamage:init(unit)
 	self._unit = unit
 	self._ext_movement = unit:movement()
@@ -15,19 +16,23 @@ function SentryGunDamage:init(unit)
 		self._health_ratio = 1
 	end
 end
+
 function SentryGunDamage:set_health(amount)
 	self._health = amount
 	self._health_max = math.max(self._health_max, amount)
 end
+
 function SentryGunDamage:sync_health(health_ratio)
 	self._health_ratio = health_ratio * self._health_sync_resolution * 100
 	if health_ratio == 0 then
 		self:die()
 	end
 end
+
 function SentryGunDamage:shoot_pos_mid(m_pos)
 	mvector3.set(m_pos, self._ext_movement:m_head_pos())
 end
+
 function SentryGunDamage:damage_bullet(attack_data)
 	if self._dead or self._invulnerable or PlayerDamage:_look_for_friendly_fire(attack_data.attacker_unit) then
 		return
@@ -45,15 +50,19 @@ function SentryGunDamage:damage_bullet(attack_data)
 		self._unit:network():send("sentrygun_health", math.ceil(health_percent / self._health_sync_resolution))
 	end
 end
+
 function SentryGunDamage:dead()
 	return self._dead
 end
+
 function SentryGunDamage:health_ratio()
 	return self._health / HEALTH_MAX
 end
+
 function SentryGunDamage:focus_delay_mul()
 	return 1
 end
+
 function SentryGunDamage:die()
 	self._health = 0
 	self._dead = true
@@ -65,6 +74,7 @@ function SentryGunDamage:die()
 	self._unit:sound_source():post_event("turret_breakdown")
 	self._unit:damage():run_sequence_simple("broken")
 end
+
 function SentryGunDamage:save(save_data)
 	local my_save_data = {}
 	if self._health_sync then
@@ -74,6 +84,7 @@ function SentryGunDamage:save(save_data)
 		save_data.char_damage = my_save_data
 	end
 end
+
 function SentryGunDamage:load(save_data)
 	if not save_data or not save_data.char_damage then
 		return
@@ -82,6 +93,7 @@ function SentryGunDamage:load(save_data)
 		self:sync_health(save_data.char_damage.health)
 	end
 end
+
 function SentryGunDamage:destroy(unit)
 	unit:brain():pre_destroy()
 	unit:movement():pre_destroy()

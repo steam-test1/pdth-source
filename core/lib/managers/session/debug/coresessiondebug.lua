@@ -1,9 +1,11 @@
 core:module("CoreSessionDebug")
 SessionDebug = SessionDebug or class()
+
 function SessionDebug:init(session_state)
 	self._session_state = session_state
 	self:_parse_standard_arguments()
 end
+
 function SessionDebug:_parse_standard_arguments()
 	local level
 	local args = Application:argv()

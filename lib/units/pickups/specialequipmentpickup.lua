@@ -1,8 +1,10 @@
 SpecialEquipmentPickup = SpecialEquipmentPickup or class(Pickup)
+
 function SpecialEquipmentPickup:init(unit)
 	SpecialEquipmentPickup.super.init(self, unit)
 	managers.occlusion:remove_occlusion(unit)
 end
+
 function SpecialEquipmentPickup:_pickup(unit)
 	local equipment = unit:equipment()
 	if not unit:character_damage():dead() and equipment and managers.player:can_pickup_equipment(self._special) then
@@ -22,6 +24,7 @@ function SpecialEquipmentPickup:_pickup(unit)
 	end
 	return false
 end
+
 function SpecialEquipmentPickup:destroy(...)
 	managers.occlusion:add_occlusion(self._unit)
 	SpecialEquipmentPickup.super.destroy(self, ...)

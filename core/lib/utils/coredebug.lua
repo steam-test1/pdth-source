@@ -10,6 +10,7 @@ if not Global.render_debug_initialized.coredebug then
 	Global.render_debug.render_overlay = true
 	Global.render_debug_initialized.coredebug = true
 end
+
 function only_in_debug(f, klass)
 	klass = klass or getmetatable(Application)
 	local old = "old_" .. f
@@ -22,6 +23,7 @@ function only_in_debug(f, klass)
 		end
 	end
 end
+
 only_in_debug("draw")
 only_in_debug("draw_sphere")
 only_in_debug("draw_line")
@@ -46,6 +48,7 @@ if not Global.category_print_initialized.coredebug then
 	Global.category_print.subtitle_manager = false
 	Global.category_print_initialized.coredebug = true
 end
+
 function out(...)
 	local CAT_TYPE = "debug"
 	local NO_CAT = "spam"
@@ -62,6 +65,7 @@ function out(...)
 		sel[1] = args[1] .. " " .. tostring(sel[1])
 		return unpack(sel)
 	end
+	
 	local function do_print(c, ...)
 		local cat = CAT_TYPE
 		local args = {
@@ -75,6 +79,7 @@ function out(...)
 		end
 		cat_print(cat, ...)
 	end
+	
 	if #args == 0 then
 		return
 	elseif 1 < #args and type(args[1]) == "string" then
@@ -85,26 +90,31 @@ function out(...)
 		do_print(NO_CAT, correct_spaces("[" .. NO_CAT .. "]", unpack(args)))
 	end
 end
+
 function cat_print(cat, ...)
 	if Global.category_print[cat] then
 		_G.print(...)
 	end
 end
+
 function cat_debug(cat, ...)
 	if Global.category_print[cat] then
 		Application:debug(...)
 	end
 end
+
 function cat_error(cat, ...)
 	if Global.category_print[cat] then
 		Application:error(...)
 	end
 end
+
 function cat_stack_dump(cat)
 	if Global.category_print[cat] then
 		Application:stack_dump()
 	end
 end
+
 function cat_print_inspect(cat, ...)
 	if Global.category_print[cat] then
 		for _, var in ipairs({
@@ -114,6 +124,7 @@ function cat_print_inspect(cat, ...)
 		end
 	end
 end
+
 function cat_debug_inspect(cat, ...)
 	if Global.category_print[cat] then
 		for _, var in ipairs({
@@ -123,6 +134,7 @@ function cat_debug_inspect(cat, ...)
 		end
 	end
 end
+
 function catprint_save()
 	local data = {_meta = "categories"}
 	for name, allow_print in pairs(Global.category_print) do
@@ -139,6 +151,7 @@ function catprint_save()
 	file:print(ScriptSerializer:to_custom_xml(data))
 	file:close()
 end
+
 function catprint_load()
 	if not Global.original_category_print then
 		Global.original_category_print = {}
@@ -158,19 +171,23 @@ function catprint_load()
 		end
 	end
 end
+
 function print_console_result(...)
 	for i = 1, select("#", ...) do
 		cat_print("debug", CoreCode.full_representation(select(i, ...)))
 	end
 end
+
 function compile_and_reload()
 	local root_path = function()
 		local path = Application:base_path() .. (CoreApp.arg_value("-assetslocation") or "../../")
 		local f
+		
 		function f(s)
 			local str, i = string.gsub(s, "\\[%w_%.%s]+\\%.%.", "")
 			return 0 < i and f(str) or str
 		end
+		
 		return f(path)
 	end
 	assert(SystemInfo:platform() == Idstring("WIN32"), "You can only compile on win32 platforms!")
@@ -184,13 +201,16 @@ function compile_and_reload()
 	DB:reload()
 	Application:console_command("reload")
 end
+
 function class_name(class)
 	return core:_lookup(class)
 end
+
 function full_class_name(class)
 	local x, y = class_name(class)
 	return y .. "." .. x
 end
+
 function watch(cond_func, exact)
 	debug.sethook(function()
 		if cond_func() then
@@ -212,6 +232,7 @@ function watch(cond_func, exact)
 		end
 	end, "l", 1)
 end
+
 function trace_ref(class_name, init_name, destroy_name)
 	local class_mt = type(class_name) == "string" and getmetatable(assert(rawget(_G, class_name))) or class_name
 	local ref = function()
@@ -277,6 +298,7 @@ function trace_ref(class_name, init_name, destroy_name)
 		end)
 	end
 end
+
 function trace_ref_add_destroy_all(class_name, func_name)
 	local class_mt = type(class_name) == "string" and getmetatable(assert(rawget(_G, class_name))) or class_name
 	rawset(class_mt, "_" .. func_name, assert(rawget(class_mt, func_name)))
@@ -288,6 +310,7 @@ function trace_ref_add_destroy_all(class_name, func_name)
 		end)
 	end
 end
+
 function debug_pause(...)
 	if Application:production_build() then
 		Application:error("[debug_pause]", ...)
@@ -297,6 +320,7 @@ function debug_pause(...)
 		end
 	end
 end
+
 function debug_pause_unit(unit, ...)
 	if Application:production_build() then
 		debug_pause(...)

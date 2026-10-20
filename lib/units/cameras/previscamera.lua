@@ -1,4 +1,5 @@
 PrevisCamera = PrevisCamera or class()
+
 function PrevisCamera:init(unit)
 	self._unit = unit
 	self._camera = World:create_camera()
@@ -14,6 +15,7 @@ function PrevisCamera:init(unit)
 	self._director:position_as(self._camera)
 	self._camera_controller:set_both(self._unit:get_object(Idstring("g_camera")) or self._unit:get_object(Idstring("g_camtest")))
 end
+
 function PrevisCamera:start()
 	if game_state_machine:current_state_name() ~= "editor" then
 		self._old_game_state_name = game_state_machine:current_state_name()
@@ -24,6 +26,7 @@ function PrevisCamera:start()
 	self._unit:anim_play_to(Idstring("camera_animation"), self._unit:anim_length(Idstring("camera_animation")), 1)
 	self._viewport:set_active(true)
 end
+
 function PrevisCamera:stop()
 	self._viewport:set_active(false)
 	self._unit:anim_stop(Idstring("camera_animation"))
@@ -34,6 +37,7 @@ function PrevisCamera:stop()
 	end
 	self._playing = false
 end
+
 function PrevisCamera:update(unit, t, dt)
 	if self._playing then
 		if self._wait_t then
@@ -46,6 +50,7 @@ function PrevisCamera:update(unit, t, dt)
 		end
 	end
 end
+
 function PrevisCamera:destroy()
 	if self._viewport then
 		self._viewport:destroy()

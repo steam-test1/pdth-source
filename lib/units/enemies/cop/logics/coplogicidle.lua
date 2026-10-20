@@ -13,6 +13,7 @@ CopLogicIdle.allowed_transitional_actions = {
 		"crouch"
 	}
 }
+
 function CopLogicIdle.enter(data, new_logic_name, enter_params)
 	CopLogicBase.enter(data, new_logic_name, enter_params)
 	local my_data = {
@@ -106,6 +107,7 @@ function CopLogicIdle.enter(data, new_logic_name, enter_params)
 		data.unit:movement():set_allow_fire(false)
 	end
 end
+
 function CopLogicIdle.exit(data, new_logic_name, enter_params)
 	CopLogicBase.exit(data, new_logic_name, enter_params)
 	local my_data = data.internal_data
@@ -132,6 +134,7 @@ function CopLogicIdle.exit(data, new_logic_name, enter_params)
 		rsrv_pos.move_dest = nil
 	end
 end
+
 function CopLogicIdle.update(data)
 	local my_data = data.internal_data
 	if CopLogicIdle._chk_relocate(data) then
@@ -140,6 +143,7 @@ function CopLogicIdle.update(data)
 	CopLogicIdle._upd_pathing(data, my_data)
 	CopLogicIdle._upd_scan(data, my_data)
 end
+
 function CopLogicIdle._update_enemy_detection(data)
 	managers.groupai:state():on_unit_detection_updated(data.unit)
 	data.t = TimerManager:game():time()
@@ -180,6 +184,7 @@ function CopLogicIdle._update_enemy_detection(data)
 	CopLogicBase.queue_task(my_data, my_data.detection_task_key, CopLogicIdle._update_enemy_detection, data, data.t + delay)
 	CopLogicBase._report_detections(enemies)
 end
+
 function CopLogicIdle._upd_pathing(data, my_data)
 	if data.pathing_results then
 		local path = my_data.stare_path_search_id and data.pathing_results[my_data.stare_path_search_id]
@@ -204,6 +209,7 @@ function CopLogicIdle._upd_pathing(data, my_data)
 		end
 	end
 end
+
 function CopLogicIdle._upd_scan(data, my_data)
 	if not (my_data.stare_pos and my_data.next_scan_t) or data.t < my_data.next_scan_t or data.unit:movement():chk_action_forbidden("walk") then
 		return
@@ -236,6 +242,7 @@ function CopLogicIdle._upd_scan(data, my_data)
 	end
 	my_data.next_scan_t = data.t + math.random(3, 10)
 end
+
 function CopLogicIdle.damage_clbk(data, damage_info)
 	local enemy = damage_info.attacker_unit
 	if enemy then
@@ -273,6 +280,7 @@ function CopLogicIdle.damage_clbk(data, damage_info)
 		managers.groupai:state():report_aggression(enemy)
 	end
 end
+
 function CopLogicIdle.on_alert(data, alert_data)
 	local enemy = alert_data[5] or alert_data[4]
 	local my_data = data.internal_data
@@ -321,6 +329,7 @@ function CopLogicIdle.on_alert(data, alert_data)
 	end
 	my_data.alert_t = t
 end
+
 function CopLogicIdle.on_new_objective(data, old_objective)
 	local new_objective = data.objective
 	TeamAILogicBase.on_new_objective(data, old_objective)
@@ -348,6 +357,7 @@ function CopLogicIdle.on_new_objective(data, old_objective)
 		old_objective.fail_clbk()
 	end
 end
+
 function CopLogicIdle._chk_reaction_to_criminal(data, key_criminal, criminal_data, stationary)
 	local u_criminal = criminal_data.unit
 	local record = managers.groupai:state():criminal_record(key_criminal)
@@ -392,6 +402,7 @@ function CopLogicIdle._chk_reaction_to_criminal(data, key_criminal, criminal_dat
 		end
 	end
 end
+
 function CopLogicIdle._am_i_important_to_player(record, my_key)
 	if record.important_enemies then
 		for i, test_e_key in ipairs(record.important_enemies) do
@@ -401,6 +412,7 @@ function CopLogicIdle._am_i_important_to_player(record, my_key)
 		end
 	end
 end
+
 function CopLogicIdle.on_detected_enemy_destroyed(data, enemy_unit)
 	local my_data = data.internal_data
 	if my_data.focus_enemy and my_data.focus_enemy.unit:key() == enemy_unit:key() then
@@ -411,6 +423,7 @@ function CopLogicIdle.on_detected_enemy_destroyed(data, enemy_unit)
 	end
 	data.internal_data.detected_enemies[enemy_unit:key()] = nil
 end
+
 function CopLogicIdle.on_criminal_neutralized(data, criminal_key)
 	local my_data = data.internal_data
 	local record = managers.groupai:state():criminal_record(criminal_key)
@@ -419,6 +432,7 @@ function CopLogicIdle.on_criminal_neutralized(data, criminal_key)
 		my_data.suspected_enemies[criminal_key] = nil
 	end
 end
+
 function CopLogicIdle.on_intimidated(data, amount, aggressor_unit)
 	local surrender = false
 	local my_data = data.internal_data
@@ -438,6 +452,7 @@ function CopLogicIdle.on_intimidated(data, amount, aggressor_unit)
 	managers.groupai:state():criminal_spotted(aggressor_unit)
 	return surrender
 end
+
 function CopLogicIdle._surrender(data, amount)
 	if managers.groupai:state():police_hostage_count() < 4 and not managers.groupai:state():get_assault_mode() then
 		local params = {effect = amount}
@@ -449,6 +464,7 @@ function CopLogicIdle._surrender(data, amount)
 	end
 	return false
 end
+
 function CopLogicIdle._chk_stare_into_wall_1(data)
 	local my_data = data.internal_data
 	local walk_from_pos = data.m_pos
@@ -500,6 +516,7 @@ function CopLogicIdle._chk_stare_into_wall_1(data)
 		data.unit:brain():search_for_path(my_data.stare_path_search_id, path_tasks[#path_tasks])
 	end
 end
+
 function CopLogicIdle._chk_stare_into_wall_2(data)
 	local my_data = data.internal_data
 	local slotmask = my_data.ai_visibility_slotmask
@@ -567,6 +584,7 @@ function CopLogicIdle._chk_stare_into_wall_2(data)
 		my_data.stare_path_pos = nil
 	end
 end
+
 function CopLogicIdle._chk_request_action_turn_to_look_pos(data, my_data, my_pos, look_pos)
 	local fwd = data.unit:movement():m_rot():y()
 	local target_vec = look_pos - my_pos
@@ -594,6 +612,7 @@ function CopLogicIdle._chk_request_action_turn_to_look_pos(data, my_data, my_pos
 		return true
 	end
 end
+
 function CopLogicIdle.on_area_safety(data, nav_seg, safe, event)
 	if not safe and event.reason == "criminal" then
 		local my_data = data.internal_data
@@ -606,6 +625,7 @@ function CopLogicIdle.on_area_safety(data, nav_seg, safe, event)
 		end
 	end
 end
+
 function CopLogicIdle.action_complete_clbk(data, action)
 	local action_type = action:type()
 	if action_type == "turn" then
@@ -630,9 +650,11 @@ function CopLogicIdle.action_complete_clbk(data, action)
 		CopLogicIdle.try_dodge(data, "on_hurt")
 	end
 end
+
 function CopLogicIdle.is_available_for_assignment(data)
 	return (not data.internal_data.performing_act_objective or data.unit:anim_data().act_idle) and not data.internal_data.exiting
 end
+
 function CopLogicIdle.clbk_act_complete(ignore_this, data)
 	local my_data = data.internal_data
 	CopLogicBase.on_delayed_clbk(my_data, my_data.act_complete_clbk_id)
@@ -643,12 +665,14 @@ function CopLogicIdle.clbk_act_complete(ignore_this, data)
 		managers.groupai:state():on_objective_complete(data.unit, old_objective)
 	end
 end
+
 function CopLogicIdle.dodge(data, hipshot)
 	if not data.unit:movement():chk_action_forbidden("walk") then
 		return CopLogicIdle.try_dodge(data, hipshot and "on_hit" or "scared")
 	end
 	return nil
 end
+
 function CopLogicIdle.try_dodge(data, dodge_type)
 	local current_actions = data.unit:movement()._active_actions[1]
 	if current_actions and current_actions:type() == "dodge" then
@@ -676,9 +700,11 @@ function CopLogicIdle.try_dodge(data, dodge_type)
 	end
 	return nil
 end
+
 function CopLogicIdle._nav_point_pos(nav_point)
 	return nav_point.x and nav_point or nav_point:script_data().element:value("position")
 end
+
 function CopLogicIdle._chk_relocate(data)
 	if data.objective and data.objective.type == "follow" then
 		local relocate
@@ -710,11 +736,13 @@ function CopLogicIdle._chk_relocate(data)
 		end
 	end
 end
+
 function CopLogicIdle._get_all_paths(data)
 	return {
 		stare_path = data.internal_data.stare_path
 	}
 end
+
 function CopLogicIdle._set_verified_paths(data, verified_paths)
 	data.internal_data.stare_path = verified_paths.stare_path
 end

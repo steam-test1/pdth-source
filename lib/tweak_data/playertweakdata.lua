@@ -1,26 +1,31 @@
 PlayerTweakData = PlayerTweakData or class()
+
 function PlayerTweakData:_set_easy()
 	self.damage.ARMOR_INIT = 6
 	self.damage.MIN_DAMAGE_INTERVAL = 0.6
 	self.damage.automatic_respawn_time = 150
 end
+
 function PlayerTweakData:_set_normal()
 	self.damage.ARMOR_INIT = 4
 	self.damage.MIN_DAMAGE_INTERVAL = 0.3
 	self.damage.automatic_respawn_time = 210
 end
+
 function PlayerTweakData:_set_hard()
 	self.damage.ARMOR_INIT = 2
 	self.damage.MIN_DAMAGE_INTERVAL = 0.3
 	self.damage.DOWNED_TIME_DEC = 7
 	self.damage.DOWNED_TIME_MIN = 5
 end
+
 function PlayerTweakData:_set_overkill()
 	self.damage.ARMOR_INIT = 1
 	self.damage.MIN_DAMAGE_INTERVAL = 0.3
 	self.damage.DOWNED_TIME_DEC = 10
 	self.damage.DOWNED_TIME_MIN = 5
 end
+
 function PlayerTweakData:_set_overkill_145()
 	self.damage.ARMOR_INIT = 1
 	self.damage.MIN_DAMAGE_INTERVAL = 0.15
@@ -28,6 +33,7 @@ function PlayerTweakData:_set_overkill_145()
 	self.damage.DOWNED_TIME_MIN = 1
 	self.damage.REVIVE_HEALTH_STEPS = {0.2}
 end
+
 function PlayerTweakData:init()
 	self.damage = {}
 	self.damage.ARMOR_INIT = 3

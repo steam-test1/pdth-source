@@ -1,4 +1,5 @@
 PointOfNoReturnElement = PointOfNoReturnElement or class(MissionElement)
+
 function PointOfNoReturnElement:init(unit)
 	PointOfNoReturnElement.super.init(self, unit)
 	self._hed.elements = {}
@@ -14,6 +15,7 @@ function PointOfNoReturnElement:init(unit)
 	table.insert(self._save_values, "time_overkill")
 	table.insert(self._save_values, "time_overkill_145")
 end
+
 function PointOfNoReturnElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel
@@ -107,11 +109,14 @@ function PointOfNoReturnElement:_build_panel(panel, panel_sizer)
 		value = "time_overkill_145"
 	})
 end
+
 function PointOfNoReturnElement:draw_links(t, dt, selected_unit, all_units)
 	MissionElement.draw_links(self, t, dt, selected_unit, all_units)
 end
+
 function PointOfNoReturnElement:update_editing()
 end
+
 function PointOfNoReturnElement:update_selected(t, dt, selected_unit, all_units)
 	for _, id in ipairs(self._hed.elements) do
 		local unit = all_units[id]
@@ -127,6 +132,7 @@ function PointOfNoReturnElement:update_selected(t, dt, selected_unit, all_units)
 		end
 	end
 end
+
 function PointOfNoReturnElement:add_element()
 	local ray = managers.editor:unit_by_raycast({mask = 10, ray_type = "editor"})
 	if ray and ray.unit and string.find(ray.unit:name():s(), "trigger_area", 1, true) then
@@ -138,6 +144,7 @@ function PointOfNoReturnElement:add_element()
 		end
 	end
 end
+
 function PointOfNoReturnElement:remove_links(unit)
 	for _, id in ipairs(self._hed.elements) do
 		if id == unit:unit_data().unit_id then
@@ -145,6 +152,7 @@ function PointOfNoReturnElement:remove_links(unit)
 		end
 	end
 end
+
 function PointOfNoReturnElement:add_triggers(vc)
 	vc:add_trigger(Idstring("lmb"), callback(self, self, "add_element"))
 end

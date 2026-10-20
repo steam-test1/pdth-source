@@ -3,6 +3,7 @@ local tmp_rot1 = Rotation()
 local tmp_vec1 = Vector3()
 local tmp_vec2 = Vector3()
 SentryGunMovement = SentryGunMovement or class()
+
 function SentryGunMovement:init(unit)
 	self._unit = unit
 	self._head_obj = self._unit:get_object(Idstring("a_detect"))
@@ -29,14 +30,17 @@ function SentryGunMovement:init(unit)
 	self._last_attention_t = 0
 	self._warmup_t = 0
 end
+
 function SentryGunMovement:post_init()
 	self._ext_network = self._unit:network()
 end
+
 function SentryGunMovement:update(unit, t, dt)
 	if t > self._warmup_t then
 		self:_upd_movement(dt)
 	end
 end
+
 function SentryGunMovement:set_active(state)
 	self._unit:set_extension_update_enabled(Idstring("movement"), state)
 	if not state and self._motor_sound then
@@ -44,9 +48,11 @@ function SentryGunMovement:set_active(state)
 		self._motor_sound = false
 	end
 end
+
 function SentryGunMovement:nav_tracker()
 	return self._nav_tracker
 end
+
 function SentryGunMovement:set_attention(attention)
 	if self._attention and self._attention.destroy_listener_key then
 		self._attention.unit:base():remove_destroy_listener(self._attention.destroy_listener_key)
@@ -68,6 +74,7 @@ function SentryGunMovement:set_attention(attention)
 	self:chk_play_alert(attention, self._attention)
 	self._attention = attention
 end
+
 function SentryGunMovement:synch_attention(attention)
 	if self._attention and self._attention.destroy_listener_key then
 		self._attention.unit:base():remove_destroy_listener(self._attention.destroy_listener_key)
@@ -80,6 +87,7 @@ function SentryGunMovement:synch_attention(attention)
 	self:chk_play_alert(attention, self._attention)
 	self._attention = attention
 end
+
 function SentryGunMovement:chk_play_alert(attention, old_attention)
 	if not attention and old_attention then
 		self._last_attention_t = TimerManager:game():time()
@@ -89,9 +97,11 @@ function SentryGunMovement:chk_play_alert(attention, old_attention)
 		self._warmup_t = TimerManager:game():time() + 0.5
 	end
 end
+
 function SentryGunMovement:attention()
 	return self._attention
 end
+
 function SentryGunMovement:attention_unit_destroy_clbk(unit)
 	if Network:is_server() then
 		self:set_attention()
@@ -99,24 +109,31 @@ function SentryGunMovement:attention_unit_destroy_clbk(unit)
 		self:synch_attention()
 	end
 end
+
 function SentryGunMovement:m_head_pos()
 	return self._m_head_pos
 end
+
 function SentryGunMovement:m_com()
 	return self._m_head_pos
 end
+
 function SentryGunMovement:m_pos()
 	return self._m_head_pos
 end
+
 function SentryGunMovement:m_detect_pos()
 	return self._m_head_pos
 end
+
 function SentryGunMovement:m_stand_pos()
 	return self._m_head_pos
 end
+
 function SentryGunMovement:m_head_fwd()
 	return self._m_head_fwd
 end
+
 function SentryGunMovement:set_look_vec3(look_vec3)
 	mvector3.set(self._m_head_fwd, look_vec3)
 	local look_rel_polar = look_vec3:to_polar_with_reference(self._unit_fwd, self._unit_up)
@@ -124,6 +141,7 @@ function SentryGunMovement:set_look_vec3(look_vec3)
 	self._pitch_obj:set_local_rotation(Rotation(0, look_rel_polar.pitch, 0))
 	self._unit:set_moving(true)
 end
+
 function SentryGunMovement:_upd_movement(dt)
 	local target_dir = self:_get_target_dir(self._attention)
 	local unit_fwd_polar = self._unit_fwd:to_polar()
@@ -131,6 +149,7 @@ function SentryGunMovement:_upd_movement(dt)
 	local error_polar = target_dir:to_polar_with_reference(self._unit_fwd, self._unit_up)
 	error_polar = Polar(1, math.clamp(error_polar.pitch, -55, 35.5), error_polar.spin)
 	error_polar = error_polar - fwd_polar
+	
 	local function _ramp_value(value, err, vel, slowdown_at, max_vel, min_vel, acc)
 		local sign_err = math.sign(err)
 		local abs_err = math.abs(err)
@@ -156,6 +175,7 @@ function SentryGunMovement:_upd_movement(dt)
 		local new_val = value + correction
 		return at_end, new_vel, new_val
 	end
+	
 	local pitch_end, spin_end, new_vel, new_spin, new_pitch
 	spin_end, new_vel, new_spin = _ramp_value(fwd_polar.spin, error_polar.spin, self._vel.spin, self._tweak.SLOWDOWN_ANGLE_SPIN, self._tweak.MAX_VEL_SPIN, self._tweak.MIN_VEL_SPIN, self._tweak.ACC_SPIN)
 	self._vel.spin = new_vel
@@ -183,6 +203,7 @@ function SentryGunMovement:_upd_movement(dt)
 		self:set_active(false)
 	end
 end
+
 function SentryGunMovement:_get_target_dir(attention)
 	if not attention then
 		if self._switched_off then
@@ -205,22 +226,28 @@ function SentryGunMovement:_get_target_dir(attention)
 		return target_vec
 	end
 end
+
 function SentryGunMovement:tased()
 	return false
 end
+
 function SentryGunMovement:on_death()
 	self._unit:set_extension_update_enabled(Idstring("movement"), false)
 end
+
 function SentryGunMovement:synch_allow_fire(...)
 	self._unit:brain():synch_allow_fire(...)
 end
+
 function SentryGunMovement:warming_up(t)
 	return t < self._warmup_t
 end
+
 function SentryGunMovement:switch_off()
 	self._switched_off = true
 	self._switch_off_rot = Rotation(self._m_rot:x(), -35)
 end
+
 function SentryGunMovement:save(save_data)
 	local my_save_data = {}
 	if self._attention then
@@ -241,6 +268,7 @@ function SentryGunMovement:save(save_data)
 		save_data.movement = my_save_data
 	end
 end
+
 function SentryGunMovement:load(save_data)
 	if not save_data or not save_data.movement then
 		return
@@ -249,6 +277,7 @@ function SentryGunMovement:load(save_data)
 		self._attention = save_data.movement.attention
 	end
 end
+
 function SentryGunMovement:pre_destroy()
 	if Network:is_server() then
 		self:set_attention()

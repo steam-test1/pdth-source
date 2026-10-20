@@ -1,12 +1,15 @@
 MenuNodeButtonLayoutGui = MenuNodeButtonLayoutGui or class(MenuNodeGui)
+
 function MenuNodeButtonLayoutGui:init(node, layer, parameters)
 	MenuNodeButtonLayoutGui.super.init(self, node, layer, parameters)
 	self:_setup(node)
 end
+
 function MenuNodeButtonLayoutGui:_setup_panels(node)
 	MenuNodeButtonLayoutGui.super._setup_panels(self, node)
 	local safe_rect_pixels = managers.viewport:get_safe_rect_pixels()
 end
+
 function MenuNodeButtonLayoutGui:_setup()
 	self._coords = {}
 	self._coords.menu_button_sprint = {
@@ -114,6 +117,7 @@ function MenuNodeButtonLayoutGui:_setup()
 	})
 	self:_layout()
 end
+
 function MenuNodeButtonLayoutGui:_layout()
 	local safe_rect_pixels = managers.viewport:get_safe_rect_pixels()
 	local res = RenderSettings.resolution
@@ -145,19 +149,24 @@ function MenuNodeButtonLayoutGui:_layout()
 		end
 	end
 end
+
 function MenuNodeButtonLayoutGui:_create_menu_item(row_item)
 	MenuNodeButtonLayoutGui.super._create_menu_item(self, row_item)
 end
+
 function MenuNodeButtonLayoutGui:_setup_main_panel(safe_rect)
 	MenuNodeButtonLayoutGui.super._setup_main_panel(self, safe_rect)
 end
+
 function MenuNodeButtonLayoutGui:_setup_item_panel(safe_rect, res)
 	MenuNodeButtonLayoutGui.super._setup_item_panel(self, safe_rect, res)
 end
+
 function MenuNodeButtonLayoutGui:resolution_changed()
 	MenuNodeButtonLayoutGui.super.resolution_changed(self)
 	self:_layout()
 end
+
 function MenuNodeButtonLayoutGui:close(...)
 	self._bg:parent():remove(self._bg)
 	MenuNodeButtonLayoutGui.super.close(self, ...)

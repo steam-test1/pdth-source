@@ -11,6 +11,7 @@ core:import("CoreEnvironmentDOFSharedInterface")
 core:import("CoreEnvironmentShadowInterface")
 core:import("CoreEnvironmentShadowSharedInterface")
 EnvironmentMixer = EnvironmentMixer or CoreClass.class()
+
 function EnvironmentMixer:set_environment(name, blend_time)
 	if not blend_time or blend_time == 0 then
 		self._from_env = self._cache:load_environment(name)
@@ -23,6 +24,7 @@ function EnvironmentMixer:set_environment(name, blend_time)
 	self._to_env = self._cache:load_environment(name)
 	self._feed_params = 3
 end
+
 function EnvironmentMixer:current_environment()
 	if self:is_mixing() then
 		return self._from_env:name(), self._to_env:name(), self._scale
@@ -30,12 +32,15 @@ function EnvironmentMixer:current_environment()
 		return self._to_env:name()
 	end
 end
+
 function EnvironmentMixer:is_mixing()
 	return self._is_mixing or false
 end
+
 function EnvironmentMixer:create_modifier(full_control, interface_name, func)
 	return self:_create_modifier(full_control, interface_name, func)
 end
+
 function EnvironmentMixer:modifier_owner(interface_name)
 	local interface = self._interfaces[interface_name]
 	if interface then
@@ -50,6 +55,7 @@ function EnvironmentMixer:modifier_owner(interface_name)
 		Application:error("[EnvironmentMixer] No interface with name: " .. interface_name)
 	end
 end
+
 function EnvironmentMixer:destroy_modifier(id)
 	local handle = self._full_control_handles[id] or self._part_control_handles[id]
 	if not handle then
@@ -59,6 +65,7 @@ function EnvironmentMixer:destroy_modifier(id)
 	self._full_control_handles[id] = nil
 	self._part_control_handles[id] = nil
 end
+
 function EnvironmentMixer:modifier_interface_names()
 	local t = {}
 	for name, _ in pairs(self._interfaces) do
@@ -66,10 +73,12 @@ function EnvironmentMixer:modifier_interface_names()
 	end
 	return unpack(t)
 end
+
 function EnvironmentMixer:static_parameters(env_name, ...)
 	local env = self._cache:load_environment(env_name)
 	return env:parameter_block(...)
 end
+
 function EnvironmentMixer:init(cache, name)
 	self._cache = cache
 	self._target_env = self._cache:copy_environment(name)
@@ -96,6 +105,7 @@ function EnvironmentMixer:init(cache, name)
 		"depth_visualization"
 	}
 end
+
 function EnvironmentMixer:internal_push_ref_fov(fov, vp, scene)
 	if fov < math.rad(vp:camera() and vp:camera():fov()) then
 		return false
@@ -111,6 +121,7 @@ function EnvironmentMixer:internal_push_ref_fov(fov, vp, scene)
 	end
 	return false
 end
+
 function EnvironmentMixer:internal_pop_ref_fov(vp, scene)
 	local sh_pro = vp:get_post_processor_effect(scene, Idstring("shadow_processor"), Idstring("shadow_rendering"))
 	if sh_pro then
@@ -126,6 +137,7 @@ function EnvironmentMixer:internal_pop_ref_fov(vp, scene)
 	end
 	return false
 end
+
 function EnvironmentMixer:internal_ref_fov(vp, scene)
 	local fov = -1
 	local sh_pro = vp:get_post_processor_effect(scene, Idstring("shadow_processor"), Idstring("shadow_rendering"))
@@ -137,6 +149,7 @@ function EnvironmentMixer:internal_ref_fov(vp, scene)
 	end
 	return fov
 end
+
 function EnvironmentMixer:internal_set_visualization_mode(effect_name, vp, scene)
 	if table.contains(self._visualization_modes, effect_name) then
 		if effect_name == "deferred_lighting" then
@@ -156,12 +169,15 @@ function EnvironmentMixer:internal_set_visualization_mode(effect_name, vp, scene
 		Application:error(error_msg)
 	end
 end
+
 function EnvironmentMixer:internal_visualization_modes()
 	return unpack(self._visualization_modes)
 end
+
 function EnvironmentMixer:set_feed_params()
 	self._feed_params = 1
 end
+
 function EnvironmentMixer:internal_update(nr, t, dt)
 	local id = Profiler:start("Environment Mixer")
 	local return_value = self._feed_params and true
@@ -178,9 +194,11 @@ function EnvironmentMixer:internal_update(nr, t, dt)
 	Profiler:stop(id)
 	return return_value
 end
+
 function EnvironmentMixer:internal_output(...)
 	return select("#", ...) > 0 and self._target_env:parameter_block(...) or self._target_env
 end
+
 function EnvironmentMixer:_create_modifier(full_control, interface_name, func, shared, ...)
 	local interface = assert(self._interfaces[interface_name], "[EnvironmentMixer] Could not find interface with name: " .. interface_name)
 	local path = interface.DATA_PATH or {
@@ -201,10 +219,12 @@ function EnvironmentMixer:_create_modifier(full_control, interface_name, func, s
 	end
 	return name
 end
+
 function EnvironmentMixer:_get_handle_by_params(...)
 	local handle_name = self:_create_handle_name_from_params(...)
 	return self:_get_handle_by_name(handle_name)
 end
+
 function EnvironmentMixer:_get_handle_by_name(name)
 	for _, handle in pairs(self._full_control_handles) do
 		if handle:name() == name then
@@ -217,6 +237,7 @@ function EnvironmentMixer:_get_handle_by_name(name)
 		end
 	end
 end
+
 function EnvironmentMixer:_process_block(first_mixer, block, ...)
 	local handle_name = self:_create_handle_name_from_params(...)
 	local handle = first_mixer and (self._full_control_handles[handle_name] or self._cache:shared_handle(true, handle_name)) or self._full_control_handles[handle_name]
@@ -232,6 +253,7 @@ function EnvironmentMixer:_process_block(first_mixer, block, ...)
 		self._target_env:set_parameter_block(handle:do_callback(), ...)
 	end
 end
+
 function EnvironmentMixer:_create_handle_name_from_params(...)
 	local str = ""
 	for _, v in ipairs({
@@ -241,9 +263,11 @@ function EnvironmentMixer:_create_handle_name_from_params(...)
 	end
 	return str
 end
+
 function EnvironmentMixer:_do_mix(block, ...)
 	self:_mix(block, self._from_env:parameter_block(...), self._to_env:parameter_block(...), self._scale)
 end
+
 function EnvironmentMixer:_mix(target_block, from_block, to_block, scale)
 	for key, value in pairs(from_block) do
 		assert(target_block[key] and to_block[key], "[EnvironmentMixer] Mixing failed, parameters does not match.")

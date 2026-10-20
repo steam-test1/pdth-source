@@ -24,6 +24,7 @@ local five_steps = {
 	"size18",
 	"size20"
 }
+
 function ChallengesTweakData:init()
 	self.character = {}
 	self.character.bullet_to_bleed_out = {
@@ -1244,6 +1245,7 @@ function ChallengesTweakData:init()
 		}
 	end
 end
+
 function ChallengesTweakData:_any_weapon_challenges()
 	local definition = {}
 	definition.me = {}
@@ -1400,6 +1402,7 @@ function ChallengesTweakData:_any_weapon_challenges()
 		}
 	}
 end
+
 function ChallengesTweakData:_c45_challenges()
 	local definition = {}
 	definition.c45 = {}
@@ -1484,6 +1487,7 @@ function ChallengesTweakData:_c45_challenges()
 		}
 	end
 end
+
 function ChallengesTweakData:_beretta92_challenges()
 	local definition = {}
 	definition.beretta92 = {}
@@ -1559,6 +1563,7 @@ function ChallengesTweakData:_beretta92_challenges()
 		}
 	end
 end
+
 function ChallengesTweakData:_bronco_challenges()
 	local definition = {}
 	definition.bronco = {}
@@ -1649,6 +1654,7 @@ function ChallengesTweakData:_bronco_challenges()
 		}
 	end
 end
+
 function ChallengesTweakData:_reinbeck_challenges()
 	local definition = {}
 	definition.reinbeck = {}
@@ -1739,6 +1745,7 @@ function ChallengesTweakData:_reinbeck_challenges()
 		}
 	end
 end
+
 function ChallengesTweakData:_mossberg_challenges()
 	local definition = {}
 	definition.mossberg = {}
@@ -1823,6 +1830,7 @@ function ChallengesTweakData:_mossberg_challenges()
 		}
 	end
 end
+
 function ChallengesTweakData:_mp5_challenges()
 	local definition = {}
 	definition.mp5 = {}
@@ -1907,6 +1915,7 @@ function ChallengesTweakData:_mp5_challenges()
 		}
 	end
 end
+
 function ChallengesTweakData:_mac11_challenges()
 	local definition = {}
 	definition.mac11 = {}
@@ -1991,6 +2000,7 @@ function ChallengesTweakData:_mac11_challenges()
 		}
 	end
 end
+
 function ChallengesTweakData:_m4_challenges()
 	local definition = {}
 	definition.m4 = {}
@@ -2066,6 +2076,7 @@ function ChallengesTweakData:_m4_challenges()
 		}
 	end
 end
+
 function ChallengesTweakData:_m14_challenges()
 	local definition = {}
 	definition.m14 = {}
@@ -2150,6 +2161,7 @@ function ChallengesTweakData:_m14_challenges()
 		}
 	end
 end
+
 function ChallengesTweakData:_hk21_challenges()
 	local definition = {}
 	definition.hk21 = {}
@@ -2234,6 +2246,7 @@ function ChallengesTweakData:_hk21_challenges()
 		}
 	end
 end
+
 function ChallengesTweakData:_glock_challenges()
 	local definition = {}
 	definition.glock = {}
@@ -2318,6 +2331,7 @@ function ChallengesTweakData:_glock_challenges()
 		}
 	end
 end
+
 function ChallengesTweakData:_ak47_challenges()
 	local definition = {}
 	definition.ak47 = {}
@@ -2402,6 +2416,7 @@ function ChallengesTweakData:_ak47_challenges()
 		}
 	end
 end
+
 function ChallengesTweakData:_m79_challenges()
 	local definition = {}
 	definition.m79 = {}
@@ -2486,6 +2501,7 @@ function ChallengesTweakData:_m79_challenges()
 		}
 	end
 end
+
 function ChallengesTweakData:_sentry_gun_challenges()
 	local definition = {}
 	definition.sentry_gun = {}
@@ -2552,6 +2568,7 @@ function ChallengesTweakData:_sentry_gun_challenges()
 		}
 	}
 end
+
 function ChallengesTweakData:_trip_mine_challenges()
 	self.weapon.plant_tripmine = {
 		title_id = "ch_plant_tripmine_hl",
@@ -2636,6 +2653,7 @@ function ChallengesTweakData:_trip_mine_challenges()
 		}
 	}
 end
+
 function ChallengesTweakData:_bleed_out_challenges()
 	local definition = {}
 	definition.bleed_out = {}
@@ -2693,6 +2711,7 @@ function ChallengesTweakData:_bleed_out_challenges()
 		}
 	}
 end
+
 function ChallengesTweakData:_melee_challenges()
 	local definition = {}
 	definition.melee = {}
@@ -2726,6 +2745,7 @@ function ChallengesTweakData:_melee_challenges()
 		}
 	end
 end
+
 function ChallengesTweakData:_money_challenges()
 	local definition = {}
 	definition.money = {}

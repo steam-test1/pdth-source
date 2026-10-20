@@ -1,10 +1,12 @@
 ShotgunBase = ShotgunBase or class(RaycastWeaponBase)
+
 function ShotgunBase:init(...)
 	ShotgunBase.super.init(self, ...)
 	self._damage_near = tweak_data.weapon[self._name_id].damage_near
 	self._damage_far = tweak_data.weapon[self._name_id].damage_far
 	self._range = self._damage_far
 end
+
 function ShotgunBase:_create_use_setups()
 	local use_data = {}
 	local player_setup = {}
@@ -14,6 +16,7 @@ function ShotgunBase:_create_use_setups()
 	use_data.player = player_setup
 	self._use_data = use_data
 end
+
 function ShotgunBase:_fire_raycast(user_unit, from_pos, direction)
 	local result = {}
 	local hit_enemies = {}
@@ -25,6 +28,7 @@ function ShotgunBase:_fire_raycast(user_unit, from_pos, direction)
 	local autoaim, dodge_enemies = self:check_autoaim(from_pos, direction, self._range)
 	local weight = 0.1
 	local enemy_died = false
+	
 	local function hit_enemy(col_ray)
 		if col_ray.unit:character_damage() and col_ray.unit:character_damage().is_head then
 			local enemy_key = col_ray.unit:key()
@@ -35,6 +39,7 @@ function ShotgunBase:_fire_raycast(user_unit, from_pos, direction)
 			InstantBulletBase:on_collision(col_ray, self._unit, user_unit, self._damage)
 		end
 	end
+	
 	for i = 1, 6 do
 		local spread_direction = direction:spread(self:_get_spread(user_unit))
 		local ray_to = mvector3.copy(spread_direction)
@@ -88,27 +93,34 @@ function ShotgunBase:_fire_raycast(user_unit, from_pos, direction)
 	})
 	return result
 end
+
 function ShotgunBase:reload_expire_t()
 	return math.min(self._ammo_total - self._ammo_remaining_in_clip, self._ammo_max_per_clip - self._ammo_remaining_in_clip) * 20 / 30
 end
+
 function ShotgunBase:reload_enter_expire_t()
 	return 0.4
 end
+
 function ShotgunBase:reload_exit_expire_t()
 	return 1.3
 end
+
 function ShotgunBase:reload_not_empty_exit_expire_t()
 	return 1
 end
+
 function ShotgunBase:start_reload(...)
 	ShotgunBase.super.start_reload(self, ...)
 	self._started_reload_empty = self:clip_empty()
 	local speed_multiplier = self:reload_speed_multiplier()
 	self._next_shell_reloded_t = Application:time() + 0.33666667 / speed_multiplier
 end
+
 function ShotgunBase:started_reload_empty()
 	return self._started_reload_empty
 end
+
 function ShotgunBase:update_reloading(t, dt, time_left)
 	if t > self._next_shell_reloded_t then
 		local speed_multiplier = self:reload_speed_multiplier()
@@ -117,6 +129,7 @@ function ShotgunBase:update_reloading(t, dt, time_left)
 		return true
 	end
 end
+
 function ShotgunBase:reload_interuptable()
 	return true
 end

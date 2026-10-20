@@ -4,15 +4,18 @@ core:import("CoreMenuLogic")
 core:import("CoreMenuInput")
 core:import("CoreMenuRenderer")
 Manager = Manager or class()
+
 function Manager:init()
 	self._registered_menus = {}
 	self._open_menus = {}
 end
+
 function Manager:destroy()
 	for _, menu in ipairs(self._open_menus) do
 		self:close_menu(menu.name)
 	end
 end
+
 function Manager:register_menu(menu)
 	if menu.name and self._registered_menus[menu.name] then
 		return
@@ -41,10 +44,12 @@ function Manager:register_menu(menu)
 		Application:error("Manager:register_menu(): Menu '" .. menu.id .. "' is missing a name, in '" .. menu.content_file .. "'")
 	end
 end
+
 function Manager:get_menu(menu_name)
 	local menu = self._registered_menus[menu_name]
 	return menu
 end
+
 function Manager:open_menu(menu_name, ...)
 	local menu = self._registered_menus[menu_name]
 	if menu then
@@ -67,6 +72,7 @@ function Manager:open_menu(menu_name, ...)
 		return false
 	end
 end
+
 function Manager:close_menu(menu_name)
 	local menu
 	if menu_name then
@@ -85,6 +91,7 @@ function Manager:close_menu(menu_name)
 		menu.logic:close(true)
 	end
 end
+
 function Manager:_menu_closed(menu_name)
 	if menu_name then
 		for i, menu in ipairs(self._open_menus) do
@@ -99,12 +106,14 @@ function Manager:_menu_closed(menu_name)
 		self._open_menus[#self._open_menus].renderer:show()
 	end
 end
+
 function Manager:input_enabled(enabled)
 	self._input_enabled = enabled
 	for _, menu in ipairs(self._open_menus) do
 		menu.input:focus(enabled)
 	end
 end
+
 function Manager:update(t, dt)
 	local active_menu = self._open_menus[#self._open_menus]
 	if active_menu then

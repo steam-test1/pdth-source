@@ -1,4 +1,5 @@
 core:import("CoreEngineAccess")
+
 function CoreEditor:build_menubar()
 	local menu_bar = EWS:MenuBar()
 	self._menu_bar = menu_bar
@@ -365,6 +366,7 @@ function CoreEditor:build_menubar()
 	Global.frame:connect("USING THE EDITOR", "EVT_COMMAND_MENU_SELECTED", callback(self, self, "on_using_the_editor"), "")
 	Global.frame:connect("ABOUT", "EVT_COMMAND_MENU_SELECTED", callback(self, self, "on_about"), "")
 end
+
 function CoreEditor:confirm_on_new()
 	if Global.running_simulation then
 		local confirm = EWS:message_box(Global.frame_panel, "Want to quit?", "Bringer of World", "YES_NO,CANCEL,ICON_QUESTION", Vector3(-1, -1, 0))
@@ -384,6 +386,7 @@ function CoreEditor:confirm_on_new()
 		self._confirm_on_new = false
 	end
 end
+
 function CoreEditor:on_new()
 	if self:confirm_on_new() then
 		return
@@ -396,6 +399,7 @@ function CoreEditor:on_new()
 		self._unit_list:reset()
 	end
 end
+
 function CoreEditor:on_open()
 	if self:confirm_on_new() then
 		return
@@ -412,6 +416,7 @@ function CoreEditor:on_open()
 		end
 	end
 end
+
 function CoreEditor:on_save()
 	if Global.running_simulation then
 		self:output_warning("Won't save during simulation.")
@@ -427,6 +432,7 @@ function CoreEditor:on_save()
 		self:on_saveas()
 	end
 end
+
 function CoreEditor:create_temp_saves(type)
 	local a = string.gsub(managers.editor._lastdir, managers.database:base_path(), "")
 	local dirs = {}
@@ -446,6 +452,7 @@ function CoreEditor:create_temp_saves(type)
 	end
 	return d
 end
+
 function CoreEditor:on_saveas()
 	if Global.running_simulation then
 		self:output_warning("Won't save during simulation.")
@@ -458,6 +465,7 @@ function CoreEditor:on_saveas()
 		self:save_editor_settings(savedlg_path, savedlg_dir)
 	end
 end
+
 function CoreEditor:on_saveascopy()
 	if Global.running_simulation then
 		self:output_warning("Won't save during simulation.")
@@ -469,12 +477,14 @@ function CoreEditor:on_saveascopy()
 		self:do_save(savedlg_path, savedlg_dir, save_continents)
 	end
 end
+
 function CoreEditor:on_load_recent_file(index)
 	if self:confirm_on_new() then
 		return
 	end
 	self:load_level(self._recent_files[index].dir, self._recent_files[index].path)
 end
+
 function CoreEditor:on_close(custom_data, event_object)
 	if self:confirm_on_new() then
 		return
@@ -483,12 +493,14 @@ function CoreEditor:on_close(custom_data, event_object)
 	self:save_layout()
 	CoreEngineAccess._quit()
 end
+
 function CoreEditor:on_enable_all_layers()
 	for name, layer in pairs(self:layers()) do
 		layer:set_enabled(true)
 		self._disable_layer_menu:set_checked("DISABLE_" .. name, false)
 	end
 end
+
 function CoreEditor:on_disable_layers()
 	for name, layer in pairs(self:layers()) do
 		if layer ~= self._current_layer then
@@ -500,24 +512,30 @@ function CoreEditor:on_disable_layers()
 		end
 	end
 end
+
 function CoreEditor:on_disable_layer(data)
 	local accepted = self:layer(data.name):set_enabled(not self._disable_layer_menu:is_checked(data.id))
 	if not accepted then
 		self._disable_layer_menu:set_checked(data.id, false)
 	end
 end
+
 function CoreEditor:on_hide_layer(data)
 	self:layer(data.name):hide_all()
 end
+
 function CoreEditor:on_unhide_layer(data)
 	self:layer(data.name):unhide_all()
 end
+
 function CoreEditor:on_change_layer(index)
 	self._notebook:set_page(index)
 end
+
 function CoreEditor:on_select_group_by_name()
 	self:show_dialog("select_group_by_name", "SelectGroupByName")
 end
+
 function CoreEditor:group()
 	if alive(self._current_layer:selected_unit()) then
 		local name = self._groups:group_name()
@@ -528,6 +546,7 @@ function CoreEditor:group()
 		end
 	end
 end
+
 function CoreEditor:ungroup()
 	if alive(self._current_layer:selected_unit()) then
 		local groups = self._current_layer:selected_unit():unit_data().editor_groups
@@ -537,6 +556,7 @@ function CoreEditor:ungroup()
 		end
 	end
 end
+
 function CoreEditor:save_group()
 	if alive(self._current_layer:selected_unit()) then
 		local groups = self._current_layer:selected_unit():unit_data().editor_groups
@@ -546,9 +566,11 @@ function CoreEditor:save_group()
 		end
 	end
 end
+
 function CoreEditor:load_group()
 	self._groups:load_group()
 end
+
 function CoreEditor:show_group_presets()
 	if not SystemFS:exists(self._group_presets_path) then
 		SystemFS:make_dir(self._group_presets_path)
@@ -556,6 +578,7 @@ function CoreEditor:show_group_presets()
 	local files = SystemFS:list(self._group_presets_path, "*.xml", false)
 	GroupPresetsDialog:new(files, self._group_presets_path)
 end
+
 function CoreEditor:dump_group()
 	if alive(self._current_layer:selected_unit()) then
 		local groups = self._current_layer:selected_unit():unit_data().editor_groups
@@ -565,21 +588,27 @@ function CoreEditor:dump_group()
 		end
 	end
 end
+
 function CoreEditor:on_difficulty(difficulty)
 	self._mission_difficulty = difficulty
 end
+
 function CoreEditor:on_players(player)
 	self._mission_player = player
 end
+
 function CoreEditor:mission_player()
 	return self._mission_player
 end
+
 function CoreEditor:on_platform(platform)
 	self._mission_platform = platform
 end
+
 function CoreEditor:mission_platform()
 	return self._mission_platform
 end
+
 function CoreEditor:toggle_info(data)
 	if data[2] == "INFO OUTPUT" then
 		self._outputctrl:set_visible(data[1]:is_checked(data[2]))
@@ -588,17 +617,21 @@ function CoreEditor:toggle_info(data)
 	end
 	self._info_frame:layout()
 end
+
 function CoreEditor:show_news()
 	self._world_editor_news:set_visible(true)
 end
+
 function CoreEditor:change_visualization(viz)
 	for _, vp in ipairs(managers.viewport:viewports()) do
 		vp:set_visualization_mode(viz)
 	end
 end
+
 function CoreEditor:on_post_processor_effect(effect)
 	self:viewport():vp():set_post_processor_effect("World", Idstring("hdr_post_processor"), Idstring(effect))
 end
+
 function CoreEditor:toggle_lock_1280_720(data)
 	if data[1]:is_checked(data[2]) then
 		self:_set_appwin_fixed_resolution(Vector3(1280, 720, 0))
@@ -606,35 +639,44 @@ function CoreEditor:toggle_lock_1280_720(data)
 		self:_set_appwin_fixed_resolution(nil)
 	end
 end
+
 function CoreEditor:toggle_orthographic(data)
 	self._orthographic = data[1]:is_checked(data[2])
 	self._camera_controller:toggle_orthographic(self._orthographic)
 end
+
 function CoreEditor:toggle_light(data)
 	self._light:set_enable(data[1]:is_checked(data[2]))
 end
+
 function CoreEditor:toggle_show_center(data)
 	self._show_center = data[1]:is_checked(data[2])
 end
+
 function CoreEditor:toggle_show_camera_info(data)
 	self._show_camera_position = data[1]:is_checked(data[2])
 	self:set_show_camera_info(self._show_camera_position)
 end
+
 function CoreEditor:toggle_draw_marker_ball(data)
 	self._layer_draw_marker = data[1]:is_checked(data[2])
 end
+
 function CoreEditor:on_configuration()
 	self._configuration:show_modal()
 end
+
 function CoreEditor:on_controller_bindings()
 	self:show_dialog("edit_controller_bindings", "EditControllerBindings")
 end
+
 function CoreEditor:on_expert_mode(data)
 	local expert = data[1]:is_checked(data[2])
 	self._ews_editor_frame:set_visible(not expert)
 	self._lower_panel:set_visible(not expert)
 	Global.frame_panel:layout()
 end
+
 function CoreEditor:on_reload_unit(quick)
 	local names = {}
 	if self._current_layer then
@@ -649,22 +691,27 @@ function CoreEditor:on_reload_unit(quick)
 	end
 	self:reload_units(names, quick)
 end
+
 function CoreEditor:on_profiler_main(custom_data, event_object)
 	self._profiler_menu:set_checked("PROFILER_MAIN", not event_object:is_checked())
 	Application:console_command("stats main")
 end
+
 function CoreEditor:on_profiler_mem(custom_data, event_object)
 	self._profiler_menu:set_checked("PROFILER_MEM", not event_object:is_checked())
 	Application:console_command("stats mem")
 end
+
 function CoreEditor:on_profiler_d3d(custom_data, event_object)
 	self._profiler_menu:set_checked("PROFILER_D3D", not event_object:is_checked())
 	Application:console_command("stats d3d")
 end
+
 function CoreEditor:on_profiler_unit_profiler(custom_data, event_object)
 	self._profiler_menu:set_checked("PROFILER_UNIT_PROFILER", not event_object:is_checked())
 	Application:console_command("stats unit_profiler")
 end
+
 function CoreEditor:on_add_workview()
 	local name = EWS:get_text_from_user(Global.frame_panel, "Enter name for new work view:", "Add work view", "", Vector3(-1, -1, 0), true)
 	if name and name ~= "" then
@@ -676,9 +723,11 @@ function CoreEditor:on_add_workview()
 		end
 	end
 end
+
 function CoreEditor:on_show_workview()
 	self:show_dialog("workview_by_name", "SelectWorkView")
 end
+
 function CoreEditor:on_check_duality()
 	local units = {}
 	local collisions = {}
@@ -732,14 +781,17 @@ function CoreEditor:on_check_duality()
 	end
 	self._unit_duality = UnitDuality:new(collisions, pos)
 end
+
 function CoreEditor:on_make_screenshot()
 	local name = Application:date("%Y-%m-%d_%H.%M.%S") .. ".tga"
 	Application:screenshot(name)
 	self:output("Screenshot created: " .. name .. ".")
 end
+
 function CoreEditor:toggle_draw_occluders(data)
 	self._draw_occluders = data[1]:is_checked(data[2])
 end
+
 function CoreEditor:on_hide_helper_units(vis)
 	for name, layer in pairs(self._layers) do
 		for _, unit in ipairs(layer:created_units()) do
@@ -749,19 +801,24 @@ function CoreEditor:on_hide_helper_units(vis)
 		end
 	end
 end
+
 function CoreEditor:toggle_render_effects(data)
 	World:effect_manager():set_rendering_enabled(data[1]:is_checked(data[2]))
 end
+
 function CoreEditor:toggle_show_markers(data)
 	self._marker_panel:set_visible(data[1]:is_checked(data[2]))
 	self._ews_editor_frame:layout()
 end
+
 function CoreEditor:on_using_the_editor()
 	EWS:launch_url("http://ganon/wiki_artistwiki/index.php/Using_Editor")
 end
+
 function CoreEditor:on_help()
 	EWS:launch_url("http://mondomonkey.com/MondoMonkeyWhiteB.jpg")
 end
+
 function CoreEditor:on_about()
 	EWS:MessageDialog(Global.frame_panel, self._editor_name .. [[
 

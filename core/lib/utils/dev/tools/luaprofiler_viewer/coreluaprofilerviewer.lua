@@ -10,10 +10,12 @@ local PERCENT, SECONDS, CUSTOM = 0, 1, 2
 local DEFAULT_FORMAT = PERCENT
 local DEFAULT_INFOKEY = "total_time"
 LuaProfilerViewer = LuaProfilerViewer or CoreClass.class()
+
 function LuaProfilerViewer:init()
 	self._lpd = EWS:LuaProfilerDataStore()
 	self:_create_main_frame()
 end
+
 function LuaProfilerViewer:_create_main_frame()
 	self._frame = EWS:Frame(TOOLHUB_NAME, Vector3(100, 400, 0), Vector3(1500, 800, 0), "FRAME_FLOAT_ON_PARENT,DEFAULT_FRAME_STYLE", Global.frame)
 	local frame_sizer = EWS:BoxSizer("VERTICAL")
@@ -43,6 +45,7 @@ function LuaProfilerViewer:_create_main_frame()
 	self._frame:set_visible(true)
 	self:_redraw_menu()
 end
+
 function LuaProfilerViewer:_create_menu()
 	local file_menu = EWS:Menu("")
 	file_menu:append_item("OPEN", "Open\tCtrl+O", "")
@@ -63,6 +66,7 @@ function LuaProfilerViewer:_create_menu()
 	self._frame:connect("", "EVT_CLOSE_WINDOW", CoreEvent.callback(self, self, "_on_close"), "")
 	self._frame:connect("CAPTURE", "EVT_COMMAND_MENU_SELECTED", CoreEvent.callback(self, self, "_on_capture"), "")
 end
+
 function LuaProfilerViewer:_redraw_menu()
 	local lpd = self._lpd
 	self._displayformat = PERCENT
@@ -101,6 +105,7 @@ function LuaProfilerViewer:_redraw_menu()
 	self._frame:connect("NO_ACC", "EVT_COMMAND_MENU_SELECTED", self._on_no_acc_calls_cb, "")
 	self._view_menu_filled = true
 end
+
 function LuaProfilerViewer:close()
 	if self._frame then
 		self._frame:destroy()
@@ -111,11 +116,13 @@ function LuaProfilerViewer:close()
 	self._gridview = nil
 	self._lpd = nil
 end
+
 function LuaProfilerViewer:set_position(newpos)
 	if self._frame then
 		self._frame:set_position(newpos)
 	end
 end
+
 function LuaProfilerViewer:update(t, dt)
 	if self._capturecounter == 4 then
 		Application:console_command("luaprofiler dump")
@@ -127,9 +134,11 @@ function LuaProfilerViewer:update(t, dt)
 		self._capturecounter = self._capturecounter - 1
 	end
 end
+
 function LuaProfilerViewer:_on_close()
 	managers.toolhub:close(TOOLHUB_NAME)
 end
+
 function LuaProfilerViewer:_on_open()
 	local filedialog = EWS:FileDialog(self._frame, "Open 'luaprofiler dump_stat' File", managers.database:base_path(), "", "*.pf", "")
 	filedialog:show_modal()
@@ -156,6 +165,7 @@ function LuaProfilerViewer:_on_open()
 		end
 	end
 end
+
 function LuaProfilerViewer:_on_percent()
 	self._displayformat = PERCENT
 	if self._lpd then
@@ -178,6 +188,7 @@ function LuaProfilerViewer:_on_percent()
 		end
 	end
 end
+
 function LuaProfilerViewer:_on_seconds()
 	self._displayformat = SECONDS
 	if self._lpd then
@@ -200,6 +211,7 @@ function LuaProfilerViewer:_on_seconds()
 		end
 	end
 end
+
 function LuaProfilerViewer:_on_custom(diffpeak)
 	self._displayformat = CUSTOM
 	local diff = tonumber(string.split(diffpeak, ":")[1])
@@ -218,6 +230,7 @@ function LuaProfilerViewer:_on_custom(diffpeak)
 		end
 	end
 end
+
 function LuaProfilerViewer:_on_acc_calls()
 	if self._lpd then
 		self._lpd:buildstructure(true)
@@ -231,6 +244,7 @@ function LuaProfilerViewer:_on_acc_calls()
 		})
 	end
 end
+
 function LuaProfilerViewer:_on_no_acc_calls()
 	if self._lpd then
 		self._lpd:buildstructure(false)
@@ -244,6 +258,7 @@ function LuaProfilerViewer:_on_no_acc_calls()
 		})
 	end
 end
+
 function LuaProfilerViewer:_on_capture()
 	self._capturecounter = 6
 end

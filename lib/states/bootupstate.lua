@@ -1,11 +1,13 @@
 require("lib/states/GameState")
 BootupState = BootupState or class(GameState)
+
 function BootupState:init(game_state_machine, setup)
 	GameState.init(self, "bootup", game_state_machine)
 	if setup then
 		self:setup()
 	end
 end
+
 function BootupState:setup()
 	local res = RenderSettings.resolution
 	local safe_rect_pixels = managers.viewport:get_safe_rect_pixels()
@@ -104,6 +106,7 @@ function BootupState:setup()
 		self._controller_list[index] = con
 	end
 end
+
 function BootupState:at_enter()
 	managers.music:post_event("menu_music")
 	managers.menu:input_enabled(false)
@@ -114,6 +117,7 @@ function BootupState:at_enter()
 	self._workspace:show()
 	self:play_next()
 end
+
 function BootupState:update(t, dt)
 	self:check_confirm_pressed()
 	if not self:is_playing() or (self._play_data.can_skip or Global.override_bootup_can_skip) and self:is_skipped() then
@@ -122,6 +126,7 @@ function BootupState:update(t, dt)
 		self:update_fades()
 	end
 end
+
 function BootupState:check_confirm_pressed()
 	for index, controller in ipairs(self._controller_list) do
 		if controller:get_input_pressed("confirm") then
@@ -134,6 +139,7 @@ function BootupState:check_confirm_pressed()
 		end
 	end
 end
+
 function BootupState:update_fades()
 	local time, duration
 	if self._play_data.video then
@@ -168,6 +174,7 @@ function BootupState:update_fades()
 		self:apply_fade()
 	end
 end
+
 function BootupState:apply_fade()
 	if self._play_data.gui then
 		local script = self._gui_obj.script and self._gui_obj:script()
@@ -180,6 +187,7 @@ function BootupState:apply_fade()
 		self._gui_obj:set_color(self._gui_obj:color():with_alpha(self._fade))
 	end
 end
+
 function BootupState:is_skipped()
 	for _, controller in ipairs(self._controller_list) do
 		if controller:get_any_input_pressed() then
@@ -188,6 +196,7 @@ function BootupState:is_skipped()
 	end
 	return false
 end
+
 function BootupState:is_playing()
 	if alive(self._gui_obj) then
 		if self._gui_obj.loop_count then
@@ -199,6 +208,7 @@ function BootupState:is_playing()
 		return false
 	end
 end
+
 function BootupState:play_next()
 	self._play_time = TimerManager:game():time()
 	self._play_index = (self._play_index or 0) + 1
@@ -266,6 +276,7 @@ function BootupState:play_next()
 		self:gsm():change_state_by_name("menu_titlescreen")
 	end
 end
+
 function BootupState:at_exit()
 	if alive(self._workspace) then
 		Overlay:gui():destroy_workspace(self._workspace)

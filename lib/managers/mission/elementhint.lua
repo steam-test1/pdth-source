@@ -1,11 +1,14 @@
 core:import("CoreMissionScriptElement")
 ElementHint = ElementHint or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementHint:init(...)
 	ElementHint.super.init(self, ...)
 end
+
 function ElementHint:client_on_executed(...)
 	self:on_executed(...)
 end
+
 function ElementHint:on_executed(instigator)
 	if not self._values.enabled then
 		return

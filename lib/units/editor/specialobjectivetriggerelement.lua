@@ -1,4 +1,5 @@
 SpecialObjectiveTriggerUnitElement = SpecialObjectiveTriggerUnitElement or class(MissionElement)
+
 function SpecialObjectiveTriggerUnitElement:init(unit)
 	MissionElement.init(self, unit)
 	self._options = {
@@ -22,6 +23,7 @@ function SpecialObjectiveTriggerUnitElement:init(unit)
 	table.insert(self._save_values, "event")
 	table.insert(self._save_values, "elements")
 end
+
 function SpecialObjectiveTriggerUnitElement:draw_links(t, dt, selected_unit, all_units)
 	MissionElement.draw_links(self, t, dt, selected_unit)
 	for _, id in ipairs(self._hed.elements) do
@@ -38,8 +40,10 @@ function SpecialObjectiveTriggerUnitElement:draw_links(t, dt, selected_unit, all
 		end
 	end
 end
+
 function SpecialObjectiveTriggerUnitElement:update_editing()
 end
+
 function SpecialObjectiveTriggerUnitElement:add_element()
 	local ray = managers.editor:unit_by_raycast({mask = 10, ray_type = "editor"})
 	if ray and ray.unit and self:_correct_unit(ray.unit:name():s()) then
@@ -51,6 +55,7 @@ function SpecialObjectiveTriggerUnitElement:add_element()
 		end
 	end
 end
+
 function SpecialObjectiveTriggerUnitElement:_correct_unit(u_name)
 	local names = {
 		"point_special_objective"
@@ -62,6 +67,7 @@ function SpecialObjectiveTriggerUnitElement:_correct_unit(u_name)
 	end
 	return false
 end
+
 function SpecialObjectiveTriggerUnitElement:remove_links(unit)
 	for _, id in ipairs(self._hed.elements) do
 		if id == unit:unit_data().unit_id then
@@ -69,9 +75,11 @@ function SpecialObjectiveTriggerUnitElement:remove_links(unit)
 		end
 	end
 end
+
 function SpecialObjectiveTriggerUnitElement:add_triggers(vc)
 	vc:add_trigger(Idstring("lmb"), callback(self, self, "add_element"))
 end
+
 function SpecialObjectiveTriggerUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

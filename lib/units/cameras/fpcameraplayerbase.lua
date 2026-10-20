@@ -1,6 +1,7 @@
 FPCameraPlayerBase = FPCameraPlayerBase or class(UnitBase)
 FPCameraPlayerBase.IDS_EMPTY = Idstring("empty")
 FPCameraPlayerBase.IDS_NOSTRING = Idstring("")
+
 function FPCameraPlayerBase:init(unit)
 	UnitBase.init(self, unit, true)
 	self._unit = unit
@@ -43,6 +44,7 @@ function FPCameraPlayerBase:init(unit)
 	self._recoil_kick.h = {}
 	self:check_flashlight_enabled()
 end
+
 function FPCameraPlayerBase:set_parent_unit(parent_unit)
 	self._parent_unit = parent_unit
 	self._parent_movement_ext = self._parent_unit:movement()
@@ -54,14 +56,17 @@ function FPCameraPlayerBase:set_parent_unit(parent_unit)
 		self._look_function = callback(self, self, "_gamepad_look_function")
 	end
 end
+
 function FPCameraPlayerBase:parent_destroyed_clbk(parent_unit)
 	self._unit:set_extension_update_enabled(Idstring("base"), false)
 	self:set_slot(self._unit, 0)
 	self._parent_unit = nil
 end
+
 function FPCameraPlayerBase:reset_properties()
 	self._camera_properties.spin = self._parent_unit:rotation():y():to_polar().spin
 end
+
 function FPCameraPlayerBase:update(unit, t, dt)
 	self._parent_unit:base():controller():get_input_axis_clbk("look", callback(self, self, "_update_rot"))
 	self:_update_stance(t, dt)
@@ -83,6 +88,7 @@ function FPCameraPlayerBase:update(unit, t, dt)
 		end
 	end
 end
+
 function FPCameraPlayerBase:check_flashlight_enabled()
 	if managers.game_play_central:flashlights_on_player_on() then
 		if not alive(self._light) then
@@ -104,6 +110,7 @@ function FPCameraPlayerBase:check_flashlight_enabled()
 		World:effect_manager():set_hidden(self._light_effect, true)
 	end
 end
+
 function FPCameraPlayerBase:start_shooting()
 	self._recoil_kick.accumulated = self._recoil_kick.to_reduce or 0
 	self._recoil_kick.to_reduce = nil
@@ -112,10 +119,12 @@ function FPCameraPlayerBase:start_shooting()
 	self._recoil_kick.h.to_reduce = nil
 	self._recoil_kick.h.current = self._recoil_kick.h.accumulated or 0
 end
+
 function FPCameraPlayerBase:stop_shooting()
 	self._recoil_kick.to_reduce = self._recoil_kick.accumulated
 	self._recoil_kick.h.to_reduce = self._recoil_kick.h.accumulated
 end
+
 function FPCameraPlayerBase:break_recoil()
 	self._recoil_kick.current = 0
 	self._recoil_kick.h.current = 0
@@ -123,6 +132,7 @@ function FPCameraPlayerBase:break_recoil()
 	self._recoil_kick.h.accumulated = 0
 	self:stop_shooting()
 end
+
 function FPCameraPlayerBase:recoil_kick(v, v_h)
 	if self._recoil_kick.accumulated < 10 then
 		v = v or 0.1
@@ -134,12 +144,14 @@ function FPCameraPlayerBase:recoil_kick(v, v_h)
 	v_h = (v_h or 0.25) * (math.random(0, 1) == 0 and -1 or 1)
 	self._recoil_kick.h.accumulated = (self._recoil_kick.h.accumulated or 0) + v_h * math.rand(0.5, 1)
 end
+
 local bezier_values = {
 	0,
 	0,
 	1,
 	1
 }
+
 function FPCameraPlayerBase:_update_stance(t, dt)
 	if self._shoulder_stance.transition then
 		local trans_data = self._shoulder_stance.transition
@@ -202,12 +214,14 @@ function FPCameraPlayerBase:_update_stance(t, dt)
 		self._fov.dirty = true
 	end
 end
+
 local mrot1 = Rotation()
 local mrot2 = Rotation()
 local mrot3 = Rotation()
 local mvec1 = Vector3()
 local mvec2 = Vector3()
 local mvec3 = Vector3()
+
 function FPCameraPlayerBase:_update_movement(t, dt)
 	local data = self._camera_properties
 	local new_head_pos = mvec2
@@ -254,6 +268,7 @@ function FPCameraPlayerBase:_update_movement(t, dt)
 	self:set_position(new_shoulder_pos)
 	self:set_rotation(new_shoulder_rot)
 end
+
 function FPCameraPlayerBase:_update_rot(axis)
 	if self._parent_movement_ext._current_state and self._parent_movement_ext._current_state:_interacting() then
 		return
@@ -309,6 +324,7 @@ function FPCameraPlayerBase:_update_rot(axis)
 	self._parent_unit:camera():set_position(self._output_data.position)
 	self._parent_unit:camera():set_rotation(self._output_data.rotation)
 end
+
 function FPCameraPlayerBase:_vertical_recoil_kick(t, dt)
 	local r_value = 0
 	if self._recoil_kick.current and self._recoil_kick.current ~= self._recoil_kick.accumulated then
@@ -326,6 +342,7 @@ function FPCameraPlayerBase:_vertical_recoil_kick(t, dt)
 	end
 	return r_value
 end
+
 function FPCameraPlayerBase:_horizonatal_recoil_kick(t, dt)
 	local r_value = 0
 	if self._recoil_kick.h.current and self._recoil_kick.h.current ~= self._recoil_kick.h.accumulated then
@@ -343,9 +360,11 @@ function FPCameraPlayerBase:_horizonatal_recoil_kick(t, dt)
 	end
 	return r_value
 end
+
 function FPCameraPlayerBase:_pc_look_function(stick_input, dt)
 	return stick_input.x, stick_input.y
 end
+
 function FPCameraPlayerBase:_gamepad_look_function(stick_input, dt)
 	if mvector3.length(stick_input) > self._tweak_data.look_speed_dead_zone then
 		local x = stick_input.x
@@ -358,6 +377,7 @@ function FPCameraPlayerBase:_gamepad_look_function(stick_input, dt)
 	end
 	return 0, 0
 end
+
 function FPCameraPlayerBase:_get_look_speed(stick_input, dt)
 	if self._parent_unit:movement()._current_state._in_steelsight then
 		return self._tweak_data.look_speed_steel_sight
@@ -381,6 +401,7 @@ function FPCameraPlayerBase:_get_look_speed(stick_input, dt)
 		p4
 	}, self._camera_properties.look_speed_transition_timer)
 end
+
 function FPCameraPlayerBase:_calculate_soft_velocity_overshot(dt)
 	local stick_input = self._input.look
 	local vel_overshot = self._vel_overshot
@@ -439,18 +460,23 @@ function FPCameraPlayerBase:_calculate_soft_velocity_overshot(dt)
 	mvector3.add(new_root, pivot)
 	mvector3.set(vel_overshot.translation, new_root)
 end
+
 function FPCameraPlayerBase:set_position(pos)
 	self._unit:set_position(pos)
 end
+
 function FPCameraPlayerBase:set_rotation(rot)
 	self._unit:set_rotation(rot)
 end
+
 function FPCameraPlayerBase:eye_position()
 	return self._obj_eye:position()
 end
+
 function FPCameraPlayerBase:eye_rotation()
 	return self._obj_eye:rotation()
 end
+
 function FPCameraPlayerBase:play_redirect(redirect_name, speed)
 	self:set_anims_enabled(true)
 	local result = self._unit:play_redirect(redirect_name)
@@ -462,14 +488,17 @@ function FPCameraPlayerBase:play_redirect(redirect_name, speed)
 	end
 	return result
 end
+
 function FPCameraPlayerBase:play_state(state_name)
 	self:set_anims_enabled(true)
 	local result = self._unit:play_state(Idstring(state_name))
 	return result ~= self.IDS_NOSTRING and result
 end
+
 function FPCameraPlayerBase:set_target_tilt(tilt)
 	self._camera_properties.target_tilt = tilt
 end
+
 function FPCameraPlayerBase:set_stance_instant(stance_name)
 	local new_stance = tweak_data.player.stances.default[stance_name].shoulders
 	if new_stance then
@@ -494,6 +523,7 @@ function FPCameraPlayerBase:set_stance_instant(stance_name)
 	end
 	self:set_stance_fov_instant(stance_name)
 end
+
 function FPCameraPlayerBase:set_stance_fov_instant(stance_name)
 	local new_fov = tweak_data.player.stances.default[stance_name].zoom_fov and managers.user:get_setting("fov_zoom") or managers.user:get_setting("fov_standard")
 	if new_fov then
@@ -505,6 +535,7 @@ function FPCameraPlayerBase:set_stance_fov_instant(stance_name)
 		end
 	end
 end
+
 function FPCameraPlayerBase:clbk_stance_entered(new_shoulder_stance, new_head_stance, new_vel_overshot, new_fov, new_shakers, duration_multiplier)
 	local t = TimerManager:game():time()
 	if new_shoulder_stance then
@@ -563,6 +594,7 @@ function FPCameraPlayerBase:clbk_stance_entered(new_shoulder_stance, new_head_st
 		end
 	end
 end
+
 function FPCameraPlayerBase:animate_fov(new_fov, duration_multiplier)
 	if new_fov == self._fov.fov then
 		self._fov.transition = nil
@@ -575,17 +607,22 @@ function FPCameraPlayerBase:animate_fov(new_fov, duration_multiplier)
 		transition.duration = 0.23 * (duration_multiplier or 1)
 	end
 end
+
 function FPCameraPlayerBase:anim_clbk_idle_full_blend()
 	self:play_redirect(self.IDS_EMPTY)
 end
+
 function FPCameraPlayerBase:anim_clbk_idle_exit()
 end
+
 function FPCameraPlayerBase:anim_clbk_empty_full_blend()
 	self:set_anims_enabled(false)
 end
+
 function FPCameraPlayerBase:set_handcuff_units(units)
 	self._handcuff_units = units
 end
+
 function FPCameraPlayerBase:anim_clbk_spawn_handcuffs()
 	if not self._handcuff_units then
 		local align_obj_l_name = Idstring("a_weapon_left")
@@ -601,6 +638,7 @@ function FPCameraPlayerBase:anim_clbk_spawn_handcuffs()
 		self._unit:base():set_handcuff_units(handcuff_units)
 	end
 end
+
 function FPCameraPlayerBase:anim_clbk_unspawn_handcuffs()
 	if self._handcuff_units then
 		for _, handcuff_unit in ipairs(self._handcuff_units) do
@@ -609,23 +647,27 @@ function FPCameraPlayerBase:anim_clbk_unspawn_handcuffs()
 	end
 	self:set_handcuff_units(nil)
 end
+
 function FPCameraPlayerBase:get_weapon_offsets()
 	local weapon = self._parent_unit:inventory():equipped_unit()
 	local object = weapon:get_object(Idstring("a_sight"))
 	print((object:position() - self._unit:position()):rotate_HP(self._unit:rotation():inverse()))
 	print(self._unit:rotation():inverse() * object:rotation())
 end
+
 function FPCameraPlayerBase:set_anims_enabled(state)
 	if state ~= self._anims_enabled then
 		self._unit:set_animations_enabled(state)
 		self._anims_enabled = state
 	end
 end
+
 function FPCameraPlayerBase:play_sound(unit, event)
 	if alive(self._parent_unit) then
 		self._parent_unit:sound():play(event)
 	end
 end
+
 function FPCameraPlayerBase:limit_spin(min, max)
 	self._limit_spin = {
 		mid = self._camera_properties.spin,
@@ -633,30 +675,36 @@ function FPCameraPlayerBase:limit_spin(min, max)
 		max = max
 	}
 end
+
 function FPCameraPlayerBase:remove_spin_limit()
 	self._limit_spin = nil
 end
+
 function FPCameraPlayerBase:throw_flash_grenade(unit)
 	if alive(self._parent_unit) then
 		self._parent_unit:equipment():throw_flash_grenade()
 	end
 end
+
 function FPCameraPlayerBase:hide_weapon()
 	if alive(self._parent_unit) then
 		self._parent_unit:inventory():hide_equipped_unit()
 	end
 end
+
 function FPCameraPlayerBase:show_weapon()
 	if alive(self._parent_unit) then
 		self._parent_unit:inventory():show_equipped_unit()
 	end
 end
+
 function FPCameraPlayerBase:enter_shotgun_reload_loop(unit, state, ...)
 	if alive(self._parent_unit) then
 		local speed_multiplier = self._parent_unit:inventory():equipped_unit():base():reload_speed_multiplier()
 		self._unit:anim_state_machine():set_speed(Idstring(state), speed_multiplier)
 	end
 end
+
 function FPCameraPlayerBase:destroy()
 	if self._parent_unit then
 		self._parent_unit:base():remove_destroy_listener("FPCameraPlayerBase")

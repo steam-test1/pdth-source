@@ -1,4 +1,5 @@
 LightLoadingScreenGuiScript = LightLoadingScreenGuiScript or class()
+
 function LightLoadingScreenGuiScript:init(scene_gui, res, progress, base_layer, is_win32)
 	self._base_layer = base_layer
 	self._is_win32 = is_win32
@@ -93,6 +94,7 @@ function LightLoadingScreenGuiScript:init(scene_gui, res, progress, base_layer, 
 	self._max_bar_width = 0
 	self:setup(res, progress)
 end
+
 function LightLoadingScreenGuiScript:get_safe_rect()
 	local a = self._is_win32 and 0.032 or 0.075
 	local b = 1 - a * 2
@@ -103,6 +105,7 @@ function LightLoadingScreenGuiScript:get_safe_rect()
 		height = b
 	}
 end
+
 function LightLoadingScreenGuiScript:get_safe_rect_pixels(res)
 	local safe_rect_scale = self:get_safe_rect()
 	local safe_rect_pixels = {}
@@ -112,6 +115,7 @@ function LightLoadingScreenGuiScript:get_safe_rect_pixels(res)
 	safe_rect_pixels.height = safe_rect_scale.height * res.y
 	return safe_rect_pixels
 end
+
 function LightLoadingScreenGuiScript:setup(res, progress)
 	local title_scale = 1
 	local menu_border_multiplier = 1
@@ -153,6 +157,7 @@ function LightLoadingScreenGuiScript:setup(res, progress)
 		self._init_progress = progress
 	end
 end
+
 function LightLoadingScreenGuiScript:update(progress, dt)
 	self._indicator:rotate(180 * dt)
 	self._dot_count = (self._dot_count + dt * 2) % self._max_dot_count
@@ -169,22 +174,27 @@ function LightLoadingScreenGuiScript:update(progress, dt)
 		self._bar_gui:set_w(self._max_bar_width * progress / (100 - self._init_progress))
 	end
 end
+
 function LightLoadingScreenGuiScript:get_loading_text(dot_count)
 	return self._init_text .. string.rep(".", math.floor(dot_count))
 end
+
 function LightLoadingScreenGuiScript:set_text(text)
 	self._text_gui:set_text(text)
 	self._init_text = text
 end
+
 function LightLoadingScreenGuiScript:destroy()
 	if alive(self._ws) then
 		self._scene_gui:destroy_workspace(self._ws)
 		self._ws = nil
 	end
 end
+
 function LightLoadingScreenGuiScript:visible()
 	return self._ws:visible()
 end
+
 function LightLoadingScreenGuiScript:set_visible(visible, res)
 	if res then
 		self._safe_rect_pixels = self:get_safe_rect_pixels(res)

@@ -5,21 +5,26 @@ core:import("CoreInteractionEditorUI")
 core:import("CoreInteractionEditorUIEvents")
 core:import("CoreInteractionEditorSystem")
 InteractionEditor = InteractionEditor or CoreClass.class(CoreInteractionEditorUIEvents.InteractionEditorUIEvents)
+
 function InteractionEditor:init()
 	self._ui = CoreInteractionEditorUI.InteractionEditorUI:new(self)
 	self._systems = {}
 end
+
 function InteractionEditor:set_position(pos)
 	self._ui:set_position(pos)
 end
+
 function InteractionEditor:update(t, dt)
 	for _, sys in pairs(self._systems) do
 		sys:update(t, dt)
 	end
 end
+
 function InteractionEditor:ui()
 	return self._ui
 end
+
 function InteractionEditor:close()
 	for _, sys in pairs(self._systems) do
 		sys:close()
@@ -27,6 +32,7 @@ function InteractionEditor:close()
 	self._system = nil
 	self._ui:destroy()
 end
+
 function InteractionEditor:open_system(path)
 	for _, sys in pairs(self._systems) do
 		sys:deactivate()
@@ -34,9 +40,11 @@ function InteractionEditor:open_system(path)
 	local sys = CoreInteractionEditorSystem.InteractionEditorSystem:new(self._ui, path)
 	self._systems[sys] = sys
 end
+
 function InteractionEditor:save_system(sys, path)
 	assert(sys or self:active_system()):save(path)
 end
+
 function InteractionEditor:close_system(sys)
 	local system = sys or self:active_system()
 	if system then
@@ -53,6 +61,7 @@ function InteractionEditor:close_system(sys)
 		self._systems[system] = nil
 	end
 end
+
 function InteractionEditor:active_system()
 	for _, sys in pairs(self._systems) do
 		if sys:active() then
@@ -60,6 +69,7 @@ function InteractionEditor:active_system()
 		end
 	end
 end
+
 function InteractionEditor:activate_system(panel)
 	for _, sys in pairs(self._systems) do
 		sys:deactivate()
@@ -71,6 +81,7 @@ function InteractionEditor:activate_system(panel)
 		end
 	end
 end
+
 function InteractionEditor:do_save(sys)
 	local system = sys or self:active_system()
 	if system then
@@ -81,6 +92,7 @@ function InteractionEditor:do_save(sys)
 		end
 	end
 end
+
 function InteractionEditor:do_save_as(sys)
 	local system = sys or self:active_system()
 	if system then
@@ -90,6 +102,7 @@ function InteractionEditor:do_save_as(sys)
 		end
 	end
 end
+
 function InteractionEditor:do_save_all()
 	for _, system in pairs(self._systems) do
 		if system:is_new() then
@@ -99,12 +112,14 @@ function InteractionEditor:do_save_all()
 		end
 	end
 end
+
 function InteractionEditor:undo(sys)
 	local system = sys or self:active_system()
 	if system then
 		system:undo()
 	end
 end
+
 function InteractionEditor:redo(sys)
 	local system = sys or self:active_system()
 	if system then

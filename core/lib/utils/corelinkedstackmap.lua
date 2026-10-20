@@ -1,23 +1,29 @@
 core:module("CoreLinkedStackMap")
 LinkedStackMap = LinkedStackMap or class()
+
 function LinkedStackMap:init()
 	self._linked_map = {}
 	self._top_link = nil
 	self._bottom_link = nil
 	self._last_link_id = 0
 end
+
 function LinkedStackMap:top_link()
 	return self._top_link
 end
+
 function LinkedStackMap:top()
 	return self._top_link and self._top_link.value
 end
+
 function LinkedStackMap:get_linked_map()
 	return self._linked_map
 end
+
 function LinkedStackMap:get(link_id)
 	return self._linked_map[link_id]
 end
+
 function LinkedStackMap:iterator()
 	local func = function(map, key)
 		local id, link = next(map, key)
@@ -25,10 +31,12 @@ function LinkedStackMap:iterator()
 	end
 	return func, self._linked_map, nil
 end
+
 function LinkedStackMap:top_bottom_iterator()
 	local function func(map, link_id)
 		if link_id then
 			local link = map[link_id].previous
+			
 			if link then
 				return link.id, link.value
 			else
@@ -40,12 +48,15 @@ function LinkedStackMap:top_bottom_iterator()
 			return nil, nil
 		end
 	end
+	
 	return func, self._linked_map, nil
 end
+
 function LinkedStackMap:bottom_top_iterator()
 	local function func(map, link_id)
 		if link_id then
 			local link = map[link_id].next
+			
 			if link then
 				return link.id, link.value
 			else
@@ -57,8 +68,10 @@ function LinkedStackMap:bottom_top_iterator()
 			return nil, nil
 		end
 	end
+	
 	return func, self._linked_map, nil
 end
+
 function LinkedStackMap:add(value)
 	self._last_link_id = self._last_link_id + 1
 	local link = {
@@ -75,6 +88,7 @@ function LinkedStackMap:add(value)
 	self._top_link = link
 	return self._last_link_id
 end
+
 function LinkedStackMap:remove(link_id)
 	local link = self._linked_map[link_id]
 	if link then
@@ -95,6 +109,7 @@ function LinkedStackMap:remove(link_id)
 		self._linked_map[link_id] = nil
 	end
 end
+
 function LinkedStackMap:to_string()
 	local string = ""
 	local link = self._top_link

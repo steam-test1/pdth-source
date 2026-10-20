@@ -1,4 +1,5 @@
 UpgradesTweakData = UpgradesTweakData or class()
+
 function UpgradesTweakData:init()
 	self.values = {}
 	self.steps = {}
@@ -572,6 +573,7 @@ function UpgradesTweakData:init()
 	self.progress[3][49] = "mr_nice_guy"
 	self.progress[4][49] = "mr_nice_guy"
 end
+
 function UpgradesTweakData:_player_definitions()
 	self.definitions.body_armor = {
 		category = "equipment",
@@ -747,6 +749,7 @@ function UpgradesTweakData:_player_definitions()
 		}
 	end
 end
+
 function UpgradesTweakData:_trip_mine_definitions()
 	self.definitions.trip_mine = {
 		tree = 2,
@@ -815,6 +818,7 @@ function UpgradesTweakData:_trip_mine_definitions()
 		}
 	end
 end
+
 function UpgradesTweakData:_ammo_bag_definitions()
 	self.definitions.ammo_bag = {
 		tree = 1,
@@ -858,6 +862,7 @@ function UpgradesTweakData:_ammo_bag_definitions()
 		}
 	end
 end
+
 function UpgradesTweakData:_doctor_bag_definitions()
 	self.definitions.doctor_bag = {
 		tree = 3,
@@ -901,6 +906,7 @@ function UpgradesTweakData:_doctor_bag_definitions()
 		}
 	end
 end
+
 function UpgradesTweakData:_cable_tie_definitions()
 	self.definitions.cable_tie = {
 		category = "equipment",
@@ -958,6 +964,7 @@ function UpgradesTweakData:_cable_tie_definitions()
 		}
 	end
 end
+
 function UpgradesTweakData:_revive_kit_definitions()
 	self.definitions.revive_kit = {
 		category = "equipment",
@@ -998,6 +1005,7 @@ function UpgradesTweakData:_revive_kit_definitions()
 		}
 	end
 end
+
 function UpgradesTweakData:_sentry_gun_definitions()
 	self.definitions.sentry_gun = {
 		tree = 4,
@@ -1066,6 +1074,7 @@ function UpgradesTweakData:_sentry_gun_definitions()
 		}
 	end
 end
+
 function UpgradesTweakData:_crew_bonuses_definitions()
 	self.definitions.welcome_to_the_gang = {
 		category = "crew_bonus",
@@ -1214,6 +1223,7 @@ function UpgradesTweakData:_crew_bonuses_definitions()
 		}
 	}
 end
+
 function UpgradesTweakData:_c45_definitions()
 	self.definitions.c45 = {
 		tree = 1,
@@ -1306,6 +1316,7 @@ function UpgradesTweakData:_c45_definitions()
 		}
 	end
 end
+
 function UpgradesTweakData:_beretta92_definitions()
 	self.definitions.beretta92 = {
 		category = "weapon",
@@ -1397,6 +1408,7 @@ function UpgradesTweakData:_beretta92_definitions()
 		}
 	end
 end
+
 function UpgradesTweakData:_raging_bull_definitions()
 	self.definitions.raging_bull = {
 		tree = 3,
@@ -1490,6 +1502,7 @@ function UpgradesTweakData:_raging_bull_definitions()
 		}
 	end
 end
+
 function UpgradesTweakData:_m4_definitions()
 	self.definitions.m4 = {
 		category = "weapon",
@@ -1580,6 +1593,7 @@ function UpgradesTweakData:_m4_definitions()
 		}
 	end
 end
+
 function UpgradesTweakData:_m14_definitions()
 	self.definitions.m14 = {
 		tree = 2,
@@ -1698,6 +1712,7 @@ function UpgradesTweakData:_m14_definitions()
 		}
 	end
 end
+
 function UpgradesTweakData:_mp5_definitions()
 	self.definitions.mp5 = {
 		tree = 3,
@@ -1816,6 +1831,7 @@ function UpgradesTweakData:_mp5_definitions()
 		}
 	end
 end
+
 function UpgradesTweakData:_mac11_definitions()
 	self.definitions.mac11 = {
 		tree = 1,
@@ -1909,6 +1925,7 @@ function UpgradesTweakData:_mac11_definitions()
 		}
 	end
 end
+
 function UpgradesTweakData:_remington_definitions()
 	self.definitions.r870_shotgun = {
 		tree = 3,
@@ -2002,6 +2019,7 @@ function UpgradesTweakData:_remington_definitions()
 		}
 	end
 end
+
 function UpgradesTweakData:_mossberg_definitions()
 	self.definitions.mossberg = {
 		tree = 2,
@@ -2120,6 +2138,7 @@ function UpgradesTweakData:_mossberg_definitions()
 		}
 	end
 end
+
 function UpgradesTweakData:_hk21_definitions()
 	self.definitions.hk21 = {
 		tree = 1,
@@ -2213,6 +2232,7 @@ function UpgradesTweakData:_hk21_definitions()
 		}
 	end
 end
+
 function UpgradesTweakData:_ak47_definitions()
 	self.definitions.ak47 = {
 		tree = 4,
@@ -2331,6 +2351,7 @@ function UpgradesTweakData:_ak47_definitions()
 		}
 	end
 end
+
 function UpgradesTweakData:_glock_definitions()
 	self.definitions.glock = {
 		tree = 4,
@@ -2449,6 +2470,7 @@ function UpgradesTweakData:_glock_definitions()
 		}
 	end
 end
+
 function UpgradesTweakData:_m79_definitions()
 	self.definitions.m79 = {
 		tree = 4,

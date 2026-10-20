@@ -3,11 +3,13 @@ core:import("CoreClass")
 core:import("CoreEvent")
 core:import("CoreDebug")
 PointPicker = PointPicker or CoreClass.mixin(CoreClass.class(), CoreEvent.BasicEventHandling)
+
 function PointPicker:init(viewport, slotmask)
 	self.__viewport = viewport
 	self.__enabled = false
 	self.__slotmask = slotmask or World:make_slot_mask(1, 2, 4, 5, 6, 7, 8, 9, 10, 11, 22, 23, 24, 26, 27, 30, 34, 37, 38, 39)
 end
+
 function PointPicker:update(time, delta_time)
 	if self.__enabled then
 		local camera = self.__viewport:camera()
@@ -26,15 +28,19 @@ function PointPicker:update(time, delta_time)
 		end
 	end
 end
+
 function PointPicker:start_picking()
 	self.__enabled = true
 end
+
 function PointPicker:stop_picking()
 	self.__enabled = false
 end
+
 function PointPicker:_mouse_moved(raycast)
 	self:_send_event("EVT_PICKING", raycast)
 end
+
 function PointPicker:_mouse_left_down(raycast)
 	self:_send_event("EVT_FINISHED_PICKING", raycast)
 	self:stop_picking()

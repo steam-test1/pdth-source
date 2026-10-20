@@ -2,6 +2,7 @@ core:module("CoreEditorWidgets")
 core:import("CoreClass")
 core:import("CoreTable")
 Widget = Widget or CoreClass.class()
+
 function Widget:init(layer, name)
 	self._layer = layer
 	self._widget = World:spawn_unit(Idstring("core/units/" .. name .. "/" .. name), Vector3())
@@ -12,31 +13,42 @@ function Widget:init(layer, name)
 	self._z_pen = Draw:pen("no_z", "blue")
 	self._yellow_pen = Draw:pen("no_z", "yellow")
 end
+
 function Widget:widget()
 	return self._widget
 end
+
 function Widget:set_enabled(enabled)
 	self._widget:set_enabled(self._use and enabled)
 end
+
 function Widget:set_use(use)
 	self._use = use
 end
+
 function Widget:enabled()
 	return self._widget:enabled()
 end
+
 function Widget:set_position(pos)
 	self._widget:set_position(pos)
 end
+
 function Widget:set_rotation(rot)
 	self._widget:set_rotation(rot)
 end
+
 function Widget:update()
 end
+
 function Widget:calculate()
 end
+
 function Widget:reset_values()
 end
+
 MoveWidget = MoveWidget or CoreClass.class(Widget)
+
 function MoveWidget:init(layer)
 	MoveWidget.super.init(self, layer, "move_widget")
 	self._draw_axis = {}
@@ -44,11 +56,13 @@ function MoveWidget:init(layer)
 	self._move_widget_offset = Vector3()
 	self._widget:set_visible(false)
 end
+
 function MoveWidget:reset_values()
 	self._move_widget_axis = {}
 	self._draw_axis = {}
 	self._move_widget_offset = Vector3()
 end
+
 function MoveWidget:update(t, dt)
 	local u_pos = self._widget:position()
 	local u_rot = self._widget:rotation()
@@ -97,11 +111,13 @@ function MoveWidget:update(t, dt)
 		end
 	end
 end
+
 function MoveWidget:calculate(unit, widget_rot)
 	local result_pos = self:calc_move_widget_pos(unit, widget_rot)
 	result_pos = result_pos + self._move_widget_offset
 	return result_pos
 end
+
 function MoveWidget:calc_move_widget_pos(unit, widget_rot)
 	local result_pos = Vector3()
 	if #self._move_widget_axis == 2 then
@@ -136,6 +152,7 @@ function MoveWidget:calc_move_widget_pos(unit, widget_rot)
 	result_pos = result_pos:rotate_with(widget_rot)
 	return result_pos + self._unit_start_pos
 end
+
 function MoveWidget:add_move_widget_axis(axis)
 	if axis == "x" then
 		table.insert(self._move_widget_axis, "x")
@@ -167,30 +184,39 @@ function MoveWidget:add_move_widget_axis(axis)
 	end
 	return table
 end
+
 function MoveWidget:set_move_widget_offset(unit, widget_rot)
 	self._unit_start_pos = unit:position()
 	self._move_widget_offset = unit:position() - self:calc_move_widget_pos(unit, widget_rot)
 end
+
 RotationWidget = RotationWidget or CoreClass.class(Widget)
+
 function RotationWidget:init(layer)
 	RotationWidget.super.init(self, layer, "rotation_widget")
 	self._rotate_widget_axis = nil
 end
+
 function RotationWidget:reset_values()
 	self._rotate_widget_axis = nil
 end
+
 function RotationWidget:set_rotate_widget_axis(axis)
 	self._rotate_widget_axis = axis
 end
+
 function RotationWidget:set_rotate_widget_start_screen_position(pos)
 	self._rotate_widget_start_screen_position = pos
 end
+
 function RotationWidget:set_rotate_widget_unit_rot(rot)
 	self._rotate_widget_unit_rot = rot
 end
+
 function RotationWidget:set_world_dir(ray_pos)
 	self._world_dir = ray_pos - self._widget:position()
 end
+
 function RotationWidget:update(t, dt)
 	local u_pos = self._widget:position()
 	local u_rot = self._widget:rotation()
@@ -210,6 +236,7 @@ function RotationWidget:update(t, dt)
 		self._yellow_pen:torus(u_pos, 75, 2.5, u_rot[axis](u_rot))
 	end
 end
+
 function RotationWidget:calculate(unit, widget_rot, widget_pos, widget_screen_pos)
 	managers.editor:world_to_screen(unit:position())
 	local world_click_pos = self._widget:position() + self._world_dir

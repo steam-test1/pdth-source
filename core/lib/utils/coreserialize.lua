@@ -1,4 +1,5 @@
 core:module("CoreSerialize")
+
 function string_to_classtable(s)
 	local module_name, name
 	if string.find(s, "[.]") then
@@ -17,6 +18,7 @@ function string_to_classtable(s)
 		return obj
 	end
 end
+
 function classtable_to_string(ct)
 	local module_name = core:_module_to_name(ct.__module__)
 	for name, obj in pairs(ct.__module__) do

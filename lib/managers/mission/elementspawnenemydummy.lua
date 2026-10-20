@@ -428,18 +428,22 @@ ElementSpawnEnemyDummy._spawn_stance_types = {
 	"hostile",
 	"combat"
 }
+
 function ElementSpawnEnemyDummy:init(...)
 	ElementSpawnEnemyDummy.super.init(self, ...)
 	self._enemy_name = self._values.enemy and Idstring(self._values.enemy) or Idstring("units/characters/enemies/swat/swat")
 	self._units = {}
 	self._events = {}
 end
+
 function ElementSpawnEnemyDummy:enemy_name()
 	return self._enemy_name
 end
+
 function ElementSpawnEnemyDummy:units()
 	return self._units
 end
+
 function ElementSpawnEnemyDummy:produce(params)
 	local units_spawned = {}
 	if params then
@@ -484,11 +488,13 @@ function ElementSpawnEnemyDummy:produce(params)
 	end
 	return units_spawned
 end
+
 function ElementSpawnEnemyDummy.produce_test(data, unit)
 	local action_desc = ElementSpawnEnemyDummy._create_action_data(nil, data)
 	unit:movement():action_request(action_desc)
 	unit:movement():set_position(unit:position())
 end
+
 function ElementSpawnEnemyDummy:clbk_unit_destroyed(unit)
 	local u_key = unit:key()
 	for i, owned_unit in ipairs(self._units) do
@@ -497,6 +503,7 @@ function ElementSpawnEnemyDummy:clbk_unit_destroyed(unit)
 		end
 	end
 end
+
 function ElementSpawnEnemyDummy:event(name, unit)
 	if self._events[name] then
 		for _, callback in ipairs(self._events[name]) do
@@ -504,10 +511,12 @@ function ElementSpawnEnemyDummy:event(name, unit)
 		end
 	end
 end
+
 function ElementSpawnEnemyDummy:add_event_callback(name, callback)
 	self._events[name] = self._events[name] or {}
 	table.insert(self._events[name], callback)
 end
+
 function ElementSpawnEnemyDummy:on_executed(instigator)
 	if not self._values.enabled then
 		return
@@ -518,6 +527,7 @@ function ElementSpawnEnemyDummy:on_executed(instigator)
 	local units = self:produce()
 	ElementSpawnEnemyDummy.super.on_executed(self, units[1])
 end
+
 function ElementSpawnEnemyDummy:_create_spawn_AI_parametric(stance, objective, spawn_properties)
 	local entry_action = self:_create_action_data(spawn_properties)
 	if entry_action.type == "act" then
@@ -535,6 +545,7 @@ function ElementSpawnEnemyDummy:_create_spawn_AI_parametric(stance, objective, s
 		params = {scan = true}
 	}
 end
+
 function ElementSpawnEnemyDummy:_create_action_data(spawn_properties)
 	local action_name = spawn_properties.spawn_action or spawn_properties.state
 	if not action_name or action_name == "none" then
@@ -558,6 +569,7 @@ function ElementSpawnEnemyDummy:_create_action_data(spawn_properties)
 		}
 	end
 end
+
 function ElementSpawnEnemyDummy:unspawn_all_units()
 	for _, unit in ipairs(self._units) do
 		if alive(unit) then
@@ -566,6 +578,7 @@ function ElementSpawnEnemyDummy:unspawn_all_units()
 		end
 	end
 end
+
 function ElementSpawnEnemyDummy:execute_on_all_units(func)
 	for _, unit in ipairs(self._units) do
 		if alive(unit) then

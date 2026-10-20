@@ -1,9 +1,11 @@
 CoreEffectPropertyContainer = CoreEffectPropertyContainer or class()
+
 function CoreEffectPropertyContainer:init(name)
 	self._name = name
 	self._properties = {}
 	self._description = ""
 end
+
 function CoreEffectPropertyContainer:ui_name()
 	if self._ui_name then
 		return self._ui_name
@@ -11,12 +13,15 @@ function CoreEffectPropertyContainer:ui_name()
 		return self:name()
 	end
 end
+
 function CoreEffectPropertyContainer:properties()
 	return self._properties
 end
+
 function CoreEffectPropertyContainer:add_property(p)
 	table.insert(self._properties, p)
 end
+
 function CoreEffectPropertyContainer:get_property(name)
 	for _, p in ipairs(self._properties) do
 		if p:name() == name then
@@ -25,6 +30,7 @@ function CoreEffectPropertyContainer:get_property(name)
 	end
 	return nil
 end
+
 function CoreEffectPropertyContainer:validate_properties()
 	local ret = {
 		valid = true,
@@ -39,28 +45,35 @@ function CoreEffectPropertyContainer:validate_properties()
 	end
 	return ret
 end
+
 function CoreEffectPropertyContainer:set_description(d)
 	self._description = d
 end
+
 function CoreEffectPropertyContainer:description()
 	return self._description
 end
+
 function CoreEffectPropertyContainer:name()
 	return self._name
 end
+
 function CoreEffectPropertyContainer:set_name(n)
 	self._name = n
 end
+
 function CoreEffectPropertyContainer:save_properties(node)
 	for _, p in ipairs(self._properties) do
 		p:save(node)
 	end
 end
+
 function CoreEffectPropertyContainer:load_properties(node)
 	for _, p in ipairs(self._properties) do
 		p:load(node)
 	end
 end
+
 function CoreEffectPropertyContainer:fill_property_container_sheet(window, view)
 	local property_container = self
 	window:freeze()
@@ -95,7 +108,9 @@ function CoreEffectPropertyContainer:fill_property_container_sheet(window, view)
 	window:thaw()
 	topdown_layout(window)
 end
+
 CoreEffectProperty = CoreEffectProperty or class()
+
 function CoreEffectProperty:init(name, ptype, value, help)
 	self._name = name
 	self._type = ptype
@@ -115,20 +130,25 @@ function CoreEffectProperty:init(name, ptype, value, help)
 		self._looping = false
 	end
 end
+
 function CoreEffectProperty:set_custom_validator(f)
 	self._custom_validator = f
 end
+
 function CoreEffectProperty:set_range(a, b)
 	self._min_range = a
 	self._max_range = b
 end
+
 function CoreEffectProperty:set_min_max_name(a, b)
 	self._min_name = a
 	self._max_name = b
 end
+
 function CoreEffectProperty:set_presets(t)
 	self._presets = t
 end
+
 function CoreEffectProperty:set_key_type(t)
 	if t == "angle" then
 		t = "float"
@@ -141,32 +161,41 @@ function CoreEffectProperty:set_key_type(t)
 	self._keys = {}
 	self._silent = true
 end
+
 function CoreEffectProperty:set_min_max(mi, ma)
 	self._min = mi.x .. " " .. mi.y .. " " .. mi.z
 	self._max = ma.x .. " " .. ma.y .. " " .. ma.z
 end
+
 function CoreEffectProperty:add_key(k)
 	table.insert(self._keys, k)
 end
+
 function CoreEffectProperty:set_min_max_keys(mi, ma)
 	self._min_keys = mi
 	self._max_keys = ma
 end
+
 function CoreEffectProperty:set_save_to_child(b)
 	self._save_to_child = b
 end
+
 function CoreEffectProperty:set_can_be_infinite(b)
 	self._can_be_infinite = true
 end
+
 function CoreEffectProperty:set_silent(b)
 	self._silent = b
 end
+
 function CoreEffectProperty:set_object(name, p)
 	self._list_objects[name] = p
 end
+
 function CoreEffectProperty:set_compound_container(p)
 	self._compound_container = p
 end
+
 function CoreEffectProperty:validate()
 	local ret = {
 		valid = true,
@@ -312,17 +341,22 @@ function CoreEffectProperty:validate()
 	end
 	return ret
 end
+
 function CoreEffectProperty:name()
 	return self._name
 end
+
 function CoreEffectProperty:add_value(v)
 	table.insert(self._values, v)
 end
+
 function CoreEffectProperty:add_variant(name, prop)
 	self._variants[name] = prop
 end
+
 function CoreEffectProperty:on_change(widget_view)
 end
+
 function CoreEffectProperty:on_commit(widget_view)
 	if self._type == "null" then
 		return
@@ -332,6 +366,7 @@ function CoreEffectProperty:on_commit(widget_view)
 		widget_view.view:update_view(false)
 	end
 end
+
 function CoreEffectProperty:on_set_variant(widget_view_variant)
 	local combo = widget_view_variant.combo
 	local view = widget_view_variant.view
@@ -352,9 +387,11 @@ function CoreEffectProperty:on_set_variant(widget_view_variant)
 		view:update_view(false)
 	end
 end
+
 function CoreEffectProperty:set_timeline_init_callback_name(c)
 	self._timeline_init_callback = c
 end
+
 function create_text_field(parent, view, prop)
 	local field = EWS:TextCtrl(parent, prop._value, "", "TE_PROCESS_ENTER")
 	field:connect("EVT_COMMAND_TEXT_UPDATED", callback(prop, prop, "on_change", {widget = field, view = view}))
@@ -362,6 +399,7 @@ function create_text_field(parent, view, prop)
 	field:connect("EVT_KILL_FOCUS", callback(prop, prop, "on_commit", {widget = field, view = view}))
 	return field
 end
+
 function create_color_selector(parent, view, prop)
 	local button = EWS:Button(parent, " ", "", "BU_EXACTFIT")
 	local on_click = function(vars)
@@ -387,6 +425,7 @@ function create_color_selector(parent, view, prop)
 	update_colour(vars)
 	return button
 end
+
 function create_texture_selector(parent, view, prop)
 	local panel = EWS:Panel(parent, "", "")
 	local panel_sizer = EWS:BoxSizer("HORIZONTAL")
@@ -395,6 +434,7 @@ function create_texture_selector(parent, view, prop)
 	local browse_button = EWS:Button(panel, "...", "", "BU_EXACTFIT")
 	panel_sizer:add(field, 1, 0, "EXPAND")
 	panel_sizer:add(browse_button, 0, 0, "EXPAND")
+	
 	local function on_browse_button_click()
 		local path = managers.database:open_file_dialog(panel, "Textures (*.dds)|*.dds", view._last_texture_dir)
 		if path then
@@ -404,9 +444,11 @@ function create_texture_selector(parent, view, prop)
 			view:update_view(false)
 		end
 	end
+	
 	browse_button:connect("EVT_COMMAND_BUTTON_CLICKED", on_browse_button_click, nil)
 	return panel
 end
+
 function create_effect_selector(parent, view, prop)
 	local panel = EWS:Panel(parent, "", "")
 	local panel_sizer = EWS:BoxSizer("HORIZONTAL")
@@ -415,6 +457,7 @@ function create_effect_selector(parent, view, prop)
 	local browse_button = EWS:Button(panel, "...", "", "BU_EXACTFIT")
 	panel_sizer:add(field, 1, 0, "EXPAND")
 	panel_sizer:add(browse_button, 0, 0, "EXPAND")
+	
 	local function on_browse_button_click()
 		local path = managers.database:open_file_dialog(panel, "Effects (*.effect)|*.effect", view._last_used_dir)
 		if path then
@@ -424,9 +467,11 @@ function create_effect_selector(parent, view, prop)
 			view:update_view(false)
 		end
 	end
+	
 	browse_button:connect("EVT_COMMAND_BUTTON_CLICKED", on_browse_button_click, nil)
 	return panel
 end
+
 function create_percentage_slider(parent, view, prop)
 	local slider = EWS:Slider(parent, tonumber(prop._value) * 100, 0, 100, "", "")
 	local on_thumbtrack = function(vars)
@@ -440,6 +485,7 @@ function create_percentage_slider(parent, view, prop)
 	})
 	return slider
 end
+
 function create_check(parent, view, prop)
 	local check = EWS:CheckBox(parent, "", "", "")
 	local on_check = function(vars)
@@ -457,6 +503,7 @@ function create_check(parent, view, prop)
 	})
 	return check
 end
+
 function create_key_curve_widget(parent, view, prop)
 	local refresh_list = function(vars)
 		local listbox = vars.listbox
@@ -553,6 +600,7 @@ function create_key_curve_widget(parent, view, prop)
 	on_select(vars)
 	return panel
 end
+
 function topdown_layout(w)
 	local q = w
 	while q and q.type_name == "EWSPanel" do
@@ -562,6 +610,7 @@ function topdown_layout(w)
 		q = q:parent()
 	end
 end
+
 function CoreEffectProperty:create_widget(parent, view)
 	local widget
 	if self._type == "value_list" then
@@ -582,6 +631,7 @@ function CoreEffectProperty:create_widget(parent, view)
 		end
 	elseif self._type == "box" then
 		widget = EWS:AABBSelector(parent, "", math.string_to_vector(self._min), math.string_to_vector(self._max))
+		
 		local function on_box_commit(widget_view)
 			if math.string_to_vector(self._min) ~= widget_view.widget:get_min() or math.string_to_vector(self._max) ~= widget_view.widget:get_max() then
 				local minv = widget_view.widget:get_min()
@@ -591,6 +641,7 @@ function CoreEffectProperty:create_widget(parent, view)
 				widget_view.view:update_view(false)
 			end
 		end
+		
 		widget:connect("EVT_SELECTOR_UPDATED", on_box_commit, {widget = widget, view = view})
 	elseif self._type == "variant" then
 		widget = EWS:Panel(parent, "", "")
@@ -628,9 +679,11 @@ function CoreEffectProperty:create_widget(parent, view)
 	elseif self._type == "list_objects" then
 		local function on_add_object(vars)
 			table.insert(vars.property._list_members, deep_clone(self._list_objects[vars.combo:get_value()]))
+			
 			vars.fill_list(vars)
 			vars.view:update_view(false)
 		end
+		
 		local on_remove_object = function(vars)
 			if vars.list_box:selected_index() < 0 then
 				return
@@ -722,6 +775,7 @@ function CoreEffectProperty:create_widget(parent, view)
 			v = math.string_to_vector(vs)
 			widget:add_key(tonumber(k.t), v)
 		end
+		
 		local function on_keys_commit(widget_view)
 			local keys = widget_view.widget:get_keys()
 			local prop = widget_view.prop
@@ -743,6 +797,7 @@ function CoreEffectProperty:create_widget(parent, view)
 			self._looping = widget_view.widget:looping()
 			widget_view.view:update_view(false)
 		end
+		
 		widget:set_looping(self._looping)
 		widget:connect("EVT_SELECTOR_UPDATED", on_keys_commit, {
 			widget = widget,
@@ -760,9 +815,11 @@ function CoreEffectProperty:create_widget(parent, view)
 	end
 	return widget
 end
+
 function CoreEffectProperty:help()
 	return self._help
 end
+
 function CoreEffectProperty:save(node)
 	if self._type == "null" then
 		return
@@ -806,6 +863,7 @@ function CoreEffectProperty:save(node)
 		end
 	end
 end
+
 function CoreEffectProperty:load(node)
 	if self._type == "null" then
 		return
@@ -875,6 +933,7 @@ function CoreEffectProperty:load(node)
 		end
 	end
 end
+
 function CoreEffectProperty:value()
 	return self._value
 end

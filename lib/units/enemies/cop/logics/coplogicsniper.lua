@@ -1,4 +1,5 @@
 CopLogicSniper = class(CopLogicBase)
+
 function CopLogicSniper.enter(data, new_logic_name, enter_params)
 	CopLogicBase.enter(data, new_logic_name, enter_params)
 	local objective = data.objective
@@ -52,6 +53,7 @@ function CopLogicSniper.enter(data, new_logic_name, enter_params)
 		my_data.attitude = objective.attitude
 	end
 end
+
 function CopLogicSniper.exit(data, new_logic_name, enter_params)
 	CopLogicBase.exit(data, new_logic_name, enter_params)
 	local my_data = data.internal_data
@@ -64,6 +66,7 @@ function CopLogicSniper.exit(data, new_logic_name, enter_params)
 		managers.navigation:release_cover(my_data.best_cover[1])
 	end
 end
+
 function CopLogicSniper._update_enemy_detection(data)
 	managers.groupai:state():on_unit_detection_updated(data.unit)
 	data.t = TimerManager:game():time()
@@ -107,18 +110,21 @@ function CopLogicSniper._update_enemy_detection(data)
 	CopLogicBase.queue_task(my_data, my_data.detection_task_key, CopLogicSniper._update_enemy_detection, data, data.t + delay)
 	CopLogicBase._report_detections(my_data.detected_enemies)
 end
+
 function CopLogicSniper._chk_stand_visibility(my_pos, target_pos, slotmask)
 	local ray_from = my_pos:with_z(my_pos.z + 150)
 	local ray_to = target_pos
 	local ray = World:raycast("ray", ray_from, ray_to, "slot_mask", slotmask, "ray_type", "ai_vision")
 	return ray
 end
+
 function CopLogicSniper._chk_crouch_visibility(my_pos, target_pos, slotmask)
 	local ray_from = my_pos:with_z(my_pos.z + 50)
 	local ray_to = target_pos
 	local ray = World:raycast("ray", ray_from, ray_to, "slot_mask", slotmask, "ray_type", "ai_vision")
 	return ray
 end
+
 function CopLogicSniper.action_complete_clbk(data, action)
 	local action_type = action:type()
 	local my_data = data.internal_data
@@ -135,27 +141,34 @@ function CopLogicSniper.action_complete_clbk(data, action)
 		my_data.reposition = true
 	end
 end
+
 function CopLogicSniper.damage_clbk(data, damage_info)
 	CopLogicIdle.damage_clbk(data, damage_info)
 end
+
 function CopLogicSniper.death_clbk(data, damage_info)
 	CopLogicAttack.death_clbk(data, damage_info)
 end
+
 function CopLogicSniper.can_deactivate(data)
 	return false
 end
+
 function CopLogicSniper.on_detected_enemy_destroyed(data, enemy_unit)
 	CopLogicAttack.on_detected_enemy_destroyed(data, enemy_unit)
 end
+
 function CopLogicSniper.on_criminal_neutralized(data, criminal_key)
 	CopLogicAttack.on_criminal_neutralized(data, criminal_key)
 end
+
 function CopLogicSniper.is_available_for_assignment(data)
 	if not data.internal_data.interrupt_on then
 		return
 	end
 	return CopLogicAttack.is_available_for_assignment(data)
 end
+
 function CopLogicSniper.on_alert(data, alert_data)
 	local enemy = alert_data[5] or alert_data[4]
 	local my_data = data.internal_data
@@ -178,15 +191,18 @@ function CopLogicSniper.on_alert(data, alert_data)
 		managers.groupai:state():report_aggression(enemy)
 	end
 end
+
 function CopLogicSniper.on_intimidated(data, amount, aggressor_unit)
 	local surrender = CopLogicIdle.on_intimidated(data, amount, aggressor_unit)
 	if surrender and data.objective then
 		managers.groupai:state():on_objective_failed(data.unit, data.objective)
 	end
 end
+
 function CopLogicSniper.on_new_objective(data, old_objective)
 	CopLogicIdle.on_new_objective(data, old_objective)
 end
+
 function CopLogicSniper._upd_aim(data, my_data)
 	local shoot, aim
 	local focus_enemy = my_data.focus_enemy
@@ -290,6 +306,7 @@ function CopLogicSniper._upd_aim(data, my_data)
 	end
 	CopLogicAttack.aim_allow_fire(shoot, aim, data, my_data)
 end
+
 function CopLogicSniper._chk_reaction_to_criminal(data, key_criminal, criminal_data, stationary)
 	local record = managers.groupai:state():criminal_record(key_criminal)
 	if record.is_deployable or data.t < record.arrest_timeout then

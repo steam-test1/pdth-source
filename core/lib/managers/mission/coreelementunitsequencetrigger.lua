@@ -2,6 +2,7 @@ core:module("CoreElementUnitSequenceTrigger")
 core:import("CoreMissionScriptElement")
 core:import("CoreCode")
 ElementUnitSequenceTrigger = ElementUnitSequenceTrigger or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementUnitSequenceTrigger:init(...)
 	ElementUnitSequenceTrigger.super.init(self, ...)
 	if not self._values.sequence_list and self._values.sequence then
@@ -13,6 +14,7 @@ function ElementUnitSequenceTrigger:init(...)
 		}
 	end
 end
+
 function ElementUnitSequenceTrigger:on_script_activated()
 	if Network:is_client() then
 		if self._values.trigger_times == 1 then
@@ -28,20 +30,24 @@ function ElementUnitSequenceTrigger:on_script_activated()
 	end
 	self._has_active_callback = true
 end
+
 function ElementUnitSequenceTrigger:send_to_host(instigator)
 	if alive(instigator) then
 		managers.network:session():send_to_host("to_server_mission_element_trigger", self._id, instigator)
 	end
 end
+
 function ElementUnitSequenceTrigger:on_executed(instigator)
 	if not self._values.enabled then
 		return
 	end
 	ElementUnitSequenceTrigger.super.on_executed(self, instigator)
 end
+
 function ElementUnitSequenceTrigger:save(data)
 	data.save_me = true
 end
+
 function ElementUnitSequenceTrigger:load(data)
 	if not self._has_active_callback then
 		self:on_script_activated()

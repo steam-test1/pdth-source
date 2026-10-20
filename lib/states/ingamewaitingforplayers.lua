@@ -9,22 +9,26 @@ IngameWaitingForPlayersState.PLAYER_INFO_HUD = Idstring("guis/player_info_hud")
 IngameWaitingForPlayersState.PLAYER_INFO_HUD_FULLSCREEN = Idstring("guis/player_info_hud_fullscreen")
 IngameWaitingForPlayersState.PLAYER_DOWNED_HUD = Idstring("guis/player_downed_hud")
 IngameWaitingForPlayersState.LEVEL_INTRO_GUI = Idstring("guis/level_intro")
+
 function IngameWaitingForPlayersState:init(game_state_machine)
 	GameState.init(self, "ingame_waiting_for_players", game_state_machine)
 	self._intro_source = SoundDevice:create_source("intro_source")
 	self._start_cb = callback(self, self, "_start")
 	self._controller = nil
 end
+
 function IngameWaitingForPlayersState:setup_controller()
 	if not self._controller then
 		self._controller = managers.controller:create_controller("waiting_for_players", managers.controller:get_default_wrapper_index(), false)
 	end
 	self._controller:set_enabled(true)
 end
+
 function IngameWaitingForPlayersState:set_controller_enabled(enabled)
 	if self._controller then
 	end
 end
+
 function IngameWaitingForPlayersState:_start()
 	if not Network:is_server() then
 		return
@@ -33,6 +37,7 @@ function IngameWaitingForPlayersState:_start()
 	self:sync_start(variant)
 	managers.network:session():send_to_peers_synched("sync_waiting_for_player_start", variant)
 end
+
 function IngameWaitingForPlayersState:sync_start(variant)
 	self._kit_menu.renderer:set_all_items_enabled(false)
 	managers.music:post_event(tweak_data.levels:get_music_event("intro"))
@@ -47,6 +52,7 @@ function IngameWaitingForPlayersState:sync_start(variant)
 		self:_start_delay()
 	end
 end
+
 function IngameWaitingForPlayersState:_start_audio()
 	managers.hud:script(self.GUI_SAFERECT):stop_movie()
 	managers.hud:show(self.LEVEL_INTRO_GUI)
@@ -62,12 +68,14 @@ function IngameWaitingForPlayersState:_start_audio()
 		end
 	end
 end
+
 function IngameWaitingForPlayersState:_start_delay()
 	if self._delay_start_t then
 		return
 	end
 	self._delay_start_t = Application:time() + 1
 end
+
 function IngameWaitingForPlayersState:_audio_done(instance, event_type, self, sound_source, label, identifier, position)
 	if event_type == "end_of_event" or event_type == "marker" and sound_source and sound_source == "end" then
 		self:_start_delay()
@@ -81,6 +89,7 @@ function IngameWaitingForPlayersState:_audio_done(instance, event_type, self, so
 		end
 	end
 end
+
 function IngameWaitingForPlayersState:update(t, dt)
 	if t > self._camera_data.next_t then
 		self:_next_camera()
@@ -142,6 +151,7 @@ function IngameWaitingForPlayersState:update(t, dt)
 		end
 	end
 end
+
 function IngameWaitingForPlayersState:at_enter()
 	self._started_from_beginning = true
 	self:setup_controller()
@@ -184,6 +194,7 @@ function IngameWaitingForPlayersState:at_enter()
 		Global.local_member:sync_data(managers.network:session():server_peer())
 	end
 end
+
 function IngameWaitingForPlayersState:start_game_intro()
 	if self._starting_game_intro then
 		return
@@ -191,10 +202,12 @@ function IngameWaitingForPlayersState:start_game_intro()
 	self._starting_game_intro = true
 	self:_start()
 end
+
 function IngameWaitingForPlayersState:set_dropin(char_name)
 	self._started_from_beginning = false
 	print("Joining as " .. char_name)
 end
+
 function IngameWaitingForPlayersState:at_exit()
 	managers.menu:close_menu("kit_menu")
 	managers.statistics:start_session({
@@ -215,6 +228,7 @@ function IngameWaitingForPlayersState:at_exit()
 	managers.platform:set_presence("Playing")
 	self._delay_audio_t = nil
 end
+
 function IngameWaitingForPlayersState:_get_cameras()
 	self._cameras = {}
 	for _, unit in ipairs(managers.helper_unit:get_units_by_type("waiting_camera")) do
@@ -242,6 +256,7 @@ function IngameWaitingForPlayersState:_get_cameras()
 		})
 	end
 end
+
 function IngameWaitingForPlayersState:_next_camera()
 	self._camera_data.next_t = Application:time() + 8 + math.rand(4)
 	self._camera_data.index = self._camera_data.index + 1
@@ -254,12 +269,15 @@ function IngameWaitingForPlayersState:_next_camera()
 	local text = self._cameras[self._camera_data.index].nr < 10 and "0" .. self._cameras[self._camera_data.index].nr or self._cameras[self._camera_data.index].nr
 	managers.hud:script(self.GUI_SAFERECT).cam_nr:set_text("CAM-" .. text)
 end
+
 function IngameWaitingForPlayersState:on_server_left()
 	IngameCleanState.on_server_left(self)
 end
+
 function IngameWaitingForPlayersState:on_kicked()
 	IngameCleanState.on_kicked(self)
 end
+
 function IngameWaitingForPlayersState:on_disconnected()
 	IngameCleanState.on_disconnected(self)
 end

@@ -9,6 +9,7 @@ local tmp_rot = Rotation()
 local idstr_look_upper_body = Idstring("look_upper_body")
 local idstr_look_head = Idstring("look_head")
 local idstr_head = Idstring("Head")
+
 function CopActionIdle:init(action_desc, common_data)
 	if action_desc.non_persistent then
 		return
@@ -77,6 +78,7 @@ function CopActionIdle:init(action_desc, common_data)
 	CopActionAct._create_blocks_table(self, action_desc.blocks)
 	return true
 end
+
 function CopActionIdle:on_exit()
 	if self._modifier_on then
 		self._modifier_on = nil
@@ -86,6 +88,7 @@ function CopActionIdle:on_exit()
 		mvector3.set(self._common_data.look_vec, self._look_vec)
 	end
 end
+
 function CopActionIdle:update(t)
 	if self._attention then
 		local ik_enable = true
@@ -157,9 +160,11 @@ function CopActionIdle:update(t)
 		self._ext_movement:upd_m_head_pos()
 	end
 end
+
 function CopActionIdle:type()
 	return "idle"
 end
+
 function CopActionIdle:on_attention(attention)
 	if attention then
 		local shoot_from_pos = self._ext_movement:m_head_pos()
@@ -197,9 +202,11 @@ function CopActionIdle:on_attention(attention)
 	self._attention = attention
 	self._ext_movement:enable_update()
 end
+
 function CopActionIdle:need_upd()
 	return self._attention and (self._attention.unit or self._look_trans and true) or false
 end
+
 function CopActionIdle:save(save_data)
 	if self._body_part == 1 then
 		save_data.is_save = true

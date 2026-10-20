@@ -1,4 +1,5 @@
 CopLogicGuard = class(CopLogicIdle)
+
 function CopLogicGuard.enter(data, new_logic_name, enter_params)
 	CopLogicBase.enter(data, new_logic_name, enter_params)
 	data.unit:brain():cancel_all_pathing_searches()
@@ -43,6 +44,7 @@ function CopLogicGuard.enter(data, new_logic_name, enter_params)
 	CopLogicBase.queue_task(my_data, my_data.detection_task_key, CopLogicIdle._update_enemy_detection, data, data.t + 1)
 	CopLogicTravel.reset_actions(data, my_data, old_internal_data, CopLogicTravel.allowed_transitional_actions)
 end
+
 function CopLogicGuard.update(data)
 	local my_data = data.internal_data
 	local guard_obj = my_data.guard_obj
@@ -67,6 +69,7 @@ function CopLogicGuard.update(data)
 		CopLogicBase._exit(data.unit, "idle")
 	end
 end
+
 function CopLogicGuard.action_complete_clbk(data, action)
 	local action_type = action:type()
 	if action_type == "shoot" then
@@ -75,9 +78,11 @@ function CopLogicGuard.action_complete_clbk(data, action)
 		data.internal_data.turning = nil
 	end
 end
+
 function CopLogicGuard.on_new_objective(data, old_objective)
 	CopLogicIdle.on_new_objective(data, old_objective)
 end
+
 function CopLogicGuard.on_area_safety(data, nav_seg, safe, event)
 	local objective = data.objective
 	if objective.guard_obj.from_seg == nav_seg then

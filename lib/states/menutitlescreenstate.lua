@@ -1,12 +1,15 @@
 require("lib/states/GameState")
 MenuTitlescreenState = MenuTitlescreenState or class(GameState)
+
 function MenuTitlescreenState:init(game_state_machine, setup)
 	GameState.init(self, "menu_titlescreen", game_state_machine)
 	if setup then
 		self:setup()
 	end
 end
+
 local is_ps3 = SystemInfo:platform() == Idstring("PS3")
+
 function MenuTitlescreenState:setup()
 	local res = RenderSettings.resolution
 	local gui = Overlay:gui()
@@ -48,6 +51,7 @@ function MenuTitlescreenState:setup()
 	end
 	self:reset_attract_video()
 end
+
 function MenuTitlescreenState:at_enter()
 	if not self._controller_list then
 		self:setup()
@@ -62,6 +66,7 @@ function MenuTitlescreenState:at_enter()
 	managers.controller:set_default_wrapper_index(nil)
 	self:reset_attract_video()
 end
+
 function MenuTitlescreenState:update(t, dt)
 	self:check_confirm_pressed()
 	if managers.system_menu:is_active() then
@@ -77,6 +82,7 @@ function MenuTitlescreenState:update(t, dt)
 		end
 	end
 end
+
 function MenuTitlescreenState:get_start_pressed_controller_index()
 	for index, controller in ipairs(self._controller_list) do
 		if is_ps3 then
@@ -89,6 +95,7 @@ function MenuTitlescreenState:get_start_pressed_controller_index()
 	end
 	return nil
 end
+
 function MenuTitlescreenState:check_confirm_pressed()
 	for index, controller in ipairs(self._controller_list) do
 		if controller:get_input_pressed("confirm") then
@@ -101,6 +108,7 @@ function MenuTitlescreenState:check_confirm_pressed()
 		end
 	end
 end
+
 function MenuTitlescreenState:check_user_callback(success)
 	if success then
 		managers.user:check_storage(callback(self, self, "check_storage_callback"), true)
@@ -118,6 +126,7 @@ function MenuTitlescreenState:check_user_callback(success)
 		managers.system_menu:show(dialog_data)
 	end
 end
+
 function MenuTitlescreenState:check_storage_callback(success)
 	if success then
 		local sound_source = SoundDevice:create_source("MenuTitleScreen")
@@ -137,13 +146,16 @@ function MenuTitlescreenState:check_storage_callback(success)
 		managers.system_menu:show(dialog_data)
 	end
 end
+
 function MenuTitlescreenState:continue_without_saving_yes_callback()
 	self:gsm():change_state_by_name("menu_main")
 end
+
 function MenuTitlescreenState:continue_without_saving_no_callback()
 	managers.user:set_index(nil)
 	managers.controller:set_default_wrapper_index(nil)
 end
+
 function MenuTitlescreenState:check_attract_video()
 	if alive(self._attract_video_gui) then
 		if self._attract_video_gui:loop_count() > 0 or self:is_any_input_pressed() then
@@ -156,6 +168,7 @@ function MenuTitlescreenState:check_attract_video()
 	end
 	return false
 end
+
 function MenuTitlescreenState:is_any_input_pressed()
 	for _, controller in ipairs(self._controller_list) do
 		if controller:get_any_input_pressed() then
@@ -164,6 +177,7 @@ function MenuTitlescreenState:is_any_input_pressed()
 	end
 	return false
 end
+
 function MenuTitlescreenState:reset_attract_video()
 	self._attract_video_time = TimerManager:main():time()
 	if alive(self._attract_video_gui) then
@@ -172,9 +186,11 @@ function MenuTitlescreenState:reset_attract_video()
 		self._attract_video_gui = nil
 	end
 end
+
 function MenuTitlescreenState:is_attract_video_delay_done()
 	return TimerManager:main():time() > self._attract_video_time + _G.tweak_data.states.title.ATTRACT_VIDEO_DELAY
 end
+
 function MenuTitlescreenState:play_attract_video()
 	self:reset_attract_video()
 	local res = RenderSettings.resolution
@@ -199,6 +215,7 @@ function MenuTitlescreenState:play_attract_video()
 	})
 	self._attract_video_gui:play()
 end
+
 function MenuTitlescreenState:at_exit()
 	if alive(self._workspace) then
 		Overlay:gui():destroy_workspace(self._workspace)

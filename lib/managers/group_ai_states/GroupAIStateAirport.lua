@@ -1,4 +1,5 @@
 GroupAIStateAirport = GroupAIStateAirport or class(GroupAIStateStreet)
+
 function GroupAIStateAirport:_upd_police_activity(t)
 	if not (self._heat_data.i_stage > 0 and self._ai_enabled) or not self._mission_fwd_vector then
 		return

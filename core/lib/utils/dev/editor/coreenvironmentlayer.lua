@@ -4,6 +4,7 @@ core:import("CoreEngineAccess")
 core:import("CoreEws")
 core:import("CoreEditorSave")
 EnvironmentLayer = EnvironmentLayer or class(CoreStaticLayer.StaticLayer)
+
 function EnvironmentLayer:init(owner)
 	EnvironmentLayer.super.init(self, owner, "environment", {
 		"environment"
@@ -88,9 +89,11 @@ function EnvironmentLayer:init(owner)
 		return self:sky_rotation_modifier(interface)
 	end, "sky_orientation")
 end
+
 function EnvironmentLayer:get_layer_name()
 	return "Environment"
 end
+
 function EnvironmentLayer:load(world_holder, offset)
 	local environment = world_holder:create_world("world", self._save_name, offset)
 	if not self:old_load(environment) then
@@ -109,6 +112,7 @@ function EnvironmentLayer:load(world_holder, offset)
 	self:clear_selected_units()
 	return environment
 end
+
 function EnvironmentLayer:_load_wind(wind)
 	self._wind_rot = Rotation(wind.angle, 0, wind.tilt)
 	self._wind_dir_var = wind.angle_var
@@ -124,12 +128,14 @@ function EnvironmentLayer:_load_wind(wind)
 	self._wind_ctrls.tilt_variation:set_value(self._wind_tilt_var)
 	self:set_wind()
 end
+
 function EnvironmentLayer:_load_effects(effects)
 	for _, effect in ipairs(effects) do
 		local unit = self:do_spawn_unit(self._effect_unit, effect.position, effect.rotation)
 		self:play_effect(unit, effect.name)
 	end
 end
+
 function EnvironmentLayer:_load_environment_areas()
 	for _, area in ipairs(managers.environment_area:areas()) do
 		local unit = EnvironmentLayer.super.do_spawn_unit(self, self._environment_area_unit, area:position(), area:rotation())
@@ -137,6 +143,7 @@ function EnvironmentLayer:_load_environment_areas()
 		unit:unit_data().environment_area:set_unit(unit)
 	end
 end
+
 function EnvironmentLayer:old_load(environment)
 	if not environment._values then
 		return false
@@ -183,6 +190,7 @@ function EnvironmentLayer:old_load(environment)
 	self:clear_selected_units()
 	return environment
 end
+
 function EnvironmentLayer:save()
 	local effects = {}
 	local environment_areas = {}
@@ -228,11 +236,13 @@ function EnvironmentLayer:save()
 	self:_save_to_world_package("scenes", managers.viewport:first_active_viewport():environment_mixer():internal_output("others", "underlay"))
 	self:_save_to_world_package("script_data", self._environment_values.environment .. ".environment")
 end
+
 function EnvironmentLayer:_save_to_world_package(category, name)
 	if name and name ~= "none" then
 		managers.editor:add_to_world_package({category = category, name = name})
 	end
 end
+
 function EnvironmentLayer:update(t, dt)
 	EnvironmentLayer.super.update(self, t, dt)
 	if self._draw_wind then
@@ -260,6 +270,7 @@ function EnvironmentLayer:update(t, dt)
 		end
 	end
 end
+
 function EnvironmentLayer:draw_wind(pos)
 	local rot = Rotation(self._wind_rot:yaw(), self._wind_rot:pitch(), self._wind_rot:roll() * -1)
 	self._wind_pen:arrow(pos, pos + rot:x() * 300, 0.25)
@@ -268,6 +279,7 @@ function EnvironmentLayer:draw_wind(pos)
 	self._wind_pen:arc(pos, pos + rot:x() * 100, self._wind_tilt_var, rot:y(), 32)
 	self._wind_pen:arc(pos, pos + rot:x() * 100, -self._wind_tilt_var, rot:y(), 32)
 end
+
 function EnvironmentLayer:build_panel(notebook)
 	EnvironmentLayer.super.build_panel(self, notebook)
 	cat_print("editor", "EnvironmentLayer:build_panel")
@@ -412,6 +424,7 @@ function EnvironmentLayer:build_panel(notebook)
 	self._sizer:add(self._env_panel, 4, 0, "EXPAND")
 	return self._ews_panel
 end
+
 function EnvironmentLayer:populate_unit_effects()
 	self._unit_effects:clear()
 	self._unit_effects:append("none")
@@ -423,6 +436,7 @@ function EnvironmentLayer:populate_unit_effects()
 	self._unit_effects:set_value("none")
 	self:update_unit_settings()
 end
+
 function EnvironmentLayer:create_cube_map(type)
 	local cubes = {}
 	if type == "all" then
@@ -446,18 +460,22 @@ function EnvironmentLayer:create_cube_map(type)
 	params.output_path = managers.database:base_path() .. "environments\\cubemaps\\"
 	managers.editor:create_cube_map(params)
 end
+
 function EnvironmentLayer:change_environment(ctrlr)
 	self._environment_values.environment = ctrlr:get_value()
 	managers.environment_area:set_default_environment(self._environment_values.environment)
 end
+
 function EnvironmentLayer:set_environment_area()
 	local area = self._selected_unit:unit_data().environment_area
 	area:set_environment(self._environment_area_ctrls.environment:get_value())
 end
+
 function EnvironmentLayer:set_permanent()
 	local area = self._selected_unit:unit_data().environment_area
 	area:set_permanent(self._environment_area_ctrls.permanent_cb:get_value())
 end
+
 function EnvironmentLayer:set_transition_time()
 	local area = self._selected_unit:unit_data().environment_area
 	local value = tonumber(self._environment_area_ctrls.transition_time:get_value())
@@ -465,59 +483,72 @@ function EnvironmentLayer:set_transition_time()
 	self._environment_area_ctrls.transition_time:change_value(string.format("%.2f", value))
 	area:set_transition_time(value)
 end
+
 function EnvironmentLayer:update_wind_direction(wind_direction)
 	local dir = wind_direction:get_value()
 	self._wind_rot = Rotation(dir, 0, self._wind_rot:roll())
 	self:set_wind()
 end
+
 function EnvironmentLayer:set_wind()
 	Wind:set_direction(self._wind_rot:yaw(), self._wind_dir_var, 5)
 	Wind:set_tilt(self._wind_rot:roll(), self._wind_tilt_var, 5)
 	Wind:set_speed_m_s(self._wind_speed, self._wind_speed_variation, 5)
 	Wind:set_enabled(true)
 end
+
 function EnvironmentLayer:update_wind_variation(wind_variation)
 	self._wind_dir_var = wind_variation:get_value()
 	self:set_wind()
 end
+
 function EnvironmentLayer:update_tilt_angle(tilt_angle)
 	local dir = tilt_angle:get_value()
 	self._wind_rot = Rotation(self._wind_rot:yaw(), 0, dir)
 	self:set_wind()
 end
+
 function EnvironmentLayer:update_tilt_variation(tilt_variation)
 	self._wind_tilt_var = tilt_variation:get_value()
 	self:set_wind()
 end
+
 function EnvironmentLayer:on_wind_speed_help()
 	EWS:launch_url("http://en.wikipedia.org/wiki/Beaufort_scale")
 end
+
 function EnvironmentLayer:update_wind_speed(wind_speed)
 	self._wind_speed = wind_speed:get_value() / 10
 	self:update_wind_speed_labels()
 	self:set_wind()
 end
+
 function EnvironmentLayer:update_wind_speed_variation(wind_speed_variation)
 	self._wind_speed_variation = wind_speed_variation:get_value() / 10
 	self:update_wind_speed_labels()
 	self:set_wind()
 end
+
 function EnvironmentLayer:update_wind_speed_labels()
 	self._speed_text:set_value(string.format("%.3g", self._wind_speed) .. " m/s")
 	self._speed_beaufort:set_value("Beaufort: " .. self:wind_beaufort(self._wind_speed))
 	self._speed_description:set_value(self:wind_description(self._wind_speed))
 	self._speed_variation_text:set_value(string.format("%.3g", self._wind_speed_variation) .. " m/s")
 end
+
 function EnvironmentLayer:sky_rotation_modifier(interface)
 	return self._environment_values.sky_rot
 end
+
 function EnvironmentLayer:change_sky_rotation(ctrlr)
 	self._environment_values.sky_rot = ctrlr:get_value()
 	self._owner:viewport():feed_params()
 end
+
 function EnvironmentLayer:unit_ok(unit)
 	return unit:name() == Idstring(self._effect_unit) or unit:name() == Idstring(self._cubemap_unit) or unit:name() == Idstring(self._environment_area_unit)
 end
+
 function EnvironmentLayer:do_spawn_unit(...)
 	local unit = EnvironmentLayer.super.do_spawn_unit(self, ...)
 	if alive(unit) and unit:name() == Idstring(self._environment_area_unit) then
@@ -530,6 +561,7 @@ function EnvironmentLayer:do_spawn_unit(...)
 	end
 	return unit
 end
+
 function EnvironmentLayer:clone_edited_values(unit, source)
 	EnvironmentLayer.super.clone_edited_values(self, unit, source)
 	if unit:name() == Idstring(self._environment_area_unit) then
@@ -545,6 +577,7 @@ function EnvironmentLayer:clone_edited_values(unit, source)
 		self:play_effect(unit, source:unit_data().effect)
 	end
 end
+
 function EnvironmentLayer:delete_unit(unit)
 	self:kill_effect(unit)
 	if unit:name() == Idstring(self._environment_area_unit) then
@@ -559,6 +592,7 @@ function EnvironmentLayer:delete_unit(unit)
 	end
 	EnvironmentLayer.super.delete_unit(self, unit)
 end
+
 function EnvironmentLayer:play_effect(unit, effect)
 	unit:unit_data().effect = effect
 	if DB:has("effect", effect) then
@@ -570,16 +604,19 @@ function EnvironmentLayer:play_effect(unit, effect)
 		})
 	end
 end
+
 function EnvironmentLayer:kill_effect(unit)
 	if unit:name() == Idstring(self._effect_unit) and unit:unit_data().current_effect then
 		World:effect_manager():kill(unit:unit_data().current_effect)
 		unit:unit_data().current_effect = nil
 	end
 end
+
 function EnvironmentLayer:change_unit_effect()
 	self:kill_effect(self._selected_unit)
 	self:play_effect(self._selected_unit, self._unit_effects:get_value())
 end
+
 function EnvironmentLayer:update_unit_settings()
 	EnvironmentLayer.super.update_unit_settings(self)
 	self._unit_effects:set_enabled(false)
@@ -589,6 +626,7 @@ function EnvironmentLayer:update_unit_settings()
 	end
 	self:set_environment_area_parameters()
 end
+
 function EnvironmentLayer:set_environment_area_parameters()
 	self._environment_area_ctrls.environment:set_enabled(false)
 	self._environment_area_ctrls.permanent_cb:set_enabled(false)
@@ -613,6 +651,7 @@ function EnvironmentLayer:set_environment_area_parameters()
 	self._ews_panel:fit_inside()
 	self._ews_panel:refresh()
 end
+
 function EnvironmentLayer:wind_description(speed)
 	local description
 	for _, data in ipairs(self._wind_speeds) do
@@ -623,6 +662,7 @@ function EnvironmentLayer:wind_description(speed)
 	end
 	return description
 end
+
 function EnvironmentLayer:wind_beaufort(speed)
 	local beaufort
 	for _, data in ipairs(self._wind_speeds) do
@@ -633,10 +673,12 @@ function EnvironmentLayer:wind_beaufort(speed)
 	end
 	return beaufort
 end
+
 function EnvironmentLayer:reset_environment_values()
 	self._environment_values.environment = managers.environment_area:game_default_environment()
 	self._environment_values.sky_rot = 0
 end
+
 function EnvironmentLayer:clear()
 	managers.environment_area:set_to_default()
 	self:reset_environment_values()
@@ -665,9 +707,11 @@ function EnvironmentLayer:clear()
 	EnvironmentLayer.super.clear(self)
 	self:set_environment_area_parameters()
 end
+
 function EnvironmentLayer:add_triggers()
 	EnvironmentLayer.super.add_triggers(self)
 end
+
 function EnvironmentLayer:clear_triggers()
 	self._editor_data.virtual_controller:clear_triggers()
 end

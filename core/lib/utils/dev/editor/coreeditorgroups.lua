@@ -1,37 +1,46 @@
 core:import("CoreEditorUtils")
 CoreEditorGroups = CoreEditorGroups or class()
+
 function CoreEditorGroups:init()
 	self._groups = {}
 	self._group_names = {}
 end
+
 function CoreEditorGroups:groups()
 	return self._groups
 end
+
 function CoreEditorGroups:group_names()
 	return self._group_names
 end
+
 function CoreEditorGroups:update(t, dt)
 	for _, group in pairs(self._groups) do
 		group:draw(t, dt)
 	end
 end
+
 function CoreEditorGroups:create(name, reference, units)
 	table.insert(self._group_names, name)
 	local group = CoreEditorGroup:new(name, reference, units)
 	self._groups[name] = group
 	return group
 end
+
 function CoreEditorGroups:add(name, units)
 	local group = self._groups[name]
 	group:add(units)
 end
+
 function CoreEditorGroups:remove(name)
 	table.delete(self._group_names, name)
 	self._groups[name]:remove()
 	self._groups[name] = nil
 end
+
 function CoreEditorGroups:clear()
 end
+
 function CoreEditorGroups:group_name()
 	local name = EWS:get_text_from_user(Global.frame_panel, "Enter name for the new group:", "Create Group", self:new_group_name(), Vector3(-1, -1, 0), true)
 	if name and name ~= "" then
@@ -43,6 +52,7 @@ function CoreEditorGroups:group_name()
 	end
 	return nil
 end
+
 function CoreEditorGroups:new_group_name()
 	local s = "Group0"
 	local i = 1
@@ -54,6 +64,7 @@ function CoreEditorGroups:new_group_name()
 	end
 	return s .. i
 end
+
 function CoreEditorGroups:save()
 	for _, name in ipairs(self._group_names) do
 		local group = self._groups[name]
@@ -74,6 +85,7 @@ function CoreEditorGroups:save()
 		managers.editor:add_save_data(t)
 	end
 end
+
 function CoreEditorGroups:load(world_holder, offset)
 	local load_data = world_holder:create_world("world", "editor_groups", offset)
 	local group_names = load_data.group_names
@@ -111,12 +123,14 @@ function CoreEditorGroups:load(world_holder, offset)
 		end
 	end
 end
+
 function CoreEditorGroups:load_group()
 	local path = managers.database:open_file_dialog(Global.frame, "XML-file (*.xml)|*.xml")
 	if path then
 		self:load_group_file(path)
 	end
 end
+
 function CoreEditorGroups:load_group_file(path)
 	local name = self:group_name()
 	local node = SystemFS:parse_xml(path)
@@ -157,6 +171,7 @@ function CoreEditorGroups:load_group_file(path)
 		layer:select_group(self._groups[name])
 	end
 end
+
 function CoreEditorGroups:parse_light(unit, node)
 	local light = unit:get_object(Idstring(node:parameter("name")))
 	if not light then
@@ -172,6 +187,7 @@ function CoreEditorGroups:parse_light(unit, node)
 		light:set_falloff_exponent(tonumber(node:parameter("falloff_exponent")))
 	end
 end
+
 function CoreEditorGroups:parse_variation(unit, node)
 	local variation = node:parameter("value")
 	if variation ~= "default" then
@@ -179,6 +195,7 @@ function CoreEditorGroups:parse_variation(unit, node)
 		managers.sequence:run_sequence_simple2(unit:unit_data().mesh_variation, "change_state", unit)
 	end
 end
+
 function CoreEditorGroups:parse_material_variation(unit, node)
 	local material_variation = node:parameter("value")
 	if material_variation ~= "default" then
@@ -186,12 +203,15 @@ function CoreEditorGroups:parse_material_variation(unit, node)
 		unit:set_material_config(unit:unit_data().material, true)
 	end
 end
+
 function CoreEditorGroups:parse_editable_gui(unit, node)
 	unit:editable_gui():set_text(node:parameter("text"))
 	unit:editable_gui():set_font_color(math.string_to_vector(node:parameter("font_color")))
 	unit:editable_gui():set_font_size(tonumber(node:parameter("font_size")))
 end
+
 CoreEditorGroup = CoreEditorGroup or class()
+
 function CoreEditorGroup:init(name, reference, units)
 	self._name = name
 	self._reference = reference
@@ -202,29 +222,38 @@ function CoreEditorGroup:init(name, reference, units)
 	end
 	self._closed = true
 end
+
 function CoreEditorGroup:closed()
 	return self._closed
 end
+
 function CoreEditorGroup:set_closed(closed)
 	self._closed = closed
 end
+
 function CoreEditorGroup:name()
 	return self._name
 end
+
 function CoreEditorGroup:units()
 	return self._units
 end
+
 function CoreEditorGroup:continent()
 	return self._continent
 end
+
 function CoreEditorGroup:set_continent(continent)
 	self._continent = continent
 end
+
 function CoreEditorGroup:continent_name()
 	return tostring(self._continent and self._continent:name())
 end
+
 function CoreEditorGroup:add(units)
 end
+
 function CoreEditorGroup:add_unit(unit)
 	if not unit then
 		return
@@ -233,6 +262,7 @@ function CoreEditorGroup:add_unit(unit)
 	unit:unit_data().editor_groups = unit:unit_data().editor_groups or {}
 	table.insert(unit:unit_data().editor_groups, self)
 end
+
 function CoreEditorGroup:remove_unit(unit)
 	table.delete(self._units, unit)
 	table.delete(unit:unit_data().editor_groups, self)
@@ -244,17 +274,21 @@ function CoreEditorGroup:remove_unit(unit)
 		end
 	end
 end
+
 function CoreEditorGroup:remove()
 	for _, unit in ipairs(self._units) do
 		table.delete(unit:unit_data().editor_groups, self)
 	end
 end
+
 function CoreEditorGroup:reference()
 	return self._reference
 end
+
 function CoreEditorGroup:set_reference(reference)
 	self._reference = reference
 end
+
 function CoreEditorGroup:save_to_file()
 	local path = managers.database:save_file_dialog(Global.frame, true, "XML-file (*.xml)|*.xml", self:name())
 	if path then
@@ -285,11 +319,13 @@ function CoreEditorGroup:save_to_file()
 		SystemFS:close(f)
 	end
 end
+
 function CoreEditorGroup:save_edited_settings(...)
 	self:save_lights(...)
 	self:save_variation(...)
 	self:save_editable_gui(...)
 end
+
 function CoreEditorGroup:save_lights(file, t, unit, data_table)
 	local lights = CoreEditorUtils.get_editable_lights(unit)
 	for _, light in ipairs(lights) do
@@ -301,6 +337,7 @@ function CoreEditorGroup:save_lights(file, t, unit, data_table)
 		file:puts(t .. "<light name=\"" .. light:name():s() .. "\" enabled=\"" .. tostring(light:enable()) .. "\" far_range=\"" .. light:far_range() .. "\" color=\"" .. c_s .. "\" angle_start=\"" .. as .. "\" angle_end=\"" .. ae .. "\" multiplier=\"" .. multiplier .. "\" falloff_exponent=\"" .. falloff_exponent .. "\"/>")
 	end
 end
+
 function CoreEditorGroup:save_variation(file, t, unit, data_table)
 	if #managers.sequence:get_editable_state_sequence_list(unit:name()) > 0 then
 		file:puts(t .. "<variation value=\"" .. unit:unit_data().mesh_variation .. "\"/>")
@@ -309,6 +346,7 @@ function CoreEditorGroup:save_variation(file, t, unit, data_table)
 		file:puts(t .. "<material_variation value=\"" .. unit:unit_data().material .. "\"/>")
 	end
 end
+
 function CoreEditorGroup:save_editable_gui(file, t, unit, data_table)
 	if unit:editable_gui() then
 		local text = unit:editable_gui():text()
@@ -317,6 +355,7 @@ function CoreEditorGroup:save_editable_gui(file, t, unit, data_table)
 		file:puts(t .. "<editable_gui text=\"" .. text .. "\" font_size=\"" .. font_size .. "\" font_color=\"" .. math.vector_to_string(font_color) .. "\"/>")
 	end
 end
+
 function CoreEditorGroup:draw(t, dt)
 	local i = 0.25
 	if managers.editor:using_groups() then
@@ -332,7 +371,9 @@ function CoreEditorGroup:draw(t, dt)
 	end
 	Application:draw(self._reference, 0, 1 * i, 0)
 end
+
 GroupPresetsDialog = GroupPresetsDialog or class(CoreEditorEwsDialog)
+
 function GroupPresetsDialog:init(files, path)
 	self._path = path
 	CoreEditorEwsDialog.init(self, nil, "Group Presets", "", Vector3(300, 150, 0), Vector3(200, 300, 0), "DEFAULT_DIALOG_STYLE,RESIZE_BORDER,STAY_ON_TOP")
@@ -366,6 +407,7 @@ function GroupPresetsDialog:init(files, path)
 	self._dialog_sizer:add(self._panel, 1, 0, "EXPAND")
 	self._dialog:set_visible(true)
 end
+
 function GroupPresetsDialog:select_group()
 	local i = self._list:selected_index()
 	if -1 < i then
@@ -373,6 +415,7 @@ function GroupPresetsDialog:select_group()
 		self._file = managers.database:base_path() .. self._path .. "\\" .. name
 	end
 end
+
 function GroupPresetsDialog:create_group()
 	if self._file then
 		if self._hide_on_create then
@@ -381,6 +424,7 @@ function GroupPresetsDialog:create_group()
 		managers.editor:groups():load_group_file(self._file)
 	end
 end
+
 function GroupPresetsDialog:hide_on_create(hide)
 	self._hide_on_create = hide:get_value()
 end

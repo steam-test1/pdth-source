@@ -1,7 +1,9 @@
 UpgradesManager = UpgradesManager or class()
+
 function UpgradesManager:init()
 	self:_setup()
 end
+
 function UpgradesManager:_setup()
 	if not Global.upgrades_manager then
 		Global.upgrades_manager = {}
@@ -18,6 +20,7 @@ function UpgradesManager:_setup()
 	end
 	self._global = Global.upgrades_manager
 end
+
 function UpgradesManager:setup_current_weapon()
 	local p_unit = managers.player:player_unit()
 	if not p_unit then
@@ -39,9 +42,11 @@ function UpgradesManager:setup_current_weapon()
 		self:_apply_visual_weapon_upgrade(weapon_unit, tweak_data.upgrades.visual.upgrade[upgrade_data.id])
 	end
 end
+
 function UpgradesManager:visual_weapon_upgrade_active(upgrade)
 	return not self._global.disabled_visual_upgrades[upgrade]
 end
+
 function UpgradesManager:toggle_visual_weapon_upgrade(upgrade)
 	if self._global.disabled_visual_upgrades[upgrade] then
 		self._global.disabled_visual_upgrades[upgrade] = nil
@@ -49,6 +54,7 @@ function UpgradesManager:toggle_visual_weapon_upgrade(upgrade)
 		self._global.disabled_visual_upgrades[upgrade] = true
 	end
 end
+
 function UpgradesManager:_apply_visual_weapon_upgrade(weapon_unit, upgrade)
 	if not upgrade then
 		return
@@ -61,6 +67,7 @@ function UpgradesManager:_apply_visual_weapon_upgrade(weapon_unit, upgrade)
 		weapon_unit:base():change_fire_object(fire_obj)
 	end
 end
+
 function UpgradesManager:set_target_tree(tree)
 	local level = managers.experience:current_level()
 	local step = self._global.progress[tree]
@@ -71,27 +78,34 @@ function UpgradesManager:set_target_tree(tree)
 	self:_set_target_tree(tree)
 	self:present_target()
 end
+
 function UpgradesManager:_set_target_tree(tree)
 	local i = self._global.progress[tree] + 1
 	local upgrade = tweak_data.upgrades.definitions[tweak_data.upgrades.progress[tree][i]]
 	self._global.target_tree = tree
 end
+
 function UpgradesManager:current_tree_name()
 	return self:tree_name(self._global.target_tree)
 end
+
 function UpgradesManager:tree_name(tree)
 	return managers.localization:text(tweak_data.upgrades.trees[tree].name_id)
 end
+
 function UpgradesManager:tree_allowed(tree, level)
 	level = level or managers.experience:current_level()
 	local cap = tweak_data.upgrades.tree_caps[self._global.progress[tree] + 1]
 	return not cap or not (level < cap), cap
 end
+
 function UpgradesManager:current_tree()
 	return self._global.target_tree
 end
+
 function UpgradesManager:next_upgrade(tree)
 end
+
 function UpgradesManager:aquire_target()
 	self._global.progress[self._global.target_tree] = self._global.progress[self._global.target_tree] + 1
 	local upgrade = tweak_data.upgrades.progress[self._global.target_tree][self._global.progress[self._global.target_tree]]
@@ -105,6 +119,7 @@ function UpgradesManager:aquire_target()
 		self:_set_target_tree(self:_autochange_tree(self._global.target_tree))
 	end
 end
+
 function UpgradesManager:_next_tree()
 	local tree
 	if self._global.automanage then
@@ -117,9 +132,11 @@ function UpgradesManager:_next_tree()
 	end
 	return tree or self._global.target_tree
 end
+
 function UpgradesManager:num_trees()
 	return managers.dlc:has_dlc1() and 4 or 3
 end
+
 function UpgradesManager:_autochange_tree(exlude_tree)
 	local progress = clone(Global.upgrades_manager.progress)
 	if exlude_tree then
@@ -138,11 +155,13 @@ function UpgradesManager:_autochange_tree(exlude_tree)
 	end
 	return n_tree
 end
+
 function UpgradesManager:aquired(id)
 	if self._global.aquired[id] then
 		return true
 	end
 end
+
 function UpgradesManager:aquire_default(id)
 	if not tweak_data.upgrades.definitions[id] then
 		Application:error("Tried to aquire an upgrade that doesn't exist: " .. id .. "")
@@ -155,6 +174,7 @@ function UpgradesManager:aquire_default(id)
 	local upgrade = tweak_data.upgrades.definitions[id]
 	self:_aquire_upgrade(upgrade, id)
 end
+
 function UpgradesManager:aquire(id)
 	if not tweak_data.upgrades.definitions[id] then
 		Application:error("Tried to aquire an upgrade that doesn't exist: " .. (id or "nil") .. "")
@@ -182,6 +202,7 @@ function UpgradesManager:aquire(id)
 		alternative_upgrades = self:alternative_upgrades()
 	})
 end
+
 function UpgradesManager:_aquire_upgrade(upgrade, id)
 	if upgrade.category == "weapon" then
 		self:_aquire_weapon(upgrade, id)
@@ -201,9 +222,11 @@ function UpgradesManager:_aquire_upgrade(upgrade, id)
 		self:_aquire_crew_bonus(upgrade, id)
 	end
 end
+
 function UpgradesManager:_aquire_weapon(upgrade, id)
 	managers.player:aquire_weapon(upgrade, id)
 end
+
 function UpgradesManager:_aquire_feature(feature)
 	if feature.incremental then
 		managers.player:aquire_incremental_upgrade(feature.upgrade)
@@ -211,27 +234,35 @@ function UpgradesManager:_aquire_feature(feature)
 		managers.player:aquire_upgrade(feature.upgrade)
 	end
 end
+
 function UpgradesManager:_aquire_outfit(upgrade)
 	print("Aquired an outfit", upgrade.name_id)
 end
+
 function UpgradesManager:_aquire_weapon_upgrade(upgrade)
 	print("Aquired a weapon upgrade", upgrade.name_id)
 end
+
 function UpgradesManager:_aquire_money_upgrade(upgrade)
 	managers.money:use_multiplier(upgrade.multiplier)
 end
+
 function UpgradesManager:_aquire_equipment(equipment, id)
 	managers.player:aquire_equipment(equipment, id)
 end
+
 function UpgradesManager:_aquire_equipment_upgrade(equipment_upgrade)
 	managers.player:aquire_upgrade(equipment_upgrade.upgrade)
 end
+
 function UpgradesManager:_aquire_crew_bonus(crew_bonus, id)
 	managers.player:aquire_upgrade(crew_bonus.upgrade, id)
 end
+
 function UpgradesManager:update_target()
 	self:present_target()
 end
+
 function UpgradesManager:present_target()
 	local hud = managers.hud and managers.hud:script(Idstring("guis/experience_hud"))
 	if not hud then
@@ -248,6 +279,7 @@ function UpgradesManager:present_target()
 	end
 	hud:set_target_upgrade_icon(icon, texture_rect)
 end
+
 function UpgradesManager:alternative_upgrades()
 	local t = {}
 	for i, progress in ipairs(self._global.progress) do
@@ -256,6 +288,7 @@ function UpgradesManager:alternative_upgrades()
 	end
 	return t
 end
+
 function UpgradesManager:is_locked(step)
 	local level = managers.experience:current_level()
 	for i, d in ipairs(tweak_data.upgrades.itree_caps) do
@@ -265,6 +298,7 @@ function UpgradesManager:is_locked(step)
 	end
 	return false
 end
+
 function UpgradesManager:get_level_from_step(step)
 	for i, d in ipairs(tweak_data.upgrades.itree_caps) do
 		if step == d.step then
@@ -273,6 +307,7 @@ function UpgradesManager:get_level_from_step(step)
 	end
 	return 0
 end
+
 function UpgradesManager:progress()
 	if managers.dlc:has_dlc1() then
 		return {
@@ -288,9 +323,11 @@ function UpgradesManager:progress()
 		self._global.progress[3]
 	}
 end
+
 function UpgradesManager:progress_by_tree(tree)
 	return self._global.progress[tree]
 end
+
 function UpgradesManager:name(id)
 	if not tweak_data.upgrades.definitions[id] then
 		Application:error("Tried to get name from an upgrade that doesn't exist: " .. id .. "")
@@ -299,6 +336,7 @@ function UpgradesManager:name(id)
 	local upgrade = tweak_data.upgrades.definitions[id]
 	return managers.localization:text(upgrade.name_id)
 end
+
 function UpgradesManager:title(id)
 	if not tweak_data.upgrades.definitions[id] then
 		Application:error("Tried to get title from an upgrade that doesn't exist: " .. id .. "")
@@ -307,6 +345,7 @@ function UpgradesManager:title(id)
 	local upgrade = tweak_data.upgrades.definitions[id]
 	return upgrade.title_id and managers.localization:text(upgrade.title_id) or nil
 end
+
 function UpgradesManager:subtitle(id)
 	if not tweak_data.upgrades.definitions[id] then
 		Application:error("Tried to get subtitle from an upgrade that doesn't exist: " .. id .. "")
@@ -315,6 +354,7 @@ function UpgradesManager:subtitle(id)
 	local upgrade = tweak_data.upgrades.definitions[id]
 	return upgrade.subtitle_id and managers.localization:text(upgrade.subtitle_id) or nil
 end
+
 function UpgradesManager:complete_title(id, type)
 	local title = self:title(id)
 	if not title then
@@ -333,6 +373,7 @@ function UpgradesManager:complete_title(id, type)
 	end
 	return title .. "\n" .. subtitle
 end
+
 function UpgradesManager:description(id)
 	if not tweak_data.upgrades.definitions[id] then
 		Application:error("Tried to get description from an upgrade that doesn't exist: " .. id .. "")
@@ -341,6 +382,7 @@ function UpgradesManager:description(id)
 	local upgrade = tweak_data.upgrades.definitions[id]
 	return upgrade.subtitle_id and managers.localization:text(upgrade.description_text_id or id) or nil
 end
+
 function UpgradesManager:image(id)
 	local image = tweak_data.upgrades.definitions[id].image
 	if not image then
@@ -348,6 +390,7 @@ function UpgradesManager:image(id)
 	end
 	return tweak_data.hud_icons:get_icon_data(image)
 end
+
 function UpgradesManager:image_slice(id)
 	local image_slice = tweak_data.upgrades.definitions[id].image_slice
 	if not image_slice then
@@ -355,6 +398,7 @@ function UpgradesManager:image_slice(id)
 	end
 	return tweak_data.hud_icons:get_icon_data(image_slice)
 end
+
 function UpgradesManager:icon(id)
 	if not tweak_data.upgrades.definitions[id] then
 		Application:error("Tried to aquire an upgrade that doesn't exist: " .. id .. "")
@@ -362,6 +406,7 @@ function UpgradesManager:icon(id)
 	end
 	return tweak_data.upgrades.definitions[id].icon
 end
+
 function UpgradesManager:aquired_by_category(category)
 	local t = {}
 	for name, _ in pairs(self._global.aquired) do
@@ -371,15 +416,19 @@ function UpgradesManager:aquired_by_category(category)
 	end
 	return t
 end
+
 function UpgradesManager:aquired_features()
 	return self:aquired_by_category("feature")
 end
+
 function UpgradesManager:aquired_outfits()
 	return self:aquired_by_category("outfit")
 end
+
 function UpgradesManager:aquired_weapons()
 	return self:aquired_by_category("weapon")
 end
+
 function UpgradesManager:print_aquired_tree()
 	local tree = {}
 	for name, data in pairs(self._global.aquired) do
@@ -389,6 +438,7 @@ function UpgradesManager:print_aquired_tree()
 		print(self:name(data.name))
 	end
 end
+
 function UpgradesManager:analyze()
 	local not_placed = {}
 	local placed = {}
@@ -438,6 +488,7 @@ function UpgradesManager:analyze()
 
 Total upgrades ]] .. amount .. ".")
 end
+
 function UpgradesManager:tree_stats()
 	local t = {
 		{
@@ -464,6 +515,7 @@ function UpgradesManager:tree_stats()
 		print(d.a)
 	end
 end
+
 function UpgradesManager:save(data)
 	local state = {
 		automanage = self._global.automanage,
@@ -480,6 +532,7 @@ function UpgradesManager:save(data)
 	end
 	data.UpgradesManager = state
 end
+
 function UpgradesManager:load(data)
 	local state = data.UpgradesManager
 	self._global.automanage = state.automanage
@@ -488,6 +541,7 @@ function UpgradesManager:load(data)
 	self._global.disabled_visual_upgrades = state.disabled_visual_upgrades
 	self:_verify_loaded_data()
 end
+
 function UpgradesManager:_verify_loaded_data()
 	while #self._global.progress < #tweak_data.upgrades.progress do
 		table.insert(self._global.progress, 0)
@@ -524,6 +578,7 @@ function UpgradesManager:_verify_loaded_data()
 		self._global.disabled_visual_upgrades = {}
 	end
 end
+
 function UpgradesManager:reset()
 	Global.upgrades_manager = nil
 	self:_setup()

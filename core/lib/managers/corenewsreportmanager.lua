@@ -26,6 +26,7 @@ _|    _|  _|    _|    _|    _|    _|_|
 		true
 	}
 }
+
 function NewsReportManager:init()
 	self._news_dates = {}
 	local news_file = self.NEWS_FILE .. ".xml"
@@ -45,6 +46,7 @@ function NewsReportManager:init()
 		CoreDebug.cat_print("spam", "[CoreNewsReportManager] Can't find: " .. news_file)
 	end
 end
+
 function NewsReportManager:replace(str)
 	local replace_str = function(s)
 		local value = NewsReportManager.KEYWORDS[s]
@@ -58,6 +60,7 @@ function NewsReportManager:replace(str)
 	str = string.gsub(str, "%$([%w_]+)", replace_str)
 	return str
 end
+
 function NewsReportManager:format_news(news, format, ...)
 	if format == "TEXT" then
 		local output
@@ -83,6 +86,7 @@ Date: %s%s]], output, v.date, v.text) or string.format("Date: %s%s", v.date, v.t
 		return 0 < #output and output
 	end
 end
+
 function NewsReportManager:write_new_date()
 	local old_news = assert(SystemFS:open(self.OLD_NEWS_FILE .. ".xml", "w"))
 	old_news:write("<old_news>\n")
@@ -92,6 +96,7 @@ function NewsReportManager:write_new_date()
 	old_news:write("</old_news>")
 	old_news:close()
 end
+
 function NewsReportManager:check_min_date(min_date, date)
 	local d0 = {}
 	local d1 = {}
@@ -111,6 +116,7 @@ function NewsReportManager:check_min_date(min_date, date)
 	end
 	return false
 end
+
 function NewsReportManager:check_news(category, include_old_news, format, ...)
 	local news = {}
 	local news_updated = false
@@ -141,9 +147,11 @@ function NewsReportManager:check_news(category, include_old_news, format, ...)
 	end
 	return self:format_news(news, format, ...)
 end
+
 function NewsReportManager:get_news(category)
 	return self:check_news(category)
 end
+
 function NewsReportManager:get_old_news(category)
 	return self:check_news(category, true)
 end

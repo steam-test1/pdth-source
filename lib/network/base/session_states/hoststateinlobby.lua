@@ -1,4 +1,5 @@
 HostStateInLobby = HostStateInLobby or class(HostStateBase)
+
 function HostStateInLobby:on_join_request_received(data, peer_name, client_mask_set, dlcs, client_ip, client_user_id, sender)
 	print("[HostStateInLobby:on_join_request_received]", peer_name, client_mask_set, dlcs, client_ip, client_user_id, sender:ip_at_index(0))
 	if self:_has_peer_left_PSN(peer_name) then
@@ -47,6 +48,7 @@ function HostStateInLobby:on_join_request_received(data, peer_name, client_mask_
 	local difficulty_index = tweak_data:difficulty_to_index(Global.game_settings.difficulty)
 	new_peer_rpc:join_request_reply(1, new_peer_id, level_index, difficulty_index, 1, data.local_peer:mask_set(), my_user_id)
 end
+
 function HostStateInLobby:on_connection_to_peer_established(data, peer)
 	peer:set_ip_verified(true)
 	peer:send("set_loading_state", false)
@@ -56,6 +58,7 @@ function HostStateInLobby:on_connection_to_peer_established(data, peer)
 	Global.local_member:sync_lobby_data(peer)
 	self:on_handshake_confirmation(data, peer, 1)
 end
+
 function HostStateInLobby:is_joinable(data)
 	return not data.wants_to_load_level
 end

@@ -1,4 +1,5 @@
 PlayerNumberCheckElement = PlayerNumberCheckElement or class(MissionElement)
+
 function PlayerNumberCheckElement:init(unit)
 	PlayerNumberCheckElement.super.init(self, unit)
 	self._hed.num1 = true
@@ -10,6 +11,7 @@ function PlayerNumberCheckElement:init(unit)
 	table.insert(self._save_values, "num3")
 	table.insert(self._save_values, "num4")
 end
+
 function PlayerNumberCheckElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

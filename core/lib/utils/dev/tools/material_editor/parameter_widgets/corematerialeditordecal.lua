@@ -2,6 +2,7 @@ require("core/lib/utils/dev/tools/material_editor/CoreSmartNode")
 local CoreMaterialEditorParameter = require("core/lib/utils/dev/tools/material_editor/parameter_widgets/CoreMaterialEditorParameter")
 local CoreMaterialEditorDecal = CoreMaterialEditorDecal or class(CoreMaterialEditorParameter)
 CoreMaterialEditorDecal.DECAL_MATERIAL_FILE = "settings/decals"
+
 function CoreMaterialEditorDecal:init(parent, editor)
 	self:_set_params(parent, editor)
 	self._panel = EWS:Panel(parent, "", "")
@@ -31,12 +32,15 @@ function CoreMaterialEditorDecal:init(parent, editor)
 	self._right_box:add(self._combo_box, 1, 4, "ALL,EXPAND")
 	self._editor:_update_output()
 end
+
 function CoreMaterialEditorDecal:update(t, dt)
 	CoreMaterialEditorParameter.update(self, t, dt)
 end
+
 function CoreMaterialEditorDecal:destroy()
 	CoreMaterialEditorParameter.destroy(self)
 end
+
 function CoreMaterialEditorDecal:on_toggle_customize()
 	self._customize = not self._customize
 	self._editor:_update_output()
@@ -54,6 +58,7 @@ function CoreMaterialEditorDecal:on_toggle_customize()
 		self._editor._current_material_node:set_parameter("decal_material", self._value)
 	end
 end
+
 function CoreMaterialEditorDecal:on_copy_to_parent()
 	if self._editor._parent_combo_box:get_value() ~= "[NONE]" then
 		self:_copy_to_parent()
@@ -69,12 +74,14 @@ function CoreMaterialEditorDecal:on_copy_to_parent()
 	end
 	self._editor:_create_parameter_panel()
 end
+
 function CoreMaterialEditorDecal:_set_params(parent, editor)
 	self._parent = parent
 	self._editor = editor
 	self._value = self._editor._current_material_node:parameter("decal_material") or "[NONE]"
 	self._parent_node = self._editor._parent_materials[self._editor._parent_combo_box:get_value()]
 end
+
 function CoreMaterialEditorDecal:_copy_to_parent(name)
 	local material_node
 	if name then
@@ -92,6 +99,7 @@ function CoreMaterialEditorDecal:_copy_to_parent(name)
 	self._editor:_load_parent_dropdown()
 	self._editor._parent_combo_box:set_value(parent)
 end
+
 function CoreMaterialEditorDecal:_on_combo_box_change()
 	self._value = self._combo_box:get_value()
 	if self._value == "[NONE]" then
@@ -101,6 +109,7 @@ function CoreMaterialEditorDecal:_on_combo_box_change()
 	end
 	self._editor:_update_output()
 end
+
 function CoreMaterialEditorDecal:_fill_decal_materials()
 	self._combo_box:clear()
 	self._combo_box:append("[NONE]")
@@ -114,4 +123,5 @@ function CoreMaterialEditorDecal:_fill_decal_materials()
 	end
 	self._combo_box:set_value(self._value)
 end
+
 return CoreMaterialEditorDecal

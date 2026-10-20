@@ -1,4 +1,5 @@
 SpawnEnemyGroupUnitElement = SpawnEnemyGroupUnitElement or class(MissionElement)
+
 function SpawnEnemyGroupUnitElement:init(unit)
 	MissionElement.init(self, unit)
 	self._hed.random = false
@@ -10,11 +11,14 @@ function SpawnEnemyGroupUnitElement:init(unit)
 	table.insert(self._save_values, "ignore_disabled")
 	table.insert(self._save_values, "amount")
 end
+
 function SpawnEnemyGroupUnitElement:draw_links(t, dt, selected_unit, all_units)
 	MissionElement.draw_links(self, t, dt, selected_unit, all_units)
 end
+
 function SpawnEnemyGroupUnitElement:update_editing()
 end
+
 function SpawnEnemyGroupUnitElement:update_selected(t, dt, selected_unit, all_units)
 	for _, id in ipairs(self._hed.elements) do
 		local unit = all_units[id]
@@ -30,6 +34,7 @@ function SpawnEnemyGroupUnitElement:update_selected(t, dt, selected_unit, all_un
 		end
 	end
 end
+
 function SpawnEnemyGroupUnitElement:add_element()
 	local ray = managers.editor:unit_by_raycast({mask = 10, ray_type = "editor"})
 	if ray and ray.unit and string.find(ray.unit:name():s(), "ai_spawn_enemy", 1, true) then
@@ -41,6 +46,7 @@ function SpawnEnemyGroupUnitElement:add_element()
 		end
 	end
 end
+
 function SpawnEnemyGroupUnitElement:remove_links(unit)
 	for _, id in ipairs(self._hed.elements) do
 		if id == unit:unit_data().unit_id then
@@ -48,9 +54,11 @@ function SpawnEnemyGroupUnitElement:remove_links(unit)
 		end
 	end
 end
+
 function SpawnEnemyGroupUnitElement:add_triggers(vc)
 	vc:add_trigger(Idstring("lmb"), callback(self, self, "add_element"))
 end
+
 function SpawnEnemyGroupUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

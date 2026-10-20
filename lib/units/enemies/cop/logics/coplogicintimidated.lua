@@ -1,4 +1,5 @@
 CopLogicIntimidated = class(CopLogicBase)
+
 function CopLogicIntimidated.enter(data, new_logic_name, enter_params)
 	CopLogicBase.enter(data, new_logic_name, enter_params)
 	data.unit:brain():cancel_all_pathing_searches()
@@ -56,6 +57,7 @@ function CopLogicIntimidated.enter(data, new_logic_name, enter_params)
 		managers.groupai:state():on_hostage_state(true, data.key, true)
 	end
 end
+
 function CopLogicIntimidated.exit(data, new_logic_name, enter_params)
 	CopLogicBase.exit(data, new_logic_name, enter_params)
 	local my_data = data.internal_data
@@ -81,9 +83,11 @@ function CopLogicIntimidated.exit(data, new_logic_name, enter_params)
 		managers.groupai:state():on_hostage_state(false, data.key, true)
 	end
 end
+
 function CopLogicIntimidated.death_clbk(data, damage_info)
 	CopLogicIntimidated.super.death_clbk(data, damage_info)
 end
+
 function CopLogicIntimidated.queued_update(rubbish, data)
 	local my_data = data.internal_data
 	CopLogicIntimidated._update_enemy_detection(data, my_data)
@@ -101,6 +105,7 @@ function CopLogicIntimidated.queued_update(rubbish, data)
 		managers.groupai:state():add_to_surrendered(data.unit, callback(CopLogicIntimidated, CopLogicIntimidated, "queued_update", data))
 	end
 end
+
 function CopLogicIntimidated._update_enemy_detection(data, my_data)
 	local t = TimerManager:game():time()
 	local delta_t = my_data.last_upd_t and t - my_data.last_upd_t or 0
@@ -138,6 +143,7 @@ function CopLogicIntimidated._update_enemy_detection(data, my_data)
 	end
 	my_data.last_upd_t = t
 end
+
 function CopLogicIntimidated.action_complete_clbk(data, action)
 	local my_data = data.internal_data
 	local action_type = action:type()
@@ -146,6 +152,7 @@ function CopLogicIntimidated.action_complete_clbk(data, action)
 		CopLogicIntimidated._add_delayed_rescue_SO(data, my_data)
 	end
 end
+
 function CopLogicIntimidated.update(data)
 	if not data.unit:movement():chk_action_forbidden("walk") then
 		local action_data = {
@@ -157,9 +164,11 @@ function CopLogicIntimidated.update(data)
 		data.unit:brain():set_update_enabled_state(false)
 	end
 end
+
 function CopLogicIntimidated.can_activate()
 	return false
 end
+
 function CopLogicIntimidated.on_intimidated(data, amount, aggressor_unit)
 	local my_data = data.internal_data
 	local adj_submission = amount * data.char_tweak.submission_intimidate
@@ -194,6 +203,7 @@ function CopLogicIntimidated.on_intimidated(data, amount, aggressor_unit)
 		end
 	end
 end
+
 function CopLogicIntimidated._register_harassment_SO(data, my_data)
 	local objective_pos = data.unit:position() - data.unit:rotation():y() * 100
 	local objective_rot = data.unit:rotation()
@@ -229,10 +239,12 @@ function CopLogicIntimidated._register_harassment_SO(data, my_data)
 	my_data.harassment_SO_id = so_id
 	managers.groupai:state():add_special_objective(so_id, so_descriptor)
 end
+
 function CopLogicIntimidated.on_harassment_SO_administered(ignore_this, data, receiver_unit)
 	local my_data = data.internal_data
 	my_data.harassment_SO_id = nil
 end
+
 function CopLogicIntimidated.on_harassment_SO_action_start(ignore_this, data, receiver_unit)
 	local my_data = data.internal_data
 	local action = {
@@ -251,6 +263,7 @@ function CopLogicIntimidated.on_harassment_SO_action_start(ignore_this, data, re
 	managers.groupai:state():on_occasional_event("cop_harassment")
 	CopLogicIntimidated._unregister_rescue_SO(data, my_data)
 end
+
 function CopLogicIntimidated.on_harassment_SO_failed(ignore_this, data, receiver_unit)
 	local my_data = data.internal_data
 	if my_data.being_harassed then
@@ -268,6 +281,7 @@ function CopLogicIntimidated.on_harassment_SO_failed(ignore_this, data, receiver
 		my_data.being_harassed = nil
 	end
 end
+
 function CopLogicIntimidated._unregister_harassment_SO(data, my_data)
 	local my_data = data.internal_data
 	if my_data.harassment_SO_id then
@@ -275,6 +289,7 @@ function CopLogicIntimidated._unregister_harassment_SO(data, my_data)
 		my_data.harassment_SO_id = nil
 	end
 end
+
 function CopLogicIntimidated._do_tied(data, aggressor_unit)
 	local my_data = data.internal_data
 	if my_data.surrender_clbk_registered then
@@ -310,12 +325,15 @@ function CopLogicIntimidated._do_tied(data, aggressor_unit)
 		end
 	end
 end
+
 function CopLogicIntimidated.on_detected_enemy_destroyed(data, enemy_unit)
 	CopLogicIdle.on_detected_enemy_destroyed(data, enemy_unit)
 end
+
 function CopLogicIntimidated.on_criminal_neutralized(data, criminal_key)
 	CopLogicIdle.on_criminal_neutralized(data, criminal_key)
 end
+
 function CopLogicIntimidated.on_alert(data, alert_data)
 	local enemy = alert_data[5] or alert_data[4]
 	local my_data = data.internal_data
@@ -328,9 +346,11 @@ function CopLogicIntimidated.on_alert(data, alert_data)
 		managers.groupai:state():report_aggression(enemy)
 	end
 end
+
 function CopLogicIntimidated.is_available_for_assignment(data)
 	return false
 end
+
 function CopLogicIntimidated._add_delayed_rescue_SO(data, my_data)
 	if data.char_tweak.flee_type == "hide" or data.unit:unit_data() and data.unit:unit_data().not_rescued then
 	elseif my_data.delayed_clbks and my_data.delayed_clbks[my_data.delayed_rescue_SO_id] then
@@ -349,6 +369,7 @@ function CopLogicIntimidated._add_delayed_rescue_SO(data, my_data)
 		CopLogicBase.add_delayed_clbk(my_data, my_data.delayed_rescue_SO_id, callback(CopLogicIntimidated, CopLogicIntimidated, "register_rescue_SO", data), TimerManager:game():time() + 10)
 	end
 end
+
 function CopLogicIntimidated.register_rescue_SO(ignore_this, data)
 	local my_data = data.internal_data
 	CopLogicBase.on_delayed_clbk(my_data, my_data.delayed_rescue_SO_id)
@@ -403,6 +424,7 @@ function CopLogicIntimidated.register_rescue_SO(ignore_this, data)
 	my_data.rescue_SO_id = so_id
 	managers.groupai:state():add_special_objective(so_id, so_descriptor)
 end
+
 function CopLogicIntimidated._unregister_rescue_SO(data, my_data)
 	if my_data.rescuer then
 		local rescuer = my_data.rescuer
@@ -415,14 +437,17 @@ function CopLogicIntimidated._unregister_rescue_SO(data, my_data)
 		CopLogicBase.chk_cancel_delayed_clbk(my_data, my_data.delayed_rescue_SO_id)
 	end
 end
+
 function CopLogicIntimidated.on_rescue_SO_administered(ignore_this, data, receiver_unit)
 	local my_data = data.internal_data
 	my_data.rescuer = receiver_unit
 	my_data.rescue_SO_id = nil
 end
+
 function CopLogicIntimidated.rescue_SO_verification(ignore_this, unit)
 	return tweak_data.character[unit:base()._tweak_table].rescue_hostages
 end
+
 function CopLogicIntimidated.on_rescue_SO_failed(ignore_this, data)
 	local my_data = data.internal_data
 	if my_data.rescuer then
@@ -431,6 +456,7 @@ function CopLogicIntimidated.on_rescue_SO_failed(ignore_this, data)
 		CopLogicBase.add_delayed_clbk(my_data, my_data.delayed_rescue_SO_id, callback(CopLogicIntimidated, CopLogicIntimidated, "register_rescue_SO", data), TimerManager:game():time() + 10)
 	end
 end
+
 function CopLogicIntimidated.on_rescue_SO_completed(ignore_this, data, good_pig)
 	if not data.unit:inventory():equipped_unit() then
 		if data.unit:inventory():num_selections() <= 0 then
@@ -453,6 +479,7 @@ function CopLogicIntimidated.on_rescue_SO_completed(ignore_this, data, good_pig)
 	CopLogicBase._exit(data.unit, "idle")
 	good_pig:sound():say("_h01x_sin", true)
 end
+
 function CopLogicIntimidated.on_rescue_allowed_state(data, state)
 	if state then
 		if not data.unit:anim_data().move then
@@ -462,6 +489,7 @@ function CopLogicIntimidated.on_rescue_allowed_state(data, state)
 		CopLogicIntimidated._unregister_rescue_SO(data, data.internal_data)
 	end
 end
+
 function CopLogicIntimidated.anim_clbk(data, event_type)
 	local my_data = data.internal_data
 	if event_type == "harass_end" and my_data.being_harassed then

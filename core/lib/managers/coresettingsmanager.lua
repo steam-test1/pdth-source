@@ -1,6 +1,7 @@
 core:module("CoreSettingsManager")
 core:import("CoreClass")
 SettingsManager = SettingsManager or CoreClass.class()
+
 function SettingsManager:init(settings_file_path)
 	assert(type(settings_file_path) == "string")
 	self.__path = settings_file_path
@@ -12,9 +13,11 @@ function SettingsManager:init(settings_file_path)
 	SystemFS:close(file)
 	self.__settings = script and loadstring(script)() or {}
 end
+
 function SettingsManager:destroy()
 	self:save()
 end
+
 function SettingsManager:save()
 	local file = SystemFS:open(self.__path, "w")
 	file:write("return ")
@@ -22,10 +25,12 @@ function SettingsManager:save()
 	SystemFS:close(file)
 	managers.database:recompile(file)
 end
+
 function SettingsManager:get(category)
 	self.__settings[category] = self.__settings[category] or {}
 	return self.__settings[category]
 end
+
 function SettingsManager:_serialize(value, file, indentation)
 	indentation = indentation or 1
 	local t = type(value)
@@ -45,6 +50,7 @@ function SettingsManager:_serialize(value, file, indentation)
 		error("Unable to serialize type \"" .. t .. "\".")
 	end
 end
+
 function SettingsManager:_inspect(value)
 	local t = type(value)
 	if t == "string" then

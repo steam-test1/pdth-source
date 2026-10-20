@@ -1,8 +1,10 @@
 CoreEnvironmentEffectHubElement = CoreEnvironmentEffectHubElement or class(HubElement)
 EnvironmentEffectHubElement = EnvironmentEffectHubElement or class(CoreEnvironmentEffectHubElement)
+
 function EnvironmentEffectHubElement:init(...)
 	CoreEnvironmentEffectHubElement.init(self, ...)
 end
+
 function CoreEnvironmentEffectHubElement:init(unit)
 	HubElement.init(self, unit)
 	self._hed.environment_effect = "none"
@@ -10,6 +12,7 @@ function CoreEnvironmentEffectHubElement:init(unit)
 	table.insert(self._hed.action_types, "use")
 	table.insert(self._hed.action_types, "stop")
 end
+
 function CoreEnvironmentEffectHubElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

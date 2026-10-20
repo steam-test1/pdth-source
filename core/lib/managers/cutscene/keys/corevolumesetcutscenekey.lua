@@ -8,12 +8,15 @@ CoreVolumeSetCutsceneKey:register_serialized_attribute("name", "")
 CoreVolumeSetCutsceneKey.control_for_action = CoreCutsceneKeyBase.standard_combo_box_control
 CoreVolumeSetCutsceneKey.control_for_name = CoreCutsceneKeyBase.standard_combo_box_control
 CoreVolumeSetCutsceneKey.refresh_control_for_action = CoreCutsceneKeyBase:standard_combo_box_control_refresh("action", CoreVolumeSetCutsceneKey.VALID_ACTIONS)
+
 function CoreVolumeSetCutsceneKey:__tostring()
 	return string.capitalize(self:action()) .. " volume set \"" .. self:name() .. "\"."
 end
+
 function CoreVolumeSetCutsceneKey:unload(player)
 	self:play(player, true)
 end
+
 function CoreVolumeSetCutsceneKey:play(player, undo, fast_forward)
 	if managers.volume == nil then
 		return
@@ -29,9 +32,11 @@ function CoreVolumeSetCutsceneKey:play(player, undo, fast_forward)
 		self:_perform_action(self:action())
 	end
 end
+
 function CoreVolumeSetCutsceneKey:inverse_action()
 	return self:action() == "activate" and "deactivate" or "activate"
 end
+
 function CoreVolumeSetCutsceneKey:_perform_action(action)
 	if action == "deactivate" and managers.volume:is_active(self:name()) then
 		managers.volume:deactivate_set(self:name())
@@ -39,12 +44,15 @@ function CoreVolumeSetCutsceneKey:_perform_action(action)
 		managers.volume:activate_set(self:name())
 	end
 end
+
 function CoreVolumeSetCutsceneKey:is_valid_action(action)
 	return table.contains(self.VALID_ACTIONS, action)
 end
+
 function CoreVolumeSetCutsceneKey:is_valid_name(name)
 	return managers.volume and managers.volume:is_valid_volume_set_name(name) or false
 end
+
 function CoreVolumeSetCutsceneKey:refresh_control_for_name(control)
 	control:freeze()
 	control:clear()

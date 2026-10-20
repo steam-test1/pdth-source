@@ -1,6 +1,7 @@
 core:import("CoreEditorUtils")
 core:import("CoreEws")
 EditUnitTriggable = EditUnitTriggable or class(EditUnitBase)
+
 function EditUnitTriggable:init(editor)
 	local panel, sizer = (editor or managers.editor):add_unit_edit_page({name = "Sequences", class = self})
 	self._panel = panel
@@ -32,6 +33,7 @@ function EditUnitTriggable:init(editor)
 	panel:layout()
 	panel:set_enabled(false)
 end
+
 function EditUnitTriggable:_build_scrolled_window()
 	self._scrolled_window = EWS:ScrolledWindow(self._panel, "", "VSCROLL")
 	self._scrolled_window:set_scroll_rate(Vector3(0, 1, 0))
@@ -40,6 +42,7 @@ function EditUnitTriggable:_build_scrolled_window()
 	self._scrolled_window:set_sizer(self._scrolled_main_sizer)
 	return self._scrolled_window
 end
+
 function EditUnitTriggable:build_element_gui(data)
 	local panel = EWS:Panel(self._scrolled_window, "", "TAB_TRAVERSAL")
 	local sizer = EWS:BoxSizer("HORIZONTAL")
@@ -85,16 +88,20 @@ function EditUnitTriggable:build_element_gui(data)
 	table.insert(self._element_guis, panel)
 	return panel
 end
+
 function EditUnitTriggable:change_sequence(ctrls)
 	self._ctrls.unit:damage():set_trigger_sequence_name(ctrls.id, ctrls.trigger_name, ctrls.trigger:get_value())
 end
+
 function EditUnitTriggable:change_time(ctrls)
 	self._ctrls.unit:damage():set_trigger_sequence_time(ctrls.id, ctrls.trigger_name, ctrls.time:get_value())
 end
+
 function EditUnitTriggable:remove_element(ctrls)
 	self._ctrls.unit:damage():remove_trigger_func(ctrls.trigger_name, ctrls.id, true)
 	self:update_element_gui()
 end
+
 function EditUnitTriggable:clear_element_gui()
 	self._scrolled_main_sizer:clear()
 	for _, gui in ipairs(self._element_guis) do
@@ -102,6 +109,7 @@ function EditUnitTriggable:clear_element_gui()
 	end
 	self._element_guis = {}
 end
+
 function EditUnitTriggable:add_unit_btn()
 	if not managers.editor then
 		return
@@ -109,6 +117,7 @@ function EditUnitTriggable:add_unit_btn()
 	local cb = self._btn_toolbar:tool_state("ADD_UNIT") and callback(self, self, "add_unit") or nil
 	managers.editor:set_trigger_add_unit(cb)
 end
+
 function EditUnitTriggable:add_unit_list_btn()
 	local f = function(unit)
 		return #managers.sequence:get_triggable_sequence_list(unit:name()) > 0
@@ -118,6 +127,7 @@ function EditUnitTriggable:add_unit_list_btn()
 		self:add_unit(unit)
 	end
 end
+
 function EditUnitTriggable:update_element_gui()
 	self:clear_element_gui()
 	local trigger_data = self._ctrls.unit:damage():get_editor_trigger_data()
@@ -135,6 +145,7 @@ function EditUnitTriggable:update_element_gui()
 	self._scrolled_window:fit_inside()
 	managers.editor:layout_edit_panel()
 end
+
 function EditUnitTriggable:add_unit(unit)
 	local triggable_sequences = managers.sequence:get_triggable_sequence_list(unit:name())
 	if 0 < #triggable_sequences then
@@ -142,11 +153,13 @@ function EditUnitTriggable:add_unit(unit)
 		self:update_element_gui()
 	end
 end
+
 function EditUnitTriggable:change_triggers()
 	if alive(self._ctrls.unit) then
 		self:update_element_gui()
 	end
 end
+
 function EditUnitTriggable:is_editable(unit)
 	if alive(unit) and unit:damage() then
 		local triggers = managers.sequence:get_trigger_list(unit:name())
@@ -162,6 +175,7 @@ function EditUnitTriggable:is_editable(unit)
 	self:add_unit_btn()
 	return false
 end
+
 function EditUnitTriggable:dialog_closed()
 	self._btn_toolbar:set_tool_state("ADD_UNIT", false)
 	self:add_unit_btn()

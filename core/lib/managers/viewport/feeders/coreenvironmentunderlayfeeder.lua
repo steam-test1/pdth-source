@@ -1,10 +1,13 @@
 core:module("CoreEnvironmentUnderlayFeeder")
 core:import("CoreClass")
 EnvironmentUnderlayFeeder = EnvironmentUnderlayFeeder or CoreClass.class()
+
 function EnvironmentUnderlayFeeder:init()
 end
+
 function EnvironmentUnderlayFeeder:end_feed(nr)
 end
+
 function EnvironmentUnderlayFeeder:feed(nr, scene, vp, data, block, ...)
 	local args = {
 		...

@@ -1,4 +1,5 @@
 FFCEditorController = FFCEditorController or class()
+
 function FFCEditorController:init(cam, controller)
 	self._controller = controller
 	self._camera = cam
@@ -11,6 +12,7 @@ function FFCEditorController:init(cam, controller)
 	self._creating_cube_map = false
 	self._mul = 112
 end
+
 function FFCEditorController:update(time, rel_time)
 	if self._camera then
 		if self._creating_cube_map then
@@ -44,45 +46,58 @@ function FFCEditorController:update(time, rel_time)
 		self._camera:set_rotation(Rotation(self._yaw, self._pitch, 0))
 	end
 end
+
 function FFCEditorController:set_camera(cam)
 	self._camera = cam
 end
+
 function FFCEditorController:set_camera_pos(pos)
 	self._camera:set_position(pos)
 end
+
 function FFCEditorController:set_camera_rot(rot)
 	self._yaw = rot:yaw()
 	self._pitch = rot:pitch()
 	self._camera:set_rotation(Rotation(self._yaw, self._pitch, rot:roll()))
 end
+
 function FFCEditorController:set_camera_roll(roll)
 	local rot = Rotation(self._camera:rotation():y(), roll)
 	self._camera:set_rotation(Rotation(self._camera:rotation():y(), rot:z()))
 end
+
 function FFCEditorController:set_controller(c)
 	self._controller = c
 end
+
 function FFCEditorController:set_move_speed(speed)
 	self._move_speed = speed
 end
+
 function FFCEditorController:set_turn_speed(t_speed)
 	self._turn_speed = t_speed
 end
+
 function FFCEditorController:set_fov(fov)
 	self._camera:set_fov(fov)
 end
+
 function FFCEditorController:get_camera_pos()
 	return self._camera:position()
 end
+
 function FFCEditorController:get_camera_rot()
 	return self._camera:rotation()
 end
+
 function FFCEditorController:get_move_speed()
 	return self._move_speed
 end
+
 function FFCEditorController:get_turn_speed()
 	return self._turn_speed
 end
+
 function FFCEditorController:start_cube_map(params)
 	self._params = params
 	self._cubemap_name = params.name or ""
@@ -121,9 +136,11 @@ function FFCEditorController:start_cube_map(params)
 	table.insert(self._name_ordered, self._names[6])
 	table.insert(self._name_ordered, self._names[1])
 end
+
 function FFCEditorController:creating_cube_map()
 	return self._creating_cube_map
 end
+
 function FFCEditorController:create_cube_map()
 	if self._wait_frames > 0 then
 		self._wait_frames = self._wait_frames - 1
@@ -162,6 +179,7 @@ function FFCEditorController:create_cube_map()
 	Application:screenshot(path .. self._names[self._cube_counter], x1, y1, x2, y2)
 	return false
 end
+
 function FFCEditorController:_cubemap_done()
 	if alive(self._light) then
 		World:delete_light(self._light)
@@ -171,6 +189,7 @@ function FFCEditorController:_cubemap_done()
 		self._cube_map_done_func()
 	end
 end
+
 function FFCEditorController:_get_screen_size()
 	local res = Application:screen_resolution()
 	local diff = res.x - res.y
@@ -180,12 +199,14 @@ function FFCEditorController:_get_screen_size()
 	local y2 = res.y
 	return x1, y1, x2, y2
 end
+
 function FFCEditorController:_create_spot_projection()
 	local x1, y1, x2, y2 = self:_get_screen_size()
 	self._camera:set_rotation(Rotation(-self._params.light:rotation():z(), Vector3(0, 0, 1)))
 	local path = self._params.source_path or managers.database:root_path()
 	Application:screenshot(path .. self._name_ordered[1], x1, y1, x2, y2)
 end
+
 function FFCEditorController:_generate_spot_projection()
 	local execute = managers.database:root_path() .. "aux_assets/engine/tools/spotmapgen.bat "
 	local path = self._params.source_path or managers.database:root_path()
@@ -195,6 +216,7 @@ function FFCEditorController:_generate_spot_projection()
 	os.execute(execute)
 	self:_add_meta_data((self._params.output_path or managers.database:root_path()) .. self._output_name .. ".dds", "diffuse_colormap_gradient_alpha_manual_mips")
 end
+
 function FFCEditorController:_generate_cubemap(file)
 	local execute = managers.database:root_path() .. "aux_assets/engine/tools/" .. file .. ".bat "
 	for i, _ in ipairs(self._names) do
@@ -206,11 +228,13 @@ function FFCEditorController:_generate_cubemap(file)
 	os.execute(execute)
 	self:_add_meta_data((self._params.output_path or managers.database:root_path()) .. self._output_name .. ".dds", "diffuse_colormap_gradient_alpha_manual_mips")
 end
+
 function FFCEditorController:_add_meta_data(file, meta)
 	local execute = managers.database:root_path() .. "aux_assets/engine/tools/diesel_dds_tagger.exe "
 	execute = execute .. file .. " " .. meta
 	os.execute(execute)
 end
+
 function FFCEditorController:update_orthographic(time, rel_time)
 	local speed = self._move_speed * rel_time
 	local mov_x = (self._controller:button(Idstring("go_right")) - self._controller:button(Idstring("go_left"))) * speed
@@ -220,10 +244,12 @@ function FFCEditorController:update_orthographic(time, rel_time)
 	self._mul = self._mul + speed * (self._controller:button(Idstring("altitude_up")) - self._controller:button(Idstring("altitude_down"))) / 100
 	self:set_orthographic_screen()
 end
+
 function FFCEditorController:set_orthographic_screen()
 	local res = Application:screen_resolution()
 	self._camera:set_orthographic_screen(-(res.x / 2) * self._mul, res.x / 2 * self._mul, -(res.y / 2) * self._mul, res.y / 2 * self._mul)
 end
+
 function FFCEditorController:toggle_orthographic(use)
 	local camera = self._camera
 	if use then

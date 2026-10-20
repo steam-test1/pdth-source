@@ -3,6 +3,7 @@ core:import("CoreTransformCameraNode")
 core:import("CoreClass")
 core:import("CoreMath")
 CollisionCameraNode = CollisionCameraNode or CoreClass.class(CoreTransformCameraNode.TransformCameraNode)
+
 function CollisionCameraNode:init(settings)
 	CollisionCameraNode.super.init(self, settings)
 	self._pop_controller = SmootherPopController()
@@ -15,15 +16,18 @@ function CollisionCameraNode:init(settings)
 	self._camera_max_velocity = settings.max_velocity
 	self._safe_position_var = settings.safe_position_var
 end
+
 function CollisionCameraNode:set_unit(unit)
 	self._unit = unit
 	if self._ignore_unit then
 		self._pop_controller:set_parameter("ignore_units", {unit})
 	end
 end
+
 function CollisionCameraNode:set_safe_position(position)
 	self._safe_position = position
 end
+
 function CollisionCameraNode.compile_settings(xml_node, settings)
 	CollisionCameraNode.super.compile_settings(xml_node, settings)
 	if xml_node:has_parameter("ignore_unit") then
@@ -52,10 +56,12 @@ function CollisionCameraNode.compile_settings(xml_node, settings)
 		settings.max_velocity = 300
 	end
 end
+
 function CollisionCameraNode:update(t, dt, in_data, out_data)
 	self._update(self, t, dt, in_data, out_data)
 	CollisionCameraNode.super.update(self, t, dt, in_data, out_data)
 end
+
 function CollisionCameraNode:_update_smoother(t, dt, in_data, out_data)
 	local position = in_data._position
 	local rotation = in_data._rotation
@@ -63,6 +69,7 @@ function CollisionCameraNode:_update_smoother(t, dt, in_data, out_data)
 	local new_position = self._pop_controller:wanted_position(safe_position, position)
 	self._local_position = (new_position - position):rotate_with(rotation:inverse())
 end
+
 function CollisionCameraNode:_update_fast_smooth(t, dt, in_data, out_data)
 	local position = in_data._position
 	local rotation = in_data._rotation
@@ -88,6 +95,7 @@ function CollisionCameraNode:_update_fast_smooth(t, dt, in_data, out_data)
 		self._local_position = Vector3(0, 0, 0)
 	end
 end
+
 function CollisionCameraNode:debug_render(t, dt)
 	local safe_position = self._camera_data[self._safe_position_var]
 	local brush = Draw:brush(Color(0.3, 1, 1, 1))

@@ -1,17 +1,23 @@
 ShadowBlock = ShadowBlock or CoreClass.class()
+
 function ShadowBlock:init()
 	self._parameters = {}
 end
+
 function ShadowBlock:map()
 	return self._parameters
 end
+
 function ShadowBlock:set(key, value)
 	self._parameters[key] = value
 end
+
 function ShadowBlock:get(key)
 	return self._parameters[key]
 end
+
 CoreEnvEditor = CoreEnvEditor or class()
+
 function CoreEnvEditor:init_shadow_tab()
 	self._shadow_blocks = {}
 	self._shadow_params = {}
@@ -19,11 +25,13 @@ function CoreEnvEditor:init_shadow_tab()
 	self:parse_shadow_data()
 	self._debug_pen = Draw:pen()
 end
+
 function CoreEnvEditor:load_shadow_data(block)
 	for k, v in pairs(block:map()) do
 		self._shadow_params[k]:set_value(v)
 	end
 end
+
 function CoreEnvEditor:parse_shadow_data()
 	local values = {}
 	local data = managers.viewport:get_environment_cache():environment(self._env_path):data_root().post_effect.shadow_processor.shadow_rendering.shadow_modifier
@@ -34,22 +42,26 @@ function CoreEnvEditor:parse_shadow_data()
 	self._shadow_blocks[self._env_path] = block
 	self:load_shadow_data(block)
 end
+
 function CoreEnvEditor:set_params_enabled(b)
 	for _, v in pairs(self._shadow_params) do
 		cat_print("debug", "enabling " .. _)
 		v._slider:set_enabled(b)
 	end
 end
+
 function CoreEnvEditor:clear_param_sliders()
 	for k, v in pairs(self._shadow_params) do
 		v:set_value(1)
 	end
 end
+
 function CoreEnvEditor:serialize(str)
 	for k, v in pairs(self._shadow_params) do
 		self._shadow_blocks[str]:set(k, v:get_value())
 	end
 end
+
 function CoreEnvEditor:convert_to_block(values)
 	local block = ShadowBlock:new()
 	block:set("d0", values.shadow_slice_depths.x)
@@ -62,6 +74,7 @@ function CoreEnvEditor:convert_to_block(values)
 	block:set("f", values.shadow_fadeout.x - block:get("d3"))
 	return block
 end
+
 function CoreEnvEditor:shadow_feed_params(feed_params)
 	local interface_params = self._posteffect.post_processors.shadow_processor.modifiers.shadow_modifier.params
 	local s0 = Vector3(0, interface_params.d0:get_value(), 0)
@@ -79,6 +92,7 @@ function CoreEnvEditor:shadow_feed_params(feed_params)
 	feed_params.shadow_fadeout = Vector3(interface_params.d3:get_value() - interface_params.f:get_value(), interface_params.d3:get_value(), 0)
 	return feed_params
 end
+
 function CoreEnvEditor:create_shadow_tab()
 	local panel = EWS:Panel(self._main_notebook, "", "")
 	local panel_box = EWS:BoxSizer("VERTICAL")

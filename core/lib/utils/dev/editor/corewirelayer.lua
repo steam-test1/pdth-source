@@ -4,6 +4,7 @@ core:import("CoreEditorSave")
 core:import("CoreTable")
 core:import("CoreMath")
 WireLayer = WireLayer or class(CoreLayer.Layer)
+
 function WireLayer:init(owner, save_name, units_vector, slot_mask)
 	WireLayer.super.init(self, owner, save_name or "wires")
 	self._current_pos = Vector3(0, 0, 0)
@@ -16,6 +17,7 @@ function WireLayer:init(owner, save_name, units_vector, slot_mask)
 	self._middle_name = Idstring("a_bender")
 	self._slot_mask = managers.slot:get_mask(slot_mask or "wires")
 end
+
 function WireLayer:save()
 	for _, unit in ipairs(self._created_units) do
 		local target = unit:get_object(self._target_name)
@@ -43,6 +45,7 @@ function WireLayer:save()
 		})
 	end
 end
+
 function WireLayer:update_unit_settings()
 	WireLayer.super.update_unit_settings(self)
 	if self._selected_unit then
@@ -51,6 +54,7 @@ function WireLayer:update_unit_settings()
 		self._ctrlrs.wire_slack:set_value(0)
 	end
 end
+
 function WireLayer:spawn_unit()
 	if self._grab then
 		return
@@ -70,6 +74,7 @@ function WireLayer:spawn_unit()
 		self._selected_point = self._selected_unit:get_object(self._target_name)
 	end
 end
+
 function WireLayer:set_select_unit(unit)
 	WireLayer.super.set_select_unit(self, unit)
 	self._selected_point = nil
@@ -77,6 +82,7 @@ function WireLayer:set_select_unit(unit)
 		self._selected_point = self._selected_unit:get_object(self._target_name)
 	end
 end
+
 function WireLayer:delete_selected_unit()
 	if self._selected_unit then
 		for _, unit in ipairs(CoreTable.clone(self._selected_units)) do
@@ -84,17 +90,21 @@ function WireLayer:delete_selected_unit()
 		end
 	end
 end
+
 function WireLayer:delete_unit(unit)
 	WireLayer.super.delete_unit(self, unit)
 	self._creating_wire = nil
 	self._selected_point = nil
 end
+
 function WireLayer:grab_point()
 	self._grab = true
 end
+
 function WireLayer:release_grab_point()
 	self._grab = false
 end
+
 function WireLayer:update(t, dt)
 	WireLayer.super.update(self, t, dt)
 	local ray = self._owner:select_unit_by_raycast(self._slot_mask)
@@ -154,6 +164,7 @@ function WireLayer:update(t, dt)
 	end
 	Application:draw_rotation(self._current_pos, self._current_rot)
 end
+
 function WireLayer:build_panel(notebook)
 	cat_print("editor", "WireLayer:build_panel")
 	self._ews_triggers = {}
@@ -174,6 +185,7 @@ function WireLayer:build_panel(notebook)
 	self._ctrlrs.wire_slack = wire_slack
 	return self._ews_panel
 end
+
 function WireLayer:change_slack(wire_slack)
 	if self._selected_unit then
 		self._selected_unit:wire_data().slack = wire_slack:get_value()
@@ -181,18 +193,22 @@ function WireLayer:change_slack(wire_slack)
 		self:set_midpoint()
 	end
 end
+
 function WireLayer:set_midpoint()
 	if self._selected_unit then
 		CoreMath.wire_set_midpoint(self._selected_unit, self._selected_unit:orientation_object():name(), self._target_name, self._middle_name)
 	end
 end
+
 function WireLayer:deselect()
 	WireLayer.super.deselect(self)
 end
+
 function WireLayer:clear()
 	WireLayer.super.clear(self)
 	self._selected_point = nil
 end
+
 function WireLayer:get_help(text)
 	local t = "\t"
 	local n = "\n"
@@ -201,6 +217,7 @@ function WireLayer:get_help(text)
 	text = text .. "Remove unit:     Press delete"
 	return text
 end
+
 function WireLayer:add_triggers()
 	WireLayer.super.add_triggers(self)
 	local vc = self._editor_data.virtual_controller
@@ -212,10 +229,12 @@ function WireLayer:add_triggers()
 		vc:add_trigger(Idstring(k), cb)
 	end
 end
+
 function WireLayer:deactivate()
 	WireLayer.super.deactivate(self)
 	WireLayer.super.deselect(self)
 end
+
 function WireLayer:clear_triggers()
 	self._editor_data.virtual_controller:clear_triggers()
 end

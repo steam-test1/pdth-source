@@ -1,15 +1,19 @@
 require("core/lib/utils/dev/ews/tree_control/CoreFilteredTreeControl")
 CoreFilteredTreePanel = CoreFilteredTreePanel or class()
+
 function CoreFilteredTreePanel:init(parent_frame)
 	self:_create_panel(parent_frame)
 	self._tree_refresh_timeout = 0
 end
+
 function CoreFilteredTreePanel:add_to_sizer(sizer, proportion, border, flags)
 	return sizer:add(self._panel, proportion, border, flags)
 end
+
 function CoreFilteredTreePanel:connect(event_type, script_callback, script_data)
 	return self:_tree_control():connect(event_type, script_callback, script_data)
 end
+
 function CoreFilteredTreePanel:update(time, delta_time)
 	if self._tree_refresh_timeout > 0 then
 		self._tree_refresh_timeout = self._tree_refresh_timeout - delta_time
@@ -19,9 +23,11 @@ function CoreFilteredTreePanel:update(time, delta_time)
 		end
 	end
 end
+
 function CoreFilteredTreePanel:_tree_control()
 	return self._filtered_tree_control
 end
+
 function CoreFilteredTreePanel:_create_panel(parent_frame)
 	self._panel = EWS:Panel(parent_frame, "", "")
 	local panel_sizer = EWS:BoxSizer("VERTICAL")
@@ -36,6 +42,7 @@ function CoreFilteredTreePanel:_create_panel(parent_frame)
 	filter_text_ctrl:connect("EVT_COMMAND_TEXT_UPDATED", callback(self, self, "_on_filter_text_updated"))
 	filter_text_ctrl:connect("EVT_COMMAND_TEXT_ENTER", callback(self, self, "_on_filter_enter_pressed"))
 end
+
 function CoreFilteredTreePanel:_create_filter_bar_panel(parent_frame)
 	local panel = EWS:Panel(parent_frame, "", "")
 	local panel_sizer = EWS:BoxSizer("HORIZONTAL")
@@ -46,9 +53,11 @@ function CoreFilteredTreePanel:_create_filter_bar_panel(parent_frame)
 	panel_sizer:add(filter_text_ctrl, 1, 5, "LEFT,RIGHT,ALIGN_CENTER_VERTICAL")
 	return panel, filter_text_ctrl
 end
+
 function CoreFilteredTreePanel:_on_filter_text_updated()
 	self._tree_refresh_timeout = 0.25
 end
+
 function CoreFilteredTreePanel:_on_filter_enter_pressed()
 	if self._tree_refresh_timeout > 0 then
 		self._tree_refresh_timeout = 0

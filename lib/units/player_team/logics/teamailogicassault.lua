@@ -1,5 +1,6 @@
 require("lib/units/enemies/cop/logics/CopLogicAttack")
 TeamAILogicAssault = class(CopLogicAttack)
+
 function TeamAILogicAssault.enter(data, new_logic_name, enter_params)
 	TeamAILogicBase.enter(data, new_logic_name, enter_params)
 	data.unit:brain():cancel_all_pathing_searches()
@@ -34,6 +35,7 @@ function TeamAILogicAssault.enter(data, new_logic_name, enter_params)
 	CopLogicBase._reset_attention(data)
 	TeamAILogicAssault._upd_aim(data, my_data)
 end
+
 function TeamAILogicAssault.exit(data, new_logic_name, enter_params)
 	TeamAILogicBase.exit(data, new_logic_name, enter_params)
 	local my_data = data.internal_data
@@ -56,6 +58,7 @@ function TeamAILogicAssault.exit(data, new_logic_name, enter_params)
 		rsrv_pos.move_dest = nil
 	end
 end
+
 function TeamAILogicAssault.update(data)
 	local unit = data.unit
 	local t = data.t
@@ -132,6 +135,7 @@ function TeamAILogicAssault.update(data)
 		return
 	end
 end
+
 function TeamAILogicAssault._get_priority_enemy(data, enemies)
 	local best_target, best_target_priority_slot, best_target_priority, best_threat, best_threat_priority_slot, best_threat_priority
 	if managers.groupai:state():whisper_mode() then
@@ -243,6 +247,7 @@ function TeamAILogicAssault._get_priority_enemy(data, enemies)
 	end
 	return best_target, best_threat, best_target_priority_slot, best_threat_priority_slot
 end
+
 function TeamAILogicAssault._update_enemy_detection(data)
 	data.t = TimerManager:game():time()
 	local my_data = data.internal_data
@@ -310,6 +315,7 @@ function TeamAILogicAssault._update_enemy_detection(data)
 	end
 	TeamAILogicAssault._chk_request_combat_chatter(data, my_data)
 end
+
 function TeamAILogicAssault.find_enemy_to_mark(criminal)
 	local head_pos = criminal:movement():m_head_pos()
 	local look_vec = criminal:movement():m_rot():y()
@@ -341,6 +347,7 @@ function TeamAILogicAssault.find_enemy_to_mark(criminal)
 	end
 	return best_nmy
 end
+
 function TeamAILogicAssault.mark_enemy(data, criminal, to_mark, play_sound, play_action)
 	if play_sound then
 		criminal:sound():say(tweak_data.character[to_mark:base()._tweak_table].priority_shout .. "x_any", true)
@@ -359,6 +366,7 @@ function TeamAILogicAssault.mark_enemy(data, criminal, to_mark, play_sound, play
 	managers.game_play_central:add_enemy_contour(to_mark)
 	managers.network:session():send_to_peers_synched("mark_enemy", to_mark)
 end
+
 function TeamAILogicAssault.action_complete_clbk(data, action)
 	local my_data = data.internal_data
 	local action_type = action:type()
@@ -394,27 +402,34 @@ function TeamAILogicAssault.action_complete_clbk(data, action)
 		TeamAILogicAssault._upd_aim(data, my_data)
 	end
 end
+
 function TeamAILogicAssault.damage_clbk(data, damage_info)
 	TeamAILogicIdle.damage_clbk(data, damage_info)
 end
+
 function TeamAILogicAssault.death_clbk(data, damage_info)
 	local my_data = data.internal_data
 	if my_data.focus_enemy then
 		my_data.focus_enemy = nil
 	end
 end
+
 function TeamAILogicAssault.on_detected_enemy_destroyed(data, enemy_unit)
 	TeamAILogicIdle.on_cop_neutralized(data, enemy_unit:key())
 end
+
 function TeamAILogicAssault.on_cop_neutralized(data, cop_key)
 	TeamAILogicIdle.on_cop_neutralized(data, cop_key)
 end
+
 function TeamAILogicAssault.on_objective_unit_damaged(...)
 	TeamAILogicIdle.on_objective_unit_damaged(...)
 end
+
 function TeamAILogicAssault.on_alert(...)
 	TeamAILogicIdle.on_alert(...)
 end
+
 function TeamAILogicAssault._needs_cover(data, my_data, focus_enemy)
 	if data.objective and data.objective.in_place then
 		return
@@ -430,15 +445,19 @@ function TeamAILogicAssault._needs_cover(data, my_data, focus_enemy)
 		return true
 	end
 end
+
 function TeamAILogicAssault.on_intimidated(data, amount, aggressor_unit)
 	TeamAILogicIdle.on_intimidated(data, amount, aggressor_unit)
 end
+
 function TeamAILogicAssault.on_long_dis_interacted(data, other_unit)
 	TeamAILogicIdle.on_long_dis_interacted(data, other_unit)
 end
+
 function TeamAILogicAssault.on_new_objective(data, old_objective)
 	TeamAILogicIdle.on_new_objective(data, old_objective)
 end
+
 function TeamAILogicAssault._upd_aim(data, my_data)
 	local shoot, aim, expected_pos
 	local focus_enemy = my_data.focus_enemy
@@ -536,9 +555,11 @@ function TeamAILogicAssault._upd_aim(data, my_data)
 		my_data.firing = nil
 	end
 end
+
 function TeamAILogicAssault.on_objective_unit_destroyed(data, unit)
 	TeamAILogicBase.on_objective_unit_destroyed(data, unit)
 end
+
 function TeamAILogicAssault.dodge(data)
 	if not data.unit:movement():chk_action_forbidden("walk") then
 		local action_data = TeamAILogicIdle.try_dodge(data)
@@ -552,6 +573,7 @@ function TeamAILogicAssault.dodge(data)
 		end
 	end
 end
+
 function TeamAILogicAssault.is_available_for_assignment(data, new_objective)
 	if not new_objective then
 		return true
@@ -573,6 +595,7 @@ function TeamAILogicAssault.is_available_for_assignment(data, new_objective)
 		return true
 	end
 end
+
 function TeamAILogicAssault._chk_change_weapon(data, my_data)
 	local selection
 	local inventory = data.unit:inventory()
@@ -588,12 +611,15 @@ function TeamAILogicAssault._chk_change_weapon(data, my_data)
 		data.unit:inventory():equip_selection(selection, true)
 	end
 end
+
 function TeamAILogicAssault._choose_between_weapon_selections(data, my_data, inventory, selections)
 	return selections[math.random(#selections)]
 end
+
 function TeamAILogicAssault.clbk_heat(data)
 	TeamAILogicIdle.clbk_heat(data)
 end
+
 function TeamAILogicAssault._update_cover(data)
 	local my_data = data.internal_data
 	local cover_release_dis = 100
@@ -667,6 +693,7 @@ function TeamAILogicAssault._update_cover(data)
 	local delay = satisfied and 4 or 1
 	CopLogicBase.queue_task(my_data, my_data.cover_update_task_key, TeamAILogicAssault._update_cover, data, TimerManager:game():time() + delay)
 end
+
 function TeamAILogicAssault._chk_request_combat_chatter(data, my_data)
 	local focus_enemy = my_data.focus_enemy
 	if focus_enemy and focus_enemy.verified and (my_data.firing or data.unit:character_damage():health_ratio() < 1) and not data.unit:movement():chk_action_forbidden("walk") and not data.unit:sound():speaking() then

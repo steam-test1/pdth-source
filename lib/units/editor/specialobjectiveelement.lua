@@ -8,6 +8,7 @@ SpecialObjectiveUnitElement._AI_SO_types = {
 	"AI_escort",
 	"AI_sniper"
 }
+
 function SpecialObjectiveUnitElement:init(unit)
 	SpecialObjectiveUnitElement.super.init(self, unit)
 	self._enemies = {}
@@ -67,6 +68,7 @@ function SpecialObjectiveUnitElement:init(unit)
 	table.insert(self._save_values, "is_navigation_link")
 	table.insert(self._save_values, "access_flag_version")
 end
+
 function SpecialObjectiveUnitElement:post_init()
 	if self._hed.navigation_link and self._hed.navigation_link ~= -1 and tonumber(self._hed.SO_access) == 0 then
 		self._hed.SO_access = tostring(managers.navigation:convert_nav_link_maneuverability_to_SO_access(self._hed.navigation_link))
@@ -79,6 +81,7 @@ function SpecialObjectiveUnitElement:post_init()
 	end
 	self._nav_link_filter = managers.navigation:convert_SO_access_filter(tonumber(self._hed.SO_access))
 end
+
 function SpecialObjectiveUnitElement:test_element()
 	local SO_access_strings = managers.navigation:convert_SO_access_filter(tonumber(self._hed.SO_access))
 	local spawn_unit_name
@@ -112,6 +115,7 @@ function SpecialObjectiveUnitElement:test_element()
 	self._so_class:on_executed(enemy)
 	self._start_test_t = Application:time()
 end
+
 function SpecialObjectiveUnitElement:stop_test_element()
 	for _, enemy in ipairs(self._enemies) do
 		enemy:set_slot(0)
@@ -119,10 +123,12 @@ function SpecialObjectiveUnitElement:stop_test_element()
 	self._enemies = {}
 	print("Stop test time", self._start_test_t and Application:time() - self._start_test_t or 0)
 end
+
 function SpecialObjectiveUnitElement:draw_links(t, dt, selected_unit, all_units)
 	SpecialObjectiveUnitElement.super.draw_links(self, t, dt, selected_unit)
 	self:_draw_follow_up(selected_unit, all_units)
 end
+
 function SpecialObjectiveUnitElement:update_selected(t, dt, selected_unit, all_units)
 	if self._hed.patrol_path ~= "none" then
 		managers.editor:layer("Ai"):draw_patrol_path_externaly(self._hed.patrol_path)
@@ -150,6 +156,7 @@ function SpecialObjectiveUnitElement:update_selected(t, dt, selected_unit, all_u
 	end
 	self:_highlight_if_outside_the_nav_field(t)
 end
+
 function SpecialObjectiveUnitElement:_highlight_if_outside_the_nav_field(t)
 	if managers.navigation:is_data_ready() then
 		local my_pos = self._unit:position()
@@ -170,6 +177,7 @@ function SpecialObjectiveUnitElement:_highlight_if_outside_the_nav_field(t)
 		managers.navigation:destroy_nav_tracker(nav_tracker)
 	end
 end
+
 function SpecialObjectiveUnitElement:update_unselected(t, dt, selected_unit, all_units)
 	if self._hed.follow_up_id and not alive(all_units[self._hed.follow_up_id]) then
 		self._hed.follow_up_id = nil
@@ -180,6 +188,7 @@ function SpecialObjectiveUnitElement:update_unselected(t, dt, selected_unit, all
 		end
 	end
 end
+
 function SpecialObjectiveUnitElement:_draw_follow_up(selected_unit, all_units)
 	if self._hed.follow_up_id then
 		local unit = all_units[self._hed.follow_up_id]
@@ -195,11 +204,13 @@ function SpecialObjectiveUnitElement:_draw_follow_up(selected_unit, all_units)
 		end
 	end
 end
+
 function SpecialObjectiveUnitElement:update_editing()
 	self:_so_raycast()
 	self:_spawn_raycast()
 	self:_raycast()
 end
+
 function SpecialObjectiveUnitElement:_so_raycast()
 	local ray = managers.editor:unit_by_raycast({mask = 10, ray_type = "editor"})
 	if ray and ray.unit and string.find(ray.unit:name():s(), "point_special_objective", 1, true) then
@@ -209,6 +220,7 @@ function SpecialObjectiveUnitElement:_so_raycast()
 	end
 	return nil
 end
+
 function SpecialObjectiveUnitElement:_spawn_raycast()
 	local ray = managers.editor:unit_by_raycast({mask = 10, ray_type = "editor"})
 	if not ray or not ray.unit then
@@ -221,6 +233,7 @@ function SpecialObjectiveUnitElement:_spawn_raycast()
 	end
 	return id
 end
+
 function SpecialObjectiveUnitElement:_raycast()
 	local from = managers.editor:get_cursor_look_point(0)
 	local to = managers.editor:get_cursor_look_point(100000)
@@ -231,6 +244,7 @@ function SpecialObjectiveUnitElement:_raycast()
 	end
 	return nil
 end
+
 function SpecialObjectiveUnitElement:_lmb()
 	local id = self:_so_raycast()
 	if id then
@@ -254,9 +268,11 @@ function SpecialObjectiveUnitElement:_lmb()
 	end
 	self._hed.search_position = self:_raycast() or self._hed.search_position
 end
+
 function SpecialObjectiveUnitElement:add_triggers(vc)
 	vc:add_trigger(Idstring("lmb"), callback(self, self, "_lmb"))
 end
+
 function SpecialObjectiveUnitElement:selected()
 	SpecialObjectiveUnitElement.super.selected(self)
 	if not managers.ai_data:patrol_path(self._hed.patrol_path) then
@@ -265,6 +281,7 @@ function SpecialObjectiveUnitElement:selected()
 	CoreEws.update_combobox_options(self._patrol_path_params, managers.ai_data:patrol_path_names())
 	CoreEws.change_combobox_value(self._patrol_path_params, self._hed.patrol_path)
 end
+
 function SpecialObjectiveUnitElement:_apply_preset(params)
 	local value = params.ctrlr:get_value()
 	local confirm = EWS:message_box(Global.frame_panel, "Apply preset " .. value .. "?", "Special objective", "YES_NO,ICON_QUESTION", Vector3(-1, -1, 0))
@@ -279,18 +296,21 @@ function SpecialObjectiveUnitElement:_apply_preset(params)
 		print("Didn't have preset", value, "yet.")
 	end
 end
+
 function SpecialObjectiveUnitElement:_enable_all_nav_link_filters()
 	for name, ctrlr in pairs(self._nav_link_filter_check_boxes) do
 		ctrlr:set_value(true)
 		self:_toggle_nav_link_filter_value({ctrlr = ctrlr, name = name})
 	end
 end
+
 function SpecialObjectiveUnitElement:_clear_all_nav_link_filters()
 	for name, ctrlr in pairs(self._nav_link_filter_check_boxes) do
 		ctrlr:set_value(false)
 		self:_toggle_nav_link_filter_value({ctrlr = ctrlr, name = name})
 	end
 end
+
 function SpecialObjectiveUnitElement:_toggle_nav_link_filter_value(params)
 	local value = params.ctrlr:get_value()
 	if value then
@@ -300,6 +320,7 @@ function SpecialObjectiveUnitElement:_toggle_nav_link_filter_value(params)
 	end
 	self._hed.SO_access = tostring(managers.navigation:convert_SO_access_filter(self._nav_link_filter))
 end
+
 function SpecialObjectiveUnitElement:select_action_btn()
 	local dialog = SelectNameModal:new("Select action", ElementSpawnEnemyDummy._spawn_actions)
 	if dialog:cancelled() then
@@ -310,6 +331,7 @@ function SpecialObjectiveUnitElement:select_action_btn()
 		CoreEws.change_combobox_value(self._so_action_params, self._hed.so_action)
 	end
 end
+
 function SpecialObjectiveUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel
@@ -665,5 +687,6 @@ function SpecialObjectiveUnitElement:_build_panel(panel, panel_sizer)
 	chance_inc:connect("EVT_COMMAND_TEXT_ENTER", callback(self, self, "set_element_data"), {ctrlr = chance_inc, value = "chance_inc"})
 	chance_inc:connect("EVT_KILL_FOCUS", callback(self, self, "set_element_data"), {ctrlr = chance_inc, value = "chance_inc"})
 end
+
 function SpecialObjectiveUnitElement:add_to_mission_package()
 end

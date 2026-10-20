@@ -5,6 +5,7 @@ core:import("CoreEnvironmentPostProcessorFeeder")
 core:import("CoreEnvironmentUnderlayFeeder")
 core:import("CoreEnvironmentOthersFeeder")
 EnvironmentFeeder = EnvironmentFeeder or CoreClass.class()
+
 function EnvironmentFeeder:init()
 	self._production_feeders = {
 		CoreEnvironmentNetworkFeeder.EnvironmentNetworkFeeder:new(),
@@ -18,6 +19,7 @@ function EnvironmentFeeder:init()
 		CoreEnvironmentOthersFeeder.EnvironmentOthersFeeder:new()
 	}
 end
+
 function EnvironmentFeeder:feed(data, nr, scene, vp)
 	data:for_each(function(block, ...)
 		for _, feeder in ipairs(self:feeders()) do
@@ -31,12 +33,15 @@ function EnvironmentFeeder:feed(data, nr, scene, vp)
 		feeder:end_feed(nr)
 	end
 end
+
 function EnvironmentFeeder:feeders()
 	return managers.slave:connected() and self._enable_slaving and self._production_feeders or self._feeders
 end
+
 function EnvironmentFeeder:slaving()
 	return self._enable_slaving and true
 end
+
 function EnvironmentFeeder:set_slaving(slaving)
 	self._enable_slaving = slaving
 end

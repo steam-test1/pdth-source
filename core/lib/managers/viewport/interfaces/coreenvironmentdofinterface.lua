@@ -8,9 +8,11 @@ EnvironmentDOFInterface.DATA_PATH = {
 	"dof"
 }
 EnvironmentDOFInterface.SHARED = false
+
 function EnvironmentDOFInterface:init(handle)
 	self._handle = handle
 end
+
 function EnvironmentDOFInterface:parameters()
 	local params = self._handle:parameters()
 	return {
@@ -21,6 +23,7 @@ function EnvironmentDOFInterface:parameters()
 		far_focus_distance_max = param.far_focus_distance_max + param.far_focus_distance_min
 	}
 end
+
 function EnvironmentDOFInterface:_process_return(params)
 	assert(table.maxn(params) == 5, "[EnvironmentDOFInterface] You did not return all parameters!")
 	return {

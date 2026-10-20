@@ -1,4 +1,5 @@
 ScenarioEventUnitElement = ScenarioEventUnitElement or class(MissionElement)
+
 function ScenarioEventUnitElement:init(unit)
 	ScenarioEventUnitElement.super.init(self, unit)
 	self._hed.amount = 1
@@ -10,6 +11,7 @@ function ScenarioEventUnitElement:init(unit)
 	table.insert(self._save_values, "base_chance")
 	table.insert(self._save_values, "chance_inc")
 end
+
 function ScenarioEventUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

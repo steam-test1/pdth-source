@@ -1,8 +1,10 @@
 core:import("CoreMissionScriptElement")
 ElementEquipment = ElementEquipment or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementEquipment:init(...)
 	ElementEquipment.super.init(self, ...)
 end
+
 function ElementEquipment:on_executed(instigator)
 	if not self._values.enabled then
 		return

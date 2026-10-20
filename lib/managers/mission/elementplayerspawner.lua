@@ -1,18 +1,22 @@
 core:import("CoreMissionScriptElement")
 ElementPlayerSpawner = ElementPlayerSpawner or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementPlayerSpawner:init(...)
 	ElementPlayerSpawner.super.init(self, ...)
 	managers.player:preload()
 end
+
 function ElementPlayerSpawner:value(name)
 	return self._values[name]
 end
+
 function ElementPlayerSpawner:client_on_executed(...)
 	if not self._values.enabled then
 		return
 	end
 	managers.player:set_player_state(self._values.state or managers.player:default_player_state())
 end
+
 function ElementPlayerSpawner:on_executed(instigator)
 	if not self._values.enabled then
 		return

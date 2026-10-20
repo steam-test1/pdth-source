@@ -1,4 +1,5 @@
 CoreXMLTextCtrl = CoreXMLTextCtrl or class()
+
 function CoreXMLTextCtrl:init(parent, value, id, syntax_colors, style)
 	if syntax_colors then
 		self._syntax_colors = syntax_colors
@@ -13,6 +14,7 @@ function CoreXMLTextCtrl:init(parent, value, id, syntax_colors, style)
 	self._text_ctrl:set_default_style_font_family("FONTFAMILY_TELETYPE")
 	self._text_ctrl:set_default_style_font_size(10)
 end
+
 function CoreXMLTextCtrl:update(t)
 	self._skip_event = nil
 	if self._check_syntax then
@@ -45,27 +47,33 @@ function CoreXMLTextCtrl:update(t)
 		end
 	end
 end
+
 function CoreXMLTextCtrl:text_ctrl()
 	return self._text_ctrl
 end
+
 function CoreXMLTextCtrl:xml_ok()
 	return self._xml_ok == true
 end
+
 function CoreXMLTextCtrl:check()
 	self._check_syntax = true
 	self._last_syntax_check = 0
 end
+
 function CoreXMLTextCtrl:set_value(value)
 	self._text_ctrl:set_value(value)
 	self:check()
 	self:update(math.huge)
 end
+
 function CoreXMLTextCtrl:_on_text_change()
 	if not self._skip_event then
 		self._check_syntax = true
 		self._last_syntax_check = nil
 	end
 end
+
 function CoreXMLTextCtrl:_draw_text_with_color(level, node)
 	for child in node:children() do
 		self:_set_tc_color("NODE")
@@ -86,6 +94,7 @@ function CoreXMLTextCtrl:_draw_text_with_color(level, node)
 		end
 	end
 end
+
 function CoreXMLTextCtrl:_set_tc_color(color)
 	self._text_ctrl:set_default_style_colour(self._syntax_colors[color])
 end

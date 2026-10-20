@@ -1,5 +1,6 @@
 function CoreEditor:build_configuration()
 	self._config = {}
+	
 	local frame_size_height = 200
 	local frame_size_width = 300
 	self._configuration = EWS:Dialog(nil, "Configuration", "_configuration", Vector3(-1, -1, 0), Vector3(frame_size_width, frame_size_height), "")
@@ -100,10 +101,12 @@ function CoreEditor:build_configuration()
 	main_sizer:add(buttons_sizer, 0, 0, "ALIGN_RIGHT")
 	notebook:fit()
 end
+
 function CoreEditor:on_configuration_ok()
 	self:on_configuration_apply()
 	self._configuration:end_modal()
 end
+
 function CoreEditor:on_configuration_cancel()
 	for value, data in pairs(self._config) do
 		local ctrlr = data.ctrlr or data
@@ -111,6 +114,7 @@ function CoreEditor:on_configuration_cancel()
 	end
 	self._configuration:end_modal()
 end
+
 function CoreEditor:on_configuration_apply()
 	for value, data in pairs(self._config) do
 		local ctrlr = data.ctrlr or data

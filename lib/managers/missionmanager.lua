@@ -62,6 +62,7 @@ require("lib/managers/mission/ElementAreaTrigger")
 require("lib/managers/mission/ElementSpawnEnemyDummy")
 require("lib/managers/mission/ElementEnemyDummyTrigger")
 MissionManager = MissionManager or class(CoreMissionManager.MissionManager)
+
 function MissionManager:init(...)
 	MissionManager.super.init(self, ...)
 	self:add_area_instigator_categories("player")
@@ -77,12 +78,15 @@ function MissionManager:init(...)
 		"start_assault"
 	})
 end
+
 function MissionManager:default_instigator()
 	return managers.player:player_unit()
 end
+
 function MissionManager:activate_script(...)
 	MissionManager.super.activate_script(self, ...)
 end
+
 function MissionManager:client_run_mission_element(id, unit)
 	for name, data in pairs(self._scripts) do
 		if data:element(id) then
@@ -91,6 +95,7 @@ function MissionManager:client_run_mission_element(id, unit)
 		end
 	end
 end
+
 function MissionManager:server_run_mission_element_trigger(id, unit)
 	for name, data in pairs(self._scripts) do
 		local element = data:element(id)
@@ -100,6 +105,7 @@ function MissionManager:server_run_mission_element_trigger(id, unit)
 		end
 	end
 end
+
 function MissionManager:server_enter_area(id, unit)
 	for name, data in pairs(self._scripts) do
 		local element = data:element(id)
@@ -108,6 +114,7 @@ function MissionManager:server_enter_area(id, unit)
 		end
 	end
 end
+
 function MissionManager:server_exit_area(id, unit)
 	for name, data in pairs(self._scripts) do
 		local element = data:element(id)
@@ -116,8 +123,10 @@ function MissionManager:server_exit_area(id, unit)
 		end
 	end
 end
+
 CoreClass.override_class(CoreMissionManager.MissionManager, MissionManager)
 MissionScript = MissionScript or class(CoreMissionManager.MissionScript)
+
 function MissionScript:activate(...)
 	if Network:is_server() then
 		MissionScript.super.activate(self, ...)
@@ -133,4 +142,5 @@ function MissionScript:activate(...)
 		end
 	end
 end
+
 CoreClass.override_class(CoreMissionManager.MissionScript, MissionScript)

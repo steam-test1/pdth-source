@@ -1,6 +1,7 @@
 require("core/lib/utils/dev/tools/cutscene_editor/CoreCutsceneAnimationPatchesPanel")
 require("core/lib/utils/dev/tools/cutscene_editor/CoreCutsceneEditorProject")
 CoreCutsceneSettingsDialog = CoreCutsceneSettingsDialog or class()
+
 function CoreCutsceneSettingsDialog:init(parent)
 	self.__window = EWS:Dialog(parent, "Project Settings", "", Vector3(100, 500, 0), Vector3(400, 500, 0), "DEFAULT_DIALOG_STYLE,RESIZE_BORDER")
 	self.__window:set_icon(CoreEWS.image_path("film_reel_16x16.png"))
@@ -24,30 +25,37 @@ function CoreCutsceneSettingsDialog:init(parent)
 	local buttons_panel = self:_create_buttons_panel(self.__window)
 	sizer:add(buttons_panel, 0, 4, "ALL,EXPAND")
 end
+
 function CoreCutsceneSettingsDialog:destroy()
 	self.__animation_patches:destroy()
 	self.__window:destroy()
 	self.__window = nil
 end
+
 function CoreCutsceneSettingsDialog:show()
 	self.__revert_export_type = self:export_type()
 	self.__revert_animation_patches = self.__animation_patches:patches()
 	return self.__window:show_modal()
 end
+
 function CoreCutsceneSettingsDialog:set_unit_types(unit_types)
 	self.__animation_patches:set_unit_types(unit_types)
 end
+
 function CoreCutsceneSettingsDialog:populate_from_project(project)
 	self.__animation_patches:set_patches(project:animation_patches())
 	self.__export_type = project:export_type()
 	self.__export_type_dropdown:set_value(self.__export_type)
 end
+
 function CoreCutsceneSettingsDialog:unit_animation_patches()
 	return self.__animation_patches:patches()
 end
+
 function CoreCutsceneSettingsDialog:export_type()
 	return self.__export_type or get_core_or_local("CutsceneEditorProject").DEFAULT_EXPORT_TYPE
 end
+
 function CoreCutsceneSettingsDialog:_create_buttons_panel(parent)
 	local panel = EWS:Panel(parent)
 	local sizer = EWS:BoxSizer("HORIZONTAL")
@@ -60,12 +68,14 @@ function CoreCutsceneSettingsDialog:_create_buttons_panel(parent)
 	sizer:add(cancel_button, 1, 2, "LEFT,EXPAND")
 	return panel
 end
+
 function CoreCutsceneSettingsDialog:_on_ok_button_clicked(sender)
 	self.__export_type = self.__export_type_dropdown:get_value()
 	self.__revert_export_type = nil
 	self.__revert_animation_patches = nil
 	self.__window:end_modal("OK")
 end
+
 function CoreCutsceneSettingsDialog:_on_close()
 	self.__window:set_visible(false)
 	self.__export_type_dropdown:set_value(self.__revert_export_type)

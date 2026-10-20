@@ -1,9 +1,11 @@
 BlackscreenVariantElement = BlackscreenVariantElement or class(MissionElement)
+
 function BlackscreenVariantElement:init(unit)
 	BlackscreenVariantElement.super.init(self, unit)
 	self._hed.variant = "0"
 	table.insert(self._save_values, "variant")
 end
+
 function BlackscreenVariantElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

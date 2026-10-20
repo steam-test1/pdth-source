@@ -1,11 +1,14 @@
 core:import("CoreMissionScriptElement")
 ElementSecretAssignment = ElementSecretAssignment or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementSecretAssignment:init(...)
 	ElementSecretAssignment.super.init(self, ...)
 end
+
 function ElementSecretAssignment:client_on_executed(...)
 	self:on_executed(...)
 end
+
 function ElementSecretAssignment:on_executed(instigator)
 	if not self._values.enabled then
 		return

@@ -1,7 +1,9 @@
 PlayerBleedOut = PlayerBleedOut or class(PlayerStandard)
+
 function PlayerBleedOut:init(unit)
 	PlayerBleedOut.super.init(self, unit)
 end
+
 function PlayerBleedOut:enter(enter_data)
 	PlayerBleedOut.super.enter(self, enter_data)
 	self._revive_SO_data = {
@@ -21,12 +23,14 @@ function PlayerBleedOut:enter(enter_data)
 	end
 	managers.groupai:state():report_criminal_downed(self._unit)
 end
+
 function PlayerBleedOut:_enter(enter_data)
 	self._unit:base():set_slot(self._unit, 2)
 	if Network:is_server() and self._ext_movement:nav_tracker() then
 		managers.groupai:state():on_player_weapons_hot()
 	end
 end
+
 function PlayerBleedOut:exit(new_state_name)
 	PlayerBleedOut.super.exit(self, new_state_name)
 	self:_end_action_bleedout(Application:time())
@@ -46,9 +50,11 @@ function PlayerBleedOut:exit(new_state_name)
 	exit_data.skip_equip = true
 	return exit_data
 end
+
 function PlayerBleedOut:update(t, dt)
 	PlayerBleedOut.super.update(self, t, dt)
 end
+
 function PlayerBleedOut:_update_check_actions(t, dt)
 	local input = self:_get_input()
 	self._unit:camera():set_shaker_parameter("headbob", "amplitude", 0)
@@ -81,15 +87,18 @@ function PlayerBleedOut:_update_check_actions(t, dt)
 	end
 	self:_check_action_interact(t, input)
 end
+
 function PlayerBleedOut:_check_action_interact(t, input)
 	if input.btn_interact_press and (not self._intimidate_t or t - self._intimidate_t > tweak_data.player.movement_state.interaction_delay) then
 		self._intimidate_t = t
 		PlayerArrested.call_teammate(self, "f11", t)
 	end
 end
+
 function PlayerBleedOut:_start_action_state_standard(t)
 	managers.player:set_player_state("standard")
 end
+
 function PlayerBleedOut._register_revive_SO(revive_SO_data, variant)
 	if revive_SO_data.SO_id or not managers.navigation:is_data_ready() then
 		return
@@ -156,6 +165,7 @@ function PlayerBleedOut._register_revive_SO(revive_SO_data, variant)
 		revive_SO_data.deathguard_SO_id = PlayerBleedOut._register_deathguard_SO(revive_SO_data.unit)
 	end
 end
+
 function PlayerBleedOut:_unregister_revive_SO()
 	if self._revive_SO_data.deathguard_SO_id then
 		PlayerBleedOut._unregister_deathguard_SO(self._revive_SO_data.deathguard_SO_id)
@@ -172,6 +182,7 @@ function PlayerBleedOut:_unregister_revive_SO()
 		end
 	end
 end
+
 function PlayerBleedOut._register_deathguard_SO(my_unit)
 	local guard_objective = {
 		type = "follow",
@@ -199,9 +210,11 @@ function PlayerBleedOut._register_deathguard_SO(my_unit)
 	managers.groupai:state():add_special_objective(guard_so_id, guard_so_descriptor)
 	return guard_so_id
 end
+
 function PlayerBleedOut._unregister_deathguard_SO(so_id)
 	managers.groupai:state():remove_special_objective(so_id)
 end
+
 function PlayerBleedOut:_start_action_bleedout(t)
 	self:_interupt_action_running(t)
 	self._ducking = true
@@ -210,6 +223,7 @@ function PlayerBleedOut:_start_action_bleedout(t)
 	self._unit:kill_mover()
 	self._unit:activate_mover(Idstring("duck"))
 end
+
 function PlayerBleedOut:_end_action_bleedout(t)
 	if not self:_can_stand() then
 		return
@@ -220,6 +234,7 @@ function PlayerBleedOut:_end_action_bleedout(t)
 	self._unit:kill_mover()
 	self._unit:activate_mover(Idstring("stand"))
 end
+
 function PlayerBleedOut:_update_movement(t, dt)
 	if self._ext_network then
 		local cur_pos = self._pos
@@ -231,6 +246,7 @@ function PlayerBleedOut:_update_movement(t, dt)
 		end
 	end
 end
+
 function PlayerBleedOut:on_rescue_SO_administered(revive_SO_data, receiver_unit)
 	if revive_SO_data.rescuer then
 		debug_pause("[PlayerBleedOut:on_rescue_SO_administered] Already had a rescuer!!!!", receiver_unit, revive_SO_data.rescuer)
@@ -238,15 +254,18 @@ function PlayerBleedOut:on_rescue_SO_administered(revive_SO_data, receiver_unit)
 	revive_SO_data.rescuer = receiver_unit
 	revive_SO_data.SO_id = nil
 end
+
 function PlayerBleedOut:on_rescue_SO_failed(revive_SO_data, rescuer)
 	if revive_SO_data.rescuer then
 		revive_SO_data.rescuer = nil
 		PlayerBleedOut._register_revive_SO(revive_SO_data, revive_SO_data.variant)
 	end
 end
+
 function PlayerBleedOut:on_rescue_SO_completed(revive_SO_data, rescuer)
 	revive_SO_data.rescuer = nil
 end
+
 function PlayerBleedOut:on_rescue_SO_started(revive_SO_data, rescuer)
 	for c_key, criminal in pairs(managers.groupai:state():all_AI_criminals()) do
 		if c_key ~= rescuer:key() then
@@ -257,15 +276,18 @@ function PlayerBleedOut:on_rescue_SO_started(revive_SO_data, rescuer)
 		end
 	end
 end
+
 function PlayerBleedOut:verif_clbk_is_unit_deathguard(enemy_unit)
 	local char_tweak = tweak_data.character[enemy_unit:base()._tweak_table]
 	return char_tweak.deathguard
 end
+
 function PlayerBleedOut:pre_destroy(unit)
 	if Network:is_server() then
 		self:_unregister_revive_SO()
 	end
 end
+
 function PlayerBleedOut:destroy()
 	if Network:is_server() then
 		self:_unregister_revive_SO()

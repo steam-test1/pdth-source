@@ -1,4 +1,5 @@
 CoreEditableGui = CoreEditableGui or class()
+
 function CoreEditableGui:init(unit)
 	self._unit = unit
 	self._text = self._text or "Default Text"
@@ -21,6 +22,7 @@ function CoreEditableGui:init(unit)
 	self:set_font_size(self._font_size)
 	self._font_color = Vector3(text_object:color().red, text_object:color().green, text_object:color().blue)
 end
+
 function CoreEditableGui:add_workspace(gui_object)
 	local ws = self._gui:create_object_workspace(0, 0, gui_object, Vector3(0, 0, 0))
 	local gui = ws:panel():gui(Idstring("core/guis/core_editable_gui"))
@@ -33,39 +35,47 @@ function CoreEditableGui:add_workspace(gui_object)
 		panel = panel
 	})
 end
+
 function CoreEditableGui:text()
 	return self._text
 end
+
 function CoreEditableGui:set_text(text)
 	self._text = text
 	for _, gui in ipairs(self._guis) do
 		gui.gui:child("std_text"):set_text(self._text)
 	end
 end
+
 function CoreEditableGui:font_size()
 	return self._font_size
 end
+
 function CoreEditableGui:set_font_size(font_size)
 	self._font_size = font_size
 	for _, gui in ipairs(self._guis) do
 		gui.gui:child("std_text"):set_font_size(self._font_size * (10 * gui.gui:child("std_text"):height() / 100))
 	end
 end
+
 function CoreEditableGui:font_color()
 	return self._font_color
 end
+
 function CoreEditableGui:set_font_color(font_color)
 	self._font_color = font_color
 	for _, gui in ipairs(self._guis) do
 		gui.gui:child("std_text"):set_color(Color(1, font_color.x, font_color.y, font_color.z))
 	end
 end
+
 function CoreEditableGui:lock_gui()
 	for _, gui in ipairs(self._guis) do
 		gui.workspace:set_cull_distance(self._cull_distance)
 		gui.workspace:set_frozen(true)
 	end
 end
+
 function CoreEditableGui:destroy()
 	for _, gui in ipairs(self._guis) do
 		if alive(self._gui) and alive(gui.workspace) then

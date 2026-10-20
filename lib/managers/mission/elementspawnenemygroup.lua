@@ -1,5 +1,6 @@
 core:import("CoreMissionScriptElement")
 ElementSpawnEnemyGroup = ElementSpawnEnemyGroup or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementSpawnEnemyGroup:init(...)
 	ElementSpawnEnemyGroup.super.init(self, ...)
 	self._group_data = {}
@@ -9,6 +10,7 @@ function ElementSpawnEnemyGroup:init(...)
 	self._group_data.spawn_points = {}
 	self._unused_randoms = {}
 end
+
 function ElementSpawnEnemyGroup:on_script_activated()
 	for i, id in ipairs(self._values.elements) do
 		local element = self:get_mission_element(id)
@@ -16,12 +18,14 @@ function ElementSpawnEnemyGroup:on_script_activated()
 		table.insert(self._group_data.spawn_points, element)
 	end
 end
+
 function ElementSpawnEnemyGroup:add_event_callback(name, callback)
 	for _, id in ipairs(self._values.elements) do
 		local element = self:get_mission_element(id)
 		element:add_event_callback(name, callback)
 	end
 end
+
 function ElementSpawnEnemyGroup:_check_spawn_points()
 	self._spawn_points = {}
 	if not self._group_data.ignore_disabled then
@@ -38,6 +42,7 @@ function ElementSpawnEnemyGroup:_check_spawn_points()
 		end
 	end
 end
+
 function ElementSpawnEnemyGroup:on_executed(instigator)
 	if not self._values.enabled then
 		return
@@ -51,6 +56,7 @@ function ElementSpawnEnemyGroup:on_executed(instigator)
 	end
 	ElementSpawnEnemyGroup.super.on_executed(self, instigator)
 end
+
 function ElementSpawnEnemyGroup:_get_spawn_point(i)
 	if self._group_data.random then
 		if #self._unused_randoms == 0 then
@@ -63,6 +69,7 @@ function ElementSpawnEnemyGroup:_get_spawn_point(i)
 	end
 	return 1 + math.mod(i, #self._spawn_points)
 end
+
 function ElementSpawnEnemyGroup:units()
 	local all_units = {}
 	for _, element in ipairs(self._group_data.spawn_points) do
@@ -73,11 +80,13 @@ function ElementSpawnEnemyGroup:units()
 	end
 	return all_units
 end
+
 function ElementSpawnEnemyGroup:unspawn_all_units()
 	for _, element in ipairs(self._group_data.spawn_points) do
 		element:unspawn_all_units()
 	end
 end
+
 function ElementSpawnEnemyGroup:execute_on_all_units(func)
 	for _, element in ipairs(self._group_data.spawn_points) do
 		element:execute_on_all_units(func)

@@ -2,17 +2,20 @@ core:module("ControllerManager")
 core:import("CoreControllerManager")
 core:import("CoreClass")
 ControllerManager = ControllerManager or class(CoreControllerManager.ControllerManager)
+
 function ControllerManager:init(path, default_settings_path)
 	default_settings_path = "settings/controller_settings"
 	path = default_settings_path
 	ControllerManager.super.init(self, path, default_settings_path)
 end
+
 function ControllerManager:controller_mod_changed()
 	if not Global.controller_manager.user_mod then
 		Global.controller_manager.user_mod = managers.user:get_setting("controller_mod")
 		self:load_user_mod()
 	end
 end
+
 function ControllerManager:set_user_mod(connection_name, params)
 	Global.controller_manager.user_mod = Global.controller_manager.user_mod or {}
 	if params.axis then
@@ -25,10 +28,12 @@ function ControllerManager:set_user_mod(connection_name, params)
 	end
 	managers.user:set_setting("controller_mod", Global.controller_manager.user_mod, true)
 end
+
 function ControllerManager:clear_user_mod()
 	Global.controller_manager.user_mod = {}
 	managers.user:set_setting("controller_mod", Global.controller_manager.user_mod, true)
 end
+
 function ControllerManager:load_user_mod()
 	if Global.controller_manager.user_mod then
 		local connections = managers.controller:get_settings(managers.controller:get_default_wrapper_type()):get_connection_map()
@@ -49,6 +54,7 @@ function ControllerManager:load_user_mod()
 		self:rebind_connections()
 	end
 end
+
 function ControllerManager:init_finalize()
 	managers.user:add_setting_changed_callback("controller_mod", callback(self, self, "controller_mod_changed"), true)
 	if Global.controller_manager.user_mod then
@@ -56,17 +62,20 @@ function ControllerManager:init_finalize()
 	end
 	self:_check_dialog()
 end
+
 function ControllerManager:default_controller_connect_change(connected)
 	ControllerManager.super.default_controller_connect_change(self, connected)
 	if not connected and not self._connect_controller_dialog_visible then
 		self:_show_controller_changed_dialog()
 	end
 end
+
 function ControllerManager:_check_dialog()
 	if Global.controller_manager.connect_controller_dialog_visible and not self._connect_controller_dialog_visible then
 		self:_show_controller_changed_dialog()
 	end
 end
+
 function ControllerManager:_show_controller_changed_dialog()
 	if self._connect_controller_dialog_visible then
 		return
@@ -87,8 +96,10 @@ function ControllerManager:_show_controller_changed_dialog()
 	data.force = true
 	managers.system_menu:show(data)
 end
+
 function ControllerManager:connect_controller_dialog_callback()
 	Global.controller_manager.connect_controller_dialog_visible = nil
 	self._connect_controller_dialog_visible = nil
 end
+
 CoreClass.override_class(CoreControllerManager.ControllerManager, ControllerManager)

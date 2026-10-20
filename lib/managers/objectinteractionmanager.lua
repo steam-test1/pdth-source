@@ -1,5 +1,6 @@
 ObjectInteractionManager = ObjectInteractionManager or class()
 ObjectInteractionManager.FRAMES_TO_COMPLETE = 15
+
 function ObjectInteractionManager:init()
 	self._interactive_objects = {}
 	self._interactive_count = 0
@@ -9,6 +10,7 @@ function ObjectInteractionManager:init()
 	self._close_freq = 1
 	self._active_object = nil
 end
+
 function ObjectInteractionManager:update(t, dt)
 	local player_unit = managers.player:player_unit()
 	if self._interactive_count > 0 and alive(player_unit) then
@@ -16,6 +18,7 @@ function ObjectInteractionManager:update(t, dt)
 		self:_update_targeted(player_pos, player_unit)
 	end
 end
+
 function ObjectInteractionManager:interact(player)
 	if alive(self._active_object) then
 		local interacted, timer = self._active_object:interaction():interact_start(player)
@@ -23,19 +26,23 @@ function ObjectInteractionManager:interact(player)
 	end
 	return false
 end
+
 function ObjectInteractionManager:end_action_interact(player)
 	if alive(self._active_object) then
 		self._active_object:interaction():interact(player)
 	end
 end
+
 function ObjectInteractionManager:active_object()
 	return self._active_object
 end
+
 function ObjectInteractionManager:add_object(obj)
 	table.insert(self._interactive_objects, obj)
 	self._interactive_count = self._interactive_count + 1
 	self._close_freq = math.max(1, math.floor(#self._interactive_objects / self.FRAMES_TO_COMPLETE))
 end
+
 function ObjectInteractionManager:remove_object(obj)
 	for k, v in pairs(self._interactive_objects) do
 		if v == obj then
@@ -50,7 +57,9 @@ function ObjectInteractionManager:remove_object(obj)
 		end
 	end
 end
+
 local mvec1 = Vector3()
+
 function ObjectInteractionManager:_update_targeted(player_pos, player_unit)
 	local mvec3_dis = mvector3.distance
 	if #self._close_objects > 0 then
@@ -110,6 +119,7 @@ function ObjectInteractionManager:_update_targeted(player_pos, player_unit)
 		last_active:interaction():unselect()
 	end
 end
+
 function ObjectInteractionManager:_in_close_list(obj)
 	if #self._close_objects > 0 then
 		for k, v in pairs(self._close_objects) do

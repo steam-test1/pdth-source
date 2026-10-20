@@ -6,9 +6,11 @@ OBJECT = CoreDependencyNode.OBJECT
 MATERIAL_CONFIG = CoreDependencyNode.MATERIAL_CONFIG
 CUTSCENE = CoreDependencyNode.CUTSCENE
 UnitDependencyNode = UnitDependencyNode or CoreClass.class(CoreDependencyNode.DependencyNodeBase)
+
 function UnitDependencyNode:init(name, get_dn_cb, database)
 	self.super.init(self, UNIT, "unit", name, get_dn_cb, database)
 end
+
 function UnitDependencyNode:_walkxml2dependencies(xmlnode, deps)
 	local node_name = xmlnode:name()
 	if node_name == "depends_on" then

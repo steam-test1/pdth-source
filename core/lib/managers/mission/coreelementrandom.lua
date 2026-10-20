@@ -2,12 +2,15 @@ core:module("CoreElementRandom")
 core:import("CoreMissionScriptElement")
 core:import("CoreTable")
 ElementRandom = ElementRandom or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementRandom:init(...)
 	ElementRandom.super.init(self, ...)
 	self._original_on_executed = CoreTable.clone(self._values.on_executed)
 end
+
 function ElementRandom:client_on_executed(...)
 end
+
 function ElementRandom:on_executed(instigator)
 	if not self._values.enabled then
 		return
@@ -24,6 +27,7 @@ function ElementRandom:on_executed(instigator)
 	end
 	ElementRandom.super.on_executed(self, instigator)
 end
+
 function ElementRandom:_get_random_elements()
 	local t = {}
 	local rand = math.random(#self._unused_randoms)

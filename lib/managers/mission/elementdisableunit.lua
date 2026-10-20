@@ -1,9 +1,11 @@
 core:import("CoreMissionScriptElement")
 ElementDisableUnit = ElementDisableUnit or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementDisableUnit:init(...)
 	ElementDisableUnit.super.init(self, ...)
 	self._units = {}
 end
+
 function ElementDisableUnit:on_script_activated()
 	print(inspect(self._values.unit_ids))
 	for _, id in ipairs(self._values.unit_ids) do
@@ -18,14 +20,17 @@ function ElementDisableUnit:on_script_activated()
 		end
 	end
 end
+
 function ElementDisableUnit:_load_unit(unit)
 	print("ElementDisableUnit FOUND LATER", unit)
 	Application:stack_dump()
 	table.insert(self._units, unit)
 end
+
 function ElementDisableUnit:client_on_executed(...)
 	self:on_executed(...)
 end
+
 function ElementDisableUnit:on_executed(instigator)
 	if not self._values.enabled then
 		return

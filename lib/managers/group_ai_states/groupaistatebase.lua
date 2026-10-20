@@ -1,29 +1,36 @@
 GroupAIStateBase = GroupAIStateBase or class()
 GroupAIStateBase._nr_important_cops = 3
+
 function GroupAIStateBase:init()
 	Global.criminal_team_AI_disabled = not Global.game_settings.team_ai
 	self:_init_misc_data()
 end
+
 function GroupAIStateBase:update(t, dt)
 	self._t = t
 	if self._draw_drama then
 		self:_debug_draw_drama(t)
 	end
 end
+
 function GroupAIStateBase:paused_update(t, dt)
 	if self._draw_drama then
 		self:_debug_draw_drama(self._t)
 	end
 end
+
 function GroupAIStateBase:get_assault_mode()
 	return self._assault_mode
 end
+
 function GroupAIStateBase:get_hunt_mode()
 	return self._hunt_mode
 end
+
 function GroupAIStateBase:is_AI_enabled()
 	return self._ai_enabled
 end
+
 function GroupAIStateBase:set_AI_enabled(state)
 	self._ai_enabled = state
 	self._forbid_drop_in = state
@@ -89,6 +96,7 @@ function GroupAIStateBase:set_AI_enabled(state)
 		end
 	end
 end
+
 function GroupAIStateBase:_init_misc_data()
 	self._t = TimerManager:game():time()
 	self:_parse_teammate_comments()
@@ -145,12 +153,15 @@ function GroupAIStateBase:_init_misc_data()
 	self:set_drama_draw_state(Global.drama_draw_state)
 	self._alert_elements = {}
 end
+
 function GroupAIStateBase:add_alert_listener(id, element)
 	self._alert_elements[id] = element
 end
+
 function GroupAIStateBase:remove_alert_listener(id)
 	self._alert_elements[id] = nil
 end
+
 function GroupAIStateBase:propagate_alert(alert_data)
 	local lod_entries = managers.enemy._gfx_lod_data.entries
 	local entries_com = lod_entries.com
@@ -171,6 +182,7 @@ function GroupAIStateBase:propagate_alert(alert_data)
 		end
 	end
 end
+
 function GroupAIStateBase:propagate_alert_cyl(alert_data)
 	local mvec3_dot = mvector3.dot
 	local mvec3_set = mvector3.set
@@ -213,14 +225,17 @@ function GroupAIStateBase:propagate_alert_cyl(alert_data)
 		end
 	end
 end
+
 function GroupAIStateBase:set_heat_build_period(period)
 	Application:error("[GroupAIStateBase:set_heat_build_period] Heat functionality is deprecated.")
 end
+
 function GroupAIStateBase:set_drama_decay_period(period)
 	self:_claculate_drama_value()
 	self._drama_data.decay_period = period
 	self._drama_data.last_calculate_t = self._t
 end
+
 function GroupAIStateBase:_claculate_drama_value()
 	local drama_data = self._drama_data
 	local dt = self._t - drama_data.last_calculate_t
@@ -228,6 +243,7 @@ function GroupAIStateBase:_claculate_drama_value()
 	drama_data.last_calculate_t = self._t
 	self:_add_drama(adj)
 end
+
 function GroupAIStateBase:_add_drama(amount)
 	local drama_data = self._drama_data
 	local new_val = math.clamp(drama_data.amount + amount, 0, 1)
@@ -247,8 +263,10 @@ function GroupAIStateBase:_add_drama(amount)
 		self:_on_drama_zone_change()
 	end
 end
+
 function GroupAIStateBase:_on_drama_zone_change()
 end
+
 function GroupAIStateBase:calm_ai()
 	self._player_weapons_hot = false
 	self._enemy_weapons_hot = false
@@ -278,15 +296,18 @@ function GroupAIStateBase:calm_ai()
 		crim.unit:inventory():set_mask_visibility(false)
 	end
 end
+
 function GroupAIStateBase:on_player_weapons_hot()
 	if not self._player_weapons_hot then
 		self._player_weapons_hot = true
 		self:_call_listeners("player_weapons_hot")
 	end
 end
+
 function GroupAIStateBase:player_weapons_hot()
 	return self._player_weapons_hot
 end
+
 function GroupAIStateBase:on_enemy_weapons_hot()
 	if not self._enemy_weapons_hot then
 		self._enemy_weapons_hot = true
@@ -300,9 +321,11 @@ function GroupAIStateBase:on_enemy_weapons_hot()
 		end
 	end
 end
+
 function GroupAIStateBase:enemy_weapons_hot()
 	return self._enemy_weapons_hot
 end
+
 function GroupAIStateBase:_hostage_hint_clbk()
 	if not self._ai_enabled then
 		return
@@ -326,6 +349,7 @@ function GroupAIStateBase:_hostage_hint_clbk()
 		self._hstg_hint_clbk = nil
 	end
 end
+
 function GroupAIStateBase:_radio_chatter_clbk()
 	if self._ai_enabled and not self:get_assault_mode() then
 		local optimal_dist = 500
@@ -351,15 +375,19 @@ function GroupAIStateBase:_radio_chatter_clbk()
 	self._radio_clbk = callback(self, self, "_radio_chatter_clbk")
 	managers.enemy:add_delayed_clbk("_radio_chatter_clbk", self._radio_clbk, Application:time() + 30 + math.random(0, 20))
 end
+
 function GroupAIStateBase:police_hostage_count()
 	return self._police_hostage_headcount
 end
+
 function GroupAIStateBase:hostage_count()
 	return self._hostage_headcount
 end
+
 GroupAIStateBase.PATH = "gamedata/comments"
 GroupAIStateBase.FILE_EXTENSION = "comment"
 GroupAIStateBase.FULL_PATH = GroupAIStateBase.PATH .. "." .. GroupAIStateBase.FILE_EXTENSION
+
 function GroupAIStateBase:_parse_teammate_comments()
 	local list = PackageManager:script_data(self.FILE_EXTENSION:id(), self.PATH:id())
 	self.teammate_comments = {}
@@ -372,12 +400,14 @@ function GroupAIStateBase:_parse_teammate_comments()
 		end
 	end
 end
+
 function GroupAIStateBase:_parse_teammate_comment(data)
 	local event = data.event
 	local allow = data.allow_first_person or false
 	table.insert(self.teammate_comments, {event = event, allow_first_person = allow})
 	table.insert(self.teammate_comment_names, event)
 end
+
 function GroupAIStateBase:teammate_comment(trigger_unit, message, pos, pos_based, radius, sync)
 	if radius == 0 then
 		radius = nil
@@ -422,12 +452,15 @@ function GroupAIStateBase:teammate_comment(trigger_unit, message, pos, pos_based
 		end
 	end
 end
+
 function GroupAIStateBase:sync_teammate_comment(message, pos, pos_based, radius)
 	self:teammate_comment(nil, self.teammate_comment_names[message], pos, pos_based, radius, false)
 end
+
 function GroupAIStateBase:sync_teammate_comment_instigator(unit, message)
 	self:teammate_comment(unit, self.teammate_comment_names[message], nil, false, nil, false)
 end
+
 function GroupAIStateBase:on_hostage_state(state, key, police)
 	local d = state and 1 or -1
 	if state then
@@ -459,14 +492,17 @@ function GroupAIStateBase:on_hostage_state(state, key, police)
 		debug_pause("[GroupAIStateBase:on_hostage_state] Headcount mismatch", self._hostage_headcount, #self._hostage_keys, key, inspect(self._hostage_keys))
 	end
 end
+
 function GroupAIStateBase:_police_announce_retreat()
 	managers.groupai:state():teammate_comment(nil, "g51", nil, false, nil, true)
 end
+
 function GroupAIStateBase:set_difficulty(value)
 	print("Set diff:", value)
 	self._difficulty_value = value
 	self:_calculate_difficulty_ratio()
 end
+
 function GroupAIStateBase:set_debug_draw_state(b)
 	if b and not self._draw_enabled then
 		local ws = Overlay:newgui():create_screen_workspace()
@@ -492,12 +528,14 @@ function GroupAIStateBase:set_debug_draw_state(b)
 	end
 	self._draw_enabled = b
 end
+
 function GroupAIStateBase:on_unit_detection_updated(unit)
 	if self._draw_enabled then
 		local draw_pos = unit:movement():m_head_pos()
 		self._AI_draw_data.brush_detection:cone(draw_pos, draw_pos + math.UP * 40, 30)
 	end
 end
+
 function GroupAIStateBase:_calculate_difficulty_ratio()
 	local ramp = tweak_data.group_ai.difficulty_curve_points
 	local diff = self._difficulty_value
@@ -508,9 +546,11 @@ function GroupAIStateBase:_calculate_difficulty_ratio()
 	self._difficulty_point_index = i
 	self._difficulty_ramp = (diff - (ramp[i - 1] or 0)) / ((ramp[i] or 1) - (ramp[i - 1] or 0))
 end
+
 function GroupAIStateBase:_get_difficulty_dependent_value(tweak_values)
 	return math.lerp(tweak_values[self._difficulty_point_index], tweak_values[self._difficulty_point_index + 1], self._difficulty_ramp)
 end
+
 function GroupAIStateBase:_get_spawn_unit_name(weights, wanted_access_type)
 	local unit_categories = tweak_data.group_ai.unit_categories
 	local total_weight = 0
@@ -562,6 +602,7 @@ function GroupAIStateBase:_get_spawn_unit_name(weights, wanted_access_type)
 	local spawn_unit_name = lucky_unit_names[math.random(#lucky_unit_names)]
 	return spawn_unit_name
 end
+
 function GroupAIStateBase:criminal_spotted(unit)
 	local u_key = unit:key()
 	local tracker = unit:movement():nav_tracker()
@@ -576,9 +617,11 @@ function GroupAIStateBase:criminal_spotted(unit)
 	mvector3.set(u_sighting.pos, tracker:position())
 	u_sighting.det_t = self._t
 end
+
 function GroupAIStateBase:criminal_record(u_key)
 	return self._criminals[u_key]
 end
+
 function GroupAIStateBase:on_enemy_engaging(unit, other_u_key)
 	local u_key = unit:key()
 	local sighting = self._criminals[other_u_key]
@@ -586,6 +629,7 @@ function GroupAIStateBase:on_enemy_engaging(unit, other_u_key)
 	sighting.engaged_force = force
 	sighting.engaged[u_key] = true
 end
+
 function GroupAIStateBase:on_enemy_disengaging(unit, other_u_key)
 	local u_key = unit:key()
 	local sighting = self._criminals[other_u_key]
@@ -593,15 +637,18 @@ function GroupAIStateBase:on_enemy_disengaging(unit, other_u_key)
 	sighting.engaged_force = force
 	sighting.engaged[u_key] = nil
 end
+
 function GroupAIStateBase:on_tase_start(cop_key, criminal_key)
 	self._criminals[criminal_key].being_tased = cop_key
 end
+
 function GroupAIStateBase:on_tase_end(criminal_key)
 	local record = self._criminals[criminal_key]
 	if record then
 		self._criminals[criminal_key].being_tased = nil
 	end
 end
+
 function GroupAIStateBase:on_arrest_start(enemy_key, criminal_key)
 	local sighting = self._criminals[criminal_key]
 	local arrest = sighting.being_arrested
@@ -613,6 +660,7 @@ function GroupAIStateBase:on_arrest_start(enemy_key, criminal_key)
 		}
 	end
 end
+
 function GroupAIStateBase:on_arrest_end(enemy_key, criminal_key)
 	local sighting = self._criminals[criminal_key]
 	sighting.being_arrested[enemy_key] = nil
@@ -622,14 +670,17 @@ function GroupAIStateBase:on_arrest_end(enemy_key, criminal_key)
 		sighting.arrest_warn_pos = nil
 	end
 end
+
 function GroupAIStateBase:on_disarm_start(enemy_key, criminal_key)
 	local sighting = self._criminals[criminal_key]
 	sighting.being_disarmed = enemy_key
 end
+
 function GroupAIStateBase:on_disarm_end(criminal_key)
 	local sighting = self._criminals[criminal_key]
 	sighting.being_disarmed = nil
 end
+
 function GroupAIStateBase:on_simulation_started()
 	self:set_AI_enabled(true)
 	self._t = TimerManager:game():time()
@@ -664,6 +715,7 @@ function GroupAIStateBase:on_simulation_started()
 	self._listener_holder = EventListenerHolder:new()
 	self:set_drama_draw_state(Global.drama_draw_state)
 end
+
 function GroupAIStateBase:on_simulation_ended()
 	self:set_AI_enabled(false)
 	self._t = TimerManager:game():time()
@@ -697,6 +749,7 @@ function GroupAIStateBase:on_simulation_ended()
 	self._criminal_AI_respawn_clbks = {}
 	self:set_drama_draw_state(false)
 end
+
 function GroupAIStateBase:on_enemy_registered(unit)
 	if self._anticipated_police_force > 0 then
 		self._anticipated_police_force = self._anticipated_police_force - 1
@@ -710,6 +763,7 @@ function GroupAIStateBase:on_enemy_registered(unit)
 		end
 	end
 end
+
 function GroupAIStateBase:criminal_hurt_drama(unit, attacker, dmg_percent)
 	local drama_data = self._drama_data
 	local drama_amount = drama_data.actions.criminal_hurt * dmg_percent
@@ -721,6 +775,7 @@ function GroupAIStateBase:criminal_hurt_drama(unit, attacker, dmg_percent)
 	end
 	self:_add_drama(drama_amount)
 end
+
 function GroupAIStateBase:on_enemy_unregistered(unit)
 	self._police_force = self._police_force - 1
 	if Network:is_server() then
@@ -772,15 +827,19 @@ function GroupAIStateBase:on_enemy_unregistered(unit)
 		end
 	end
 end
+
 function GroupAIStateBase:report_aggression(unit)
 	self._criminals[unit:key()].assault_t = self._t
 end
+
 function GroupAIStateBase:register_fleeing_civilian(u_key, unit)
 	self._fleeing_civilians[u_key] = unit
 end
+
 function GroupAIStateBase:unregister_fleeing_civilian(u_key)
 	self._fleeing_civilians[u_key] = nil
 end
+
 function GroupAIStateBase:register_special_unit(u_key, category_name)
 	local category = self._special_units[category_name]
 	if not category then
@@ -789,6 +848,7 @@ function GroupAIStateBase:register_special_unit(u_key, category_name)
 	end
 	category[u_key] = true
 end
+
 function GroupAIStateBase:unregister_special_unit(u_key, category_name)
 	local category = self._special_units[category_name]
 	category[u_key] = nil
@@ -796,6 +856,7 @@ function GroupAIStateBase:unregister_special_unit(u_key, category_name)
 		self._special_units[category_name] = nil
 	end
 end
+
 function GroupAIStateBase:register_criminal(unit)
 	local u_key = unit:key()
 	local ext_mv = unit:movement()
@@ -839,6 +900,7 @@ function GroupAIStateBase:register_criminal(unit)
 		managers.enemy:on_criminal_registered(unit)
 	end
 end
+
 function GroupAIStateBase:unregister_criminal(unit)
 	local u_key = unit:key()
 	local record = self._criminals[u_key]
@@ -875,6 +937,7 @@ function GroupAIStateBase:unregister_criminal(unit)
 	end
 	self:check_gameover_conditions()
 end
+
 function GroupAIStateBase:check_gameover_conditions()
 	if not Network:is_server() or managers.platform:presence() ~= "Playing" then
 		return false
@@ -917,6 +980,7 @@ function GroupAIStateBase:check_gameover_conditions()
 	end
 	return gameover
 end
+
 function GroupAIStateBase:_gameover_clbk_func()
 	local govr = self:check_gameover_conditions()
 	self._gameover_clbk = nil
@@ -925,9 +989,11 @@ function GroupAIStateBase:_gameover_clbk_func()
 		self:begin_gameover_fadeout()
 	end
 end
+
 function GroupAIStateBase:begin_gameover_fadeout()
 	game_state_machine:change_state_by_name("gameoverscreen")
 end
+
 function GroupAIStateBase:report_criminal_downed(unit)
 	if not self:bain_state() then
 		return
@@ -939,6 +1005,7 @@ function GroupAIStateBase:report_criminal_downed(unit)
 	end
 	managers.network:session():send_to_peers("bain_comment", bain_line)
 end
+
 function GroupAIStateBase:on_criminal_disabled(unit, custom_status)
 	local criminal_key = unit:key()
 	local record = self._criminals[criminal_key]
@@ -953,6 +1020,7 @@ function GroupAIStateBase:on_criminal_disabled(unit, custom_status)
 		self:check_gameover_conditions()
 	end
 end
+
 function GroupAIStateBase:on_criminal_neutralized(unit)
 	local criminal_key = unit:key()
 	local record = self._criminals[criminal_key]
@@ -967,6 +1035,7 @@ function GroupAIStateBase:on_criminal_neutralized(unit)
 		self:check_gameover_conditions()
 	end
 end
+
 function GroupAIStateBase:on_criminal_recovered(criminal_unit)
 	local record = self._criminals[criminal_unit:key()]
 	if record.status then
@@ -976,6 +1045,7 @@ function GroupAIStateBase:on_criminal_recovered(criminal_unit)
 		end
 	end
 end
+
 function GroupAIStateBase:on_civilian_try_freed()
 	if not self._warned_about_deploy_this_control then
 		self._warned_about_deploy_this_control = true
@@ -989,6 +1059,7 @@ function GroupAIStateBase:on_civilian_try_freed()
 		end
 	end
 end
+
 function GroupAIStateBase:on_civilian_freed()
 	if not self._warned_about_freed_this_control then
 		self._warned_about_freed_this_control = true
@@ -1002,6 +1073,7 @@ function GroupAIStateBase:on_civilian_freed()
 		end
 	end
 end
+
 function GroupAIStateBase:sync_warn_about_civilian_free(i)
 	if not self:bain_state() then
 		return
@@ -1016,12 +1088,16 @@ function GroupAIStateBase:sync_warn_about_civilian_free(i)
 		managers.dialog:queue_dialog("ban_r04", {})
 	end
 end
+
 function GroupAIStateBase:on_enemy_tied(u_key)
 end
+
 function GroupAIStateBase:on_enemy_untied(u_key)
 end
+
 function GroupAIStateBase:on_civilian_tied(u_key)
 end
+
 function GroupAIStateBase:_debug_draw_drama(t)
 	local draw_data = self._draw_drama
 	local drama_data = self._drama_data
@@ -1103,6 +1179,7 @@ function GroupAIStateBase:_debug_draw_drama(t)
 	local bottom_l = Vector3(0, draw_data.bg_bottom_l.y, 90)
 	local top_r = Vector3(0, draw_data.bg_top_l.y, 90)
 	local bottom_r = Vector3(0, draw_data.bg_bottom_l.y, 90)
+	
 	local function _draw_events(event_brush, event_list)
 		while event_list[1] and event_list[1][2] and t - event_list[1][2] > t_span do
 			table.remove(event_list, 1)
@@ -1122,13 +1199,16 @@ function GroupAIStateBase:_debug_draw_drama(t)
 			event_brush:quad(top_l, top_r, bottom_r, bottom_l)
 		end
 	end
+	
 	_draw_events(draw_data.assault_brush, draw_data.assault_hist)
 	_draw_events(draw_data.regroup_brush, draw_data.regroup_hist)
 end
+
 function GroupAIStateBase:toggle_drama_draw_state()
 	Global.drama_draw_state = not Global.drama_draw_state
 	self:set_drama_draw_state(Global.drama_draw_state)
 end
+
 function GroupAIStateBase:set_drama_draw_state(state)
 	if state then
 		local depth = 100
@@ -1210,6 +1290,7 @@ function GroupAIStateBase:set_drama_draw_state(state)
 		self._draw_drama = nil
 	end
 end
+
 function GroupAIStateBase:task_names()
 	return {
 		"any",
@@ -1220,13 +1301,16 @@ function GroupAIStateBase:task_names()
 		"rescue"
 	}
 end
+
 function GroupAIStateBase:add_spawn_event(id, event_data)
 	self._spawn_events[id] = event_data
 	event_data.chance = event_data.base_chance
 end
+
 function GroupAIStateBase:remove_spawn_event(id)
 	self._spawn_events[id] = nil
 end
+
 function GroupAIStateBase:_try_use_task_spawn_event(t, target_area, task_type, target_pos, force)
 	local max_dis = 3000
 	local mvec3_dis = mvector3.distance
@@ -1247,10 +1331,12 @@ function GroupAIStateBase:_try_use_task_spawn_event(t, target_area, task_type, t
 		end
 	end
 end
+
 function GroupAIStateBase:_use_spawn_event(event_data)
 	event_data.chance = event_data.base_chance
 	event_data.element:on_executed()
 end
+
 function GroupAIStateBase:on_objective_failed(unit, objective)
 	local new_objective
 	if unit:brain():objective() == objective then
@@ -1278,6 +1364,7 @@ function GroupAIStateBase:on_objective_failed(unit, objective)
 		fail_clbk(unit)
 	end
 end
+
 function GroupAIStateBase:add_special_objective(id, objective_data)
 	if self._special_objectives[id] then
 		self:remove_special_objective(id)
@@ -1305,6 +1392,7 @@ function GroupAIStateBase:add_special_objective(id, objective_data)
 		table.insert(area_data.SO, id)
 	end
 end
+
 function GroupAIStateBase:_execute_so(so_data, so_rooms, so_administered)
 	local max_dis = so_data.search_dis_sq
 	local pos = so_data.search_pos
@@ -1370,6 +1458,7 @@ function GroupAIStateBase:_execute_so(so_data, so_rooms, so_administered)
 	end
 	return closest_u_data
 end
+
 function GroupAIStateBase:remove_special_objective(id)
 	local so = self._special_objectives[id]
 	if not so then
@@ -1394,6 +1483,7 @@ function GroupAIStateBase:remove_special_objective(id)
 		end
 	end
 end
+
 function GroupAIStateBase:save(save_data)
 	local my_save_data = {}
 	save_data.group_ai = my_save_data
@@ -1409,6 +1499,7 @@ function GroupAIStateBase:save(save_data)
 		my_save_data.hostage_headcount = self._hostage_headcount
 	end
 end
+
 function GroupAIStateBase:load(load_data)
 	local my_load_data = load_data.group_ai
 	self._control_value = my_load_data.control_value
@@ -1423,6 +1514,7 @@ function GroupAIStateBase:load(load_data)
 		self:sync_hostage_headcount(my_load_data.hostage_headcount)
 	end
 end
+
 function GroupAIStateBase:set_point_of_no_return_timer(time, point_of_no_return_id)
 	if time == nil then
 		return
@@ -1438,9 +1530,11 @@ function GroupAIStateBase:set_point_of_no_return_timer(time, point_of_no_return_
 	managers.hud:show_point_of_no_return_timer()
 	managers.hud:add_updator("point_of_no_return", callback(self, self, "_update_point_of_no_return"))
 end
+
 function GroupAIStateBase:set_is_inside_point_of_no_return(peer_id, is_inside)
 	self._peers_inside_point_of_no_return[peer_id] = is_inside
 end
+
 function GroupAIStateBase:_update_point_of_no_return(t, dt)
 	local get_mission_script_element = function(id)
 		for name, script in pairs(managers.mission:scripts()) do
@@ -1518,6 +1612,7 @@ function GroupAIStateBase:_update_point_of_no_return(t, dt)
 		managers.hud:feed_point_of_no_return_timer(self._point_of_no_return_timer, is_inside)
 	end
 end
+
 function GroupAIStateBase:spawn_one_teamAI(is_drop_in, char_name, spawn_on_unit)
 	if Global.criminal_team_AI_disabled or not self._ai_enabled then
 		return
@@ -1575,12 +1670,14 @@ function GroupAIStateBase:spawn_one_teamAI(is_drop_in, char_name, spawn_on_unit)
 		return unit
 	end
 end
+
 function GroupAIStateBase:is_teamAI_marked_for_removal(name)
 	if not self._marked_AI then
 		return false
 	end
 	return self._marked_AI[name]
 end
+
 function GroupAIStateBase:mark_one_teamAI_for_removal(member_downed, member_dead)
 	if not self._marked_AI then
 		self._marked_AI = {}
@@ -1616,12 +1713,14 @@ function GroupAIStateBase:mark_one_teamAI_for_removal(member_downed, member_dead
 		return name
 	end
 end
+
 function GroupAIStateBase:demark_one_teamAI_for_removal(name)
 	if not self._marked_AI then
 		return
 	end
 	self._marked_AI[name] = nil
 end
+
 function GroupAIStateBase:remove_one_teamAI(name_to_remove, replace_with_player)
 	local u_key, u_data
 	if not name_to_remove then
@@ -1666,6 +1765,7 @@ function GroupAIStateBase:remove_one_teamAI(name_to_remove, replace_with_player)
 	end
 	return trade_entry, unit
 end
+
 function GroupAIStateBase:sync_remove_one_teamAI(name, replace_with_player)
 	managers.criminals:remove_character_by_name(name)
 	if not replace_with_player then
@@ -1675,6 +1775,7 @@ function GroupAIStateBase:sync_remove_one_teamAI(name, replace_with_player)
 		return managers.trade:replace_ai_with_player(name, name)
 	end
 end
+
 function GroupAIStateBase:fill_criminal_team_with_AI(is_drop_in)
 	if managers.navigation:is_data_ready() and self._ai_enabled and not Global.criminal_team_AI_disabled then
 		while true do
@@ -1684,6 +1785,7 @@ function GroupAIStateBase:fill_criminal_team_with_AI(is_drop_in)
 		end
 	end
 end
+
 function GroupAIStateBase:on_civilian_objective_complete(unit, objective)
 	local new_objective
 	if objective.followup_objective then
@@ -1706,6 +1808,7 @@ function GroupAIStateBase:on_civilian_objective_complete(unit, objective)
 		objective.complete_clbk(unit)
 	end
 end
+
 function GroupAIStateBase:on_civilian_objective_failed(unit, objective)
 	local fail_clbk = objective.fail_clbk
 	objective.fail_clbk = nil
@@ -1714,6 +1817,7 @@ function GroupAIStateBase:on_civilian_objective_failed(unit, objective)
 	end
 	unit:brain():set_objective({type = "free"})
 end
+
 function GroupAIStateBase:on_criminal_objective_complete(unit, objective)
 	local new_objective, so_element
 	if objective.followup_objective then
@@ -1737,6 +1841,7 @@ function GroupAIStateBase:on_criminal_objective_complete(unit, objective)
 		objective.complete_clbk(unit)
 	end
 end
+
 function GroupAIStateBase:on_criminal_objective_failed(unit, objective, no_new_objective)
 	local fail_clbk = objective.fail_clbk
 	objective.fail_clbk = nil
@@ -1747,12 +1852,14 @@ function GroupAIStateBase:on_criminal_objective_failed(unit, objective, no_new_o
 		unit:brain():set_objective(nil)
 	end
 end
+
 function GroupAIStateBase:on_criminal_jobless(unit)
 	local new_objective = self:_determine_objective_for_criminal_AI(unit)
 	if new_objective then
 		unit:brain():set_objective(new_objective)
 	end
 end
+
 function GroupAIStateBase:_determine_spawn_objective_for_criminal_AI()
 	local new_objective
 	local valid_criminals = {}
@@ -1771,6 +1878,7 @@ function GroupAIStateBase:_determine_spawn_objective_for_criminal_AI()
 	end
 	return new_objective
 end
+
 function GroupAIStateBase:_determine_objective_for_criminal_AI(unit)
 	local new_objective, closest_dis, closest_record
 	local ai_pos = self._ai_criminals[unit:key()].m_pos
@@ -1792,6 +1900,7 @@ function GroupAIStateBase:_determine_objective_for_criminal_AI(unit)
 	end
 	return new_objective
 end
+
 function GroupAIStateBase:_coach_last_man_clbk()
 	if table.size(self:all_char_criminals()) == 1 and self:bain_state() then
 		local _, crim = next(self:all_char_criminals())
@@ -1806,6 +1915,7 @@ function GroupAIStateBase:_coach_last_man_clbk()
 		end
 	end
 end
+
 function GroupAIStateBase:set_assault_mode(enabled)
 	if self._assault_mode ~= enabled then
 		self._assault_mode = enabled
@@ -1828,6 +1938,7 @@ function GroupAIStateBase:set_assault_mode(enabled)
 		end
 	end
 end
+
 function GroupAIStateBase:sync_assault_mode(enabled)
 	if self._assault_mode ~= enabled then
 		self._assault_mode = enabled
@@ -1841,6 +1952,7 @@ function GroupAIStateBase:sync_assault_mode(enabled)
 		end
 	end
 end
+
 function GroupAIStateBase:set_fake_assault_mode(enabled)
 	if self._fake_assault_mode ~= enabled then
 		self._fake_assault_mode = enabled
@@ -1850,30 +1962,38 @@ function GroupAIStateBase:set_fake_assault_mode(enabled)
 		end
 	end
 end
+
 function GroupAIStateBase:whisper_mode()
 	return self._whisper_mode
 end
+
 function GroupAIStateBase:set_whisper_mode(enabled)
 	self._whisper_mode = enabled
 end
+
 function GroupAIStateBase:set_blackscreen_variant(variant)
 	self._blackscreen_variant = variant
 end
+
 function GroupAIStateBase:blackscreen_variant(variant)
 	return self._blackscreen_variant
 end
+
 function GroupAIStateBase:bain_state()
 	return self._bain_state
 end
+
 function GroupAIStateBase:set_bain_state(enabled)
 	self._bain_state = enabled
 end
+
 function GroupAIStateBase:set_allow_dropin(enabled)
 	self._allow_dropin = enabled
 	if Network:is_server() then
 		managers.network:session():chk_server_joinable_state()
 	end
 end
+
 function GroupAIStateBase:sync_hostage_killed_warning(warning)
 	if not self:bain_state() then
 		return
@@ -1886,6 +2006,7 @@ function GroupAIStateBase:sync_hostage_killed_warning(warning)
 		return managers.dialog:queue_dialog("Play_ban_c03", {})
 	end
 end
+
 function GroupAIStateBase:hostage_killed(killer_unit)
 	self._hostages_killed = (self._hostages_killed or 0) + 1
 	if not self._hunt_mode then
@@ -1922,6 +2043,7 @@ function GroupAIStateBase:hostage_killed(killer_unit)
 		print("RC: respawn_penalty", criminal.respawn_penalty)
 	end
 end
+
 function GroupAIStateBase:on_AI_criminal_death(criminal_name, unit)
 	managers.hint:show_hint("teammate_dead", nil, false, {
 		TEAMMATE = unit:base():nick_name()
@@ -1932,6 +2054,7 @@ function GroupAIStateBase:on_AI_criminal_death(criminal_name, unit)
 	local respawn_penalty = self._criminals[unit:key()].respawn_penalty or tweak_data.character[unit:base()._tweak_table].damage.base_respawn_time_penalty
 	managers.trade:on_AI_criminal_death(criminal_name, respawn_penalty, self._criminals[unit:key()].hostages_killed or 0)
 end
+
 function GroupAIStateBase:on_player_criminal_death(peer_id)
 	local unit = managers.network:game():unit_from_peer_id(peer_id)
 	if not unit then
@@ -1950,18 +2073,23 @@ function GroupAIStateBase:on_player_criminal_death(peer_id)
 	local respawn_penalty = self._criminals[unit:key()].respawn_penalty or tweak_data.player.damage.base_respawn_time_penalty
 	managers.trade:on_player_criminal_death(criminal_name, respawn_penalty, self._criminals[unit:key()].hostages_killed or 0)
 end
+
 function GroupAIStateBase:all_AI_criminals()
 	return self._ai_criminals
 end
+
 function GroupAIStateBase:all_player_criminals()
 	return self._player_criminals
 end
+
 function GroupAIStateBase:all_criminals()
 	return self._criminals
 end
+
 function GroupAIStateBase:all_char_criminals()
 	return self._char_criminals
 end
+
 function GroupAIStateBase:amount_of_ai_criminals()
 	local amount = 0
 	for _, _ in pairs(self._ai_criminals) do
@@ -1969,6 +2097,7 @@ function GroupAIStateBase:amount_of_ai_criminals()
 	end
 	return amount
 end
+
 function GroupAIStateBase:amount_of_winning_ai_criminals()
 	local amount = 0
 	for _, u_data in pairs(self._ai_criminals) do
@@ -1978,12 +2107,15 @@ function GroupAIStateBase:amount_of_winning_ai_criminals()
 	end
 	return amount
 end
+
 function GroupAIStateBase:fleeing_civilians()
 	return self._fleeing_civilians
 end
+
 function GroupAIStateBase:all_hostages()
 	return self._hostage_keys
 end
+
 function GroupAIStateBase:on_criminal_team_AI_enabled_state_changed()
 	if Network:is_client() then
 		return
@@ -1996,6 +2128,7 @@ function GroupAIStateBase:on_criminal_team_AI_enabled_state_changed()
 		self:fill_criminal_team_with_AI()
 	end
 end
+
 function GroupAIStateBase:_draw_enemy_importancies()
 	for e_key, e_data in pairs(self._police) do
 		local imp = e_data.importance
@@ -2015,6 +2148,7 @@ function GroupAIStateBase:_draw_enemy_importancies()
 		end
 	end
 end
+
 function GroupAIStateBase:report_cop_to_criminal_dis(cop_unit, dis_report)
 	if #dis_report == 0 then
 		return
@@ -2069,6 +2203,7 @@ function GroupAIStateBase:report_cop_to_criminal_dis(cop_unit, dis_report)
 		self:_adjust_cop_importance(e_key, imp_adj)
 	end
 end
+
 function GroupAIStateBase:_adjust_cop_importance(e_key, imp_adj)
 	local e_data = self._police[e_key]
 	local old_imp = e_data.importance
@@ -2077,6 +2212,7 @@ function GroupAIStateBase:_adjust_cop_importance(e_key, imp_adj)
 		e_data.unit:brain():set_important(old_imp == 0)
 	end
 end
+
 function GroupAIStateBase:sync_smoke_grenade(detonate_pos, shooter_pos, duration)
 	self._smoke_grenade = World:spawn_unit(Idstring("units/weapons/smoke_grenade_quick/smoke_grenade_quick"), detonate_pos, Rotation())
 	local smoke_duration = duration == 0 and 15 or duration
@@ -2086,6 +2222,7 @@ function GroupAIStateBase:sync_smoke_grenade(detonate_pos, shooter_pos, duration
 	self._smoke_grenade_ignore_control = nil
 	managers.groupai:state():teammate_comment(nil, "g40x_any", detonate_pos, true, 2000, false)
 end
+
 function GroupAIStateBase:sync_smoke_grenade_kill()
 	if alive(self._smoke_grenade) then
 		self._smoke_grenade:base():preemptive_kill()
@@ -2093,15 +2230,19 @@ function GroupAIStateBase:sync_smoke_grenade_kill()
 	end
 	self._smoke_end_t = nil
 end
+
 function GroupAIStateBase:_call_listeners(event)
 	self._listener_holder:call(event)
 end
+
 function GroupAIStateBase:add_listener(key, events, clbk)
 	self._listener_holder:add(key, events, clbk)
 end
+
 function GroupAIStateBase:remove_listener(key)
 	self._listener_holder:remove(key)
 end
+
 function GroupAIStateBase:sync_hostage_headcount(nr_hostages)
 	if nr_hostages then
 		self._hostage_headcount = nr_hostages
@@ -2112,6 +2253,7 @@ function GroupAIStateBase:sync_hostage_headcount(nr_hostages)
 		nr_hostages = self._hostage_headcount
 	})
 end
+
 function GroupAIStateBase:_set_rescue_state(state)
 	self._rescue_allowed = state
 	local all_civilians = managers.enemy:all_civilians()
@@ -2122,9 +2264,11 @@ function GroupAIStateBase:_set_rescue_state(state)
 		e_data.unit:brain():on_rescue_allowed_state(state)
 	end
 end
+
 function GroupAIStateBase:rescue_state()
 	return self._rescue_allowed
 end
+
 function GroupAIStateBase:find_followers_to_unit(leader_key, leader_data)
 	local leader_u_data = self._police[leader_key]
 	if not leader_u_data then
@@ -2165,12 +2309,14 @@ function GroupAIStateBase:find_followers_to_unit(leader_key, leader_data)
 		end
 	end
 end
+
 function GroupAIStateBase:chk_has_followers(leader_key)
 	local leader_u_data = self._police[leader_key]
 	if leader_u_data and next(leader_u_data.followers) then
 		return true
 	end
 end
+
 function GroupAIStateBase:are_followers_ready(leader_key)
 	local leader_u_data = self._police[leader_key]
 	if not leader_u_data or not leader_u_data.followers then
@@ -2185,6 +2331,7 @@ function GroupAIStateBase:are_followers_ready(leader_key)
 	end
 	return true
 end
+
 function GroupAIStateBase:dismiss_followers(leader_key)
 	local leader_u_data = self._police[leader_key]
 	if leader_u_data.followers then
@@ -2199,6 +2346,7 @@ function GroupAIStateBase:dismiss_followers(leader_key)
 		leader_u_data.followers = nil
 	end
 end
+
 function GroupAIStateBase:clbk_follow_objective_failed(data)
 	local leader_u_data = data.leader_u_data
 	local follower_unit = data.follower_unit
@@ -2214,6 +2362,7 @@ function GroupAIStateBase:clbk_follow_objective_failed(data)
 		follower_u_data.follower = nil
 	end
 end
+
 function GroupAIStateBase:chk_area_leads_to_enemy(start_nav_seg_id, test_nav_seg_id, enemy_is_criminal)
 	local enemy_areas = {}
 	for c_key, c_data in pairs(enemy_is_criminal and self._criminals or self._police) do
@@ -2240,9 +2389,11 @@ function GroupAIStateBase:chk_area_leads_to_enemy(start_nav_seg_id, test_nav_seg
 		end
 	until #to_search_nav_segs == 0
 end
+
 function GroupAIStateBase:occasional_event_info(event_type)
 	return self._occasional_events[event_type]
 end
+
 function GroupAIStateBase:on_occasional_event(event_type)
 	local event_data = self._occasional_events[event_type]
 	if not event_data then
@@ -2252,11 +2403,13 @@ function GroupAIStateBase:on_occasional_event(event_type)
 	event_data.count = (event_data.count or 0) + 1
 	event_data.last_occurence_t = TimerManager:game():time()
 end
+
 function GroupAIStateBase:on_player_spawn_state_set(state_name)
 	if state_name == "standard" then
 		self:on_enemy_weapons_hot()
 	end
 end
+
 function GroupAIStateBase:chk_say_enemy_chatter(unit, unit_pos, chatter_type)
 	local chatter_tweak = tweak_data.group_ai.enemy_chatter[chatter_type]
 	local chatter_type_hist = self._enemy_chatter[chatter_type]
@@ -2317,6 +2470,7 @@ function GroupAIStateBase:chk_say_enemy_chatter(unit, unit_pos, chatter_type)
 	unit:sound():say(chatter_tweak.queue, true)
 	return true
 end
+
 function GroupAIStateBase:chk_say_teamAI_combat_chatter(unit)
 	if not self:is_detection_persistent() then
 		return
@@ -2335,6 +2489,7 @@ function GroupAIStateBase:chk_say_teamAI_combat_chatter(unit)
 	end
 	unit:sound():say("g90", true, true)
 end
+
 function GroupAIStateBase:_mark_hostage_areas_as_unsafe()
 	local all_areas = self._area_data
 	for u_key, u_data in pairs(managers.enemy:all_civilians()) do
@@ -2343,6 +2498,7 @@ function GroupAIStateBase:_mark_hostage_areas_as_unsafe()
 		end
 	end
 end
+
 function GroupAIStateBase:on_nav_link_unregistered(element_id)
 	local all_ai = {
 		self._police,
@@ -2356,12 +2512,14 @@ function GroupAIStateBase:on_nav_link_unregistered(element_id)
 		end
 	end
 end
+
 function GroupAIStateBase:chk_allow_drop_in()
 	if self._forbid_drop_in or not self._allow_dropin then
 		return false
 	end
 	return true
 end
+
 function GroupAIStateBase:_get_anticipation_duration(anticipation_duration_table, is_first)
 	local anticipation_duration = anticipation_duration_table[1][1]
 	if not is_first then

@@ -2,23 +2,30 @@ core:module("CoreHeatmapLayer")
 core:import("CoreLayer")
 core:import("CoreEws")
 HeatmapLayer = HeatmapLayer or class(CoreLayer.Layer)
+
 function HeatmapLayer:init(owner)
 	HeatmapLayer.super.init(self, owner, "heatmap")
 	self._heatmap_sets = {}
 end
+
 function HeatmapLayer:get_layer_name()
 	return "Heatmap"
 end
+
 function HeatmapLayer:get_setting(setting)
 	return
 end
+
 function HeatmapLayer:load(world_holder, offset)
 end
+
 function HeatmapLayer:save(save_params)
 end
+
 function HeatmapLayer:update(t, dt)
 	self:_draw(t, dt)
 end
+
 function HeatmapLayer:_draw(t, dt)
 	local colors = {
 		Vector3(0, 1, 0),
@@ -43,6 +50,7 @@ function HeatmapLayer:_draw(t, dt)
 		end
 	end
 end
+
 function HeatmapLayer:_draw_path(path, color)
 	for i = 1, #path, 2 do
 		local p1 = path[i]
@@ -52,6 +60,7 @@ function HeatmapLayer:_draw_path(path, color)
 		end
 	end
 end
+
 function HeatmapLayer:build_panel(notebook)
 	cat_print("editor", "HeatmapLayer:build_panel")
 	self._ews_panel = EWS:Panel(notebook, "", "TAB_TRAVERSAL")
@@ -67,6 +76,7 @@ function HeatmapLayer:build_panel(notebook)
 	self._main_sizer:add(self._sizer, 1, 0, "EXPAND")
 	return self._ews_panel
 end
+
 function HeatmapLayer:_add_data()
 	local opendlg_path, opendlg_dir = managers.database:open_file_dialog(Global.frame, "Logs (*.txt)|*.txt")
 	if opendlg_path and opendlg_dir then
@@ -146,18 +156,23 @@ function HeatmapLayer:_add_data()
 		table.insert(self._heatmap_sets, data)
 	end
 end
+
 function HeatmapLayer:_clr_data()
 	self._heatmap_sets = {}
 end
+
 function HeatmapLayer:add_triggers()
 	HeatmapLayer.super.add_triggers(self)
 end
+
 function HeatmapLayer:activate()
 	HeatmapLayer.super.activate(self)
 end
+
 function HeatmapLayer:deactivate()
 	HeatmapLayer.super.deactivate(self)
 end
+
 function HeatmapLayer:clear()
 	HeatmapLayer.super.clear(self)
 	self:_clr_data()

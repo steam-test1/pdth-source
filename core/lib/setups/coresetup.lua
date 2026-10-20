@@ -66,6 +66,7 @@ if Application:editor() then
 end
 CoreSetup = CoreSetup or class()
 local _CoreSetup = CoreSetup
+
 function CoreSetup:init()
 	CoreClass.close_override()
 	self.__quit = false
@@ -73,62 +74,87 @@ function CoreSetup:init()
 	self.__context = nil
 	self.__firstupdate = true
 end
+
 function CoreSetup:init_category_print()
 end
+
 function CoreSetup:load_packages()
 end
+
 function CoreSetup:unload_packages()
 end
+
 function CoreSetup:start_boot_loading_screen()
 end
+
 function CoreSetup:init_managers(managers)
 end
+
 function CoreSetup:init_toolhub(toolhub)
 end
+
 function CoreSetup:init_game()
 end
+
 function CoreSetup:init_finalize()
 end
+
 function CoreSetup:start_loading_screen()
 end
+
 function CoreSetup:stop_loading_screen()
 end
+
 function CoreSetup:update(t, dt)
 end
+
 function CoreSetup:paused_update(t, dt)
 end
+
 function CoreSetup:render()
 end
+
 function CoreSetup:end_frame(t, dt)
 end
+
 function CoreSetup:end_update(t, dt)
 end
+
 function CoreSetup:paused_end_update(t, dt)
 end
+
 function CoreSetup:save(data)
 end
+
 function CoreSetup:load(data)
 end
+
 function CoreSetup:destroy()
 end
+
 function CoreSetup:freeflight()
 	return self.__freeflight
 end
+
 function CoreSetup:exec(context)
 	self.__exec = true
 	self.__context = context
 end
+
 function CoreSetup:quit()
 	if not Application:editor() then
 		self.__quit = true
 	end
 end
+
 function CoreSetup:block_exec()
 	return false
 end
+
 function CoreSetup:block_quit()
 	return false
 end
+
 function CoreSetup:__pre_init()
 	if Application:editor() then
 		managers.global_texture = CoreGTextureManager.GTextureManager:new()
@@ -160,6 +186,7 @@ function CoreSetup:__pre_init()
 		Global.left_toolbar_sizer = left_toolbar_sizer
 	end
 end
+
 function CoreSetup:__init()
 	self:init_category_print()
 	if not PackageManager:loaded("core/packages/base") then
@@ -263,6 +290,7 @@ function CoreSetup:__init()
 	end
 	self:init_finalize()
 end
+
 function CoreSetup:__destroy()
 	self:destroy()
 	self.__gsm:destroy()
@@ -286,8 +314,10 @@ function CoreSetup:__destroy()
 	self._input:destroy()
 	self._smoketest:destroy()
 end
+
 function CoreSetup:loading_update(t, dt)
 end
+
 function CoreSetup:__update(t, dt)
 	if self.__firstupdate then
 		self:stop_loading_screen()
@@ -326,6 +356,7 @@ function CoreSetup:__update(t, dt)
 	end
 	self:update(t, dt)
 end
+
 function CoreSetup:__paused_update(t, dt)
 	managers.viewport:paused_update(t, dt)
 	managers.controller:paused_update(t, dt)
@@ -350,6 +381,7 @@ function CoreSetup:__paused_update(t, dt)
 	end
 	self:paused_update(t, dt)
 end
+
 function CoreSetup:__end_update(t, dt)
 	managers.camera:update(t, dt)
 	self._session:end_update(t, dt)
@@ -362,17 +394,20 @@ function CoreSetup:__end_update(t, dt)
 		managers.toolhub:end_update(t, dt)
 	end
 end
+
 function CoreSetup:__paused_end_update(t, dt)
 	self:paused_end_update(t, dt)
 	self.__gsm:end_update(t, dt)
 	managers.DOF:paused_update(t, dt)
 end
+
 function CoreSetup:__render()
 	managers.portal:render()
 	managers.viewport:render()
 	managers.overlay_effect:render()
 	self:render()
 end
+
 function CoreSetup:__end_frame(t, dt)
 	self:end_frame(t, dt)
 	managers.viewport:end_frame(t, dt)
@@ -406,38 +441,48 @@ function CoreSetup:__end_frame(t, dt)
 		CoreEngineAccess._exec("core/lib/CoreEntry", self.__context)
 	end
 end
+
 function CoreSetup:__loading_update(t, dt)
 	self._session:update(t, dt)
 	self:loading_update()
 end
+
 function CoreSetup:__animations_reloaded()
 end
+
 function CoreSetup:__script_reloaded()
 end
+
 function CoreSetup:__entering_window(user_data, event_object)
 	if Global.frame:is_active() then
 		Global.application_window:set_focus()
 		Input:keyboard():acquire()
 	end
 end
+
 function CoreSetup:__leaving_window(user_data, event_object)
 	if managers.editor._in_mixed_input_mode then
 		Input:keyboard():unacquire()
 	end
 end
+
 function CoreSetup:__kill_focus(user_data, event_object)
 	if managers.editor and not managers.editor:in_mixed_input_mode() and not Global.running_simulation then
 		managers.editor:set_in_mixed_input_mode(true)
 	end
 end
+
 function CoreSetup:__save(data)
 	self:save(data)
 end
+
 function CoreSetup:__load(data)
 	self:load(data)
 end
+
 core:module("CoreSetup")
 CoreSetup = _CoreSetup
+
 function CoreSetup:make_entrypoint()
 	if not _G.CoreSetup.__entrypoint_is_setup then
 		assert(nil == rawget(_G, "pre_init"))

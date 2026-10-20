@@ -1,9 +1,11 @@
 WhisperStateUnitElement = WhisperStateUnitElement or class(MissionElement)
+
 function WhisperStateUnitElement:init(unit)
 	WhisperStateUnitElement.super.init(self, unit)
 	self._hed.state = false
 	table.insert(self._save_values, "state")
 end
+
 function WhisperStateUnitElement:_build_panel(panel, panel_sizer)
 	self:_create_panel()
 	panel = panel or self._panel

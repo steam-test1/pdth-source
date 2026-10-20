@@ -1,11 +1,14 @@
 core:import("CoreMissionScriptElement")
 ElementPointOfNoReturn = ElementPointOfNoReturn or class(CoreMissionScriptElement.MissionScriptElement)
+
 function ElementPointOfNoReturn:init(...)
 	ElementPointOfNoReturn.super.init(self, ...)
 end
+
 function ElementPointOfNoReturn:client_on_executed(...)
 	self:on_executed(...)
 end
+
 function ElementPointOfNoReturn:on_executed(instigator)
 	if not self._values.enabled then
 		return

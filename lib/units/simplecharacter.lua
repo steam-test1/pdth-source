@@ -1,14 +1,18 @@
 SimpleCharacter = SimpleCharacter or class()
 SimpleCharacter.SPEED = 150
+
 function SimpleCharacter:init(unit)
 	self._unit = unit
 end
+
 function SimpleCharacter:update(unit, t, dt)
 	self:move(t, dt)
 end
+
 function SimpleCharacter:paused_update(unit, t, dt)
 	self:move(t, dt)
 end
+
 function SimpleCharacter:move(t, dt)
 	local move_vec = Vector3(0, 0, 0)
 	local keyboard = Input:keyboard()

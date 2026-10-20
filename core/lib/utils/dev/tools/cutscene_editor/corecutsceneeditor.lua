@@ -14,6 +14,7 @@ CoreCutsceneEditor = CoreCutsceneEditor or class()
 mixin(CoreCutsceneEditor, CoreCutsceneKeyCollection)
 CoreCutsceneEditor.EDITOR_TITLE = "Cutscene Editor"
 CoreCutsceneEditor.DEFAULT_CAMERA_FAR_RANGE = 50000
+
 function CoreCutsceneEditor:_all_keys_sorted_by_time()
 	local cutscene_keys = table.collect(self._sequencer:key_track():clips(), function(sequencer_key)
 		return sequencer_key:metadata()
@@ -23,6 +24,7 @@ function CoreCutsceneEditor:_all_keys_sorted_by_time()
 	end)
 	return cutscene_keys
 end
+
 local commands = CoreCommandRegistry:new()
 commands:add({
 	id = "NEW_PROJECT",
@@ -266,12 +268,14 @@ for _, key_type in ipairs(CoreCutsceneKey:types()) do
 		cutscene_key_insertion_commands[key] = key_type
 	end
 end
+
 function CoreCutsceneEditor:init()
 	self._cast = core_or_local("CutsceneCast")
 	self:_create_viewport()
 	self:_create_window():set_visible(true)
 	self._project_settings_dialog = core_or_local("CutsceneSettingsDialog", self._window)
 end
+
 function CoreCutsceneEditor:_create_viewport()
 	assert(self._viewport == nil)
 	assert(self._camera == nil)
@@ -287,6 +291,7 @@ function CoreCutsceneEditor:_create_viewport()
 	self._camera_controller:set_timer(TimerManager:game_animation())
 	self._viewport:director():set_camera(self._camera_controller)
 end
+
 function CoreCutsceneEditor:camera_attributes()
 	if self._player then
 		return self._player:camera_attributes()
@@ -299,17 +304,20 @@ function CoreCutsceneEditor:camera_attributes()
 		return attributes
 	end
 end
+
 function CoreCutsceneEditor:_create_window()
 	self._window = EWS:Frame(CoreCutsceneEditor.EDITOR_TITLE, Vector3(100, 500, 0), Vector3(800, 800, 0), "DEFAULT_FRAME_STYLE,FRAME_FLOAT_ON_PARENT", Global.frame)
 	self._window:connect("", "EVT_CLOSE_WINDOW", callback(self, self, "_on_exit"), "")
 	self._window:connect("", "EVT_ACTIVATE", callback(self, self, "_on_activate"), "")
 	self._window:set_icon(CoreEWS.image_path("film_reel_16x16.png"))
 	self._window:set_min_size(Vector3(400, 321, 0))
+	
 	local function connect_command(command_id, callback_name, callback_data)
 		callback_name = callback_name or "_on_" .. string.lower(command_id)
 		callback_data = callback_data or ""
 		self._window:connect(commands:id(command_id), "EVT_COMMAND_MENU_SELECTED", callback(self, self, callback_name), callback_data)
 	end
+	
 	connect_command("NEW_PROJECT")
 	connect_command("OPEN_PROJECT")
 	connect_command("SAVE_PROJECT")
@@ -380,6 +388,7 @@ function CoreCutsceneEditor:_create_window()
 	self:_refresh_attribute_panel()
 	return self._window
 end
+
 function CoreCutsceneEditor:_create_menu_bar()
 	local file_menu = commands:wrap_menu(EWS:Menu(""))
 	file_menu:append_command("NEW_PROJECT")
@@ -454,8 +463,10 @@ function CoreCutsceneEditor:_create_menu_bar()
 	menu_bar:append(self._insert_menu:wrapped_object(), "&Insert")
 	return menu_bar
 end
+
 function CoreCutsceneEditor:_create_tool_bar(parent_frame)
 	local tool_bar = commands:wrap_tool_bar(EWS:ToolBar(parent_frame, "", "TB_HORIZONTAL,TB_FLAT,TB_NOALIGN"))
+	
 	local function add_labelled_field(label, field_text)
 		local label = EWS:StaticText(tool_bar:wrapped_object(), label)
 		label:set_font_size(6)
@@ -466,6 +477,7 @@ function CoreCutsceneEditor:_create_tool_bar(parent_frame)
 		tool_bar:add_control(field)
 		return field
 	end
+	
 	tool_bar:add_separator()
 	tool_bar:add_command("PLAY_FROM_START")
 	tool_bar:add_command("PLAY")
@@ -485,20 +497,25 @@ function CoreCutsceneEditor:_create_tool_bar(parent_frame)
 	tool_bar:realize()
 	return tool_bar:wrapped_object()
 end
+
 function CoreCutsceneEditor:_frame_string_for_frame(frame)
 	return string.format("%05i", frame)
 end
+
 function CoreCutsceneEditor:_time_code_string_for_frame(frame)
 	local function consume_frames(frames_per_unit)
 		local whole_units = math.floor(frame / frames_per_unit)
+		
 		frame = frame - whole_units * frames_per_unit
 		return whole_units
 	end
+	
 	local hour = consume_frames(3600 * self:frames_per_second())
 	local minute = consume_frames(60 * self:frames_per_second())
 	local second = consume_frames(self:frames_per_second())
 	return string.format("%02i:%02i:%02i:%02i", hour, minute, second, frame)
 end
+
 function CoreCutsceneEditor:_create_sequencer(parent_frame)
 	self._sequencer_panel = EWS:Panel(parent_frame)
 	local panel_sizer = EWS:BoxSizer("VERTICAL")
@@ -512,6 +529,7 @@ function CoreCutsceneEditor:_create_sequencer(parent_frame)
 	self._sequencer:connect("EVT_EVALUATE_FRAME_AT_PLAYHEAD", callback(self, self, "_on_sequencer_evaluate_frame_at_playhead"), self._sequencer)
 	panel_sizer:add(self._sequencer:panel(), 1, 1, "LEFT,RIGHT,BOTTOM,EXPAND")
 end
+
 function CoreCutsceneEditor:_create_attribute_panel(parent_frame)
 	self._attribute_panel = EWS:Panel(parent_frame)
 	local panel_sizer = EWS:BoxSizer("VERTICAL")
@@ -522,6 +540,7 @@ function CoreCutsceneEditor:_create_attribute_panel(parent_frame)
 	self:_refresh_attribute_panel()
 	panel_sizer:add(self._attribute_panel_area, 1, 1, "LEFT,BOTTOM,EXPAND")
 end
+
 function CoreCutsceneEditor:_refresh_attribute_panel()
 	self._attribute_panel_area:freeze()
 	self._attribute_panel_area:destroy_children()
@@ -538,6 +557,7 @@ function CoreCutsceneEditor:_refresh_attribute_panel()
 	end
 	self._attribute_panel_area:thaw()
 end
+
 function CoreCutsceneEditor:_refresh_selected_footage_track()
 	local selected_footage = self:_selected_footage()
 	self:_display_footage_in_selected_footage_track(selected_footage)
@@ -558,6 +578,7 @@ function CoreCutsceneEditor:_refresh_selected_footage_track()
 		end
 	end
 end
+
 function CoreCutsceneEditor:_selected_footage()
 	local selected_clips = self._sequencer:selected_film_clips()
 	if not table.empty(selected_clips) then
@@ -570,6 +591,7 @@ function CoreCutsceneEditor:_selected_footage()
 		return 0 <= selected_item_index and self._footage_list_ctrl:get_item_data(selected_item_index)
 	end
 end
+
 function CoreCutsceneEditor:_display_footage_in_selected_footage_track(footage)
 	if footage ~= self._selected_footage_track_displayed_footage then
 		self._selected_footage_track:remove_all_clips()
@@ -581,6 +603,7 @@ function CoreCutsceneEditor:_display_footage_in_selected_footage_track(footage)
 		self._selected_footage_track_displayed_footage = footage
 	end
 end
+
 function CoreCutsceneEditor:_sizer_with_editable_attributes_for_current_context(parent_frame)
 	local selected_keys = self._sequencer:selected_keys()
 	local displayed_item = (#selected_keys == 1 and selected_keys[1] or responder(nil)):metadata()
@@ -595,6 +618,7 @@ function CoreCutsceneEditor:_sizer_with_editable_attributes_for_current_context(
 		return sizer
 	end
 end
+
 function CoreCutsceneEditor:_create_selected_footage_track(parent_frame)
 	local panel = EWS:Panel(parent_frame)
 	local panel_sizer = EWS:BoxSizer("VERTICAL")
@@ -618,6 +642,7 @@ function CoreCutsceneEditor:_create_selected_footage_track(parent_frame)
 	scrolled_area_sizer:add(self._selected_footage_track, 0, 0, "EXPAND")
 	return panel
 end
+
 function CoreCutsceneEditor:_create_footage_list(parent_frame)
 	self._footage_list_ctrl = EWS:ListCtrl(parent_frame, "", "LC_LIST")
 	local image_list = EWS:ImageList(16, 16)
@@ -629,6 +654,7 @@ function CoreCutsceneEditor:_create_footage_list(parent_frame)
 	self._footage_list_ctrl:connect("EVT_COMMAND_LIST_ITEM_DESELECTED", callback(self, self, "_on_footage_selection_changed"), self._footage_list_ctrl)
 	return self._footage_list_ctrl
 end
+
 function CoreCutsceneEditor:_refresh_footage_list()
 	self._footage_list_ctrl:freeze()
 	self._footage_list_ctrl:clear_all()
@@ -641,6 +667,7 @@ function CoreCutsceneEditor:_refresh_footage_list()
 	end)
 	table.sort(unoptimized_cutscene_names)
 	table.sort(optimized_cutscene_names)
+	
 	local function add_cutscene_footage(name, icon_id)
 		local cutscene = managers.cutscene:get_cutscene(name)
 		if cutscene:is_valid() then
@@ -649,6 +676,7 @@ function CoreCutsceneEditor:_refresh_footage_list()
 			self._footage_list_ctrl:set_item_data(item, core_or_local("CutsceneFootage", cutscene))
 		end
 	end
+	
 	for _, name in ipairs(optimized_cutscene_names) do
 		add_cutscene_footage(name, self._optimized_reel_icon)
 	end
@@ -657,9 +685,11 @@ function CoreCutsceneEditor:_refresh_footage_list()
 	end
 	self._footage_list_ctrl:thaw()
 end
+
 function CoreCutsceneEditor:_evaluated_track()
 	return self._sequencer:active_film_track()
 end
+
 function CoreCutsceneEditor:_evaluate_current_frame()
 	local frame = self:playhead_position()
 	self._frame_label:set_label(self:_frame_string_for_frame(frame))
@@ -670,6 +700,7 @@ function CoreCutsceneEditor:_evaluate_current_frame()
 	end
 	self:_evaluate_editor_cutscene_keys_for_frame(frame)
 end
+
 function CoreCutsceneEditor:_evaluate_editor_cutscene_keys_for_frame(frame)
 	local time = frame / self:frames_per_second()
 	self._last_evaluated_time = self._last_evaluated_time or 0
@@ -694,6 +725,7 @@ function CoreCutsceneEditor:_evaluate_editor_cutscene_keys_for_frame(frame)
 	end
 	self._last_evaluated_time = time
 end
+
 function CoreCutsceneEditor:_evaluate_clip_at_frame(clip, frame)
 	if clip then
 		local cutscene_metadata = clip:metadata()
@@ -703,6 +735,7 @@ function CoreCutsceneEditor:_evaluate_clip_at_frame(clip, frame)
 		end
 	end
 end
+
 function CoreCutsceneEditor:_create_cutscene_player(cutscene)
 	local player = core_or_local("CutscenePlayer", cutscene, self._viewport, self._cast)
 	player:set_key_handler(self)
@@ -714,6 +747,7 @@ function CoreCutsceneEditor:_create_cutscene_player(cutscene)
 	player:set_widescreen(self._view_menu:is_checked(commands:id("WIDESCREEN_TOGGLE")))
 	return player
 end
+
 function CoreCutsceneEditor:_evaluate_cutscene_frame(cutscene, camera, frame)
 	if self._player == nil then
 		self._player = self:_create_cutscene_player(cutscene)
@@ -724,11 +758,13 @@ function CoreCutsceneEditor:_evaluate_cutscene_frame(cutscene, camera, frame)
 	self._player:set_camera(camera)
 	self._player:seek(frame / cutscene:frames_per_second())
 end
+
 function CoreCutsceneEditor:_create_camera_list(parent_frame)
 	self._camera_list_ctrl = EWS:ListCtrl(parent_frame, "", "LC_LIST")
 	self._camera_list_ctrl:set_image_list(self:_camera_icons_image_list())
 	return self._camera_list_ctrl
 end
+
 function CoreCutsceneEditor:_camera_icons_image_list()
 	if self.__camera_icons_image_list == nil then
 		self.__camera_icons_image_list = EWS:ImageList(16, 16)
@@ -739,6 +775,7 @@ function CoreCutsceneEditor:_camera_icons_image_list()
 	end
 	return self.__camera_icons_image_list
 end
+
 function CoreCutsceneEditor:_camera_icon_index(icon_index)
 	if icon_index < 0 or icon_index >= self:_camera_icons_image_list():image_count() then
 		return 0
@@ -746,24 +783,30 @@ function CoreCutsceneEditor:_camera_icon_index(icon_index)
 		return icon_index
 	end
 end
+
 function CoreCutsceneEditor:cutscene_camera_enabled()
 	return self._view_menu:is_checked(commands:id("CUTSCENE_CAMERA_TOGGLE"))
 end
+
 function CoreCutsceneEditor:set_cutscene_camera_enabled(enabled)
 	self._view_menu:set_checked(commands:id("CUTSCENE_CAMERA_TOGGLE"), enabled)
 	self:_on_cutscene_camera_toggle()
 end
+
 function CoreCutsceneEditor:widescreen_enabled()
 	return self._view_menu:is_checked(commands:id("WIDESCREEN_TOGGLE"))
 end
+
 function CoreCutsceneEditor:set_widescreen_enabled(enabled)
 	self._view_menu:set_checked(commands:id("WIDESCREEN_TOGGLE"), enabled)
 	self:_on_widescreen_toggle()
 end
+
 function CoreCutsceneEditor:load_project(project)
 	self:_set_current_project(project)
 	self:revert_to_saved()
 end
+
 function CoreCutsceneEditor:save_project()
 	if self._current_project then
 		local settings = {
@@ -773,6 +816,7 @@ function CoreCutsceneEditor:save_project()
 		self._current_project:save(self:_serialized_audio_clips(), self:_serialized_film_clips(), self:_serialized_cutscene_keys(), settings)
 	end
 end
+
 function CoreCutsceneEditor:_serialized_audio_clips()
 	local clips = {}
 	for _, clip in ipairs(self._sequencer:audio_track():clips()) do
@@ -788,6 +832,7 @@ function CoreCutsceneEditor:_serialized_audio_clips()
 	end)
 	return clips
 end
+
 function CoreCutsceneEditor:_serialized_film_clips()
 	local clips = {}
 	for index, track in ipairs(self._sequencer:film_tracks()) do
@@ -810,11 +855,13 @@ function CoreCutsceneEditor:_serialized_film_clips()
 	end)
 	return clips
 end
+
 function CoreCutsceneEditor:_serialized_cutscene_keys()
 	return table.collect(self._sequencer:key_track():clips(), function(sequencer_key)
 		return sequencer_key:metadata()
 	end)
 end
+
 function CoreCutsceneEditor:_all_controlled_unit_types(include_cameras)
 	local unit_types = {}
 	for _, clip in ipairs(self._sequencer:film_clips()) do
@@ -826,14 +873,17 @@ function CoreCutsceneEditor:_all_controlled_unit_types(include_cameras)
 	end
 	return unit_types
 end
+
 function CoreCutsceneEditor:_set_current_project(project)
 	self._current_project = project
 	local title = self._current_project and string.format("%s - %s", self:project_name(), CoreCutsceneEditor.EDITOR_TITLE) or CoreCutsceneEditor.EDITOR_TITLE
 	self._window:set_title(title)
 end
+
 function CoreCutsceneEditor:project_name()
 	return self._current_project and self._current_project:name() or "untitled"
 end
+
 function CoreCutsceneEditor:revert_to_saved()
 	self._sequencer:freeze()
 	self._sequencer:remove_all_items()
@@ -861,15 +911,19 @@ function CoreCutsceneEditor:revert_to_saved()
 	self._sequencer:thaw()
 	self:_evaluate_current_frame()
 end
+
 function CoreCutsceneEditor:frames_per_second()
 	return 30
 end
+
 function CoreCutsceneEditor:playhead_position()
 	return self._sequencer:playhead_position()
 end
+
 function CoreCutsceneEditor:set_playhead_position(time)
 	self._sequencer:set_playhead_position(time)
 end
+
 function CoreCutsceneEditor:zoom_around(time, offset_in_window, delta)
 	local new_pixels_per_division = self._sequencer:pixels_per_division() + delta
 	if 25 <= new_pixels_per_division and new_pixels_per_division < 12000 then
@@ -881,6 +935,7 @@ function CoreCutsceneEditor:zoom_around(time, offset_in_window, delta)
 		self._selected_footage_track_scrolled_area:thaw()
 	end
 end
+
 function CoreCutsceneEditor:zoom_around_playhead(multiplier)
 	multiplier = multiplier or 1
 	local time = self:playhead_position()
@@ -888,13 +943,16 @@ function CoreCutsceneEditor:zoom_around_playhead(multiplier)
 	local delta = self._sequencer:ruler():pixels_per_major_division() / self._sequencer:ruler():subdivision_count()
 	self:zoom_around(time, offset_in_window, delta * multiplier)
 end
+
 function CoreCutsceneEditor:set_position(newpos)
 	self._window:set_position(newpos)
 end
+
 function CoreCutsceneEditor:enqueue_update_action(callback_func)
 	self._enqueued_update_actions = self._enqueued_update_actions or {}
 	table.insert(self._enqueued_update_actions, 1, callback_func)
 end
+
 function CoreCutsceneEditor:_process_enqueued_update_actions()
 	if self._enqueued_update_actions then
 		local func = table.remove(self._enqueued_update_actions)
@@ -905,11 +963,13 @@ function CoreCutsceneEditor:_process_enqueued_update_actions()
 		end
 	end
 end
+
 function CoreCutsceneEditor:refresh_player()
 	if self._player then
 		self._player:refresh()
 	end
 end
+
 function CoreCutsceneEditor:update(time, delta_time)
 	if self._modal_window then
 		if self._modal_window:update(time, delta_time) then
@@ -946,6 +1006,7 @@ function CoreCutsceneEditor:update(time, delta_time)
 		end
 	end
 end
+
 function CoreCutsceneEditor:end_update(time, delta_time)
 	if self._modal_window then
 		if self._modal_window.end_update then
@@ -971,6 +1032,7 @@ function CoreCutsceneEditor:end_update(time, delta_time)
 		end
 	end
 end
+
 function CoreCutsceneEditor:close()
 	for cutscene_key in self:keys() do
 		cutscene_key:unload(self._player)
@@ -995,6 +1057,7 @@ function CoreCutsceneEditor:close()
 	self._cast:unload()
 	self._window:destroy()
 end
+
 function CoreCutsceneEditor:_process_debug_key_commands(time, delta_time)
 	if EWS:get_key_state("K_SHIFT") and EWS:get_key_state("K_CONTROL") then
 		local delta = 0
@@ -1017,6 +1080,7 @@ function CoreCutsceneEditor:_process_debug_key_commands(time, delta_time)
 		self._player_seek_offset = nil
 	end
 end
+
 function CoreCutsceneEditor:_on_exit()
 	local choice = EWS:MessageDialog(self._window, "Do you want to save the current project before closing?", "Save Changes?", "YES_NO,CANCEL,YES_DEFAULT,ICON_EXCLAMATION"):show_modal()
 	if choice == "ID_YES" then
@@ -1029,6 +1093,7 @@ function CoreCutsceneEditor:_on_exit()
 	managers.toolhub:close(CoreCutsceneEditor.EDITOR_TITLE)
 	return true
 end
+
 function CoreCutsceneEditor:_on_activate(data, event)
 	if event:get_active() then
 		if managers.subtitle then
@@ -1041,11 +1106,13 @@ function CoreCutsceneEditor:_on_activate(data, event)
 	end
 	event:skip()
 end
+
 function CoreCutsceneEditor:_on_new_project()
 	if self:_on_exit() then
 		managers.toolhub:open(CoreCutsceneEditor.EDITOR_TITLE)
 	end
 end
+
 function CoreCutsceneEditor:_on_open_project()
 	local path = managers.database:open_file_dialog(self._window, "Cutscene Project (*.cutscene_project)|*.cutscene_project")
 	if path then
@@ -1054,6 +1121,7 @@ function CoreCutsceneEditor:_on_open_project()
 		self:load_project(project)
 	end
 end
+
 function CoreCutsceneEditor:_on_save_project()
 	if self._current_project then
 		self:save_project()
@@ -1062,6 +1130,7 @@ function CoreCutsceneEditor:_on_save_project()
 		return self:_on_save_project_as()
 	end
 end
+
 function CoreCutsceneEditor:_on_save_project_as()
 	local path = managers.database:save_file_dialog(self._window, "Cutscene Project (*.cutscene_project)|*.cutscene_project")
 	if path then
@@ -1072,10 +1141,12 @@ function CoreCutsceneEditor:_on_save_project_as()
 	end
 	return path ~= nil
 end
+
 function CoreCutsceneEditor:_on_show_project_settings()
 	self._project_settings_dialog:set_unit_types(self:_all_controlled_unit_types(false))
 	self._project_settings_dialog:show()
 end
+
 function CoreCutsceneEditor:_on_export_to_game()
 	local optimized_cutscene_name = self:_request_asset_name_from_user("cutscene", "optimized_" .. self:project_name())
 	if optimized_cutscene_name == nil then
@@ -1110,6 +1181,7 @@ function CoreCutsceneEditor:_on_export_to_game()
 		EWS:MessageDialog(self._window, message, "Export Failed", "OK,ICON_ERROR"):show_modal()
 	end
 end
+
 function CoreCutsceneEditor:_on_export_to_maya()
 	local clips_on_active_track = self:_evaluated_track() and self:_evaluated_track():clips() or {}
 	local start_frame = 0
@@ -1134,6 +1206,7 @@ function CoreCutsceneEditor:_on_export_to_maya()
 	exporter:begin()
 	self._modal_window = exporter
 end
+
 function CoreCutsceneEditor:_on_export_playblast()
 	local clips_on_active_track = self:_evaluated_track() and self:_evaluated_track():clips() or {}
 	local start_frame = 0
@@ -1147,15 +1220,18 @@ function CoreCutsceneEditor:_on_export_playblast()
 	self._window:set_enabled(false)
 	self._modal_window = core_or_local("CutsceneFrameExporterDialog", self, self._export_playblast, self._window, self:project_name(), start_frame, end_frame)
 end
+
 function CoreCutsceneEditor:_export_playblast(start_frame, end_frame, folder_name)
 	local exporter = core_or_local("CutsceneFrameExporter", self._window, self, start_frame, end_frame, folder_name)
 	exporter:begin()
 	self._modal_window = exporter
 end
+
 function CoreCutsceneEditor:_on_show_batch_optimizer()
 	self._window:set_enabled(false)
 	self._modal_window = core_or_local("CutsceneBatchOptimizerDialog", self._window, ProjectDatabase)
 end
+
 function CoreCutsceneEditor:_request_asset_name_from_user(asset_db_type, default_name, duplicate_name_check_func)
 	local asset_type = string.pretty(asset_db_type)
 	local asset_type_capitalized = string.capitalize(asset_type)
@@ -1181,17 +1257,21 @@ function CoreCutsceneEditor:_request_asset_name_from_user(asset_db_type, default
 	end
 	return asset_name
 end
+
 function CoreCutsceneEditor:_request_output_maya_ascii_file_from_user()
 	return self:_request_output_file_from_user("Export Cutscene to Maya", "mayaAscii (*.ma)|*.ma", nil, self:project_name() .. ".ma")
 end
+
 function CoreCutsceneEditor:_request_output_file_from_user(message, wildcard, default_dir, default_file)
 	local dialog = EWS:FileDialog(self._window, message, default_dir or "", default_file or "", assert(wildcard, "Must supply a wildcard spec. Check wxWidgets docs."), "SAVE,OVERWRITE_PROMPT")
 	return dialog:show_modal() and dialog:get_path() or nil
 end
+
 function CoreCutsceneEditor:_project_db_type()
 	local project_class = get_core_or_local("CutsceneEditorProject")
 	return project_class and project_class.ELEMENT_NAME or "cutscene_project"
 end
+
 function CoreCutsceneEditor:_get_clip_bounds(clips)
 	if 0 < #clips then
 		local earliest_time = math.huge
@@ -1204,6 +1284,7 @@ function CoreCutsceneEditor:_get_clip_bounds(clips)
 	end
 	return nil, nil
 end
+
 function CoreCutsceneEditor:mark_items_on_clipboard_as_cut(style_as_cut)
 	self._sequencer:freeze()
 	self._clipboard_cut_items = style_as_cut and {} or nil
@@ -1215,6 +1296,7 @@ function CoreCutsceneEditor:mark_items_on_clipboard_as_cut(style_as_cut)
 	end
 	self._sequencer:thaw()
 end
+
 function CoreCutsceneEditor:_on_cut()
 	self._sequencer:freeze()
 	self:mark_items_on_clipboard_as_cut(false)
@@ -1223,11 +1305,13 @@ function CoreCutsceneEditor:_on_cut()
 	self:mark_items_on_clipboard_as_cut(true)
 	self._sequencer:thaw()
 end
+
 function CoreCutsceneEditor:_on_copy()
 	self:mark_items_on_clipboard_as_cut(false)
 	self._clipboard = self._sequencer:selected_items()
 	self._edit_menu:set_enabled(commands:id("PASTE"), true)
 end
+
 function CoreCutsceneEditor:_on_paste()
 	local earliest_item_time = table.inject(self._clipboard or {}, math.huge, function(earliest_time, item)
 		return math.min(earliest_time, item:start_time())
@@ -1245,21 +1329,26 @@ function CoreCutsceneEditor:_on_paste()
 		self:_refresh_attribute_panel()
 	end
 end
+
 function CoreCutsceneEditor:_on_select_all()
 	self._sequencer:select_all_clips()
 end
+
 function CoreCutsceneEditor:_on_select_all_on_current_track()
 	self._sequencer:deselect_all_items()
 	self._sequencer:active_film_track():select_all_clips()
 end
+
 function CoreCutsceneEditor:_on_deselect()
 	self._sequencer:deselect_all_items()
 end
+
 function CoreCutsceneEditor:_on_delete()
 	self._sequencer:remove_items(self._sequencer:selected_items())
 	self:_on_sequencer_selection_changed(self._sequencer)
 	self:_refresh_attribute_panel()
 end
+
 function CoreCutsceneEditor:_on_cleanup_zoom_keys()
 	local _, last_film_clip_end_time = self:_get_clip_bounds(self._sequencer:film_clips())
 	local items_to_remove = {}
@@ -1280,22 +1369,27 @@ function CoreCutsceneEditor:_on_cleanup_zoom_keys()
 		self._sequencer:remove_items(items_to_remove)
 	end
 end
+
 function CoreCutsceneEditor:_on_play()
 	self._playing = true
 end
+
 function CoreCutsceneEditor:_on_play_from_start()
 	self:_on_stop()
 	self:_on_play()
 end
+
 function CoreCutsceneEditor:_on_pause()
 	self._playing = false
 end
+
 function CoreCutsceneEditor:_on_stop()
 	self:_on_pause()
 	local clips_on_active_track = self._sequencer:active_film_track() and self._sequencer:active_film_track():clips() or {}
 	local start_time = self:_get_clip_bounds(clips_on_active_track) or 0
 	self:set_playhead_position(start_time)
 end
+
 function CoreCutsceneEditor:_on_play_toggle()
 	if self._playing then
 		self:_on_pause()
@@ -1303,17 +1397,21 @@ function CoreCutsceneEditor:_on_play_toggle()
 		self:_on_play()
 	end
 end
+
 function CoreCutsceneEditor:_on_zoom_in()
 	self:zoom_around_playhead()
 end
+
 function CoreCutsceneEditor:_on_zoom_out()
 	self:zoom_around_playhead(-1)
 end
+
 function CoreCutsceneEditor:_on_go_to_start()
 	local clips_on_active_track = self._sequencer:active_film_track() and self._sequencer:active_film_track():clips() or {}
 	local start_time = self:_get_clip_bounds(self._sequencer:selected_items()) or self:_get_clip_bounds(clips_on_active_track) or 0
 	self:set_playhead_position(start_time)
 end
+
 function CoreCutsceneEditor:_on_go_to_end()
 	local items = self._sequencer:selected_items()
 	if #items == 0 then
@@ -1324,12 +1422,15 @@ function CoreCutsceneEditor:_on_go_to_end()
 		self:set_playhead_position(end_time)
 	end
 end
+
 function CoreCutsceneEditor:_on_go_to_previous_frame()
 	self:set_playhead_position(self:playhead_position() - 1)
 end
+
 function CoreCutsceneEditor:_on_go_to_next_frame()
 	self:set_playhead_position(self:playhead_position() + 1)
 end
+
 function CoreCutsceneEditor:_on_sequencer_selection_changed(sequencer)
 	self:_refresh_selected_footage_track()
 	self:_refresh_attribute_panel()
@@ -1337,12 +1438,14 @@ function CoreCutsceneEditor:_on_sequencer_selection_changed(sequencer)
 	self._edit_menu:set_enabled("CUT", all_selected_clips_are_on_the_active_film_track)
 	self._edit_menu:set_enabled("COPY", all_selected_clips_are_on_the_active_film_track)
 end
+
 function CoreCutsceneEditor:_on_sequencer_remove_item(sender, removed_item)
 	local metadata = removed_item.metadata and removed_item:metadata()
 	if metadata and metadata.unload then
 		metadata:unload(self._player)
 	end
 end
+
 function CoreCutsceneEditor:_on_sequencer_drag_item(sender, dragged_item, drag_mode)
 	self:_refresh_selected_footage_track()
 	if string.ends(drag_mode, "EDGE") then
@@ -1351,9 +1454,11 @@ function CoreCutsceneEditor:_on_sequencer_drag_item(sender, dragged_item, drag_m
 		self:_evaluate_current_frame()
 	end
 end
+
 function CoreCutsceneEditor:_on_sequencer_evaluate_frame_at_playhead(sender, event)
 	self:_evaluate_current_frame()
 end
+
 function CoreCutsceneEditor:_on_selected_footage_track_mouse_left_up(sender, event)
 	if not event:control_down() then
 		sender:deselect_all_clips()
@@ -1363,12 +1468,15 @@ function CoreCutsceneEditor:_on_selected_footage_track_mouse_left_up(sender, eve
 		clip_below_cursor:set_selected(not clip_below_cursor:selected())
 	end
 end
+
 function CoreCutsceneEditor:_on_sequencer_track_mousewheel(sender, event, track)
 	self:_on_track_mousewheel(track, event)
 end
+
 function CoreCutsceneEditor:_on_track_mousewheel(sender, event)
 	self:zoom_around_playhead(event:get_wheel_rotation() < 0 and -1 or 1)
 end
+
 function CoreCutsceneEditor:_on_footage_selection_changed(sender, event)
 	self._selected_footage_track:remove_all_clips()
 	local selected_item_index = sender:selected_item()
@@ -1382,6 +1490,7 @@ function CoreCutsceneEditor:_on_footage_selection_changed(sender, event)
 	end
 	self._insert_menu:set_enabled(commands:id("INSERT_CLIPS_FROM_SELECTED_FOOTAGE"), footage ~= nil)
 end
+
 function CoreCutsceneEditor:_on_cutscene_camera_toggle()
 	self:_evaluate_current_frame()
 	if self._player then
@@ -1398,14 +1507,17 @@ function CoreCutsceneEditor:_on_cutscene_camera_toggle()
 		end
 	end
 end
+
 function CoreCutsceneEditor:_on_widescreen_toggle()
 	if self._player then
 		self._player:set_widescreen(self._view_menu:is_checked(commands:id("WIDESCREEN_TOGGLE")))
 	end
 end
+
 function CoreCutsceneEditor:_on_play_every_frame_toggle()
 	self._play_every_frame = self._transport_menu:is_checked(commands:id("PLAY_EVERY_FRAME_TOGGLE"))
 end
+
 function CoreCutsceneEditor:_on_insert_clips_from_selected_footage(sender, event)
 	local clips_to_add = self._selected_footage_track:selected_clips()
 	if #clips_to_add == 0 then
@@ -1460,6 +1572,7 @@ function CoreCutsceneEditor:_on_insert_clips_from_selected_footage(sender, event
 		end
 	end
 end
+
 function CoreCutsceneEditor:_on_insert_cutscene_key(element_name)
 	local cutscene_key = CoreCutsceneKey:create(element_name, self)
 	cutscene_key:populate_from_editor(self)
@@ -1467,15 +1580,18 @@ function CoreCutsceneEditor:_on_insert_cutscene_key(element_name)
 	self._sequencer:deselect_all_items()
 	self._sequencer:set_item_selected(self._sequencer:add_cutscene_key(cutscene_key), true)
 end
+
 function CoreCutsceneEditor:_monkey_patch_cutscene_key(cutscene_key)
 	cutscene_key:set_key_collection(self)
 	cutscene_key:set_cast(self._cast)
 	cutscene_key.is_in_cutscene_editor = true
 end
+
 function CoreCutsceneEditor:_draw_focus_planes()
 	if self._player and managers.DOF then
 		self._player._viewport:update()
 		local camera = self._player:_camera()
+		
 		local function draw_focus_plane(value, color)
 			local point = camera:screen_to_world(Vector3(0, 0, value))
 			local brush = Draw:brush()
@@ -1483,6 +1599,7 @@ function CoreCutsceneEditor:_draw_focus_planes()
 			brush:set_blend_mode("add")
 			brush:disc(point, self._player:is_viewport_enabled() and 10000 or 100, camera:rotation():y())
 		end
+		
 		local camera_cylinder = Draw:pen()
 		camera_cylinder:set(Color("808080"))
 		camera_cylinder:cylinder(camera:position(), camera:screen_to_world(Vector3(0, 0, camera:far_range())), 100, 20, 0)
@@ -1499,6 +1616,7 @@ function CoreCutsceneEditor:_draw_focus_planes()
 		end
 	end
 end
+
 function CoreCutsceneEditor:_draw_cast_finder()
 	if self._player == nil then
 		return
@@ -1524,6 +1642,7 @@ function CoreCutsceneEditor:_draw_cast_finder()
 		end
 	end
 end
+
 function CoreCutsceneEditor:_draw_compass()
 	local vp = managers.viewport and managers.viewport:first_active_viewport()
 	local camera = vp and vp:camera()
@@ -1550,6 +1669,7 @@ function CoreCutsceneEditor:_draw_compass()
 		self:_pen():line(compass_position, compass_position - Vector3(0, 0, 1))
 	end
 end
+
 function CoreCutsceneEditor:_draw_locator_object(object)
 	local position = object:position()
 	local rotation = object:rotation()
@@ -1557,6 +1677,7 @@ function CoreCutsceneEditor:_draw_locator_object(object)
 	self:_pen():rotation(position, rotation, 10)
 	self:_pen():sphere(position, 1, 10, 1)
 end
+
 function CoreCutsceneEditor:_draw_tracking_line(object, label)
 	local vp = managers.viewport and managers.viewport:first_active_viewport()
 	local camera = managers.viewport and vp:camera()
@@ -1573,6 +1694,7 @@ function CoreCutsceneEditor:_draw_tracking_line(object, label)
 		end
 	end
 end
+
 function CoreCutsceneEditor:_draw_cameras()
 	if self._player == nil then
 		return
@@ -1595,6 +1717,7 @@ function CoreCutsceneEditor:_draw_cameras()
 		end
 	end
 end
+
 function CoreCutsceneEditor:_draw_camera_object(object, color)
 	local position = object:position()
 	local rotation = object:rotation()
@@ -1609,6 +1732,7 @@ function CoreCutsceneEditor:_draw_camera_object(object, color)
 	brush:pyramid(center, position + x + y, position + x * -1 + y, position + x * -1 + y * -1, position + x + y * -1)
 	self:_pen():rotation(position, rotation, 10)
 end
+
 function CoreCutsceneEditor:_draw_hierarchies()
 	if self._player == nil then
 		return
@@ -1620,6 +1744,7 @@ function CoreCutsceneEditor:_draw_hierarchies()
 		end
 	end
 end
+
 function CoreCutsceneEditor:_draw_unit_hierarchy(unit, unit_name, draw_root_point)
 	unit_name = unit_name or unit:name()
 	local root_point = unit:orientation_object()
@@ -1633,6 +1758,7 @@ function CoreCutsceneEditor:_draw_unit_hierarchy(unit, unit_name, draw_root_poin
 		end
 	end
 end
+
 function CoreCutsceneEditor:_draw_object_hierarchy(object, parent, max_z)
 	self:_draw_joint(parent, object)
 	max_z = math.max(max_z or -math.huge, object.position and object:position().z or -math.huge)
@@ -1645,9 +1771,11 @@ function CoreCutsceneEditor:_draw_object_hierarchy(object, parent, max_z)
 	end
 	return max_z
 end
+
 function CoreCutsceneEditor:_draw_label(text, position)
 	self:_text_brush():center_text(position, text)
 end
+
 function CoreCutsceneEditor:_draw_joint(start_object, end_object, radius)
 	radius = radius or 1
 	local end_position = end_object and end_object.position and end_object:position()
@@ -1670,6 +1798,7 @@ function CoreCutsceneEditor:_draw_joint(start_object, end_object, radius)
 		self:_pen():sphere(end_position, radius, 10, 1)
 	end
 end
+
 function CoreCutsceneEditor:_pen()
 	if self._debug_pen == nil then
 		self._debug_pen = Draw:pen()
@@ -1678,6 +1807,7 @@ function CoreCutsceneEditor:_pen()
 	end
 	return self._debug_pen
 end
+
 function CoreCutsceneEditor:_text_brush()
 	if self._debug_text_brush == nil then
 		self._debug_text_brush = Draw:brush()
@@ -1686,6 +1816,7 @@ function CoreCutsceneEditor:_text_brush()
 	end
 	return self._debug_text_brush
 end
+
 function CoreCutsceneEditor:_tiny_text_brush()
 	if self._debug_tiny_text_brush == nil then
 		self._debug_tiny_text_brush = Draw:brush()
@@ -1694,22 +1825,30 @@ function CoreCutsceneEditor:_tiny_text_brush()
 	end
 	return self._debug_tiny_text_brush
 end
+
 function CoreCutsceneEditor:prime_cutscene_key(player, key, cast)
 end
+
 function CoreCutsceneEditor:evaluate_cutscene_key(player, key, time, last_evaluated_time)
 end
+
 function CoreCutsceneEditor:revert_cutscene_key(player, key, time, last_evaluated_time)
 end
+
 function CoreCutsceneEditor:update_cutscene_key(player, key, time, last_evaluated_time)
 end
+
 function CoreCutsceneEditor:skip_cutscene_key(player)
 end
+
 function CoreCutsceneEditor:time_in_relation_to_cutscene_key(key)
 	return self:playhead_position() / self:frames_per_second() - key:time()
 end
+
 function CoreCutsceneEditor:_debug_get_cast_member(unit_name)
 	return self._cast:unit(unit_name)
 end
+
 function CoreCutsceneEditor:_debug_dump_cast()
 	cat_print("debug", "Cast:")
 	for _, unit_name in ipairs(self._cast:unit_names()) do
@@ -1717,6 +1856,7 @@ function CoreCutsceneEditor:_debug_dump_cast()
 		cat_print("debug", unit_name .. " (" .. unit:name() .. ")")
 	end
 end
+
 function CoreCutsceneEditor:_debug_dump_cast_member(unit_name)
 	local unit = self:_debug_get_cast_member(unit_name)
 	if unit then
@@ -1726,6 +1866,7 @@ function CoreCutsceneEditor:_debug_dump_cast_member(unit_name)
 		cat_print("debug", "Unit \"" .. unit_name .. "\" not in cast.")
 	end
 end
+
 function CoreCutsceneEditor:_debug_dump_hierarchy(object, indent)
 	indent = indent or 0
 	local object_type = type_name(object)

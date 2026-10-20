@@ -1,7 +1,9 @@
 FragGrenade = FragGrenade or class(GrenadeBase)
+
 function FragGrenade:init(unit)
 	FragGrenade.super.init(self, unit)
 end
+
 function FragGrenade:_detonate()
 	local units = World:find_units("sphere", self._unit:position(), 400, self._slotmask)
 	for _, unit in ipairs(units) do
@@ -14,6 +16,7 @@ function FragGrenade:_detonate()
 	end
 	self._unit:set_slot(0)
 end
+
 function FragGrenade:_play_sound_and_effects()
 	World:effect_manager():spawn({
 		effect = Idstring("effects/particles/explosions/explosion_grenade"),
@@ -22,6 +25,7 @@ function FragGrenade:_play_sound_and_effects()
 	})
 	self._unit:sound_source():post_event("trip_mine_explode")
 end
+
 function FragGrenade:_give_explosion_damage(col_ray, unit, damage)
 	local action_data = {}
 	action_data.variant = "explosion"

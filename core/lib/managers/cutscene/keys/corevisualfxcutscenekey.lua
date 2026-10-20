@@ -11,20 +11,25 @@ CoreVisualFXCutsceneKey:register_serialized_attribute("offset", Vector3(0, 0, 0)
 CoreVisualFXCutsceneKey:register_serialized_attribute("rotation", Rotation(), CoreCutsceneKeyBase.string_to_rotation)
 CoreVisualFXCutsceneKey:register_serialized_attribute("force_synch", false, toboolean)
 CoreVisualFXCutsceneKey.control_for_effect = CoreCutsceneKeyBase.standard_combo_box_control
+
 function CoreVisualFXCutsceneKey:__tostring()
 	return "Trigger visual effect \"" .. self:effect() .. "\" on \"" .. self:object_name() .. " in " .. self:unit_name() .. "\"."
 end
+
 function CoreVisualFXCutsceneKey:can_evaluate_with_player(player)
 	return true
 end
+
 function CoreVisualFXCutsceneKey:prime(player)
 	if Application:production_build() then
 		CoreEngineAccess._editor_load(Idstring("effect"), self:effect():id())
 	end
 end
+
 function CoreVisualFXCutsceneKey:unload(player)
 	self:stop()
 end
+
 function CoreVisualFXCutsceneKey:play(player, undo, fast_forward)
 	if undo then
 		self:stop()
@@ -40,34 +45,43 @@ function CoreVisualFXCutsceneKey:play(player, undo, fast_forward)
 			rotation = self:rotation(),
 			force_synch = self:force_synch()
 		})
+		
 		function self._effect_abort_func()
 			effect_manager:kill(effect_id)
 		end
 	end
 end
+
 function CoreVisualFXCutsceneKey:update(player, time)
 	if self:duration() and time > self:duration() then
 		self:stop()
 	end
 end
+
 function CoreVisualFXCutsceneKey:is_valid_unit_name(value)
 	return value == nil or value == "" or CoreCutsceneKeyBase.is_valid_unit_name(self, value)
 end
+
 function CoreVisualFXCutsceneKey:is_valid_object_name(value)
 	return value == nil or value == "" or table.contains(self:_unit_object_names(self:unit_name()), value) or false
 end
+
 function CoreVisualFXCutsceneKey:is_valid_effect(effect)
 	return DB:has("effect", effect)
 end
+
 function CoreVisualFXCutsceneKey:is_valid_duration(value)
 	return value == nil or 0 < value
 end
+
 function CoreVisualFXCutsceneKey:is_valid_offset(value)
 	return value ~= nil
 end
+
 function CoreVisualFXCutsceneKey:is_valid_rotation(value)
 	return value ~= nil
 end
+
 function CoreVisualFXCutsceneKey:refresh_control_for_unit_name(control)
 	self.super.refresh_control_for_unit_name(self, control, self:unit_name())
 	control:append("")
@@ -75,6 +89,7 @@ function CoreVisualFXCutsceneKey:refresh_control_for_unit_name(control)
 		control:set_value("")
 	end
 end
+
 function CoreVisualFXCutsceneKey:refresh_control_for_object_name(control)
 	self.super.refresh_control_for_object_name(self, control, self:unit_name(), self:object_name())
 	control:append("")
@@ -84,6 +99,7 @@ function CoreVisualFXCutsceneKey:refresh_control_for_object_name(control)
 	end
 	control:set_enabled(self:unit_name() ~= "")
 end
+
 function CoreVisualFXCutsceneKey:refresh_control_for_effect(control)
 	control:freeze()
 	control:clear()
@@ -96,9 +112,11 @@ function CoreVisualFXCutsceneKey:refresh_control_for_effect(control)
 	end
 	control:thaw()
 end
+
 function CoreVisualFXCutsceneKey:on_attribute_before_changed(attribute_name, value, previous_value)
 	self:stop()
 end
+
 function CoreVisualFXCutsceneKey:stop()
 	if self._effect_abort_func then
 		self._effect_abort_func()

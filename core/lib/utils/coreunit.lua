@@ -1,6 +1,7 @@
 core:module("CoreUnit")
 core:import("CoreEngineAccess")
 core:import("CoreCode")
+
 function table.get_ray_ignore_args(...)
 	local arg_list = {}
 	for _, unit in pairs({
@@ -13,6 +14,7 @@ function table.get_ray_ignore_args(...)
 	end
 	return unpack(arg_list)
 end
+
 function get_distance_to_body(body, pos)
 	local root_obj = body:root_object()
 	local min_dist = root_obj:distance_to_bounding_volume(pos)
@@ -25,6 +27,7 @@ function get_distance_to_body(body, pos)
 	end
 	return min_dist
 end
+
 function reload_units(unit_name)
 	local units = World:find_units_quick("all")
 	local num_reloads = 0
@@ -48,6 +51,7 @@ function reload_units(unit_name)
 	end
 	return num_reloads
 end
+
 function set_unit_and_children_visible(unit, visible, filter_func)
 	if filter_func == nil or filter_func(unit) then
 		unit:set_visible(visible)
@@ -56,6 +60,7 @@ function set_unit_and_children_visible(unit, visible, filter_func)
 		set_unit_and_children_visible(child, visible, filter_func)
 	end
 end
+
 function editor_load_unit(unit_name)
 	if Application:editor() then
 		CoreEngineAccess._editor_load(Idstring("unit"), unit_name:id())
@@ -64,10 +69,12 @@ function editor_load_unit(unit_name)
 		end
 	end
 end
+
 function safe_spawn_unit(unit_name, ...)
 	editor_load_unit(unit_name)
 	return World:spawn_unit(unit_name:id(), ...)
 end
+
 function safe_spawn_unit_without_extensions(unit_name, ...)
 	editor_load_unit(unit_name)
 	return World:spawn_unit_without_extensions(unit_name:id(), ...)

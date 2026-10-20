@@ -1,4 +1,5 @@
 CopActionStand = CopActionStand or class()
+
 function CopActionStand:init(action_desc, common_data)
 	self._ext_movement = common_data.ext_movement
 	if common_data.active_actions[2] and common_data.active_actions[2]._nav_link then
@@ -43,6 +44,7 @@ function CopActionStand:init(action_desc, common_data)
 		cat_print("george", "[CopActionStand:init] failed in", common_data.machine:segment_state(Idstring("base")), common_data.unit)
 	end
 end
+
 function CopActionStand:update(t)
 	if self._ext_anim.base_need_upd then
 		self._ext_movement:upd_m_head_pos()
@@ -50,9 +52,11 @@ function CopActionStand:update(t)
 		self._expired = true
 	end
 end
+
 function CopActionStand:expired()
 	return self._expired
 end
+
 function CopActionStand:type()
 	return "stand"
 end

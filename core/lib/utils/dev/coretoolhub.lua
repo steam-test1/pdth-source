@@ -1,6 +1,7 @@
 core:module("CoreToolHub")
 core:import("CoreDebug")
 ToolHub = ToolHub or class()
+
 function ToolHub:init()
 	self._main_frame = nil
 	self._shed = {}
@@ -17,6 +18,7 @@ function ToolHub:init()
 	self._startscreen = "primary"
 	self:create()
 end
+
 function ToolHub:destroy()
 	if alive(self._main_frame) then
 		for _, tool in pairs(self._tools) do
@@ -29,6 +31,7 @@ function ToolHub:destroy()
 		self._main_frame:destroy()
 	end
 end
+
 function ToolHub:update(time, rel_time)
 	local kb = Input:keyboard()
 	if kb:released(Idstring("f4")) or self._f4 then
@@ -56,6 +59,7 @@ function ToolHub:update(time, rel_time)
 	end
 	self._closelist = {}
 end
+
 function ToolHub:end_update(time, delta_time)
 	for key, value in pairs(self._tools) do
 		if value.end_update then
@@ -63,9 +67,11 @@ function ToolHub:end_update(time, delta_time)
 		end
 	end
 end
+
 function ToolHub:paused_update(time, rel_time)
 	self:update(time, rel_time)
 end
+
 function ToolHub:create()
 	self._main_frame = EWS:Frame("Tool Hub", Vector3(-1, -1, 0), Vector3(800, 55, 0), "CAPTION,SYSTEM_MENU,MINIMIZE_BOX,CLOSE_BOX")
 	self._main_frame:connect("", "EVT_CLOSE_WINDOW", callback(self, self, "on_close"), "")
@@ -76,6 +82,7 @@ function ToolHub:create()
 	self._main_frame:set_visible(false)
 	self._main_frame:set_position(self:getscreenpos(self._startscreen))
 end
+
 function ToolHub:get_tool_menu(frame)
 	local sortkeys = {}
 	for n in pairs(self._shed) do
@@ -89,6 +96,7 @@ function ToolHub:get_tool_menu(frame)
 	end
 	return tool_menu
 end
+
 function ToolHub:buildmenu()
 	local menu_bar = EWS:MenuBar()
 	local file_menu = EWS:Menu("")
@@ -176,20 +184,25 @@ function ToolHub:buildmenu()
 		menu_bar:append(resolution_menu, "Resolution")
 	end
 end
+
 function ToolHub:change_visualization(viz)
 	for _, vp in ipairs(managers.viewport:viewports()) do
 		vp:set_visualization_mode(viz)
 	end
 end
+
 function ToolHub:toggle_fullscreen()
 	managers.viewport:set_fullscreen(not RenderSettings.fullscreen)
 end
+
 function ToolHub:change_resolution(custom_data, event_object)
 	managers.viewport:set_resolution(custom_data)
 end
+
 function ToolHub:change_aspect_ratio(custom_data, event_object)
 	managers.viewport:set_aspect_ratio(custom_data)
 end
+
 function ToolHub:menu_showcommands()
 	self:register_showcommand("show_gui", "show_gui")
 	self:register_showcommand("show_gui_sprites", "show_gui_sprites")
@@ -228,6 +241,7 @@ function ToolHub:menu_showcommands()
 	self:register_showcommand("show_phantoms", "show_phantoms")
 	self:register_showcommand("show_shadow_projection", "show_shadow_projection")
 end
+
 function ToolHub:menu_statsommands()
 	self:register_statscommands("atombatcher", "atombatcher")
 	self:register_statscommands("cullingmanager", "cullingmanager")
@@ -248,29 +262,36 @@ function ToolHub:menu_statsommands()
 	self:register_statscommands("stall", "stall")
 	self:register_statscommands("unit_profiler", "unit_profiler")
 end
+
 function ToolHub:register_statscommands(commandname, text)
 	self._statsmenu:append_check_item("TB_" .. commandname, text, "")
 	self._main_frame:connect("TB_" .. commandname, "EVT_COMMAND_MENU_SELECTED", callback(self, self, "on_stats"), "")
 end
+
 function ToolHub:register_showcommand(commandname, text)
 	self._dbgmenu:append_check_item("TB_" .. commandname, text, "")
 	self._main_frame:connect("TB_" .. commandname, "EVT_COMMAND_MENU_SELECTED", callback(self, self, "on_gaaa"), "")
 end
+
 function ToolHub:hide()
 	self._main_frame:set_visible(false)
 	self._show = false
 end
+
 function ToolHub:show()
 	self._main_frame:set_visible(true)
 	self._show = true
 end
+
 function ToolHub:on_close()
 	self:hide()
 end
+
 function ToolHub:add(name, tool_class, init_args)
 	self._shed[name] = tool_class
 	self._init[name] = init_args or {}
 end
+
 function ToolHub:open(name)
 	local tool = self._tools[name]
 	if not tool then
@@ -279,10 +300,12 @@ function ToolHub:open(name)
 		tool:set_position(self:getscreenpos(self._startscreen))
 	end
 end
+
 function ToolHub:close(name)
 	self._closelist[name] = true
 	cat_print("debug", "ToolHub: Tool '" .. name .. "' added to close down list.")
 end
+
 function ToolHub:prepare(name)
 	local tool_class = self._shed[name]
 	if tool_class then
@@ -291,15 +314,18 @@ function ToolHub:prepare(name)
 	end
 	return nil
 end
+
 function ToolHub:on_opentool(gaa, commandevent)
 	cat_print("debug", "Should Open Toool: " .. commandevent:get_id())
 	self:open(commandevent:get_id())
 end
+
 function ToolHub:on_stats(gaa, commandevent)
 	local cmdname = string.sub(commandevent:get_id(), 4)
 	Application:console_command("stats " .. cmdname)
 	cat_print("debug", "stats " .. cmdname)
 end
+
 function ToolHub:on_gaaa(gaa, commandevent)
 	local ischecked = self._dbgmenu:is_checked(commandevent:get_id())
 	local cmdname = string.sub(commandevent:get_id(), 4)
@@ -309,6 +335,7 @@ function ToolHub:on_gaaa(gaa, commandevent)
 		Application:console_command("set " .. cmdname .. " true")
 	end
 end
+
 function ToolHub:on_catprint(gaa, commandevent)
 	cat_print("debug", "Should Toogle Catprint: " .. commandevent:get_id())
 	local ischecked = self._catprintmenu:is_checked(commandevent:get_id())
@@ -318,10 +345,12 @@ function ToolHub:on_catprint(gaa, commandevent)
 		Global.category_print[commandevent:get_id()] = true
 	end
 end
+
 function ToolHub:on_catprint_save(gaa, commandevent)
 	cat_print("debug", "Should Save Catprint")
 	CoreDebug.catprint_save()
 end
+
 function ToolHub:on_catprint_drawdebug(gaa, commandevent)
 	if Global.render_debug == nil then
 		return
@@ -329,6 +358,7 @@ function ToolHub:on_catprint_drawdebug(gaa, commandevent)
 	Global.render_debug.draw_enabled = not Global.render_debug.draw_enabled
 	cat_print("debug", "Toggle draw of debug info: " .. tostring(Global.render_debug.draw_enabled))
 end
+
 function ToolHub:set_screen(gaa, commandevent)
 	cat_print("debug", "Should set_screen: " .. commandevent:get_id())
 	if commandevent:get_id() == "TB_SETSCREEN-primary" then
@@ -341,6 +371,7 @@ function ToolHub:set_screen(gaa, commandevent)
 		self._startscreen = "right"
 	end
 end
+
 function ToolHub:getscreenpos(screen)
 	if screen == "primary" then
 		return Vector3(100, 100, 0)

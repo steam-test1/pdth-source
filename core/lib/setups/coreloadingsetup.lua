@@ -1,5 +1,6 @@
 function class(...)
 	local super = (...)
+	
 	if select("#", ...) >= 1 and super == nil then
 		error("trying to inherit from nil", 2)
 	end
@@ -7,6 +8,7 @@ function class(...)
 	class_table.super = super
 	class_table.__index = class_table
 	setmetatable(class_table, super)
+	
 	function class_table.new(klass, ...)
 		local object = {}
 		setmetatable(object, class_table)
@@ -15,8 +17,10 @@ function class(...)
 		end
 		return object
 	end
+	
 	return class_table
 end
+
 function callback(o, base_callback_class, base_callback_func_name, base_callback_param)
 	if base_callback_class and base_callback_func_name and base_callback_class[base_callback_func_name] then
 		if base_callback_param ~= nil then
@@ -47,30 +51,41 @@ function callback(o, base_callback_class, base_callback_func_name, base_callback
 		error("Callback class and function was nil.")
 	end
 end
+
 CoreLoadingSetup = CoreLoadingSetup or class()
+
 function CoreLoadingSetup:init()
 end
+
 function CoreLoadingSetup:init_managers(managers)
 end
+
 function CoreLoadingSetup:init_gp()
 end
+
 function CoreLoadingSetup:post_init()
 end
+
 function CoreLoadingSetup:update(t, dt)
 end
+
 function CoreLoadingSetup:destroy()
 end
+
 function CoreLoadingSetup:__init()
 	self:init_managers(managers)
 	self:init_gp()
 	self:post_init()
 end
+
 function CoreLoadingSetup:__update(t, dt)
 	self:update(t, dt)
 end
+
 function CoreLoadingSetup:__destroy(t, dt)
 	self:destroy()
 end
+
 function CoreLoadingSetup:make_entrypoint()
 	rawset(_G, "init", callback(self, self, "__init"))
 	rawset(_G, "update", callback(self, self, "__update"))
